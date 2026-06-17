@@ -754,175 +754,249 @@ export function LandingPage({ onToolSelect, onViewChange }: LandingPageProps) {
     .filter((t): t is typeof tools[0] => t !== undefined);
 
   function scrollToTools() {
-    document.getElementById("tools-grid-section")?.scrollIntoView({ behavior: "smooth" });
+    document.getElementById("stitch-tools-section")?.scrollIntoView({ behavior: "smooth" });
   }
 
   return (
-    <div className="landing-page">
-      {/* Hero Section */}
-      <section className="landing-hero landing-section">
-        <div className="landing-hero-copy">
-          <h1 style={{ color: "var(--c-text)" }}>We make PDF easy.</h1>
-          <p>
-            All the tools you’ll need to be more productive and work smarter with documents.
+    <div className="stitch-landing">
+
+      {/* ── HERO ── */}
+      <section className="stitch-hero">
+        <div className="stitch-hero-inner">
+          {/* Left copy */}
+          <div className="stitch-hero-copy">
+            <span className="eyebrow">Ultimate Productivity</span>
+            <h1>All PDF tools at your<br/>fingertips.</h1>
+            <p className="stitch-hero-sub">
+              Edit, convert, merge, and sign PDF documents in seconds.
+              Professional-grade utilities wrapped in a minimalist, high-fidelity workspace.
+            </p>
+            <div className="stitch-hero-actions">
+              <button className="stitch-pill-primary" onClick={scrollToTools}>
+                Explore All Tools
+              </button>
+              <button className="stitch-pill-secondary" onClick={() => onViewChange("pricing")}>
+                View Pricing
+              </button>
+            </div>
+          </div>
+
+          {/* Right illustration */}
+          <div className="stitch-hero-illustration">
+            <div className="stitch-hero-glow" />
+            <div className="stitch-browser-card">
+              <div className="stitch-browser-dots">
+                <span style={{ background: "#ff5f56" }} />
+                <span style={{ background: "#ffbd2e" }} />
+                <span style={{ background: "#27c93f" }} />
+              </div>
+              <BrowserMockup />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── POPULAR TOOLS — Block Mint ── */}
+      <section className="stitch-block-section stitch-block-mint" id="stitch-tools-section">
+        <div className="stitch-container">
+          <div className="stitch-block-header">
+            <div>
+              <span className="eyebrow" style={{ color: "rgba(0,0,0,0.5)" }}>Suite Core</span>
+              <h2 className="stitch-block-heading">Popular Utilities</h2>
+            </div>
+            <button className="stitch-pill-outline" onClick={scrollToTools}>
+              See 20+ more
+            </button>
+          </div>
+
+          <div className="stitch-tools-grid">
+            {popularTools.map((tool) => {
+              const toolColor = getToolColor(tool.id);
+              return (
+                <button
+                  key={tool.id}
+                  className="stitch-tool-card tool-card-hover"
+                  onClick={() => onToolSelect(tool.name)}
+                  style={{ "--tool-color": toolColor } as React.CSSProperties}
+                >
+                  <div className="stitch-tool-card-top">
+                    <div className="stitch-tool-icon">
+                      <ToolIcon toolNameOrId={tool.id} size={28} />
+                    </div>
+                    <span className="stitch-tool-category eyebrow" style={{ fontSize: "11px", marginBottom: 0, color: "rgba(0,0,0,0.35)" }}>
+                      {tool.group || "PDF Tool"}
+                    </span>
+                  </div>
+                  <h3 className="stitch-tool-name">{tool.name}</h3>
+                  <p className="stitch-tool-desc">{tool.description}</p>
+                  <div className="stitch-tool-cta">
+                    <span>Open Tool</span>
+                    <ArrowRight size={14} />
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* ── ENTERPRISE / SIGNING — Block Lime ── */}
+      <section className="stitch-block-section stitch-block-lime">
+        <div className="stitch-container">
+          <div className="stitch-split-section">
+            {/* Left visual */}
+            <div className="stitch-split-visual">
+              <div className="stitch-feature-window">
+                <div className="stitch-browser-dots" style={{ marginBottom: "12px" }}>
+                  <span style={{ background: "#ff5f56" }} />
+                  <span style={{ background: "#ffbd2e" }} />
+                  <span style={{ background: "#27c93f" }} />
+                </div>
+                <SignatureMockup />
+              </div>
+            </div>
+
+            {/* Right copy */}
+            <div className="stitch-split-copy">
+              <span className="eyebrow" style={{ color: "rgba(0,0,0,0.55)" }}>Premium Feature</span>
+              <h2 style={{ fontSize: "clamp(28px, 4vw, 42px)", fontWeight: 540, letterSpacing: "-0.5px", lineHeight: 1.15, marginBottom: "20px" }}>
+                Secure Enterprise Signing for Modern Teams
+              </h2>
+              <p style={{ fontSize: "18px", fontWeight: 330, lineHeight: 1.6, color: "rgba(0,0,0,0.6)", marginBottom: "28px" }}>
+                Collect legally binding signatures globally with end-to-end encryption.
+                Our enterprise suite integrates with your favourite tools to automate
+                document workflows effortlessly.
+              </p>
+              <ul className="stitch-feature-list">
+                <li><Check size={18} /> AES-256 Bit Encryption</li>
+                <li><Check size={18} /> Unlimited Signers &amp; Requests</li>
+                <li><Check size={18} /> Audit Trail Documentation</li>
+              </ul>
+              <button className="stitch-pill-primary" onClick={() => onToolSelect("Sign PDF")}>
+                Go Enterprise
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── FEATURES WALKTHROUGH ── */}
+      <section className="stitch-features-section">
+        <div className="stitch-container">
+          <div style={{ textAlign: "center", marginBottom: "64px" }}>
+            <span className="eyebrow">Core Capabilities</span>
+            <h2 style={{ fontSize: "clamp(32px, 5vw, 56px)", fontWeight: 340, letterSpacing: "-0.8px" }}>
+              Keep your simple tasks simple
+            </h2>
+          </div>
+
+          {featuresData.map((feature, idx) => (
+            <div className={`stitch-feature-row ${idx % 2 !== 0 ? "reverse" : ""}`} key={feature.title}>
+              <div className="stitch-feature-copy">
+                <h3 style={{ fontSize: "clamp(24px, 3vw, 36px)", fontWeight: 540, letterSpacing: "-0.3px", marginBottom: "16px" }}>
+                  {feature.title}
+                </h3>
+                <p style={{ fontSize: "18px", fontWeight: 320, lineHeight: 1.6, color: "rgba(0,0,0,0.6)", marginBottom: "24px" }}>
+                  {feature.description}
+                </p>
+                <button
+                  className="stitch-text-link"
+                  onClick={scrollToTools}
+                >
+                  Start processing files <ArrowRight size={14} />
+                </button>
+              </div>
+
+              <div className="stitch-feature-visual">
+                <div className="stitch-feature-window">
+                  <div className="stitch-browser-dots" style={{ marginBottom: "8px" }}>
+                    <span style={{ background: "#ff5f56" }} />
+                    <span style={{ background: "#ffbd2e" }} />
+                    <span style={{ background: "#27c93f" }} />
+                  </div>
+                  {feature.id === "editor" && <EditorMockup />}
+                  {feature.id === "signature" && <SignatureMockup />}
+                  {feature.id === "organizer" && <OrganizerMockup />}
+                  {feature.id === "dashboard" && <DashboardMockup />}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── WHY CHOOSE — Block Lilac ── */}
+      <section className="stitch-block-section stitch-block-lilac">
+        <div className="stitch-container">
+          <div style={{ marginBottom: "48px" }}>
+            <span className="eyebrow" style={{ color: "rgba(0,0,0,0.5)" }}>Why WeLovePDF</span>
+            <h2 style={{ fontSize: "clamp(32px, 5vw, 56px)", fontWeight: 340, letterSpacing: "-0.8px" }}>
+              Built for real workflows.
+            </h2>
+          </div>
+
+          <div className="stitch-why-grid">
+            {whyChooseData.map((prop) => {
+              const Icon = prop.icon;
+              return (
+                <div className="stitch-why-card" key={prop.title}>
+                  <div className="stitch-why-icon">
+                    <Icon size={22} />
+                  </div>
+                  <h3 style={{ fontSize: "20px", fontWeight: 540, marginBottom: "8px", letterSpacing: "-0.2px" }}>{prop.title}</h3>
+                  <p style={{ fontSize: "16px", fontWeight: 320, lineHeight: 1.6, color: "rgba(0,0,0,0.6)", margin: 0 }}>{prop.description}</p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* ── CTA SECTION ── */}
+      <section className="stitch-cta-section">
+        <div className="stitch-container" style={{ textAlign: "center" }}>
+          <h2 style={{ fontSize: "clamp(36px, 6vw, 64px)", fontWeight: 340, letterSpacing: "-0.96px", marginBottom: "20px" }}>
+            Ready to streamline<br/>your workflow?
+          </h2>
+          <p style={{ fontSize: "20px", fontWeight: 330, color: "rgba(0,0,0,0.55)", maxWidth: "560px", margin: "0 auto 40px" }}>
+            Join over 12 million professionals who trust WeLovePDF for their daily document tasks.
           </p>
-          <div className="hero-actions">
-            <button className="primary-button hero-cta-btn" onClick={scrollToTools}>
-              Get Pro Now
+          <div className="stitch-cta-actions">
+            <button className="stitch-pill-primary stitch-pill-lg" onClick={scrollToTools}>
+              Get Started for Free
             </button>
-            <button className="quiet-button outline-cta-btn" onClick={scrollToTools}>
-              Explore All PDF Tools
+            <button className="stitch-pill-secondary stitch-pill-lg" onClick={() => onViewChange("pricing")}>
+              View Pricing
             </button>
           </div>
-        </div>
-
-        <div className="landing-hero-illustration-container">
-          <BrowserMockup />
+          <p className="eyebrow" style={{ marginTop: "32px", fontSize: "12px" }}>No credit card required</p>
         </div>
       </section>
 
-      {/* Popular Tools Section */}
-      <section id="tools-grid-section" className="landing-section" style={{ padding: "40px 0" }}>
-        <div className="section-head">
-          <h2 style={{ fontSize: "2.2rem", fontWeight: "700", color: "var(--c-text)" }}>Most Popular PDF Tools</h2>
-        </div>
-
-        <div className="landing-popular-grid">
-          {popularTools.map((tool) => {
-            const toolColor = getToolColor(tool.id);
-            return (
-              <button 
-                className="popular-card" 
-                key={tool.id} 
-                onClick={() => onToolSelect(tool.name)}
-                style={{ "--tool-color": toolColor } as React.CSSProperties}
-              >
-                <ToolIcon toolNameOrId={tool.id} size={26} style={{ width: "44px", height: "44px", borderRadius: "10px" }} />
-                <div className="text-container">
-                  <strong>{tool.name}</strong>
-                  <span>{tool.description}</span>
-                </div>
-                <ChevronRight size={18} className="card-arrow" />
-              </button>
-            );
-          })}
-        </div>
-
-        <div style={{ textAlign: "center", marginTop: "32px" }}>
-          <button className="primary-button see-all-btn" onClick={scrollToTools}>
-            See all PDF tools
-          </button>
-        </div>
-      </section>
-
-      {/* Product Walkthrough Sections */}
-      <section className="landing-section" style={{ display: "flex", flexDirection: "column", gap: "64px" }}>
-        <div className="section-head">
-          <h2 style={{ fontSize: "2.2rem", fontWeight: "700", color: "var(--c-text)" }}>Keep your simple tasks simple</h2>
-        </div>
-
-        {featuresData.map((feature, idx) => (
-          <div className={`landing-feature-row ${idx % 2 !== 0 ? "reverse" : ""}`} key={feature.title}>
-            <div className="landing-feature-copy">
-              <h3>{feature.title}</h3>
-              <p>{feature.description}</p>
-              <button 
-                className="quiet-button" 
-                onClick={scrollToTools} 
-                style={{ padding: 0, minHeight: "auto", border: 0, background: "transparent", color: "var(--c-accent)", fontWeight: "600" }}
-              >
-                Start processing files
-                <ArrowRight size={16} style={{ marginLeft: "4px" }} />
-              </button>
+      {/* ── FOOTER — Dark Navy ── */}
+      <footer className="stitch-footer">
+        <div className="stitch-container">
+          <div className="stitch-footer-grid">
+            <div className="stitch-footer-brand">
+              <a className="stitch-footer-logo" href="#home" onClick={(e) => { e.preventDefault(); window.scrollTo(0, 0); }}>
+                WeLovePDF
+              </a>
+              <p className="stitch-footer-tagline">
+                The precision-focused suite for document management.
+                Designed for creators, by creators.
+              </p>
             </div>
 
-            <div className="landing-illustration">
-              <div className="window-header">
-                <span className="dot" style={{ backgroundColor: "#ef4444" }}></span>
-                <span className="dot" style={{ backgroundColor: "#eab308" }}></span>
-                <span className="dot" style={{ backgroundColor: "#22c55e" }}></span>
-              </div>
-              <div className="window-body" style={{ border: "none", padding: 0, overflow: "hidden", backgroundColor: "transparent" }}>
-                {feature.id === "editor" && <EditorMockup />}
-                {feature.id === "signature" && <SignatureMockup />}
-                {feature.id === "organizer" && <OrganizerMockup />}
-                {feature.id === "dashboard" && <DashboardMockup />}
-              </div>
-            </div>
-          </div>
-        ))}
-      </section>
-
-      {/* Why Choose Section */}
-      <section className="landing-section" style={{ padding: "40px 0" }}>
-        <div className="section-head">
-          <h2 style={{ fontSize: "2.2rem", fontWeight: "700", color: "var(--c-text)" }}>Why Choose WeLovePDF?</h2>
-        </div>
-
-        <div className="landing-popular-grid" style={{ gridTemplateColumns: "repeat(3, 1fr)" }}>
-          {whyChooseData.map((prop) => {
-            const Icon = prop.icon;
-            return (
-              <div className="popular-card" key={prop.title} style={{ cursor: "default", borderColor: "var(--border)" }}>
-                <div className="icon-container" style={{ background: "var(--border)", color: "var(--c-text)" }}>
-                  <Icon size={20} />
-                </div>
-                <div className="text-container">
-                  <strong>{prop.title}</strong>
-                  <span>{prop.description}</span>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* Pricing/Limits Section */}
-      <section className="pricing-section landing-section">
-        <div className="section-head">
-          <h2 style={{ fontSize: "2.2rem", fontWeight: "700", color: "var(--c-text)" }}>100% Free & Unlimited Features</h2>
-        </div>
-
-        <div className="pricing-card" style={{ maxWidth: "600px", margin: "0 auto" }}>
-          <h3>WeLovePDF Free & Fair Use Plan</h3>
-          <p style={{ color: "var(--text-muted)", marginBottom: "16px" }}>We don't sell premium subscriptions. All conversion features, page organization, and translation tools are fully unlocked for everyone.</p>
-          <div className="price" style={{ fontSize: "2.5rem", fontWeight: "800", marginBottom: "20px" }}>
-            ₹0 <span style={{ fontSize: "1rem", color: "var(--text-muted)", fontWeight: "normal" }}>/ forever (Ad-supported)</span>
-          </div>
-          <button className="primary-button" style={{ width: "100%", marginBottom: "20px" }} onClick={() => onViewChange("pricing")}>
-            View Server Limits & Donations
-          </button>
-          <ul style={{ paddingLeft: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: "10px" }}>
-            <li style={{ display: "flex", alignItems: "center", gap: "8px" }}><Check size={16} style={{ color: "var(--c-accent)" }} /> 100% Free features & tools access</li>
-            <li style={{ display: "flex", alignItems: "center", gap: "8px" }}><Check size={16} style={{ color: "var(--c-accent)" }} /> Standard multi-threaded execution queue</li>
-            <li style={{ display: "flex", alignItems: "center", gap: "8px" }}><Check size={16} style={{ color: "var(--c-accent)" }} /> 50 MB maximum upload limit per file</li>
-            <li style={{ display: "flex", alignItems: "center", gap: "8px" }}><Check size={16} style={{ color: "var(--c-accent)" }} /> Complete automated deletion after 1 hour</li>
-          </ul>
-        </div>
-      </section>
-
-      {/* Footer Sitemap */}
-      <footer className="landing-footer">
-        <div className="landing-section">
-          <div className="landing-footer-grid">
-            {sitemapGroups.map((group) => {
+            {sitemapGroups.slice(0, 3).map((group) => {
               const groupTools = tools.filter((tool) => tool.sitemapGroup === group);
               return (
-                <div className="footer-col" key={group}>
-                  <h5>{group}</h5>
+                <div className="stitch-footer-col" key={group}>
+                  <span className="eyebrow" style={{ color: "rgba(255,255,255,0.35)", fontSize: "11px", marginBottom: "16px" }}>{group}</span>
                   <ul>
-                    {groupTools.map((tool) => (
+                    {groupTools.slice(0, 6).map((tool) => (
                       <li key={tool.id}>
-                        <a 
-                          href={`#${tool.id}`} 
-                          onClick={(e) => {
-                            e.preventDefault();
-                            onToolSelect(tool.name);
-                          }}
-                          style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}
-                        >
-                          <ToolIcon toolNameOrId={tool.id} size={15} style={{ width: "24px", height: "24px", borderRadius: "6px" }} />
-                          <span>{tool.name}</span>
+                        <a href={`#${tool.id}`} onClick={(e) => { e.preventDefault(); onToolSelect(tool.name); }}>
+                          {tool.name}
                         </a>
                       </li>
                     ))}
@@ -930,20 +1004,24 @@ export function LandingPage({ onToolSelect, onViewChange }: LandingPageProps) {
                 </div>
               );
             })}
+
+            <div className="stitch-footer-col">
+              <span className="eyebrow" style={{ color: "rgba(255,255,255,0.35)", fontSize: "11px", marginBottom: "16px" }}>Legal</span>
+              <ul>
+                <li><a href="#privacy" onClick={(e) => { e.preventDefault(); onViewChange("privacy"); }}>Privacy Policy</a></li>
+                <li><a href="#terms" onClick={(e) => { e.preventDefault(); onViewChange("terms"); }}>Terms of Service</a></li>
+                <li><a href="#faq" onClick={(e) => { e.preventDefault(); onViewChange("faq"); }}>FAQ</a></li>
+                <li><a href="#contact" onClick={(e) => { e.preventDefault(); onViewChange("contact"); }}>Contact</a></li>
+              </ul>
+            </div>
           </div>
 
-          <div className="footer-bottom" style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: "16px" }}>
-            <span>&copy; {new Date().getFullYear()} WeLovePDF. Made with ❤️.</span>
-            <div className="footer-links-row" style={{ display: "flex", gap: "16px", fontSize: "0.75rem" }}>
-              <a href="#faq" onClick={(e) => { e.preventDefault(); onViewChange("faq"); }} style={{ color: "var(--text-muted)", textDecoration: "none", transition: "color 0.15s" }} onMouseEnter={e => e.currentTarget.style.color = "var(--c-accent)"} onMouseLeave={e => e.currentTarget.style.color = "var(--text-muted)"}>FAQ</a>
-              <a href="#contact" onClick={(e) => { e.preventDefault(); onViewChange("contact"); }} style={{ color: "var(--text-muted)", textDecoration: "none", transition: "color 0.15s" }} onMouseEnter={e => e.currentTarget.style.color = "var(--c-accent)"} onMouseLeave={e => e.currentTarget.style.color = "var(--text-muted)"}>Contact</a>
-              <a href="#privacy" onClick={(e) => { e.preventDefault(); onViewChange("privacy"); }} style={{ color: "var(--text-muted)", textDecoration: "none", transition: "color 0.15s" }} onMouseEnter={e => e.currentTarget.style.color = "var(--c-accent)"} onMouseLeave={e => e.currentTarget.style.color = "var(--text-muted)"}>Privacy Policy</a>
-              <a href="#terms" onClick={(e) => { e.preventDefault(); onViewChange("terms"); }} style={{ color: "var(--text-muted)", textDecoration: "none", transition: "color 0.15s" }} onMouseEnter={e => e.currentTarget.style.color = "var(--c-accent)"} onMouseLeave={e => e.currentTarget.style.color = "var(--text-muted)"}>Terms of Service</a>
+          <div className="stitch-footer-bottom">
+            <p>© {new Date().getFullYear()} WeLovePDF. All rights reserved.</p>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <ShieldCheck size={14} />
+              <span>ISO/IEC 27001 Certified · Privacy Compliant</span>
             </div>
-            <span style={{ display: "inline-flex", gap: "8px", alignItems: "center" }}>
-              <ShieldCheck size={14} style={{ color: "var(--c-accent)" }} />
-              ISO/IEC 27001 Certified · Privacy Compliant
-            </span>
           </div>
         </div>
       </footer>

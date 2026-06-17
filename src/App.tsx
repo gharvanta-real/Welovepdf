@@ -10,13 +10,18 @@ import { PrivacyPage } from "./components/PrivacyPage";
 import { TermsPage } from "./components/TermsPage";
 import { FaqPage } from "./components/FaqPage";
 import { ContactPage } from "./components/ContactPage";
+import { AllToolsPage } from "./components/AllToolsPage";
+import { AboutPage } from "./components/AboutPage";
+import { ContactSalesPage } from "./components/ContactSalesPage";
+import { AccountSettingsPage } from "./components/AccountSettingsPage";
+import { UserDashboardPage } from "./components/UserDashboardPage";
 
 export function App() {
   const [theme, setTheme] = useState<"white" | "light" | "dark">("white");
   const [selectedTool, setSelectedTool] = useState("Compress PDF");
   const [toast, setToast] = useState("");
   const [jobs, setJobs] = useState<any[]>([]);
-  const [currentView, setCurrentView] = useState<"home" | "workspace" | "pricing" | "privacy" | "terms" | "faq" | "contact">("home");
+  const [currentView, setCurrentView] = useState<"home" | "workspace" | "pricing" | "privacy" | "terms" | "faq" | "contact" | "tools" | "about" | "contact-sales" | "settings" | "dashboard">("home");
   const [activeJobId, setActiveJobId] = useState<string | null>(null);
   const [hasStagedFiles, setHasStagedFiles] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -176,6 +181,21 @@ export function App() {
           }}
           onAvatarClick={() => setIsAccountDrawerOpen(true)}
           onPricingClick={() => setCurrentView("pricing")}
+          onToolsClick={() => {
+            setCurrentView("tools");
+            setActiveJobId(null);
+            setHasStagedFiles(false);
+          }}
+          onContactSalesClick={() => {
+            setCurrentView("contact-sales");
+            setActiveJobId(null);
+            setHasStagedFiles(false);
+          }}
+          onWorkspaceClick={() => {
+            setCurrentView("dashboard");
+            setActiveJobId(null);
+            setHasStagedFiles(false);
+          }}
         />
       )}
       
@@ -188,10 +208,54 @@ export function App() {
             setHasStagedFiles(false);
           }} 
           onViewChange={(view) => {
-            setCurrentView(view);
+            if (view === "contact") {
+              setCurrentView("contact-sales");
+            } else {
+              setCurrentView(view);
+            }
             setActiveJobId(null);
             setHasStagedFiles(false);
           }}
+        />
+      ) : currentView === "tools" ? (
+        <AllToolsPage 
+          onToolSelect={(toolName) => {
+            setSelectedTool(toolName);
+            setCurrentView("workspace");
+            setActiveJobId(null);
+            setHasStagedFiles(false);
+          }}
+          onPricingClick={() => setCurrentView("pricing")}
+          onContactSalesClick={() => setCurrentView("contact-sales")}
+          onBack={() => setCurrentView("home")}
+        />
+      ) : currentView === "about" ? (
+        <AboutPage onBack={() => setCurrentView("home")} />
+      ) : currentView === "contact-sales" ? (
+        <ContactSalesPage onBack={() => setCurrentView("home")} />
+      ) : currentView === "settings" ? (
+        <AccountSettingsPage 
+          onBack={() => setCurrentView("home")} 
+          currentUser={currentUser}
+          onLogout={() => {
+            setCurrentUser(null);
+            setToast("Logged out successfully");
+            window.setTimeout(() => setToast(""), 2200);
+          }}
+        />
+      ) : currentView === "dashboard" ? (
+        <UserDashboardPage 
+          onBack={() => setCurrentView("home")} 
+          onToolSelect={(toolName) => {
+            setSelectedTool(toolName);
+            setCurrentView("workspace");
+            setActiveJobId(null);
+            setHasStagedFiles(false);
+          }}
+          onBrowseTools={() => setCurrentView("tools")}
+          jobs={jobs}
+          currentUser={currentUser}
+          onManageSubscription={() => setCurrentView("pricing")}
         />
       ) : currentView === "pricing" ? (
         <PricingPage
@@ -235,7 +299,7 @@ export function App() {
               onStagedChange={setHasStagedFiles}
             />
           ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: "32px", width: "100%" }}>
+            <div className="workspace-full-bleed-container">
               <UploadPanel 
                 selectedTool={selectedTool} 
                 onUpload={handleUpload} 
@@ -281,6 +345,10 @@ export function App() {
         }}
         theme={theme}
         setTheme={setTheme}
+        onSettingsClick={() => {
+          setCurrentView("settings");
+          setIsAccountDrawerOpen(false);
+        }}
       />
     </div>
   );

@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Dashboard | PDF.Edit</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #E6E6E6;
+            border-radius: 10px;
+        }
+        .tool-card:hover .tool-icon {
+            transform: translateY(-2px);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-container-high": "#e8e8e8",
+                      "tertiary-fixed-dim": "#c6c6c6",
+                      "tertiary-container": "#1b1b1b",
+                      "primary": "#000000",
+                      "error": "#ba1a1a",
+                      "secondary": "#5d5f5f",
+                      "on-tertiary-fixed-variant": "#474747",
+                      "on-primary-fixed-variant": "#474747",
+                      "on-secondary-fixed-variant": "#454747",
+                      "surface-bright": "#f9f9f9",
+                      "block-mint": "#ADEFD1",
+                      "outline-variant": "#cfc4c5",
+                      "error-container": "#ffdad6",
+                      "on-secondary-container": "#616363",
+                      "on-primary-fixed": "#1b1b1b",
+                      "surface-container": "#eeeeee",
+                      "inverse-on-surface": "#f1f1f1",
+                      "on-secondary-fixed": "#1a1c1c",
+                      "surface-tint": "#5e5e5e",
+                      "secondary-fixed": "#e2e2e2",
+                      "block-navy": "#10162F",
+                      "tertiary-fixed": "#e2e2e2",
+                      "block-cream": "#FFF9E5",
+                      "surface": "#f9f9f9",
+                      "on-surface": "#1b1b1b",
+                      "on-error": "#ffffff",
+                      "on-tertiary": "#ffffff",
+                      "tertiary": "#000000",
+                      "surface-dim": "#dadada",
+                      "secondary-container": "#dfe0e0",
+                      "block-lilac": "#D6C4FF",
+                      "on-surface-variant": "#4c4546",
+                      "surface-container-lowest": "#ffffff",
+                      "on-primary-container": "#848484",
+                      "primary-container": "#1b1b1b",
+                      "hairline": "#E6E6E6",
+                      "on-tertiary-fixed": "#1b1b1b",
+                      "block-coral": "#FFBDAE",
+                      "accent-magenta": "#FF00FF",
+                      "primary-fixed": "#e2e2e2",
+                      "surface-variant": "#e2e2e2",
+                      "outline": "#7e7576",
+                      "inverse-surface": "#303030",
+                      "on-secondary": "#ffffff",
+                      "block-pink": "#FFC7C2",
+                      "surface-container-highest": "#e2e2e2",
+                      "on-primary": "#ffffff",
+                      "on-error-container": "#93000a",
+                      "background": "#f9f9f9",
+                      "hairline-soft": "#F0F0F0",
+                      "primary-fixed-dim": "#c6c6c7",
+                      "block-lime": "#D3F57B",
+                      "on-tertiary-container": "#848484",
+                      "surface-container-low": "#f3f3f3",
+                      "secondary-fixed-dim": "#c6c6c7",
+                      "surface-soft": "#F5F5F5",
+                      "on-background": "#1b1b1b",
+                      "inverse-primary": "#c6c6c6"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "gutter": "16px",
+                      "margin-page": "24px",
+                      "padding-xl": "80px",
+                      "padding-xxl": "120px",
+                      "padding-lg": "48px"
+              },
+              "fontFamily": {
+                      "body": ["Plus Jakarta Sans"],
+                      "display-xl": ["Plus Jakarta Sans"],
+                      "display-lg": ["Plus Jakarta Sans"],
+                      "button": ["Plus Jakarta Sans"],
+                      "display-xl-mobile": ["Plus Jakarta Sans"],
+                      "subhead": ["Plus Jakarta Sans"],
+                      "eyebrow": ["JetBrains Mono"],
+                      "headline": ["Plus Jakarta Sans"],
+                      "body-lg": ["Plus Jakarta Sans"]
+              },
+              "fontSize": {
+                      "body": ["18px", {"lineHeight": "26px", "letterSpacing": "-0.26px", "fontWeight": "320"}],
+                      "display-xl": ["86px", {"lineHeight": "86px", "letterSpacing": "-1.72px", "fontWeight": "340"}],
+                      "display-lg": ["64px", {"lineHeight": "70px", "letterSpacing": "-0.96px", "fontWeight": "340"}],
+                      "button": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.10px", "fontWeight": "480"}],
+                      "display-xl-mobile": ["48px", {"lineHeight": "52px", "letterSpacing": "-1px", "fontWeight": "340"}],
+                      "subhead": ["26px", {"lineHeight": "35px", "letterSpacing": "-0.26px", "fontWeight": "340"}],
+                      "eyebrow": ["18px", {"lineHeight": "23px", "letterSpacing": "0.54px", "fontWeight": "400"}],
+                      "headline": ["26px", {"lineHeight": "35px", "letterSpacing": "-0.26px", "fontWeight": "540"}],
+                      "body-lg": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.14px", "fontWeight": "330"}]
+              }
+            },
+          },
+        }
+      </script>
+</head>
+<body class="bg-surface font-body text-body selection:bg-block-mint selection:text-primary">
+<!-- TopNavBar -->
+<header class="bg-surface border-b border-hairline fixed w-full top-0 z-50">
+<div class="flex justify-between items-center h-20 px-margin-page max-w-7xl mx-auto">
+<div class="flex items-center gap-8">
+<a class="font-headline text-headline font-black tracking-tighter text-primary" href="#">PDF.Edit</a>
+<nav class="hidden md:flex gap-6">
+<a class="text-secondary hover:text-primary transition-colors font-body text-body" href="#">Tools</a>
+<a class="text-primary font-bold border-b-2 border-primary font-body text-body" href="#">My Workspace</a>
+<a class="text-secondary hover:text-primary transition-colors font-body text-body" href="#">Support</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden md:flex flex-col items-end mr-2">
+<span class="font-eyebrow text-[12px] leading-tight text-primary uppercase">Pro Plan</span>
+<span class="font-body text-[14px] text-secondary">Alex Rivera</span>
+</div>
+<div class="w-10 h-10 rounded-full bg-surface-container-high border border-hairline overflow-hidden cursor-pointer active:scale-95 transition-transform">
+<img alt="User Avatar" class="w-full h-full object-cover" data-alt="A professional headshot of a creative professional with a warm expression, captured in high-detail with soft studio lighting. The aesthetic is clean and modern, mirroring a high-end designer's portfolio. The background is a neutral, light gray that complements the minimalist white and black theme of the PDF editing platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB_SRIXR5ZASk_Nq0KM6XhIGukQ3Qz4CJbN-AkdgwttHi2AUjE_-4aeB-UyIbzxm_mBeOfIw8FzQFUJsrgf6Dg4eEVf0JliFjFY9hTR7ZL2dG_K-mF4cKCikEKk88YwgtuRBw0OWUwwTU7k36kpIejHmFhHwzibHvDzDeiPAl4fqN3BadCK_3q8QbiIHzwXWAOWD8Qsts7UHEnNJgphu3MCUZDHkClYuNlbIYPQTtL7p-Y3enKrw1Waq6HTB-OzGkF4zJ0jffEeXRE"/>
+</div>
+</div>
+</div>
+</header>
+<main class="pt-20 min-h-screen">
+<div class="max-w-7xl mx-auto px-margin-page py-padding-lg">
+<!-- Hero / Primary Action Section -->
+<section class="mb-12">
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<!-- Mint Upload Block -->
+<div class="lg:col-span-2 bg-block-mint rounded-xl p-8 md:p-12 flex flex-col justify-between group cursor-pointer border border-black/5 hover:border-black/20 transition-all">
+<div>
+<span class="font-eyebrow text-eyebrow mb-4 block">GET STARTED</span>
+<h1 class="font-display-lg text-display-xl-mobile md:text-display-lg mb-6 leading-none">Drop files here to start editing.</h1>
+</div>
+<div class="flex flex-wrap items-center gap-4">
+<button class="bg-primary text-on-primary font-button px-8 py-4 rounded-full flex items-center gap-2 hover:bg-opacity-90 transition-all">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">add</span>
+                                Upload Document
+                            </button>
+<span class="font-body text-primary/60 md:ml-2">Maximum file size: 500MB</span>
+</div>
+</div>
+<!-- Account Quick Overview -->
+<div class="bg-white border border-hairline rounded-xl p-8 flex flex-col justify-between">
+<div>
+<span class="font-eyebrow text-eyebrow mb-4 block">WORKSPACE STATUS</span>
+<div class="space-y-6">
+<div>
+<div class="flex justify-between items-end mb-2">
+<span class="font-body text-secondary">Storage</span>
+<span class="font-eyebrow text-[14px]">8.2 GB / 20 GB</span>
+</div>
+<div class="w-full h-1.5 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[41%]"></div>
+</div>
+</div>
+<div>
+<span class="font-body text-secondary block mb-1">Active Projects</span>
+<span class="font-headline text-headline">12 Documents</span>
+</div>
+</div>
+</div>
+<a class="text-primary font-button underline underline-offset-4 hover:opacity-70 transition-opacity" href="#">Manage Subscription</a>
+</div>
+</div>
+</section>
+<div class="grid grid-cols-1 lg:grid-cols-4 gap-12">
+<!-- Sidebar: Favorite Tools -->
+<aside class="lg:col-span-1">
+<span class="font-eyebrow text-eyebrow mb-6 block">FAVORITE TOOLS</span>
+<div class="space-y-2">
+<button class="tool-card w-full flex items-center gap-4 p-4 rounded-lg bg-surface-soft border border-transparent hover:border-hairline hover:bg-white transition-all group text-left">
+<div class="tool-icon w-10 h-10 rounded-md bg-block-lilac flex items-center justify-center transition-transform">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">auto_fix_high</span>
+</div>
+<span class="font-headline text-[18px]">AI Summarize</span>
+</button>
+<button class="tool-card w-full flex items-center gap-4 p-4 rounded-lg bg-surface-soft border border-transparent hover:border-hairline hover:bg-white transition-all group text-left">
+<div class="tool-icon w-10 h-10 rounded-md bg-block-coral flex items-center justify-center transition-transform">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">edit_note</span>
+</div>
+<span class="font-headline text-[18px]">Form Filler</span>
+</button>
+<button class="tool-card w-full flex items-center gap-4 p-4 rounded-lg bg-surface-soft border border-transparent hover:border-hairline hover:bg-white transition-all group text-left">
+<div class="tool-icon w-10 h-10 rounded-md bg-block-lime flex items-center justify-center transition-transform">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">draw</span>
+</div>
+<span class="font-headline text-[18px]">E-Signature</span>
+</button>
+<button class="tool-card w-full flex items-center gap-4 p-4 rounded-lg bg-surface-soft border border-transparent hover:border-hairline hover:bg-white transition-all group text-left">
+<div class="tool-icon w-10 h-10 rounded-md bg-block-pink flex items-center justify-center transition-transform">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">compress</span>
+</div>
+<span class="font-headline text-[18px]">Compress</span>
+</button>
+</div>
+<button class="mt-6 w-full py-4 border border-hairline rounded-full font-button text-primary hover:bg-primary hover:text-white transition-colors">
+                        Browse All Tools
+                    </button>
+</aside>
+<!-- Content Area: Recent Documents -->
+<section class="lg:col-span-3">
+<div class="flex justify-between items-center mb-6">
+<span class="font-eyebrow text-eyebrow">RECENT DOCUMENTS</span>
+<div class="flex gap-2">
+<button class="p-2 text-secondary hover:text-primary transition-colors">
+<span class="material-symbols-outlined">grid_view</span>
+</button>
+<button class="p-2 text-primary">
+<span class="material-symbols-outlined">list</span>
+</button>
+</div>
+</div>
+<div class="border border-hairline rounded-xl bg-white overflow-hidden">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-hairline bg-surface-soft">
+<th class="px-6 py-4 font-eyebrow text-[14px] text-secondary uppercase tracking-wider">File Name</th>
+<th class="px-6 py-4 font-eyebrow text-[14px] text-secondary uppercase tracking-wider">Last Modified</th>
+<th class="px-6 py-4 font-eyebrow text-[14px] text-secondary uppercase tracking-wider">Size</th>
+<th class="px-6 py-4 font-eyebrow text-[14px] text-secondary uppercase tracking-wider">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-hairline">
+<tr class="group hover:bg-surface-soft transition-colors cursor-pointer">
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-error" style="font-variation-settings: 'FILL' 1;">description</span>
+<span class="font-headline text-[18px]">Q4_Revenue_Report.pdf</span>
+</div>
+</td>
+<td class="px-6 py-5 font-body text-secondary">2 hours ago</td>
+<td class="px-6 py-5 font-body text-secondary">4.2 MB</td>
+<td class="px-6 py-5">
+<button class="opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-white rounded-full">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</td>
+</tr>
+<tr class="group hover:bg-surface-soft transition-colors cursor-pointer">
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-error" style="font-variation-settings: 'FILL' 1;">description</span>
+<span class="font-headline text-[18px]">Client_Proposal_v2.pdf</span>
+</div>
+</td>
+<td class="px-6 py-5 font-body text-secondary">Yesterday</td>
+<td class="px-6 py-5 font-body text-secondary">1.8 MB</td>
+<td class="px-6 py-5">
+<button class="opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-white rounded-full">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</td>
+</tr>
+<tr class="group hover:bg-surface-soft transition-colors cursor-pointer">
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-error" style="font-variation-settings: 'FILL' 1;">description</span>
+<span class="font-headline text-[18px]">Legal_Terms_Final.pdf</span>
+</div>
+</td>
+<td class="px-6 py-5 font-body text-secondary">Oct 24, 2023</td>
+<td class="px-6 py-5 font-body text-secondary">12.5 MB</td>
+<td class="px-6 py-5">
+<button class="opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-white rounded-full">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</td>
+</tr>
+<tr class="group hover:bg-surface-soft transition-colors cursor-pointer">
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-error" style="font-variation-settings: 'FILL' 1;">description</span>
+<span class="font-headline text-[18px]">Team_Offsite_Agenda.pdf</span>
+</div>
+</td>
+<td class="px-6 py-5 font-body text-secondary">Oct 20, 2023</td>
+<td class="px-6 py-5 font-body text-secondary">0.9 MB</td>
+<td class="px-6 py-5">
+<button class="opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-white rounded-full">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-surface border-t border-hairline">
+<div class="py-padding-lg px-margin-page max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center">
+<div class="flex items-center gap-8 mb-6 md:mb-0">
+<span class="font-headline text-headline font-bold text-primary">PDF.Edit</span>
+<span class="font-body text-secondary text-[14px]">© 2024 PDF.Edit. All rights reserved.</span>
+</div>
+<nav class="flex flex-wrap justify-center gap-6">
+<a class="text-secondary hover:text-primary transition-colors font-body text-[14px]" href="#">Product</a>
+<a class="text-secondary hover:text-primary transition-colors font-body text-[14px]" href="#">Resources</a>
+<a class="text-secondary hover:text-primary transition-colors font-body text-[14px]" href="#">Legal</a>
+<a class="text-secondary hover:text-primary transition-colors font-body text-[14px]" href="#">Privacy Policy</a>
+<a class="text-secondary hover:text-primary transition-colors font-body text-[14px]" href="#">Terms of Service</a>
+</nav>
+</div>
+</footer>
+<script>
+        // Micro-interaction for the upload block
+        const uploadBlock = document.querySelector('.bg-block-mint');
+        if (uploadBlock) {
+            uploadBlock.addEventListener('mouseenter', () => {
+                uploadBlock.style.transform = 'translateY(-2px)';
+            });
+            uploadBlock.addEventListener('mouseleave', () => {
+                uploadBlock.style.transform = 'translateY(0px)';
+            });
+        }
+
+        // Toggle mobile menu simulation
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'f') {
+                e.preventDefault();
+                console.log('Search command triggered');
+            }
+        });
+    </script>
+</body></html>

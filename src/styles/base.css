@@ -9,11 +9,11 @@ html {
 body {
   margin: 0;
   min-width: 320px;
-  background: var(--c-bg);
+  background: var(--s-background);
+  color: var(--s-on-surface);
 }
 
-button,
-input {
+button, input, textarea, select {
   font: inherit;
 }
 
@@ -26,40 +26,57 @@ a {
   text-decoration: none;
 }
 
+/* ── App shell: clean white, NO accent gradient ── */
 .app {
   min-height: 100vh;
-  background:
-    radial-gradient(circle at top right, var(--accent-soft), transparent 28rem),
-    var(--c-bg);
+  background: var(--s-background);
+  color: var(--s-on-surface);
+  font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.app[data-theme="dark"] {
+  background: var(--c-bg);
   color: var(--c-text);
 }
 
-.eyebrow {
-  margin: 0 0 var(--space-2);
-  color: var(--c-accent);
-  font-size: 0.76rem;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+/* ── Stitch typography base ── */
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  font-family: "Plus Jakarta Sans", sans-serif;
 }
 
-h1,
-h2,
+h1 {
+  font-size: clamp(48px, 8vw, 86px);
+  font-weight: 340;
+  line-height: 1.0;
+  letter-spacing: -1.72px;
+}
+
+h2 {
+  font-size: clamp(36px, 6vw, 64px);
+  font-weight: 340;
+  line-height: 1.1;
+  letter-spacing: -0.96px;
+}
+
 p {
   margin-top: 0;
 }
 
-h1 {
-  margin-bottom: var(--space-3);
-  font-size: clamp(2rem, 4vw, 4rem);
-  line-height: 1.05;
-  letter-spacing: -0.02em;
-  font-weight: 700;
+/* ── Eyebrow labels — JetBrains Mono ── */
+.eyebrow {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0.54px;
+  text-transform: uppercase;
+  color: var(--s-secondary);
+  display: block;
+  margin-bottom: 16px;
 }
 
-h2 {
-  margin-bottom: 0;
-  font-size: 1.1rem;
-  letter-spacing: -0.01em;
-  font-weight: 700;
+/* ── Selection highlight ── */
+::selection {
+  background: var(--s-block-mint);
+  color: var(--s-primary);
 }

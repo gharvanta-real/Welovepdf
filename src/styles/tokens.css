@@ -1,43 +1,49 @@
-@import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&display=swap');
+/* ── Google Stitch / Figma-style Monochrome Design System ── */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;320;330;340;400;480;500;540;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
 
 :root {
-  font-family: "Source Sans 3", "Adjusted Arial Fallback", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
-.app[data-theme="white"] {
-  color-scheme: light;
-  --c-bg: #ffffff;
-  --c-surface: #f5f6f8;
-  --c-text: #20222a;
-  --c-accent: #0074f0;
-}
-
-.app[data-theme="light"] {
-  color-scheme: light;
-  --c-bg: #f7f3ef;
-  --c-surface: #ffffff;
-  --c-text: #28231f;
-  --c-accent: #0074f0;
-}
-
-.app[data-theme="dark"] {
-  color-scheme: dark;
-  --c-bg: #090a0f;
-  --c-surface: #12141c;
-  --c-text: #f3f4f6;
-  --c-accent: #0074f0;
-}
-
-
-
-
+/* ── Stitch color tokens (light mode default) ── */
 .app {
-  --text-muted: color-mix(in srgb, var(--c-text) 62%, var(--c-bg));
-  --border: color-mix(in srgb, var(--c-text) 15%, var(--c-bg));
-  --surface-raised: color-mix(in srgb, var(--c-surface) 82%, var(--c-bg));
-  --accent-soft: color-mix(in srgb, var(--c-accent) 12%, var(--c-bg));
-  --accent-strong: color-mix(in srgb, var(--c-accent) 88%, var(--c-text));
-  --shadow: 0 16px 44px color-mix(in srgb, var(--c-text) 10%, transparent);
+  /* Stitch core palette */
+  --s-primary:       #000000;
+  --s-on-primary:    #ffffff;
+  --s-background:    #f9f9f9;
+  --s-surface:       #f9f9f9;
+  --s-surface-low:   #f3f3f3;
+  --s-surface-soft:  #F5F5F5;
+  --s-hairline:      #E6E6E6;
+  --s-hairline-soft: #F0F0F0;
+  --s-on-surface:    #1b1b1b;
+  --s-on-surface-variant: #4c4546;
+  --s-secondary:     #5d5f5f;
+  --s-outline:       #7e7576;
+
+  /* Block accent colors */
+  --s-block-mint:    #ADEFD1;
+  --s-block-lime:    #D3F57B;
+  --s-block-lilac:   #D6C4FF;
+  --s-block-cream:   #FFF9E5;
+  --s-block-pink:    #FFC7C2;
+  --s-block-coral:   #FFBDAE;
+  --s-block-navy:    #10162F;
+  --s-magenta:       #FF00FF;
+
+  /* Alias to existing var system for functional code (UploadPanel, PdfEditor, etc.) */
+  --c-bg:       #ffffff;
+  --c-surface:  #f5f5f5;
+  --c-text:     #1b1b1b;
+  --c-accent:   #000000;
+  --text-muted: #4c4546;
+  --border:     #E6E6E6;
+  --surface-raised: #ffffff;
+  --accent-soft: #f3f3f3;
+  --accent-strong: #000000;
+  --shadow: 0 8px 30px rgba(0,0,0,0.06);
+
+  /* Spacing */
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -45,13 +51,56 @@
   --space-5: 20px;
   --space-6: 24px;
   --space-8: 32px;
-  --radius: 20px;
-  --radius-sm: 12px;
-  --header-h: 64px;
+
+  /* Border radius */
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-pill: 9999px;
+
+  /* Layout */
+  --header-h: 80px;
   --sidebar-w: 236px;
+
+  /* Typography scales */
+  --font-display-xl: 86px;
+  --font-display-lg: 64px;
+  --font-headline: 26px;
+  --font-subhead: 26px;
+  --font-body-lg: 20px;
+  --font-body: 18px;
+  --font-button: 20px;
+  --font-eyebrow: 18px;
+}
+
+/* Keep dark theme working for PdfEditor etc. */
+.app[data-theme="dark"] {
+  color-scheme: dark;
+  --c-bg:       #0f0f0f;
+  --c-surface:  #1a1a1a;
+  --c-text:     #f3f3f3;
+  --c-accent:   #ffffff;
+  --text-muted: #9ca3af;
+  --border:     #2e2e2e;
+  --surface-raised: #1a1a1a;
+  --accent-soft: #1f1f1f;
+  --accent-strong: #ffffff;
+  --shadow: 0 8px 30px rgba(0,0,0,0.4);
+  --s-primary:    #ffffff;
+  --s-on-primary: #000000;
+  --s-background: #0f0f0f;
+  --s-surface:    #1a1a1a;
+  --s-surface-low: #1f1f1f;
+  --s-on-surface:  #f3f3f3;
+  --s-on-surface-variant: #9ca3af;
+  --s-hairline:   #2e2e2e;
+  --s-hairline-soft: #252525;
+}
+
+.app[data-theme="white"],
+.app[data-theme="light"] {
+  color-scheme: light;
 }
 
 .app.visual-editor-active {
   --header-h: 0px;
 }
-

@@ -41,81 +41,107 @@ export function FaqPage({ onBack }: FaqPageProps) {
   ];
 
   return (
-    <div style={{ padding: "40px 20px", maxWidth: "800px", margin: "0 auto", color: "var(--c-text)", fontFamily: "'Inter', sans-serif" }}>
-      <button 
-        onClick={onBack} 
-        style={{ display: "inline-flex", alignItems: "center", gap: "8px", border: "1px solid var(--border)", background: "var(--c-bg)", color: "var(--text-muted)", padding: "6px 16px", borderRadius: "9999px", cursor: "pointer", fontSize: "0.75rem", marginBottom: "24px", outline: "none" }}
-      >
-        <ArrowLeft size={14} /> Back to Tools
-      </button>
+    <div className="stitch-landing" style={{ width: "100%", minHeight: "100vh", backgroundColor: "var(--s-background, #f9f9f9)", paddingBottom: "80px" }}>
+      <div className="stitch-container" style={{ paddingTop: "60px", paddingBottom: "40px" }}>
+        
+        {/* Back Button */}
+        <button 
+          onClick={onBack} 
+          className="stitch-pill-outline"
+          style={{ 
+            display: "inline-flex", 
+            alignItems: "center", 
+            gap: "8px", 
+            padding: "8px 20px", 
+            fontSize: "14px", 
+            marginBottom: "40px"
+          }}
+        >
+          <ArrowLeft size={16} /> Back to Tools
+        </button>
 
-      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
-        <HelpCircle size={28} style={{ color: "var(--c-accent)" }} />
-        <h1 style={{ fontSize: "2rem", fontWeight: "700", margin: 0 }}>Frequently Asked Questions</h1>
-      </div>
-      <p style={{ color: "var(--text-muted)", fontSize: "0.9rem", marginBottom: "32px", paddingLeft: "36px" }}>Everything you need to know about our free PDF tools, security, and usage constraints.</p>
+        {/* Hero Header */}
+        <div style={{ marginBottom: "56px" }}>
+          <span className="eyebrow" style={{ color: "rgba(0,0,0,0.5)", display: "block", marginBottom: "12px" }}>Common Inquiries</span>
+          <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px" }}>
+            <HelpCircle size={36} style={{ color: "var(--s-primary)" }} />
+            <h1 style={{ fontSize: "clamp(32px, 5vw, 56px)", fontWeight: 340, letterSpacing: "-0.8px", margin: 0, lineHeight: 1.1 }}>
+              Frequently Asked Questions
+            </h1>
+          </div>
+          <p style={{ color: "rgba(0, 0, 0, 0.5)", fontSize: "18px", fontWeight: 320, margin: 0 }}>
+            Everything you need to know about our free PDF tools, security, and usage constraints.
+          </p>
+        </div>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: "12px", paddingLeft: "36px" }}>
-        {faqs.map((faq, idx) => {
-          const isOpen = openIndex === idx;
-          return (
-            <div 
-              key={idx}
-              style={{
-                backgroundColor: "var(--c-surface)",
-                borderRadius: "8px",
-                border: "none",
-                boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
-                overflow: "hidden",
-                transition: "all 0.2s ease"
-              }}
-            >
-              <button
-                onClick={() => setOpenIndex(isOpen ? null : idx)}
-                style={{
-                  width: "100%",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  padding: "16px 20px",
-                  background: "transparent",
-                  border: "none",
-                  color: "var(--c-text)",
-                  textAlign: "left",
-                  fontWeight: "500",
-                  fontSize: "0.85rem",
-                  cursor: "pointer",
-                  outline: "none"
-                }}
-              >
-                <span>{faq.q}</span>
-                <ChevronDown 
-                  size={16} 
-                  style={{ 
-                    transform: isOpen ? "rotate(180deg)" : "rotate(0deg)", 
-                    transition: "transform 0.2s ease",
-                    color: "var(--text-muted)"
-                  }} 
-                />
-              </button>
-
+        {/* Accordion List */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+          {faqs.map((faq, idx) => {
+            const isOpen = openIndex === idx;
+            return (
               <div 
+                key={idx}
                 style={{
-                  maxHeight: isOpen ? "200px" : "0px",
-                  opacity: isOpen ? 1 : 0,
+                  backgroundColor: "#ffffff",
+                  borderRadius: "16px",
+                  border: "1px solid rgba(0,0,0,0.06)",
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.02)",
                   overflow: "hidden",
-                  transition: "all 0.2s ease",
-                  padding: isOpen ? "0 20px 16px" : "0 20px"
+                  transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)"
                 }}
               >
-                <div style={{ height: "1px", backgroundColor: "var(--border)", marginBottom: "12px" }} />
-                <p style={{ fontSize: "0.78rem", color: "var(--text-muted)", lineHeight: 1.5, margin: 0 }}>
-                  {faq.a}
-                </p>
+                <button
+                  onClick={() => setOpenIndex(isOpen ? null : idx)}
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    padding: "24px 28px",
+                    background: "transparent",
+                    border: "none",
+                    color: "var(--s-on-surface)",
+                    textAlign: "left",
+                    fontWeight: 540,
+                    fontSize: "18px",
+                    letterSpacing: "-0.1px",
+                    cursor: "pointer",
+                    outline: "none",
+                    fontFamily: "'Plus Jakarta Sans', sans-serif"
+                  }}
+                >
+                  <span>{faq.q}</span>
+                  <ChevronDown 
+                    size={20} 
+                    style={{ 
+                      transform: isOpen ? "rotate(180deg)" : "rotate(0deg)", 
+                      transition: "transform 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
+                      color: "rgba(0,0,0,0.45)",
+                      flexShrink: 0,
+                      marginLeft: "16px"
+                    }} 
+                  />
+                </button>
+
+                <div 
+                  style={{
+                    maxHeight: isOpen ? "300px" : "0px",
+                    opacity: isOpen ? 1 : 0,
+                    overflow: "hidden",
+                    transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
+                    padding: isOpen ? "0 28px 24px" : "0 28px"
+                  }}
+                >
+                  <div style={{ height: "1px", backgroundColor: "rgba(0,0,0,0.05)", marginBottom: "16px" }} />
+                  <p style={{ fontSize: "16px", fontWeight: 320, color: "rgba(0,0,0,0.6)", lineHeight: 1.6, margin: 0 }}>
+                    {faq.a}
+                  </p>
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
+
       </div>
     </div>
   );

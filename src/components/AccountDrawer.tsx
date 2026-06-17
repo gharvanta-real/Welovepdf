@@ -8,9 +8,10 @@ interface AccountDrawerProps {
   onLogout: () => void;
   theme: "white" | "light" | "dark";
   setTheme: (theme: "white" | "light" | "dark") => void;
+  onSettingsClick: () => void;
 }
 
-export function AccountDrawer({ isOpen, onClose, currentUser, onLogout, theme, setTheme }: AccountDrawerProps) {
+export function AccountDrawer({ isOpen, onClose, currentUser, onLogout, theme, setTheme, onSettingsClick }: AccountDrawerProps) {
   
   // Close on ESC key
   useEffect(() => {
@@ -128,7 +129,7 @@ export function AccountDrawer({ isOpen, onClose, currentUser, onLogout, theme, s
           </div>
 
           <ul className="settings-options-list">
-            <li className="settings-option-item" onClick={() => alert("Simulated Change Password link sent!")}>
+            <li className="settings-option-item" onClick={onSettingsClick}>
               <Shield size={15} />
               <span>Security & Password</span>
             </li>

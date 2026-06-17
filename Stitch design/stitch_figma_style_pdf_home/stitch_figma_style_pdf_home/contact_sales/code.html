@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Contact Sales | PDF.Edit</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;700;800&family=JetBrains+Mono:wght@400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@100..900&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "hairline": "#E6E6E6",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-highest": "#e2e2e2",
+                        "on-tertiary-container": "#848484",
+                        "surface-container-high": "#e8e8e8",
+                        "surface-soft": "#F5F5F5",
+                        "block-lime": "#D3F57B",
+                        "tertiary-fixed": "#e2e2e2",
+                        "error": "#ba1a1a",
+                        "secondary-fixed-dim": "#c6c6c7",
+                        "on-secondary-fixed": "#1a1c1c",
+                        "tertiary": "#000000",
+                        "secondary-fixed": "#e2e2e2",
+                        "on-error-container": "#93000a",
+                        "error-container": "#ffdad6",
+                        "on-primary-fixed-variant": "#474747",
+                        "on-background": "#1b1b1b",
+                        "tertiary-container": "#1b1b1b",
+                        "outline-variant": "#cfc4c5",
+                        "background": "#f9f9f9",
+                        "primary-container": "#1b1b1b",
+                        "hairline-soft": "#F0F0F0",
+                        "surface-tint": "#5e5e5e",
+                        "on-surface": "#1b1b1b",
+                        "block-coral": "#FFBDAE",
+                        "on-tertiary": "#ffffff",
+                        "primary-fixed": "#e2e2e2",
+                        "secondary": "#5d5f5f",
+                        "primary": "#000000",
+                        "secondary-container": "#dfe0e0",
+                        "primary-fixed-dim": "#c6c6c6",
+                        "inverse-on-surface": "#f1f1f1",
+                        "on-primary-fixed": "#1b1b1b",
+                        "on-primary-container": "#848484",
+                        "inverse-surface": "#303030",
+                        "block-pink": "#FFC7C2",
+                        "block-cream": "#FFF9E5",
+                        "block-navy": "#10162F",
+                        "surface-variant": "#e2e2e2",
+                        "on-tertiary-fixed-variant": "#474747",
+                        "on-surface-variant": "#4c4546",
+                        "on-primary": "#ffffff",
+                        "block-mint": "#ADEFD1",
+                        "on-secondary-container": "#616363",
+                        "surface-bright": "#f9f9f9",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary-fixed": "#1b1b1b",
+                        "surface-container": "#eeeeee",
+                        "on-error": "#ffffff",
+                        "inverse-primary": "#c6c6c6",
+                        "tertiary-fixed-dim": "#c6c6c6",
+                        "block-lilac": "#D6C4FF",
+                        "surface": "#f9f9f9",
+                        "outline": "#7e7576",
+                        "on-secondary-fixed-variant": "#454747",
+                        "surface-dim": "#dadada",
+                        "accent-magenta": "#FF00FF",
+                        "surface-container-low": "#f3f3f3"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "padding-lg": "48px",
+                        "margin-page": "24px",
+                        "gutter": "16px",
+                        "padding-xxl": "120px",
+                        "padding-xl": "80px"
+                    },
+                    "fontFamily": {
+                        "eyebrow": ["JetBrains Mono"],
+                        "display-xl": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "body": ["Plus Jakarta Sans"],
+                        "display-lg": ["Plus Jakarta Sans"],
+                        "subhead": ["Plus Jakarta Sans"],
+                        "display-xl-mobile": ["Plus Jakarta Sans"],
+                        "headline": ["Plus Jakarta Sans"],
+                        "button": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "eyebrow": ["18px", {"lineHeight": "23px", "letterSpacing": "0.54px", "fontWeight": "400"}],
+                        "display-xl": ["86px", {"lineHeight": "86px", "letterSpacing": "-1.72px", "fontWeight": "340"}],
+                        "body-lg": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.14px", "fontWeight": "330"}],
+                        "body": ["18px", {"lineHeight": "26px", "letterSpacing": "-0.26px", "fontWeight": "320"}],
+                        "display-lg": ["64px", {"lineHeight": "70px", "letterSpacing": "-0.96px", "fontWeight": "340"}],
+                        "subhead": ["26px", {"lineHeight": "35px", "letterSpacing": "-0.26px", "fontWeight": "340"}],
+                        "display-xl-mobile": ["48px", {"lineHeight": "52px", "letterSpacing": "-1px", "fontWeight": "340"}],
+                        "headline": ["26px", {"lineHeight": "35px", "letterSpacing": "-0.26px", "fontWeight": "540"}],
+                        "button": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.10px", "fontWeight": "480"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .marquee-container {
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        .marquee-content {
+            display: inline-block;
+            animation: marquee 30s linear infinite;
+        }
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        body {
+            background-color: #ffffff;
+            color: #1b1b1b;
+        }
+    </style>
+</head>
+<body class="font-body text-body antialiased">
+<!-- TopNavBar -->
+<header class="sticky top-0 w-full z-50 bg-surface-container-lowest border-b border-hairline">
+<nav class="flex justify-between items-center h-20 px-margin-page max-w-7xl mx-auto">
+<div class="font-headline text-headline font-bold text-primary">PDF.Edit</div>
+<div class="hidden md:flex items-center gap-8">
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body text-body" href="#">Tools</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body text-body" href="#">Pricing</a>
+<a class="text-primary border-b-2 border-primary font-bold font-body text-body" href="#">Contact Sales</a>
+</div>
+<button class="bg-primary text-on-primary px-8 py-3 rounded-full font-button text-button hover:opacity-90 active:scale-95 transition-all">
+                Get Started
+            </button>
+</nav>
+</header>
+<main>
+<!-- Hero Section -->
+<section class="px-margin-page py-padding-xl md:py-padding-xxl max-w-7xl mx-auto">
+<div class="max-w-4xl">
+<span class="font-eyebrow text-eyebrow text-primary mb-6 block uppercase">Enterprise Solutions</span>
+<h1 class="font-display-xl-mobile md:font-display-xl text-display-xl-mobile md:text-display-xl text-primary mb-8 tracking-tighter">
+                    Scale your document workflows.
+                </h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">
+                    Customized API limits, dedicated support, and advanced security protocols built for high-volume document processing across global teams.
+                </p>
+</div>
+</section>
+<!-- Form Section (Mint Color Block) -->
+<section class="px-margin-page pb-padding-xxl">
+<div class="max-w-7xl mx-auto bg-block-mint rounded-xl p-padding-lg md:p-padding-xl flex flex-col lg:flex-row gap-16 items-start">
+<div class="lg:w-1/2 space-y-8">
+<h2 class="font-display-lg text-display-lg text-primary leading-tight">Let's build your custom plan.</h2>
+<p class="font-body text-body text-on-surface-variant">
+                        Our enterprise experts will reach out within 4 hours to discuss volume licensing, technical integrations, and SOC2 compliance requirements.
+                    </p>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-8">
+<div class="flex items-start gap-4">
+<span class="material-symbols-outlined text-primary text-3xl">verified_user</span>
+<div>
+<h4 class="font-headline text-headline text-primary">Priority SLA</h4>
+<p class="text-sm opacity-70">Uptime guarantees you can rely on.</p>
+</div>
+</div>
+<div class="flex items-start gap-4">
+<span class="material-symbols-outlined text-primary text-3xl">support_agent</span>
+<div>
+<h4 class="font-headline text-headline text-primary">TAM Support</h4>
+<p class="text-sm opacity-70">Assigned account management.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Contact Form -->
+<div class="lg:w-1/2 w-full bg-surface-container-lowest p-8 md:p-12 rounded-lg border border-hairline shadow-sm">
+<form class="space-y-6" onsubmit="event.preventDefault(); alert('Message sent! Our sales team will be in touch soon.');">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-2">
+<label class="font-eyebrow text-[12px] uppercase tracking-wider text-on-surface-variant">First Name</label>
+<input class="w-full bg-transparent border border-hairline rounded-md px-4 py-3 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all font-body" placeholder="Jane" type="text"/>
+</div>
+<div class="space-y-2">
+<label class="font-eyebrow text-[12px] uppercase tracking-wider text-on-surface-variant">Last Name</label>
+<input class="w-full bg-transparent border border-hairline rounded-md px-4 py-3 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all font-body" placeholder="Doe" type="text"/>
+</div>
+</div>
+<div class="space-y-2">
+<label class="font-eyebrow text-[12px] uppercase tracking-wider text-on-surface-variant">Work Email</label>
+<input class="w-full bg-transparent border border-hairline rounded-md px-4 py-3 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all font-body" placeholder="jane@company.com" required="" type="email"/>
+</div>
+<div class="space-y-2">
+<label class="font-eyebrow text-[12px] uppercase tracking-wider text-on-surface-variant">Company Name</label>
+<input class="w-full bg-transparent border border-hairline rounded-md px-4 py-3 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all font-body" placeholder="Acme Inc." type="text"/>
+</div>
+<div class="space-y-2">
+<label class="font-eyebrow text-[12px] uppercase tracking-wider text-on-surface-variant">Estimated Monthly Volume</label>
+<select class="w-full bg-transparent border border-hairline rounded-md px-4 py-3 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all font-body appearance-none">
+<option>10,000 - 50,000 docs</option>
+<option>50,000 - 250,000 docs</option>
+<option>250,000+ docs</option>
+</select>
+</div>
+<div class="space-y-2">
+<label class="font-eyebrow text-[12px] uppercase tracking-wider text-on-surface-variant">Message</label>
+<textarea class="w-full bg-transparent border border-hairline rounded-md px-4 py-3 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all font-body" placeholder="Tell us about your project goals..." rows="4"></textarea>
+</div>
+<button class="w-full bg-primary text-on-primary py-4 rounded-full font-button text-button hover:opacity-90 active:scale-95 transition-all" type="submit">
+                            Send Request
+                        </button>
+<p class="text-[12px] text-center text-on-surface-variant font-body">
+                            By submitting, you agree to our <a class="underline" href="#">Privacy Policy</a>.
+                        </p>
+</form>
+</div>
+</div>
+</section>
+<!-- Trusted By Section -->
+<section class="bg-surface-container-lowest py-padding-xl border-y border-hairline">
+<div class="max-w-7xl mx-auto px-margin-page text-center mb-12">
+<span class="font-eyebrow text-eyebrow text-on-secondary-container">POWERING GLOBAL LEADERS</span>
+</div>
+<div class="marquee-container">
+<div class="marquee-content flex items-center gap-24">
+<span class="text-4xl font-bold opacity-30 font-display-lg">STELLAR_CORP</span>
+<span class="text-4xl font-bold opacity-30 font-display-lg">QUANTUM_SYS</span>
+<span class="text-4xl font-bold opacity-30 font-display-lg">NEBULA_LABS</span>
+<span class="text-4xl font-bold opacity-30 font-display-lg">VERTEX_PRO</span>
+<span class="text-4xl font-bold opacity-30 font-display-lg">ORBIT_DIGITAL</span>
+<span class="text-4xl font-bold opacity-30 font-display-lg">NOVA_LEGAL</span>
+<!-- Duplicated for seamless scroll -->
+<span class="text-4xl font-bold opacity-30 font-display-lg">STELLAR_CORP</span>
+<span class="text-4xl font-bold opacity-30 font-display-lg">QUANTUM_SYS</span>
+<span class="text-4xl font-bold opacity-30 font-display-lg">NEBULA_LABS</span>
+<span class="text-4xl font-bold opacity-30 font-display-lg">VERTEX_PRO</span>
+<span class="text-4xl font-bold opacity-30 font-display-lg">ORBIT_DIGITAL</span>
+<span class="text-4xl font-bold opacity-30 font-display-lg">NOVA_LEGAL</span>
+</div>
+</div>
+</section>
+<!-- Features Grid -->
+<section class="px-margin-page py-padding-xxl max-w-7xl mx-auto">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+<div class="space-y-4">
+<div class="w-12 h-12 bg-block-lime rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">rocket_launch</span>
+</div>
+<h3 class="font-headline text-headline">High Velocity</h3>
+<p class="font-body text-body text-on-surface-variant">Optimized endpoints designed for parallel processing of millions of files simultaneously.</p>
+</div>
+<div class="space-y-4">
+<div class="w-12 h-12 bg-block-coral rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">security</span>
+</div>
+<h3 class="font-headline text-headline">Bank-Grade Security</h3>
+<p class="font-body text-body text-on-surface-variant">End-to-end encryption with data residency options in over 40 global regions.</p>
+</div>
+<div class="space-y-4">
+<div class="w-12 h-12 bg-block-pink rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">integration_instructions</span>
+</div>
+<h3 class="font-headline text-headline">API-First</h3>
+<p class="font-body text-body text-on-surface-variant">Robust SDKs for Python, Node.js, and Java to integrate PDF editing into your existing stack.</p>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-primary text-on-primary w-full">
+<div class="max-w-7xl mx-auto px-margin-page py-padding-xxl grid grid-cols-2 md:grid-cols-4 gap-gutter">
+<div class="col-span-2 md:col-span-1">
+<div class="font-headline text-headline text-on-primary mb-6">PDF.Edit</div>
+<p class="text-sm opacity-60 max-w-xs">Building the future of digital document precision for high-fidelity teams.</p>
+</div>
+<div>
+<h5 class="font-eyebrow text-sm mb-6 uppercase opacity-50">Product</h5>
+<ul class="space-y-4 font-body text-sm text-on-primary-container">
+<li><a class="hover:text-block-mint transition-colors" href="#">Features</a></li>
+<li><a class="hover:text-block-mint transition-colors" href="#">Integrations</a></li>
+<li><a class="hover:text-block-mint transition-colors" href="#">Enterprise</a></li>
+</ul>
+</div>
+<div>
+<h5 class="font-eyebrow text-sm mb-6 uppercase opacity-50">Resources</h5>
+<ul class="space-y-4 font-body text-sm text-on-primary-container">
+<li><a class="hover:text-block-mint transition-colors" href="#">Documentation</a></li>
+<li><a class="hover:text-block-mint transition-colors" href="#">API Reference</a></li>
+<li><a class="hover:text-block-mint transition-colors" href="#">Support</a></li>
+</ul>
+</div>
+<div>
+<h5 class="font-eyebrow text-sm mb-6 uppercase opacity-50">Legal</h5>
+<ul class="space-y-4 font-body text-sm text-on-primary-container">
+<li><a class="hover:text-block-mint transition-colors" href="#">Privacy</a></li>
+<li><a class="hover:text-block-mint transition-colors" href="#">Terms</a></li>
+<li><a class="hover:text-block-mint transition-colors" href="#">Security</a></li>
+</ul>
+</div>
+</div>
+<div class="max-w-7xl mx-auto px-margin-page py-8 border-t border-white/10 flex justify-between items-center text-[12px] opacity-40">
+<span>© 2024 PDF.Edit Inc. All rights reserved.</span>
+<div class="flex gap-6">
+<a href="#">Twitter</a>
+<a href="#">LinkedIn</a>
+<a href="#">GitHub</a>
+</div>
+</div>
+</footer>
+<script>
+        // Simple interactivity for inputs
+        document.querySelectorAll('input, select, textarea').forEach(el => {
+            el.addEventListener('focus', () => {
+                el.parentElement.querySelector('label').style.color = '#000000';
+            });
+            el.addEventListener('blur', () => {
+                el.parentElement.querySelector('label').style.color = '';
+            });
+        });
+    </script>
+</body></html>

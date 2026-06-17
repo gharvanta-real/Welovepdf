@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "hairline": "#E6E6E6",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-highest": "#e2e2e2",
+                        "on-tertiary-container": "#848484",
+                        "surface-container-high": "#e8e8e8",
+                        "surface-soft": "#F5F5F5",
+                        "block-lime": "#D3F57B",
+                        "tertiary-fixed": "#e2e2e2",
+                        "error": "#ba1a1a",
+                        "secondary-fixed-dim": "#c6c6c7",
+                        "on-secondary-fixed": "#1a1c1c",
+                        "tertiary": "#000000",
+                        "secondary-fixed": "#e2e2e2",
+                        "on-error-container": "#93000a",
+                        "error-container": "#ffdad6",
+                        "on-primary-fixed-variant": "#474747",
+                        "on-background": "#1b1b1b",
+                        "tertiary-container": "#1b1b1b",
+                        "outline-variant": "#cfc4c5",
+                        "background": "#f9f9f9",
+                        "primary-container": "#1b1b1b",
+                        "hairline-soft": "#F0F0F0",
+                        "surface-tint": "#5e5e5e",
+                        "on-surface": "#1b1b1b",
+                        "block-coral": "#FFBDAE",
+                        "on-tertiary": "#ffffff",
+                        "primary-fixed": "#e2e2e2",
+                        "secondary": "#5d5f5f",
+                        "primary": "#000000",
+                        "secondary-container": "#dfe0e0",
+                        "primary-fixed-dim": "#c6c6c6",
+                        "inverse-on-surface": "#f1f1f1",
+                        "on-primary-fixed": "#1b1b1b",
+                        "on-primary-container": "#848484",
+                        "inverse-surface": "#303030",
+                        "block-pink": "#FFC7C2",
+                        "block-cream": "#FFF9E5",
+                        "block-navy": "#10162F",
+                        "surface-variant": "#e2e2e2",
+                        "on-tertiary-fixed-variant": "#474747",
+                        "on-surface-variant": "#4c4546",
+                        "on-primary": "#ffffff",
+                        "block-mint": "#ADEFD1",
+                        "on-secondary-container": "#616363",
+                        "surface-bright": "#f9f9f9",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary-fixed": "#1b1b1b",
+                        "surface-container": "#eeeeee",
+                        "on-error": "#ffffff",
+                        "inverse-primary": "#c6c6c6",
+                        "tertiary-fixed-dim": "#c6c6c6",
+                        "block-lilac": "#D6C4FF",
+                        "surface": "#f9f9f9",
+                        "outline": "#7e7576",
+                        "on-secondary-fixed-variant": "#454747",
+                        "surface-dim": "#dadada",
+                        "accent-magenta": "#FF00FF",
+                        "surface-container-low": "#f3f3f3"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "padding-lg": "48px",
+                        "margin-page": "24px",
+                        "gutter": "16px",
+                        "padding-xxl": "120px",
+                        "padding-xl": "80px"
+                    },
+                    "fontFamily": {
+                        "eyebrow": ["JetBrains Mono"],
+                        "display-xl": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "body": ["Plus Jakarta Sans"],
+                        "display-lg": ["Plus Jakarta Sans"],
+                        "subhead": ["Plus Jakarta Sans"],
+                        "display-xl-mobile": ["Plus Jakarta Sans"],
+                        "headline": ["Plus Jakarta Sans"],
+                        "button": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "eyebrow": ["18px", {"lineHeight": "23px", "letterSpacing": "0.54px", "fontWeight": "400"}],
+                        "display-xl": ["86px", {"lineHeight": "86px", "letterSpacing": "-1.72px", "fontWeight": "340"}],
+                        "body-lg": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.14px", "fontWeight": "330"}],
+                        "body": ["18px", {"lineHeight": "26px", "letterSpacing": "-0.26px", "fontWeight": "320"}],
+                        "display-lg": ["64px", {"lineHeight": "70px", "letterSpacing": "-0.96px", "fontWeight": "340"}],
+                        "subhead": ["26px", {"lineHeight": "35px", "letterSpacing": "-0.26px", "fontWeight": "340"}],
+                        "display-xl-mobile": ["48px", {"lineHeight": "52px", "letterSpacing": "-1px", "fontWeight": "340"}],
+                        "headline": ["26px", {"lineHeight": "35px", "letterSpacing": "-0.26px", "fontWeight": "540"}],
+                        "button": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.10px", "fontWeight": "480"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .drag-over {
+            @apply border-primary bg-surface-container-high;
+        }
+    </style>
+</head>
+<body class="bg-surface-container-lowest font-body text-on-surface antialiased">
+<!-- TopNavBar -->
+<header class="sticky top-0 w-full z-50 bg-surface-container-lowest border-b border-hairline">
+<nav class="flex justify-between items-center h-20 px-margin-page max-w-7xl mx-auto">
+<div class="flex items-center gap-8">
+<a class="font-headline text-headline font-bold text-primary" href="#">PDF.Edit</a>
+<div class="hidden md:flex items-center gap-6">
+<a class="text-primary border-b-2 border-primary font-bold transition-colors" href="#">Tools</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Pricing</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Contact Sales</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="hidden md:block font-button text-button px-6 py-2 transition-all hover:opacity-80">Log In</button>
+<button class="bg-primary text-on-primary font-button text-button px-8 py-3 rounded-full hover:scale-95 active:duration-100 transition-all">Get Started</button>
+</div>
+</nav>
+</header>
+<main>
+<!-- Hero Section -->
+<section class="w-full px-margin-page py-padding-xl md:py-padding-xxl">
+<div class="max-w-7xl mx-auto bg-block-navy rounded-xl overflow-hidden p-8 md:p-16 flex flex-col items-center text-center">
+<span class="font-eyebrow text-eyebrow text-block-mint uppercase mb-6 tracking-widest block">Sign Documents Anywhere</span>
+<h1 class="font-display-xl-mobile md:font-display-xl text-display-xl-mobile md:text-display-xl text-white mb-10 tracking-tighter max-w-4xl">
+                    Legally binding signatures in seconds.
+                </h1>
+<!-- Upload Zone -->
+<div class="w-full max-w-2xl bg-white/5 border-2 border-dashed border-white/20 rounded-xl p-10 md:p-16 transition-all group hover:border-white/40 flex flex-col items-center" id="drop-zone">
+<div class="mb-6 w-16 h-16 rounded-full bg-white/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-3xl" data-icon="cloud_upload">cloud_upload</span>
+</div>
+<p class="font-subhead text-subhead text-white mb-8">Drop your PDF here to sign</p>
+<input accept=".pdf" class="hidden" id="file-input" type="file"/>
+<button class="bg-white text-block-navy font-button text-button px-10 py-4 rounded-full hover:scale-95 transition-transform" onclick="document.getElementById('file-input').click()">
+                        Choose File
+                    </button>
+<p class="mt-6 font-body text-white/50 text-sm">PDF, DOCX, or Image files (Max 50MB)</p>
+</div>
+</div>
+</section>
+<!-- How It Works -->
+<section class="bg-surface-container-lowest py-padding-xxl px-margin-page">
+<div class="max-w-7xl mx-auto">
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+<div>
+<span class="font-eyebrow text-eyebrow text-primary uppercase block mb-4">Workflow</span>
+<h2 class="font-display-lg text-display-lg text-primary tracking-tighter">How it works</h2>
+</div>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-md">Our streamlined process ensures your documents are handled with military-grade security while remaining effortless to execute.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<!-- Step 1 -->
+<div class="p-8 border border-hairline rounded-lg hover:bg-surface-soft transition-colors group">
+<div class="text-display-lg font-display-lg text-hairline group-hover:text-primary/10 transition-colors mb-4">01</div>
+<h3 class="font-headline text-headline text-primary mb-4 flex items-center gap-3">
+                            Upload
+                            <span class="material-symbols-outlined text-primary" data-icon="upload_file">upload_file</span>
+</h3>
+<p class="font-body text-body text-on-surface-variant">Securely upload the document you need signed. We support multiple formats including PDFs, contracts, and lease agreements.</p>
+</div>
+<!-- Step 2 -->
+<div class="p-8 border border-hairline rounded-lg hover:bg-surface-soft transition-colors group">
+<div class="text-display-lg font-display-lg text-hairline group-hover:text-primary/10 transition-colors mb-4">02</div>
+<h3 class="font-headline text-headline text-primary mb-4 flex items-center gap-3">
+                            Sign
+                            <span class="material-symbols-outlined text-primary" data-icon="draw">draw</span>
+</h3>
+<p class="font-body text-body text-on-surface-variant">Create your signature or upload an image. Place it anywhere on the document with pixel-perfect precision.</p>
+</div>
+<!-- Step 3 -->
+<div class="p-8 border border-hairline rounded-lg hover:bg-surface-soft transition-colors group">
+<div class="text-display-lg font-display-lg text-hairline group-hover:text-primary/10 transition-colors mb-4">03</div>
+<h3 class="font-headline text-headline text-primary mb-4 flex items-center gap-3">
+                            Send
+                            <span class="material-symbols-outlined text-primary" data-icon="send">send</span>
+</h3>
+<p class="font-body text-body text-on-surface-variant">Download your signed document or send it directly to recipients. Every signature comes with a valid audit trail.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Feature Spotlight (Bento Style) -->
+<section class="py-padding-xl bg-surface-soft px-margin-page">
+<div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-gutter">
+<div class="md:col-span-8 bg-white rounded-xl p-10 border border-hairline flex flex-col justify-between overflow-hidden relative group">
+<div class="relative z-10">
+<h3 class="font-display-lg text-display-lg text-primary tracking-tighter mb-6">Built for Security</h3>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-lg mb-8">Every signature is encrypted and timestamped, ensuring total compliance with global e-signature laws including eIDAS and ESIGN.</p>
+<div class="flex flex-wrap gap-4">
+<span class="bg-surface-soft px-4 py-2 rounded-full font-eyebrow text-sm uppercase">256-Bit SSL</span>
+<span class="bg-surface-soft px-4 py-2 rounded-full font-eyebrow text-sm uppercase">Audit Logs</span>
+<span class="bg-surface-soft px-4 py-2 rounded-full font-eyebrow text-sm uppercase">Certified</span>
+</div>
+</div>
+<div class="absolute -right-20 -bottom-20 w-80 h-80 bg-block-mint/20 rounded-full blur-3xl group-hover:bg-block-mint/40 transition-colors"></div>
+</div>
+<div class="md:col-span-4 bg-primary rounded-xl p-10 flex flex-col items-center text-center justify-center">
+<span class="material-symbols-outlined text-white text-6xl mb-6" data-icon="verified_user" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+<h4 class="font-headline text-headline text-white mb-4">Legally Certified</h4>
+<p class="font-body text-white/70 mb-8">Join over 10,000 businesses using PDF.Edit for their legal workflows.</p>
+<button class="bg-white text-primary px-8 py-3 rounded-full font-button text-button hover:scale-95 transition-transform">View Compliance</button>
+</div>
+</div>
+</section>
+<!-- Trust Section -->
+<section class="py-padding-xl px-margin-page border-t border-hairline">
+<div class="max-w-7xl mx-auto flex flex-col items-center">
+<span class="font-eyebrow text-eyebrow text-on-tertiary-container uppercase mb-10">Trusted by Global Teams</span>
+<div class="flex flex-wrap justify-center gap-12 md:gap-24 grayscale opacity-50">
+<div class="h-8 w-24 bg-on-surface-variant/20 rounded flex items-center justify-center font-bold text-lg">LOGOS</div>
+<div class="h-8 w-24 bg-on-surface-variant/20 rounded flex items-center justify-center font-bold text-lg">CORP</div>
+<div class="h-8 w-24 bg-on-surface-variant/20 rounded flex items-center justify-center font-bold text-lg">TECH</div>
+<div class="h-8 w-24 bg-on-surface-variant/20 rounded flex items-center justify-center font-bold text-lg">FINANCE</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-primary w-full mt-padding-xxl">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-gutter py-padding-xxl px-margin-page max-w-7xl mx-auto">
+<div class="col-span-2 md:col-span-1">
+<span class="font-headline text-headline text-on-primary block mb-6">PDF.Edit</span>
+<p class="text-on-primary-container font-body text-sm max-w-xs mb-8">The professional standard for digital document editing and signing.</p>
+<div class="flex gap-4">
+<a class="text-on-primary hover:text-block-mint transition-colors" href="#"><span class="material-symbols-outlined" data-icon="share">share</span></a>
+<a class="text-on-primary hover:text-block-mint transition-colors" href="#"><span class="material-symbols-outlined" data-icon="public">public</span></a>
+</div>
+</div>
+<div class="flex flex-col gap-4">
+<span class="font-button text-on-primary mb-2">Product</span>
+<a class="text-on-primary-container hover:text-block-mint transition-colors font-body text-sm" href="#">Editor</a>
+<a class="text-on-primary-container hover:text-block-mint transition-colors font-body text-sm" href="#">Signature</a>
+<a class="text-on-primary-container hover:text-block-mint transition-colors font-body text-sm" href="#">Convert</a>
+<a class="text-on-primary-container hover:text-block-mint transition-colors font-body text-sm" href="#">Merge</a>
+</div>
+<div class="flex flex-col gap-4">
+<span class="font-button text-on-primary mb-2">Resources</span>
+<a class="text-on-primary-container hover:text-block-mint transition-colors font-body text-sm" href="#">Help Center</a>
+<a class="text-on-primary-container hover:text-block-mint transition-colors font-body text-sm" href="#">Blog</a>
+<a class="text-on-primary-container hover:text-block-mint transition-colors font-body text-sm" href="#">API Docs</a>
+<a class="text-on-primary-container hover:text-block-mint transition-colors font-body text-sm" href="#">Pricing</a>
+</div>
+<div class="flex flex-col gap-4">
+<span class="font-button text-on-primary mb-2">Legal</span>
+<a class="text-on-primary-container hover:text-block-mint transition-colors font-body text-sm" href="#">Privacy Policy</a>
+<a class="text-on-primary-container hover:text-block-mint transition-colors font-body text-sm" href="#">Terms of Service</a>
+<a class="text-on-primary-container hover:text-block-mint transition-colors font-body text-sm" href="#">GDPR Compliance</a>
+<a class="text-on-primary-container hover:text-block-mint transition-colors font-body text-sm" href="#">Security</a>
+</div>
+</div>
+<div class="max-w-7xl mx-auto px-margin-page pb-12">
+<div class="pt-12 border-t border-on-primary-container/20 flex flex-col md:flex-row justify-between items-center gap-6">
+<p class="text-on-primary-container font-body text-sm">© 2024 PDF.Edit Inc. All rights reserved.</p>
+<div class="flex items-center gap-6">
+<span class="text-on-primary-container font-body text-xs">System Status: All systems operational</span>
+<div class="w-2 h-2 rounded-full bg-block-lime animate-pulse"></div>
+</div>
+</div>
+</div>
+</footer>
+<script>
+        // Simple Drag and Drop logic
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight(e) {
+            dropZone.classList.add('bg-white/10', 'border-white/60', 'scale-[1.02]');
+        }
+
+        function unhighlight(e) {
+            dropZone.classList.remove('bg-white/10', 'border-white/60', 'scale-[1.02]');
+        }
+
+        dropZone.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            let dt = e.dataTransfer;
+            let files = dt.files;
+            handleFiles(files);
+        }
+
+        function handleFiles(files) {
+            if (files.length > 0) {
+                const file = files[0];
+                if (file.type === 'application/pdf') {
+                    alert('Uploading: ' + file.name + '. In a real app, this would start the signature workflow.');
+                } else {
+                    alert('Please upload a PDF file.');
+                }
+            }
+        }
+
+        fileInput.addEventListener('change', function() {
+            handleFiles(this.files);
+        });
+    </script>
+</body></html>

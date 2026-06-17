@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Merge PDF - PDF.Edit</title>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,320;0,330;0,340;0,480;0,540;1,320&amp;family=JetBrains+Mono:wght@400&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "hairline-soft": "#F0F0F0",
+                    "outline": "#7e7576",
+                    "block-cream": "#FFF9E5",
+                    "inverse-on-surface": "#f1f1f1",
+                    "on-tertiary-fixed-variant": "#474747",
+                    "on-tertiary-container": "#848484",
+                    "block-lime": "#D3F57B",
+                    "primary-fixed": "#e2e2e2",
+                    "on-primary-container": "#848484",
+                    "on-surface-variant": "#4c4546",
+                    "on-secondary": "#ffffff",
+                    "surface-dim": "#dadada",
+                    "tertiary": "#000000",
+                    "outline-variant": "#cfc4c5",
+                    "on-primary-fixed-variant": "#474747",
+                    "block-mint": "#ADEFD1",
+                    "tertiary-fixed-dim": "#c6c6c6",
+                    "error-container": "#ffdad6",
+                    "inverse-surface": "#303030",
+                    "inverse-primary": "#c6c6c6",
+                    "surface": "#f9f9f9",
+                    "secondary-container": "#dfe0e0",
+                    "on-tertiary": "#ffffff",
+                    "surface-bright": "#f9f9f9",
+                    "on-tertiary-fixed": "#1b1b1b",
+                    "on-error-container": "#93000a",
+                    "surface-tint": "#5e5e5e",
+                    "tertiary-container": "#1b1b1b",
+                    "on-error": "#ffffff",
+                    "secondary": "#5d5f5f",
+                    "background": "#f9f9f9",
+                    "on-secondary-fixed": "#1a1c1c",
+                    "on-background": "#1b1b1b",
+                    "block-lilac": "#D6C4FF",
+                    "block-coral": "#FFBDAE",
+                    "on-secondary-fixed-variant": "#454747",
+                    "block-pink": "#FFC7C2",
+                    "surface-container": "#eeeeee",
+                    "surface-variant": "#e2e2e2",
+                    "surface-container-low": "#f3f3f3",
+                    "primary-fixed-dim": "#c6c6c6",
+                    "primary": "#000000",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-soft": "#F5F5F5",
+                    "on-primary": "#ffffff",
+                    "on-primary-fixed": "#1b1b1b",
+                    "accent-magenta": "#FF00FF",
+                    "hairline": "#E6E6E6",
+                    "surface-container-high": "#e8e8e8",
+                    "primary-container": "#1b1b1b",
+                    "tertiary-fixed": "#e2e2e2",
+                    "surface-container-highest": "#e2e2e2",
+                    "secondary-fixed-dim": "#c6c6c7",
+                    "error": "#ba1a1a",
+                    "on-secondary-container": "#616363",
+                    "on-surface": "#1b1b1b",
+                    "block-navy": "#10162F",
+                    "secondary-fixed": "#e2e2e2"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "padding-xxl": "120px",
+                    "padding-lg": "48px",
+                    "margin-page": "24px",
+                    "padding-xl": "80px",
+                    "gutter": "16px"
+            },
+            "fontFamily": {
+                    "eyebrow": ["JetBrains Mono"],
+                    "body-lg": ["Plus Jakarta Sans"],
+                    "display-xl": ["Plus Jakarta Sans"],
+                    "display-xl-mobile": ["Plus Jakarta Sans"],
+                    "display-lg": ["Plus Jakarta Sans"],
+                    "body": ["Plus Jakarta Sans"],
+                    "headline": ["Plus Jakarta Sans"],
+                    "subhead": ["Plus Jakarta Sans"],
+                    "button": ["Plus Jakarta Sans"]
+            },
+            "fontSize": {
+                    "eyebrow": ["18px", {"lineHeight": "23px", "letterSpacing": "0.54px", "fontWeight": "400"}],
+                    "body-lg": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.14px", "fontWeight": "330"}],
+                    "display-xl": ["86px", {"lineHeight": "86px", "letterSpacing": "-1.72px", "fontWeight": "340"}],
+                    "display-xl-mobile": ["48px", {"lineHeight": "52px", "letterSpacing": "-1px", "fontWeight": "340"}],
+                    "display-lg": ["64px", {"lineHeight": "70px", "letterSpacing": "-0.96px", "fontWeight": "340"}],
+                    "body": ["18px", {"lineHeight": "26px", "letterSpacing": "-0.26px", "fontWeight": "320"}],
+                    "headline": ["26px", {"lineHeight": "35px", "letterSpacing": "-0.26px", "fontWeight": "540"}],
+                    "subhead": ["26px", {"lineHeight": "35px", "letterSpacing": "-0.26px", "fontWeight": "340"}],
+                    "button": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.10px", "fontWeight": "480"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .drag-over {
+            outline: 3px solid #000000;
+            outline-offset: -3px;
+        }
+    </style>
+</head>
+<body class="bg-surface-container-lowest font-body text-on-surface antialiased transition-colors duration-300">
+<!-- TopNavBar -->
+<header class="sticky top-0 w-full z-50 bg-surface-container-lowest dark:bg-inverse-surface border-b border-hairline dark:border-outline-variant">
+<nav class="flex justify-between items-center h-20 px-margin-page max-w-7xl mx-auto">
+<div class="flex items-center gap-10">
+<a class="font-headline text-headline font-bold text-primary dark:text-inverse-on-surface" href="#">PDF.Edit</a>
+<div class="hidden md:flex items-center gap-8">
+<!-- Mapping active state logic: No direct Tools tab in content, defaulting to Tools as a general category for Merge -->
+<a class="font-body text-body text-primary dark:text-inverse-on-surface border-b-2 border-primary font-bold hover:text-primary dark:hover:text-on-primary-container transition-colors" href="#">Tools</a>
+<a class="font-body text-body text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-on-primary-container transition-colors" href="#">Pricing</a>
+<a class="font-body text-body text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-on-primary-container transition-colors" href="#">Contact Sales</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="font-button text-button px-8 py-3 rounded-full bg-primary text-on-primary scale-95 active:duration-100 transition-all hover:opacity-90">
+                    Get Started
+                </button>
+</div>
+</nav>
+</header>
+<main class="min-h-[calc(100vh-80px-300px)]">
+<!-- Breadcrumbs -->
+<nav class="px-margin-page max-w-7xl mx-auto py-8">
+<ol class="flex items-center gap-2 text-on-surface-variant">
+<li><a class="hover:text-primary transition-colors" href="#">Home</a></li>
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+<span class="text-primary font-medium">Merge PDF</span>
+</li>
+</ol>
+</nav>
+<!-- Hero Section -->
+<section class="px-margin-page max-w-7xl mx-auto text-center pb-padding-lg">
+<h1 class="font-display-xl-mobile md:font-display-xl text-display-xl-mobile md:text-display-xl text-primary mb-12">
+                Merge PDF
+            </h1>
+</section>
+<!-- Drop Zone Section -->
+<section class="px-margin-page max-w-7xl mx-auto pb-padding-xxl">
+<div class="bg-block-lilac rounded-xl p-padding-xl md:p-padding-xxl border-2 border-dashed border-primary/20 flex flex-col items-center justify-center transition-all duration-300 relative" id="drop-zone">
+<div class="flex flex-col items-center gap-8">
+<!-- Icon Placeholder Logic -->
+<div class="w-24 h-24 bg-surface-container-lowest rounded-full flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-[48px] text-primary" data-weight="fill" style="font-variation-settings: 'FILL' 1;">picture_as_pdf</span>
+</div>
+<!-- Split Pill Button -->
+<div class="flex group">
+<button class="font-button text-button px-10 py-4 bg-primary text-on-primary rounded-l-full hover:opacity-90 transition-all flex items-center gap-2">
+                            Choose Files
+                        </button>
+<div class="w-[1px] bg-white/20"></div>
+<button class="font-button text-button px-4 py-4 bg-primary text-on-primary rounded-r-full hover:opacity-90 transition-all">
+<span class="material-symbols-outlined">expand_more</span>
+</button>
+</div>
+<p class="font-body text-body text-primary font-medium opacity-60">
+                        or drop files here
+                    </p>
+</div>
+<!-- Ghost Input -->
+<input accept=".pdf" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" id="file-input" multiple="" type="file"/>
+</div>
+<!-- Bento Features (UI Enhancement) -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter mt-padding-lg">
+<div class="p-8 border border-hairline rounded-lg bg-surface-soft flex flex-col gap-4">
+<span class="material-symbols-outlined text-primary">security</span>
+<h3 class="font-headline text-headline">Secure Processing</h3>
+<p class="font-body text-body text-on-surface-variant">Your files are encrypted and automatically deleted after 2 hours.</p>
+</div>
+<div class="p-8 border border-hairline rounded-lg bg-surface-soft flex flex-col gap-4">
+<span class="material-symbols-outlined text-primary">speed</span>
+<h3 class="font-headline text-headline">Fast Merging</h3>
+<p class="font-body text-body text-on-surface-variant">Our high-performance servers combine your PDFs in seconds.</p>
+</div>
+<div class="p-8 border border-hairline rounded-lg bg-surface-soft flex flex-col gap-4">
+<span class="material-symbols-outlined text-primary">cloud_done</span>
+<h3 class="font-headline text-headline">Easy Access</h3>
+<p class="font-body text-body text-on-surface-variant">Works in any web browser, on any device, anywhere in the world.</p>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full bg-primary dark:bg-surface-container-lowest">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-gutter py-padding-xxl px-margin-page max-w-7xl mx-auto">
+<div class="col-span-2 md:col-span-1 flex flex-col gap-6">
+<div class="font-headline text-headline text-on-primary dark:text-on-surface">PDF.Edit</div>
+<p class="font-body text-body text-on-primary-container dark:text-on-surface-variant">The professional toolkit for document high-fidelity editing and precision conversion.</p>
+</div>
+<div class="flex flex-col gap-4">
+<h4 class="font-eyebrow text-eyebrow text-on-primary dark:text-on-surface opacity-60 uppercase">Product</h4>
+<a class="font-body text-body text-on-primary-container dark:text-on-surface-variant hover:text-block-mint transition-colors" href="#">Merge PDF</a>
+<a class="font-body text-body text-on-primary-container dark:text-on-surface-variant hover:text-block-mint transition-colors" href="#">Split PDF</a>
+<a class="font-body text-body text-on-primary-container dark:text-on-surface-variant hover:text-block-mint transition-colors" href="#">Compress PDF</a>
+</div>
+<div class="flex flex-col gap-4">
+<h4 class="font-eyebrow text-eyebrow text-on-primary dark:text-on-surface opacity-60 uppercase">Resources</h4>
+<a class="font-body text-body text-on-primary-container dark:text-on-surface-variant hover:text-block-mint transition-colors" href="#">API Docs</a>
+<a class="font-body text-body text-on-primary-container dark:text-on-surface-variant hover:text-block-mint transition-colors" href="#">Tutorials</a>
+<a class="font-body text-body text-on-primary-container dark:text-on-surface-variant hover:text-block-mint transition-colors" href="#">Support</a>
+</div>
+<div class="flex flex-col gap-4">
+<h4 class="font-eyebrow text-eyebrow text-on-primary dark:text-on-surface opacity-60 uppercase">Legal</h4>
+<a class="font-body text-body text-on-primary-container dark:text-on-surface-variant hover:text-block-mint transition-colors" href="#">Privacy Policy</a>
+<a class="font-body text-body text-on-primary-container dark:text-on-surface-variant hover:text-block-mint transition-colors" href="#">Terms of Service</a>
+</div>
+</div>
+<div class="px-margin-page max-w-7xl mx-auto py-8 border-t border-white/10 dark:border-black/5">
+<p class="font-body text-body text-on-primary-container dark:text-on-surface-variant opacity-40">
+                © 2024 PDF.Edit Inc. All rights reserved.
+            </p>
+</div>
+</footer>
+<script>
+        // Micro-interactions for Drag and Drop
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.classList.add('drag-over');
+            }, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.classList.remove('drag-over');
+            }, false);
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            handleFiles(files);
+        }, false);
+
+        fileInput.addEventListener('change', function() {
+            handleFiles(this.files);
+        });
+
+        function handleFiles(files) {
+            if (files.length > 0) {
+                console.log(`Received ${files.length} files`);
+                // Animation of success or route to merge view would happen here
+                alert(`${files.length} file(s) selected for merging.`);
+            }
+        }
+    </script>
+</body></html>
