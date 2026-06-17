@@ -956,8 +956,46 @@
   50% { transform: translate(-3px, -3px); }
 }
 
+@keyframes float-slow-1 {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes float-slow-2 {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(6px); }
+}
+
+@keyframes float-slow-3 {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px) translateX(2px); }
+}
+
+.float-anim-1 {
+  animation: float-slow-1 4.2s infinite ease-in-out;
+}
+
+.float-anim-2 {
+  animation: float-slow-2 4.8s infinite ease-in-out 0.4s;
+}
+
+.float-anim-3 {
+  animation: float-slow-3 5.5s infinite ease-in-out 0.8s;
+}
+
+.float-anim-4 {
+  animation: float-slow-1 5.2s infinite ease-in-out 1.2s;
+}
+
+.float-anim-5 {
+  animation: float-slow-2 4.5s infinite ease-in-out 1.6s;
+}
+
+.float-anim-6 {
+  animation: float-slow-3 5.0s infinite ease-in-out 0.2s;
+}
+
 .floating-badge {
-  position: absolute;
   width: 36px;
   height: 36px;
   border-radius: 50%;
@@ -966,7 +1004,6 @@
   justify-content: center;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
   color: #ffffff;
-  z-index: 3;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }

@@ -2,6 +2,39 @@ import { useRef, useState, useEffect } from "react";
 import { ChevronDown, Check, Share2, RotateCcw, File, Download, Cloud, Plus, Image as ImageIcon } from "lucide-react";
 import { getToolColor } from "./ToolIcon";
 import { PdfEditor } from "./PdfEditor";
+import {
+  CompressSettings,
+  MergeSettings,
+  JpgToPdfSettings,
+  PdfToJpgSettings,
+  SplitSettings,
+  WatermarkSettings,
+  SignSettings,
+  PasswordSettings,
+  TranslateSettings,
+  SummarizeSettings,
+  BatesSettings,
+  PageNumberSettings,
+  CropSettings,
+  CopilotSettings,
+  TxtToPdfSettings,
+  HtmlToPdfSettings,
+  RotateSettings,
+  RemoveSettings,
+  ExtractSettings,
+  OrganizeSettings,
+  FlattenSettings,
+  RepairSettings,
+  WordToPdfSettings,
+  ExcelToPdfSettings,
+  PptToPdfSettings,
+  PdfToWordSettings,
+  PdfToExcelSettings,
+  PdfToPptSettings,
+  AnnotateSettings,
+  OcrSettings,
+  DefaultSettings
+} from "./tool-configs";
 
 type UploadPanelProps = {
   selectedTool: string;
@@ -638,7 +671,7 @@ export function UploadPanel({ selectedTool, onUpload, onBack, activeJob, onReset
   const [signatureStyle, setSignatureStyle] = useState("cursive");
   const [pdfPassword, setPdfPassword] = useState("welovepdf");
   const [translateLang, setTranslateLang] = useState("hi");
-  const [summarizeLength, setSummarizeLength] = useState("medium");
+  const [summarizeLength, setSummarizeLength] = useState<"short" | "medium" | "long">("medium");
   const [batesPrefix, setBatesPrefix] = useState("BATES-");
   const [batesStart, setBatesStart] = useState("1");
   const [pageNumberPos, setPageNumberPos] = useState("bottom-center");
@@ -999,6 +1032,7 @@ export function UploadPanel({ selectedTool, onUpload, onBack, activeJob, onReset
   }
 
   // Render options sidebar content dynamically
+  // Render options sidebar content dynamically
   function renderOptionsSidebar() {
     const isCompress = selectedTool === "Compress PDF";
     const isMerge = selectedTool === "Merge PDF";
@@ -1030,1072 +1064,292 @@ export function UploadPanel({ selectedTool, onUpload, onBack, activeJob, onReset
     const isAnnotate = selectedTool === "PDF Annotator";
     const isOcr = selectedTool === "PDF OCR";
 
-
     return (
       <div className="workspace-sidebar">
         <h3 className="sidebar-heading">{selectedTool} settings</h3>
         
         {isCompress && (
-          <div className="options-group">
-            <label className="options-label">Compression Level</label>
-            <div className="options-vertical-list">
-              <button 
-                className={`option-card ${compressionLevel === "extreme" ? "active" : ""}`}
-                style={{ borderColor: compressionLevel === "extreme" ? toolColor : "" }}
-                onClick={() => setCompressionLevel("extreme")}
-              >
-                <span className="option-title">Extreme Compression</span>
-                <span className="option-desc">Less quality, high compression.</span>
-              </button>
-              <button 
-                className={`option-card ${compressionLevel === "recommended" ? "active" : ""}`}
-                style={{ borderColor: compressionLevel === "recommended" ? toolColor : "" }}
-                onClick={() => setCompressionLevel("recommended")}
-              >
-                <span className="option-title">Recommended Compression</span>
-                <span className="option-desc">Good quality, good compression.</span>
-              </button>
-              <button 
-                className={`option-card ${compressionLevel === "less" ? "active" : ""}`}
-                style={{ borderColor: compressionLevel === "less" ? toolColor : "" }}
-                onClick={() => setCompressionLevel("less")}
-              >
-                <span className="option-title">Less Compression</span>
-                <span className="option-desc">High quality, low compression.</span>
-              </button>
-            </div>
-          </div>
+          <CompressSettings
+            compressionLevel={compressionLevel}
+            setCompressionLevel={setCompressionLevel}
+            toolColor={toolColor}
+          />
         )}
 
         {isMerge && (
-          <div className="options-group">
-            <label className="options-label">Merge Options</label>
-            <div className="options-checkbox-list">
-              <label className="checkbox-row">
-                <input 
-                  type="checkbox" 
-                  checked={fileNameStamps} 
-                  onChange={(e) => setFileNameStamps(e.target.checked)} 
-                />
-                <span>Add filename stamps to page corners</span>
-              </label>
-              <label className="checkbox-row">
-                <input 
-                  type="checkbox" 
-                  checked={includeTOC} 
-                  onChange={(e) => setIncludeTOC(e.target.checked)} 
-                />
-                <span>Include a table of contents page</span>
-              </label>
-            </div>
-          </div>
+          <MergeSettings
+            fileNameStamps={fileNameStamps}
+            setFileNameStamps={setFileNameStamps}
+            includeTOC={includeTOC}
+            setIncludeTOC={setIncludeTOC}
+          />
         )}
 
         {isJpgToPdf && (
-          <>
-            <div className="options-group">
-              <label className="options-label">Page orientation</label>
-              <div className="options-grid cols-2">
-                <button 
-                  className={`option-card center-align ${pageOrientation === "portrait" ? "active" : ""}`}
-                  style={{ borderColor: pageOrientation === "portrait" ? toolColor : "" }}
-                  onClick={() => setPageOrientation("portrait")}
-                >
-                  <div className="orientation-icon portrait"></div>
-                  <span className="option-title">Portrait</span>
-                </button>
-                <button 
-                  className={`option-card center-align ${pageOrientation === "landscape" ? "active" : ""}`}
-                  style={{ borderColor: pageOrientation === "landscape" ? toolColor : "" }}
-                  onClick={() => setPageOrientation("landscape")}
-                >
-                  <div className="orientation-icon landscape"></div>
-                  <span className="option-title">Landscape</span>
-                </button>
-              </div>
-            </div>
-
-            <div className="options-group">
-              <label className="options-label">Page size</label>
-              <select 
-                className="options-select" 
-                value={pageSize} 
-                onChange={(e) => setPageSize(e.target.value as any)}
-              >
-                <option value="a4">A4 (297x210 mm)</option>
-                <option value="letter">US Letter (8.5x11 in)</option>
-                <option value="fit">Fit (same page size as image)</option>
-              </select>
-            </div>
-
-            <div className="options-group">
-              <label className="options-label">Margin</label>
-              <div className="options-grid cols-3">
-                <button 
-                  className={`option-card center-align compact ${pageMargin === "none" ? "active" : ""}`}
-                  style={{ borderColor: pageMargin === "none" ? toolColor : "" }}
-                  onClick={() => setPageMargin("none")}
-                >
-                  <span className="option-title">No margin</span>
-                </button>
-                <button 
-                  className={`option-card center-align compact ${pageMargin === "small" ? "active" : ""}`}
-                  style={{ borderColor: pageMargin === "small" ? toolColor : "" }}
-                  onClick={() => setPageMargin("small")}
-                >
-                  <span className="option-title">Small</span>
-                </button>
-                <button 
-                  className={`option-card center-align compact ${pageMargin === "big" ? "active" : ""}`}
-                  style={{ borderColor: pageMargin === "big" ? toolColor : "" }}
-                  onClick={() => setPageMargin("big")}
-                >
-                  <span className="option-title">Big</span>
-                </button>
-              </div>
-            </div>
-
-            <div className="options-group">
-              <label className="checkbox-row mt-4">
-                <input 
-                  type="checkbox" 
-                  checked={mergeAll} 
-                  onChange={(e) => setMergeAll(e.target.checked)} 
-                />
-                <span style={{ fontSize: "0.85rem", fontWeight: "600" }}>Merge all images in one PDF file</span>
-              </label>
-            </div>
-          </>
+          <JpgToPdfSettings
+            pageOrientation={pageOrientation}
+            setPageOrientation={setPageOrientation}
+            pageSize={pageSize}
+            setPageSize={setPageSize}
+            pageMargin={pageMargin}
+            setPageMargin={setPageMargin}
+            mergeAll={mergeAll}
+            setMergeAll={setMergeAll}
+            toolColor={toolColor}
+          />
         )}
 
         {isPdfToJpg && (
-          <div className="options-group">
-            <label className="options-label">Extraction Mode</label>
-            <div className="options-vertical-list">
-              <button 
-                className={`option-card ${conversionMode === "page" ? "active" : ""}`}
-                style={{ borderColor: conversionMode === "page" ? toolColor : "" }}
-                onClick={() => setConversionMode("page")}
-              >
-                <span className="option-title">Page to JPG</span>
-                <span className="option-desc">Convert entire PDF pages to JPG images.</span>
-              </button>
-              <button 
-                className={`option-card ${conversionMode === "extract" ? "active" : ""}`}
-                style={{ borderColor: conversionMode === "extract" ? toolColor : "" }}
-                onClick={() => setConversionMode("extract")}
-              >
-                <span className="option-title">Extract Images</span>
-                <span className="option-desc">Extract all single images inside the PDF.</span>
-              </button>
-            </div>
-          </div>
+          <PdfToJpgSettings
+            conversionMode={conversionMode}
+            setConversionMode={setConversionMode}
+            toolColor={toolColor}
+          />
         )}
 
         {isSplit && (
-          <>
-            <div className="options-group">
-              <label className="options-label">Split Mode</label>
-              <div className="options-grid cols-2">
-                <button 
-                  className={`option-card center-align ${splitMode === "ranges" ? "active" : ""}`}
-                  style={{ borderColor: splitMode === "ranges" ? toolColor : "" }}
-                  onClick={() => {
-                    setSplitMode("ranges");
-                    setSplitRanges("1-2");
-                  }}
-                >
-                  <span className="option-title">Split by Range</span>
-                </button>
-                <button 
-                  className={`option-card center-align ${splitMode === "extract" ? "active" : ""}`}
-                  style={{ borderColor: splitMode === "extract" ? toolColor : "" }}
-                  onClick={() => {
-                    setSplitMode("extract");
-                    setSplitRanges("all");
-                  }}
-                >
-                  <span className="option-title">Extract Pages</span>
-                </button>
-              </div>
-            </div>
-
-            <div className="options-group">
-              {splitMode === "ranges" ? (
-                <>
-                  <label className="options-label" htmlFor="split-ranges-input">Custom page ranges</label>
-                  <input 
-                    type="text" 
-                    id="split-ranges-input"
-                    className="options-input" 
-                    value={splitRanges} 
-                    onChange={(e) => setSplitRanges(e.target.value)} 
-                    placeholder="e.g. 1-2, 3-5"
-                    style={{ width: "100%", padding: "10px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border)", background: "var(--c-bg)", color: "var(--c-text)", marginTop: "4px" }}
-                  />
-                  <span className="options-subtext" style={{ fontSize: "0.76rem", color: "var(--text-muted)", marginTop: "6px", display: "block" }}>
-                    Split the document into separate files of specified page ranges.
-                  </span>
-                </>
-              ) : (
-                <>
-                  <label className="options-label" htmlFor="split-extract-input">Page numbers to extract</label>
-                  <input 
-                    type="text" 
-                    id="split-extract-input"
-                    className="options-input" 
-                    value={splitRanges} 
-                    onChange={(e) => setSplitRanges(e.target.value)} 
-                    placeholder="e.g. all or 1, 3, 5"
-                    style={{ width: "100%", padding: "10px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border)", background: "var(--c-bg)", color: "var(--c-text)", marginTop: "4px" }}
-                  />
-                  <span className="options-subtext" style={{ fontSize: "0.76rem", color: "var(--text-muted)", marginTop: "6px", display: "block" }}>
-                    Enter page numbers separated by commas, or write "all" to split every page.
-                  </span>
-                </>
-              )}
-            </div>
-          </>
+          <SplitSettings
+            splitMode={splitMode}
+            setSplitMode={setSplitMode}
+            splitRanges={splitRanges}
+            setSplitRanges={setSplitRanges}
+            toolColor={toolColor}
+          />
         )}
 
         {isWatermark && (
-          <div className="options-group">
-            <label className="options-label">Watermark Text</label>
-            <input 
-              type="text" 
-              className="options-input" 
-              value={watermarkText} 
-              onChange={(e) => setWatermarkText(e.target.value)}
-              style={{ width: "100%", padding: "10px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border)", background: "var(--c-bg)", color: "var(--c-text)", marginTop: "4px" }}
-            />
-            <label className="options-label" style={{ marginTop: "14px", display: "block" }}>Text Color</label>
-            <input 
-              type="color" 
-              value={watermarkColor} 
-              onChange={(e) => setWatermarkColor(e.target.value)}
-              style={{ width: "100%", height: "38px", border: "1px solid var(--border)", background: "none", cursor: "pointer", marginTop: "4px", borderRadius: "var(--radius-sm)" }}
-            />
-            <label className="options-label" style={{ marginTop: "14px", display: "block" }}>Opacity ({Math.round(parseFloat(watermarkOpacity) * 100)}%)</label>
-            <input 
-              type="range" 
-              min="0.1" 
-              max="1.0" 
-              step="0.05" 
-              value={watermarkOpacity} 
-              onChange={(e) => setWatermarkOpacity(e.target.value)}
-              style={{ width: "100%", marginTop: "4px" }}
-            />
-          </div>
+          <WatermarkSettings
+            watermarkText={watermarkText}
+            setWatermarkText={setWatermarkText}
+            watermarkColor={watermarkColor}
+            setWatermarkColor={setWatermarkColor}
+            watermarkOpacity={watermarkOpacity}
+            setWatermarkOpacity={setWatermarkOpacity}
+          />
         )}
 
         {isSign && (
-          <div className="options-group">
-            <label className="options-label">Signature Text</label>
-            <input 
-              type="text" 
-              className="options-input" 
-              value={signatureText} 
-              onChange={(e) => setSignatureText(e.target.value)}
-              style={{ width: "100%", padding: "10px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border)", background: "var(--c-bg)", color: "var(--c-text)", marginTop: "4px" }}
-            />
-            <label className="options-label" style={{ marginTop: "14px", display: "block" }}>Signature Font Style</label>
-            <select 
-              className="options-select" 
-              value={signatureStyle}
-              onChange={(e) => setSignatureStyle(e.target.value)}
-              style={{ width: "100%", padding: "10px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border)", background: "var(--c-bg)", color: "var(--c-text)", marginTop: "4px" }}
-            >
-              <option value="cursive">Cursive (Handwritten)</option>
-              <option value="serif">Formal Serif</option>
-              <option value="sans">Clean Sans-Serif</option>
-            </select>
-          </div>
+          <SignSettings
+            signatureText={signatureText}
+            setSignatureText={setSignatureText}
+            signatureStyle={signatureStyle}
+            setSignatureStyle={setSignatureStyle}
+          />
         )}
 
         {(isProtect || isUnlock) && (
-          <div className="options-group">
-            <label className="options-label">PDF Password</label>
-            <input 
-              type="password" 
-              className="options-input" 
-              value={pdfPassword} 
-              onChange={(e) => setPdfPassword(e.target.value)}
-              style={{ width: "100%", padding: "10px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border)", background: "var(--c-bg)", color: "var(--c-text)", marginTop: "4px" }}
-            />
-            <span className="options-subtext" style={{ fontSize: "0.76rem", color: "var(--text-muted)", marginTop: "6px", display: "block" }}>
-              {isProtect ? "Set a secure password lock for this document." : "Enter the password required to open the PDF."}
-            </span>
-          </div>
+          <PasswordSettings
+            pdfPassword={pdfPassword}
+            setPdfPassword={setPdfPassword}
+            isProtect={isProtect}
+          />
         )}
 
         {isTranslate && (
-          <div className="options-group">
-            <label className="options-label">Target Language</label>
-            <select 
-              className="options-select" 
-              value={translateLang}
-              onChange={(e) => setTranslateLang(e.target.value)}
-              style={{ width: "100%", padding: "10px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border)", background: "var(--c-bg)", color: "var(--c-text)", marginTop: "4px" }}
-            >
-              <option value="hi">Hindi (हिन्दी)</option>
-              <option value="es">Spanish (Español)</option>
-              <option value="fr">French (Français)</option>
-              <option value="de">German (Deutsch)</option>
-            </select>
-          </div>
+          <TranslateSettings
+            translateLang={translateLang}
+            setTranslateLang={setTranslateLang}
+          />
         )}
 
         {isSummarize && (
-          <div className="options-group">
-            <label className="options-label">Summary Length</label>
-            <div className="options-vertical-list">
-              <button 
-                className={`option-card ${summarizeLength === "short" ? "active" : ""}`}
-                style={{ borderColor: summarizeLength === "short" ? toolColor : "" }}
-                onClick={() => setSummarizeLength("short")}
-              >
-                <span className="option-title">Short (3 Sentences)</span>
-                <span className="option-desc">Highly condensed overview.</span>
-              </button>
-              <button 
-                className={`option-card ${summarizeLength === "medium" ? "active" : ""}`}
-                style={{ borderColor: summarizeLength === "medium" ? toolColor : "" }}
-                onClick={() => setSummarizeLength("medium")}
-              >
-                <span className="option-title">Medium (6 Sentences)</span>
-                <span className="option-desc">Standard descriptive outline.</span>
-              </button>
-              <button 
-                className={`option-card ${summarizeLength === "long" ? "active" : ""}`}
-                style={{ borderColor: summarizeLength === "long" ? toolColor : "" }}
-                onClick={() => setSummarizeLength("long")}
-              >
-                <span className="option-title">Long (12 Sentences)</span>
-                <span className="option-desc">Deep structural details.</span>
-              </button>
-            </div>
-          </div>
+          <SummarizeSettings
+            summarizeLength={summarizeLength}
+            setSummarizeLength={setSummarizeLength}
+            toolColor={toolColor}
+          />
         )}
 
         {isBates && (
-          <div className="options-group">
-            <label className="options-label">Bates Prefix</label>
-            <input 
-              type="text" 
-              className="options-input" 
-              value={batesPrefix} 
-              onChange={(e) => setBatesPrefix(e.target.value)}
-              style={{ width: "100%", padding: "10px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border)", background: "var(--c-bg)", color: "var(--c-text)", marginTop: "4px" }}
-            />
-            <label className="options-label" style={{ marginTop: "14px", display: "block" }}>Starting Number</label>
-            <input 
-              type="number" 
-              className="options-input" 
-              value={batesStart} 
-              onChange={(e) => setBatesStart(e.target.value)}
-              style={{ width: "100%", padding: "10px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border)", background: "var(--c-bg)", color: "var(--c-text)", marginTop: "4px" }}
-            />
-          </div>
+          <BatesSettings
+            batesPrefix={batesPrefix}
+            setBatesPrefix={setBatesPrefix}
+            batesStart={batesStart}
+            setBatesStart={setBatesStart}
+          />
         )}
 
         {isPageNumber && (
-          <div className="options-group">
-            <label className="options-label">Position Alignment</label>
-            <select 
-              className="options-select" 
-              value={pageNumberPos}
-              onChange={(e) => setPageNumberPos(e.target.value)}
-              style={{ width: "100%", padding: "10px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border)", background: "var(--c-bg)", color: "var(--c-text)", marginTop: "4px" }}
-            >
-              <option value="bottom-center">Bottom Center</option>
-              <option value="bottom-left">Bottom Left</option>
-              <option value="bottom-right">Bottom Right</option>
-              <option value="top-center">Top Center</option>
-              <option value="top-left">Top Left</option>
-              <option value="top-right">Top Right</option>
-            </select>
-            <label className="options-label" style={{ marginTop: "14px", display: "block" }}>Font Size (px)</label>
-            <input 
-              type="number" 
-              className="options-input" 
-              value={pageNumberSize} 
-              onChange={(e) => setPageNumberSize(e.target.value)}
-              style={{ width: "100%", padding: "10px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border)", background: "var(--c-bg)", color: "var(--c-text)", marginTop: "4px" }}
-            />
-          </div>
+          <PageNumberSettings
+            pageNumberPos={pageNumberPos}
+            setPageNumberPos={setPageNumberPos}
+            pageNumberSize={pageNumberSize}
+            setPageNumberSize={setPageNumberSize}
+          />
         )}
 
         {isCrop && (
-          <div className="options-group">
-            <label className="options-label">Crop Margin Percentage ({cropMargin}%)</label>
-            <input 
-              type="range" 
-              min="2" 
-              max="30" 
-              step="1" 
-              value={cropMargin} 
-              onChange={(e) => setCropMargin(e.target.value)}
-              style={{ width: "100%", marginTop: "4px" }}
-            />
-            <span className="options-subtext" style={{ fontSize: "0.76rem", color: "var(--text-muted)", marginTop: "6px", display: "block" }}>
-              Applies equal crop boundary margins to all four page edges.
-            </span>
-          </div>
+          <CropSettings
+            cropMargin={cropMargin}
+            setCropMargin={setCropMargin}
+          />
         )}
 
         {isCopilot && (
-          <div className="options-group">
-            <label className="options-label">Copilot Analysis Mode</label>
-            <div className="options-vertical-list">
-              <button 
-                className={`option-card ${copilotMode === "general" ? "active" : ""}`}
-                style={{ borderColor: copilotMode === "general" ? toolColor : "" }}
-                onClick={() => setCopilotMode("general")}
-              >
-                <span className="option-title">General Summary</span>
-                <span className="option-desc">Broad, semantic review.</span>
-              </button>
-              <button 
-                className={`option-card ${copilotMode === "technical" ? "active" : ""}`}
-                style={{ borderColor: copilotMode === "technical" ? toolColor : "" }}
-                onClick={() => setCopilotMode("technical")}
-              >
-                <span className="option-title">Technical Audit</span>
-                <span className="option-desc">Inspect structural tags and elements.</span>
-              </button>
-              <button 
-                className={`option-card ${copilotMode === "financial" ? "active" : ""}`}
-                style={{ borderColor: copilotMode === "financial" ? toolColor : "" }}
-                onClick={() => setCopilotMode("financial")}
-              >
-                <span className="option-title">Financial Audit</span>
-                <span className="option-desc">Extract tabular data and metrics.</span>
-              </button>
-            </div>
-          </div>
+          <CopilotSettings
+            copilotMode={copilotMode}
+            setCopilotMode={setCopilotMode}
+            toolColor={toolColor}
+          />
         )}
 
         {isTxtToPdf && (
-          <div className="options-group">
-            <label className="options-label">Font Size</label>
-            <input 
-              type="number" 
-              className="options-input" 
-              value={txtFontSize} 
-              onChange={(e) => setTxtFontSize(e.target.value)}
-              style={{ width: "100%", padding: "10px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border)", background: "var(--c-bg)", color: "var(--c-text)", marginTop: "4px" }}
-            />
-          </div>
+          <TxtToPdfSettings
+            txtFontSize={txtFontSize}
+            setTxtFontSize={setTxtFontSize}
+          />
         )}
 
         {isHtmlToPdf && (
-          <div className="options-group">
-            <label className="options-label">Page Layout Dimensions</label>
-            <select 
-              className="options-select" 
-              value={htmlPageSize}
-              onChange={(e) => setHtmlPageSize(e.target.value)}
-              style={{ width: "100%", padding: "10px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border)", background: "var(--c-bg)", color: "var(--c-text)", marginTop: "4px" }}
-            >
-              <option value="letter">US Letter (8.5 x 11 in)</option>
-              <option value="a4">ISO A4 (210 x 297 mm)</option>
-            </select>
-          </div>
+          <HtmlToPdfSettings
+            htmlPageSize={htmlPageSize}
+            setHtmlPageSize={setHtmlPageSize}
+          />
         )}
 
         {selectedTool === "Rotate PDF" && (
-          <div className="options-group">
-            <label className="options-label">Global Rotate</label>
-            <button 
-              className="option-card center-align compact"
-              onClick={() => {
-                const next: any = {};
-                for (let i = 1; i <= totalPdfPages; i++) {
-                  next[i] = ((rotationMap[i] || 0) + 90) % 360;
-                }
-                setRotationMap(next);
-              }}
-              style={{ width: "100%", padding: "12px", border: "1px dashed var(--border)", display: "flex", justifyContent: "center", gap: "8px" }}
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
-              </svg>
-              <span>Rotate all pages 90°</span>
-            </button>
-          </div>
+          <RotateSettings
+            totalPdfPages={totalPdfPages}
+            rotationMap={rotationMap}
+            setRotationMap={setRotationMap}
+          />
         )}
 
         {selectedTool === "Remove Pages" && (
-          <div className="options-group">
-            <label className="options-label">Selection Summary</label>
-            <p style={{ fontSize: "0.82rem", color: "var(--text-muted)", margin: "4px 0 12px 0" }}>
-              {removedPages.size} {removedPages.size === 1 ? "page" : "pages"} selected for removal.
-            </p>
-            {removedPages.size > 0 && (
-              <button 
-                className="quiet-button" 
-                style={{ width: "100%", padding: "10px", border: "1px solid var(--border)", background: "transparent" }}
-                onClick={() => setRemovedPages(new Set())}
-              >
-                Clear all deletions
-              </button>
-            )}
-          </div>
+          <RemoveSettings
+            removedPages={removedPages}
+            setRemovedPages={setRemovedPages}
+          />
         )}
 
         {selectedTool === "Extract Pages" && (
-          <div className="options-group">
-            <label className="options-label">Extraction Ranges</label>
-            <p style={{ fontSize: "0.82rem", color: "var(--text-muted)", margin: "4px 0 12px 0" }}>
-              {selectedPages.size} of {totalPdfPages} pages selected for extraction.
-            </p>
-            <div className="options-grid cols-2" style={{ gap: "8px" }}>
-              <button 
-                className="quiet-button"
-                style={{ border: "1px solid var(--border)", padding: "8px", cursor: "pointer" }}
-                onClick={() => {
-                  const s = new Set<number>();
-                  for (let i = 1; i <= totalPdfPages; i++) s.add(i);
-                  setSelectedPages(s);
-                }}
-              >
-                Select All
-              </button>
-              <button 
-                className="quiet-button"
-                style={{ border: "1px solid var(--border)", padding: "8px", cursor: "pointer" }}
-                onClick={() => setSelectedPages(new Set())}
-              >
-                Deselect All
-              </button>
-            </div>
-          </div>
+          <ExtractSettings
+            selectedPages={selectedPages}
+            setSelectedPages={setSelectedPages}
+            totalPdfPages={totalPdfPages}
+          />
         )}
 
         {selectedTool === "Organize PDF" && (
-          <div className="options-group">
-            <label className="options-label">Sequence operations</label>
-            <button 
-              className="option-card center-align compact"
-              onClick={() => {
-                setPageOrder(prev => [...prev].reverse());
-              }}
-              style={{ width: "100%", padding: "12px", border: "1px dashed var(--border)", display: "flex", justifyContent: "center", gap: "8px", marginBottom: "8px", cursor: "pointer" }}
-            >
-              <span>Reverse page order</span>
-            </button>
-            <button 
-              className="option-card center-align compact"
-              onClick={() => {
-                const s = [];
-                for (let i = 1; i <= totalPdfPages; i++) s.push(i);
-                setPageOrder(s);
-              }}
-              style={{ width: "100%", padding: "12px", border: "1px dashed var(--border)", display: "flex", justifyContent: "center", gap: "8px", cursor: "pointer" }}
-            >
-              <span>Reset to default order</span>
-            </button>
-          </div>
+          <OrganizeSettings
+            setPageOrder={setPageOrder}
+            totalPdfPages={totalPdfPages}
+          />
         )}
 
         {isFlatten && (
-          <div className="options-group">
-            <label className="options-label">Flattening Mode</label>
-            <div className="options-vertical-list">
-              <button 
-                className={`option-card ${flattenMode === "all" ? "active" : ""}`}
-                style={{ borderColor: flattenMode === "all" ? toolColor : "" }}
-                onClick={() => setFlattenMode("all")}
-              >
-                <span className="option-title">Flatten All Elements</span>
-                <span className="option-desc">Flatten both form fields and annotations.</span>
-              </button>
-              <button 
-                className={`option-card ${flattenMode === "forms" ? "active" : ""}`}
-                style={{ borderColor: flattenMode === "forms" ? toolColor : "" }}
-                onClick={() => setFlattenMode("forms")}
-              >
-                <span className="option-title">Flatten Form Fields Only</span>
-                <span className="option-desc">Keep annotations interactive, flatten form fields.</span>
-              </button>
-              <button 
-                className={`option-card ${flattenMode === "annotations" ? "active" : ""}`}
-                style={{ borderColor: flattenMode === "annotations" ? toolColor : "" }}
-                onClick={() => setFlattenMode("annotations")}
-              >
-                <span className="option-title">Flatten Annotations Only</span>
-                <span className="option-desc">Keep form fields interactive, flatten annotations.</span>
-              </button>
-            </div>
-          </div>
+          <FlattenSettings
+            flattenMode={flattenMode}
+            setFlattenMode={setFlattenMode}
+            toolColor={toolColor}
+          />
         )}
 
         {isRepair && (
-          <>
-            <div className="options-group">
-              <label className="options-label">Repair Intensity</label>
-              <div className="options-vertical-list">
-                <button 
-                  className={`option-card ${repairMode === "streams" ? "active" : ""}`}
-                  style={{ borderColor: repairMode === "streams" ? toolColor : "" }}
-                  onClick={() => setRepairMode("streams")}
-                >
-                  <span className="option-title">Recover Corrupted Streams</span>
-                  <span className="option-desc">Deep scan stream blocks for errors.</span>
-                </button>
-                <button 
-                  className={`option-card ${repairMode === "tables" ? "active" : ""}`}
-                  style={{ borderColor: repairMode === "tables" ? toolColor : "" }}
-                  onClick={() => setRepairMode("tables")}
-                >
-                  <span className="option-title">Rebuild Cross-References</span>
-                  <span className="option-desc">Restore page indexes and offsets.</span>
-                </button>
-                <button 
-                  className={`option-card ${repairMode === "catalog" ? "active" : ""}`}
-                  style={{ borderColor: repairMode === "catalog" ? toolColor : "" }}
-                  onClick={() => setRepairMode("catalog")}
-                >
-                  <span className="option-title">Fix Catalog Metadata</span>
-                  <span className="option-desc">Rebuild corrupt catalog root descriptors.</span>
-                </button>
-              </div>
-            </div>
-            <div className="options-group" style={{ marginTop: "14px" }}>
-              <label className="options-label">PDF Compatibility Output</label>
-              <select 
-                className="options-select" 
-                value={repairCompatibility} 
-                onChange={(e) => setRepairCompatibility(e.target.value)}
-                style={{ width: "100%", padding: "10px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border)", background: "var(--c-bg)", color: "var(--c-text)", marginTop: "4px" }}
-              >
-                <option value="1.4">Acrobat 5.0 (PDF 1.4)</option>
-                <option value="1.7">Acrobat 8.0 (PDF 1.7 - Default)</option>
-                <option value="2.0">Acrobat X (PDF 2.0)</option>
-              </select>
-            </div>
-          </>
+          <RepairSettings
+            repairMode={repairMode}
+            setRepairMode={setRepairMode}
+            repairCompatibility={repairCompatibility}
+            setRepairCompatibility={setRepairCompatibility}
+            toolColor={toolColor}
+          />
         )}
 
         {isWordToPdf && (
-          <>
-            <div className="options-group">
-              <label className="options-label">Margins</label>
-              <select 
-                className="options-select" 
-                value={wordMargins} 
-                onChange={(e) => setWordMargins(e.target.value as any)}
-                style={{ width: "100%", padding: "10px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border)", background: "var(--c-bg)", color: "var(--c-text)", marginTop: "4px" }}
-              >
-                <option value="standard">Standard (1.0 in / 2.54 cm)</option>
-                <option value="narrow">Narrow (0.5 in / 1.27 cm)</option>
-                <option value="wide">Wide (1.5 in / 3.81 cm)</option>
-              </select>
-            </div>
-            <div className="options-group" style={{ marginTop: "14px" }}>
-              <label className="options-label">Layout Rules</label>
-              <div className="options-checkbox-list">
-                <label className="checkbox-row">
-                  <input 
-                    type="checkbox" 
-                    checked={wordBookmarks} 
-                    onChange={(e) => setWordBookmarks(e.target.checked)} 
-                  />
-                  <span>Convert headings to document bookmarks</span>
-                </label>
-                <label className="checkbox-row">
-                  <input 
-                    type="checkbox" 
-                    checked={wordLinkColors} 
-                    onChange={(e) => setWordLinkColors(e.target.checked)} 
-                  />
-                  <span>Preserve source link styling and colors</span>
-                </label>
-              </div>
-            </div>
-          </>
+          <WordToPdfSettings
+            wordMargins={wordMargins}
+            setWordMargins={setWordMargins}
+            wordBookmarks={wordBookmarks}
+            setWordBookmarks={setWordBookmarks}
+            wordLinkColors={wordLinkColors}
+            setWordLinkColors={setWordLinkColors}
+          />
         )}
 
         {isExcelToPdf && (
-          <>
-            <div className="options-group">
-              <label className="options-label">Orientation</label>
-              <div className="options-grid cols-2">
-                <button 
-                  className={`option-card center-align ${excelOrientation === "portrait" ? "active" : ""}`}
-                  style={{ borderColor: excelOrientation === "portrait" ? toolColor : "" }}
-                  onClick={() => setExcelOrientation("portrait")}
-                >
-                  <span className="option-title">Portrait</span>
-                </button>
-                <button 
-                  className={`option-card center-align ${excelOrientation === "landscape" ? "active" : ""}`}
-                  style={{ borderColor: excelOrientation === "landscape" ? toolColor : "" }}
-                  onClick={() => setExcelOrientation("landscape")}
-                >
-                  <span className="option-title">Landscape</span>
-                </button>
-              </div>
-            </div>
-            <div className="options-group" style={{ marginTop: "14px" }}>
-              <label className="options-label">Sheet Scaling</label>
-              <select 
-                className="options-select" 
-                value={excelSheetRendering} 
-                onChange={(e) => setExcelSheetRendering(e.target.value as any)}
-                style={{ width: "100%", padding: "10px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border)", background: "var(--c-bg)", color: "var(--c-text)", marginTop: "4px" }}
-              >
-                <option value="fit-width">Fit Sheet to One Page Wide</option>
-                <option value="fit-all-columns">Fit All Columns on One Page</option>
-                <option value="actual-size">No Scaling (Actual Size)</option>
-              </select>
-            </div>
-            <div className="options-group" style={{ marginTop: "14px" }}>
-              <div className="options-checkbox-list">
-                <label className="checkbox-row">
-                  <input 
-                    type="checkbox" 
-                    checked={excelGridlines} 
-                    onChange={(e) => setExcelGridlines(e.target.checked)} 
-                  />
-                  <span>Render visible gridlines in output PDF</span>
-                </label>
-              </div>
-            </div>
-          </>
+          <ExcelToPdfSettings
+            excelOrientation={excelOrientation}
+            setExcelOrientation={setExcelOrientation}
+            excelSheetRendering={excelSheetRendering}
+            setExcelSheetRendering={setExcelSheetRendering}
+            excelGridlines={excelGridlines}
+            setExcelGridlines={setExcelGridlines}
+            toolColor={toolColor}
+          />
         )}
 
         {isPptToPdf && (
-          <>
-            <div className="options-group">
-              <label className="options-label">Slide Orientation</label>
-              <div className="options-grid cols-2">
-                <button 
-                  className={`option-card center-align ${pptOrientation === "landscape" ? "active" : ""}`}
-                  style={{ borderColor: pptOrientation === "landscape" ? toolColor : "" }}
-                  onClick={() => setPptOrientation("landscape")}
-                >
-                  <span className="option-title">Landscape</span>
-                </button>
-                <button 
-                  className={`option-card center-align ${pptOrientation === "portrait" ? "active" : ""}`}
-                  style={{ borderColor: pptOrientation === "portrait" ? toolColor : "" }}
-                  onClick={() => setPptOrientation("portrait")}
-                >
-                  <span className="option-title">Portrait</span>
-                </button>
-              </div>
-            </div>
-            <div className="options-group" style={{ marginTop: "14px" }}>
-              <label className="options-label">Slides Layout</label>
-              <select 
-                className="options-select" 
-                value={pptSlidesLayout} 
-                onChange={(e) => setPptSlidesLayout(e.target.value as any)}
-                style={{ width: "100%", padding: "10px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border)", background: "var(--c-bg)", color: "var(--c-text)", marginTop: "4px" }}
-              >
-                <option value="1-slide">1 Slide Per Page</option>
-                <option value="2-slides">2 Slides Per Page (Vertical List)</option>
-                <option value="4-slides">4 Slides Per Page (2x2 Handout Grid)</option>
-              </select>
-            </div>
-            <div className="options-group" style={{ marginTop: "14px" }}>
-              <div className="options-checkbox-list">
-                <label className="checkbox-row">
-                  <input 
-                    type="checkbox" 
-                    checked={pptNotes} 
-                    onChange={(e) => setPptNotes(e.target.checked)} 
-                  />
-                  <span>Include presenter notes page under slides</span>
-                </label>
-              </div>
-            </div>
-          </>
+          <PptToPdfSettings
+            pptOrientation={pptOrientation}
+            setPptOrientation={setPptOrientation}
+            pptSlidesLayout={pptSlidesLayout}
+            setPptSlidesLayout={setPptSlidesLayout}
+            pptNotes={pptNotes}
+            setPptNotes={setPptNotes}
+            toolColor={toolColor}
+          />
         )}
 
         {isPdfToWord && (
-          <>
-            <div className="options-group">
-              <label className="options-label">Text Layout Reconstruction</label>
-              <div className="options-vertical-list">
-                <button 
-                  className={`option-card ${pdfToWordMode === "flowing" ? "active" : ""}`}
-                  style={{ borderColor: pdfToWordMode === "flowing" ? toolColor : "" }}
-                  onClick={() => setPdfToWordMode("flowing")}
-                >
-                  <span className="option-title">Flowing Text (Highly Editable)</span>
-                  <span className="option-desc">Preserves paragraphs, tables and document flow.</span>
-                </button>
-                <button 
-                  className={`option-card ${pdfToWordMode === "frames" ? "active" : ""}`}
-                  style={{ borderColor: pdfToWordMode === "frames" ? toolColor : "" }}
-                  onClick={() => setPdfToWordMode("frames")}
-                >
-                  <span className="option-title">Visual Layout (Frames)</span>
-                  <span className="option-desc">Keeps elements in exact visual positions using text boxes.</span>
-                </button>
-                <button 
-                  className={`option-card ${pdfToWordMode === "text-only" ? "active" : ""}`}
-                  style={{ borderColor: pdfToWordMode === "text-only" ? toolColor : "" }}
-                  onClick={() => setPdfToWordMode("text-only")}
-                >
-                  <span className="option-title">Plain Text Only</span>
-                  <span className="option-desc">Extract raw text strings without markup.</span>
-                </button>
-              </div>
-            </div>
-            <div className="options-group" style={{ marginTop: "14px" }}>
-              <label className="options-label">OCR Options</label>
-              <div className="options-checkbox-list">
-                <label className="checkbox-row">
-                  <input 
-                    type="checkbox" 
-                    checked={pdfToWordOcr} 
-                    onChange={(e) => setPdfToWordOcr(e.target.checked)} 
-                  />
-                  <span>Run OCR to extract text from scanned images</span>
-                </label>
-              </div>
-            </div>
-            <div className="options-group" style={{ marginTop: "14px" }}>
-              <label className="options-label">Language for Text Parsing</label>
-              <select 
-                className="options-select" 
-                value={pdfToWordLang} 
-                onChange={(e) => setPdfToWordLang(e.target.value)}
-                style={{ width: "100%", padding: "10px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border)", background: "var(--c-bg)", color: "var(--c-text)", marginTop: "4px" }}
-              >
-                <option value="en">English (US/UK)</option>
-                <option value="es">Spanish (Español)</option>
-                <option value="fr">French (Français)</option>
-              </select>
-            </div>
-          </>
+          <PdfToWordSettings
+            pdfToWordMode={pdfToWordMode}
+            setPdfToWordMode={setPdfToWordMode}
+            pdfToWordOcr={pdfToWordOcr}
+            setPdfToWordOcr={setPdfToWordOcr}
+            pdfToWordLang={pdfToWordLang}
+            setPdfToWordLang={setPdfToWordLang}
+            toolColor={toolColor}
+          />
         )}
 
         {isPdfToExcel && (
-          <>
-            <div className="options-group">
-              <label className="options-label">Table Extraction Format</label>
-              <select 
-                className="options-select" 
-                value={pdfToExcelData} 
-                onChange={(e) => setPdfToExcelData(e.target.value as any)}
-                style={{ width: "100%", padding: "10px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border)", background: "var(--c-bg)", color: "var(--c-text)", marginTop: "4px" }}
-              >
-                <option value="all-tables">Extract All Tables to Separate Sheets</option>
-                <option value="single-sheet">Merge All Tables into One Sheet</option>
-                <option value="table-per-page">Create One Excel Sheet Per PDF Page</option>
-              </select>
-            </div>
-            <div className="options-group" style={{ marginTop: "14px" }}>
-              <label className="options-label">Formatting Separator</label>
-              <div className="options-grid cols-2">
-                <button 
-                  className={`option-card center-align ${pdfToExcelSeparator === "period" ? "active" : ""}`}
-                  style={{ borderColor: pdfToExcelSeparator === "period" ? toolColor : "" }}
-                  onClick={() => setPdfToExcelSeparator("period")}
-                >
-                  <span className="option-title">Period (.) Decimal</span>
-                </button>
-                <button 
-                  className={`option-card center-align ${pdfToExcelSeparator === "comma" ? "active" : ""}`}
-                  style={{ borderColor: pdfToExcelSeparator === "comma" ? toolColor : "" }}
-                  onClick={() => setPdfToExcelSeparator("comma")}
-                >
-                  <span className="option-title">Comma (,) Decimal</span>
-                </button>
-              </div>
-            </div>
-            <div className="options-group" style={{ marginTop: "14px" }}>
-              <div className="options-checkbox-list">
-                <label className="checkbox-row">
-                  <input 
-                    type="checkbox" 
-                    checked={pdfToExcelDetectNum} 
-                    onChange={(e) => setPdfToExcelDetectNum(e.target.checked)} 
-                  />
-                  <span>Automatically detect numeric string formatting</span>
-                </label>
-              </div>
-            </div>
-          </>
+          <PdfToExcelSettings
+            pdfToExcelData={pdfToExcelData}
+            setPdfToExcelData={setPdfToExcelData}
+            pdfToExcelSeparator={pdfToExcelSeparator}
+            setPdfToExcelSeparator={setPdfToExcelSeparator}
+            pdfToExcelDetectNum={pdfToExcelDetectNum}
+            setPdfToExcelDetectNum={setPdfToExcelDetectNum}
+            toolColor={toolColor}
+          />
         )}
 
         {isPdfToPpt && (
-          <>
-            <div className="options-group">
-              <label className="options-label">Slide Creation Layout</label>
-              <div className="options-vertical-list">
-                <button 
-                  className={`option-card ${pdfToPptLayout === "auto" ? "active" : ""}`}
-                  style={{ borderColor: pdfToPptLayout === "auto" ? toolColor : "" }}
-                  onClick={() => setPdfToPptLayout("auto")}
-                >
-                  <span className="option-title">Auto Content Flow</span>
-                  <span className="option-desc">Convert PDF paragraphs into bullet slides.</span>
-                </button>
-                <button 
-                  className={`option-card ${pdfToPptLayout === "page-image" ? "active" : ""}`}
-                  style={{ borderColor: pdfToPptLayout === "page-image" ? toolColor : "" }}
-                  onClick={() => setPdfToPptLayout("page-image")}
-                >
-                  <span className="option-title">Page as Backdrop Image</span>
-                  <span className="option-desc">Rasterize each page as a static slide background.</span>
-                </button>
-              </div>
-            </div>
-            <div className="options-group" style={{ marginTop: "14px" }}>
-              <div className="options-checkbox-list">
-                <label className="checkbox-row">
-                  <input 
-                    type="checkbox" 
-                    checked={pdfToPptBorders} 
-                    onChange={(e) => setPdfToPptBorders(e.target.checked)} 
-                  />
-                  <span>Add thin slide border lines</span>
-                </label>
-                <label className="checkbox-row">
-                  <input 
-                    type="checkbox" 
-                    checked={pdfToPptCompress} 
-                    onChange={(e) => setPdfToPptCompress(e.target.checked)} 
-                  />
-                  <span>Compress embedded images to 150 DPI</span>
-                </label>
-              </div>
-            </div>
-          </>
+          <PdfToPptSettings
+            pdfToPptLayout={pdfToPptLayout}
+            setPdfToPptLayout={setPdfToPptLayout}
+            pdfToPptBorders={pdfToPptBorders}
+            setPdfToPptBorders={setPdfToPptBorders}
+            pdfToPptCompress={pdfToPptCompress}
+            setPdfToPptCompress={setPdfToPptCompress}
+            toolColor={toolColor}
+          />
         )}
 
         {isAnnotate && (
-          <>
-            <div className="options-group">
-              <label className="options-label">Annotation Tool</label>
-              <div className="options-vertical-list">
-                <button 
-                  className={`option-card ${annotateTool === "highlight" ? "active" : ""}`}
-                  style={{ borderColor: annotateTool === "highlight" ? toolColor : "" }}
-                  onClick={() => setAnnotateTool("highlight")}
-                >
-                  <span className="option-title">Highlight Marker</span>
-                  <span className="option-desc">Semi-transparent text selection highlight.</span>
-                </button>
-                <button 
-                  className={`option-card ${annotateTool === "pen" ? "active" : ""}`}
-                  style={{ borderColor: annotateTool === "pen" ? toolColor : "" }}
-                  onClick={() => setAnnotateTool("pen")}
-                >
-                  <span className="option-title">Freehand Pen Outline</span>
-                  <span className="option-desc">Draw a customizable review outline path.</span>
-                </button>
-                <button 
-                  className={`option-card ${annotateTool === "text-comment" ? "active" : ""}`}
-                  style={{ borderColor: annotateTool === "text-comment" ? toolColor : "" }}
-                  onClick={() => setAnnotateTool("text-comment")}
-                >
-                  <span className="option-title">Reviewer Comment Card</span>
-                  <span className="option-desc">Insert a sticky text comment card on page header.</span>
-                </button>
-              </div>
-            </div>
-            <div className="options-group" style={{ marginTop: "14px" }}>
-              <label className="options-label">Annotation Color</label>
-              <input 
-                type="color" 
-                value={annotateColor} 
-                onChange={(e) => setAnnotateColor(e.target.value)}
-                style={{ width: "100%", height: "38px", border: "1px solid var(--border)", background: "none", cursor: "pointer", marginTop: "4px", borderRadius: "var(--radius-sm)" }}
-              />
-            </div>
-            <div className="options-group" style={{ marginTop: "14px" }}>
-              <label className="options-label" htmlFor="annotate-text-input">Annotation / Comment Text</label>
-              <input 
-                type="text" 
-                id="annotate-text-input"
-                className="options-input" 
-                value={annotateText} 
-                onChange={(e) => setAnnotateText(e.target.value)}
-                style={{ width: "100%", padding: "10px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border)", background: "var(--c-bg)", color: "var(--c-text)", marginTop: "4px" }}
-              />
-            </div>
-            <div className="options-group" style={{ marginTop: "14px" }}>
-              <label className="options-label">Opacity ({Math.round(parseFloat(annotateOpacity) * 100)}%)</label>
-              <input 
-                type="range" 
-                min="0.1" 
-                max="1.0" 
-                step="0.05" 
-                value={annotateOpacity} 
-                onChange={(e) => setAnnotateOpacity(e.target.value)}
-                style={{ width: "100%", marginTop: "4px" }}
-              />
-            </div>
-            {annotateTool === "pen" && (
-              <div className="options-group" style={{ marginTop: "14px" }}>
-                <label className="options-label">Pen Line Thickness ({annotateThickness}px)</label>
-                <input 
-                  type="range" 
-                  min="1" 
-                  max="10" 
-                  step="1" 
-                  value={annotateThickness} 
-                  onChange={(e) => setAnnotateThickness(e.target.value)}
-                  style={{ width: "100%", marginTop: "4px" }}
-                />
-              </div>
-            )}
-          </>
+          <AnnotateSettings
+            annotateTool={annotateTool}
+            setAnnotateTool={setAnnotateTool}
+            annotateColor={annotateColor}
+            setAnnotateColor={setAnnotateColor}
+            annotateText={annotateText}
+            setAnnotateText={setAnnotateText}
+            annotateOpacity={annotateOpacity}
+            setAnnotateOpacity={setAnnotateOpacity}
+            annotateThickness={annotateThickness}
+            setAnnotateThickness={setAnnotateThickness}
+            toolColor={toolColor}
+          />
         )}
 
         {isOcr && (
-          <>
-            <div className="options-group">
-              <label className="options-label">OCR Engine Accuracy</label>
-              <div className="options-vertical-list">
-                <button 
-                  className={`option-card ${ocrEngineMode === "balanced" ? "active" : ""}`}
-                  style={{ borderColor: ocrEngineMode === "balanced" ? toolColor : "" }}
-                  onClick={() => setOcrEngineMode("balanced")}
-                >
-                  <span className="option-title">Balanced Quality</span>
-                  <span className="option-desc">Standard conversion layout and accuracy.</span>
-                </button>
-                <button 
-                  className={`option-card ${ocrEngineMode === "quality" ? "active" : ""}`}
-                  style={{ borderColor: ocrEngineMode === "quality" ? toolColor : "" }}
-                  onClick={() => setOcrEngineMode("quality")}
-                >
-                  <span className="option-title">Maximum Quality (Slow)</span>
-                  <span className="option-desc">High precision pixel scanning and formatting.</span>
-                </button>
-                <button 
-                  className={`option-card ${ocrEngineMode === "fast" ? "active" : ""}`}
-                  style={{ borderColor: ocrEngineMode === "fast" ? toolColor : "" }}
-                  onClick={() => setOcrEngineMode("fast")}
-                >
-                  <span className="option-title">Fast Recognition</span>
-                  <span className="option-desc">Optimized speed, simple overlay structure.</span>
-                </button>
-              </div>
-            </div>
-            <div className="options-group" style={{ marginTop: "14px" }}>
-              <label className="options-label">Primary Document Language</label>
-              <select 
-                className="options-select" 
-                value={ocrLanguage} 
-                onChange={(e) => setOcrLanguage(e.target.value)}
-                style={{ width: "100%", padding: "10px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border)", background: "var(--c-bg)", color: "var(--c-text)", marginTop: "4px" }}
-              >
-                <option value="en">English (US/UK)</option>
-                <option value="es">Spanish (Español)</option>
-                <option value="fr">French (Français)</option>
-                <option value="de">German (Deutsch)</option>
-                <option value="hi">Hindi (हिन्दी)</option>
-              </select>
-            </div>
-          </>
+          <OcrSettings
+            ocrEngineMode={ocrEngineMode}
+            setOcrEngineMode={setOcrEngineMode}
+            ocrLanguage={ocrLanguage}
+            setOcrLanguage={setOcrLanguage}
+            toolColor={toolColor}
+          />
         )}
 
         {!isCompress && !isMerge && !isJpgToPdf && !isPdfToJpg && !isSplit && 
@@ -2105,41 +1359,11 @@ export function UploadPanel({ selectedTool, onUpload, onBack, activeJob, onReset
          !isPdfToWord && !isPdfToExcel && !isPdfToPpt && !isAnnotate && !isOcr && 
          selectedTool !== "Rotate PDF" && selectedTool !== "Remove Pages" && 
          selectedTool !== "Extract Pages" && selectedTool !== "Organize PDF" && (
-          <>
-            <div className="options-group">
-              <label className="options-label">Output Quality</label>
-              <div className="options-grid cols-3">
-                <button 
-                  className={`option-card center-align compact ${outputQuality === "normal" ? "active" : ""}`}
-                  style={{ borderColor: outputQuality === "normal" ? toolColor : "" }}
-                  onClick={() => setOutputQuality("normal")}
-                >
-                  <span className="option-title">Normal</span>
-                </button>
-                <button 
-                  className={`option-card center-align compact ${outputQuality === "high" ? "active" : ""}`}
-                  style={{ borderColor: outputQuality === "high" ? toolColor : "" }}
-                  onClick={() => setOutputQuality("high")}
-                >
-                  <span className="option-title">High</span>
-                </button>
-                <button 
-                  className={`option-card center-align compact ${outputQuality === "compact" ? "active" : ""}`}
-                  style={{ borderColor: outputQuality === "compact" ? toolColor : "" }}
-                  onClick={() => setOutputQuality("compact")}
-                >
-                  <span className="option-title">Compact</span>
-                </button>
-              </div>
-            </div>
-
-            <div className="options-group">
-              <label className="checkbox-row mt-4">
-                <input type="checkbox" defaultChecked />
-                <span style={{ fontSize: "0.85rem", fontWeight: "600" }}>Optimize output for web view</span>
-              </label>
-            </div>
-          </>
+           <DefaultSettings
+             outputQuality={outputQuality}
+             setOutputQuality={setOutputQuality}
+             toolColor={toolColor}
+           />
         )}
 
         <div className="sidebar-action-footer">
