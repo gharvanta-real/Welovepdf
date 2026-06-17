@@ -1,0 +1,469 @@
+/* User Profile Menu in Header */
+.user-profile-menu-container {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-left: var(--space-2);
+}
+
+.user-profile-trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  cursor: default;
+}
+
+.user-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 4px rgba(0, 116, 240, 0.2);
+}
+
+.user-name-label {
+  font-size: 0.88rem;
+  font-weight: 400;
+  color: var(--c-text);
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.logout-btn.quiet-button {
+  min-height: 28px;
+  height: 28px;
+  padding: 0 var(--space-2);
+  font-size: 0.85rem;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-family: system-ui, -apple-system, sans-serif;
+  transition: all 0.15s ease;
+}
+
+.logout-btn.quiet-button:hover {
+  background: color-mix(in srgb, #ef4444 8%, var(--c-bg));
+  color: #ef4444;
+  border-color: color-mix(in srgb, #ef4444 20%, transparent);
+}
+
+/* Authentic Premium Login Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(10px);
+  display: grid;
+  place-items: center;
+  z-index: 10000;
+  padding: var(--space-4);
+  animation: modalOverlayFadeIn 0.25s ease-out forwards;
+}
+
+@keyframes modalOverlayFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-box {
+  background: var(--c-bg);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  box-shadow: 0 24px 48px -12px rgba(15, 23, 42, 0.18), 0 0 0 1px rgba(15, 23, 42, 0.02);
+  width: 100%;
+  max-width: 840px;
+  box-sizing: border-box;
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  animation: modalSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@media (max-width: 768px) {
+  .modal-box {
+    max-width: 440px;
+    flex-direction: column;
+  }
+}
+
+@keyframes modalSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal-close-btn {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  transition: all 0.15s ease;
+}
+
+.modal-close-btn:hover {
+  background: var(--c-surface);
+  color: var(--c-text);
+  transform: rotate(90deg);
+}
+
+.modal-header-section {
+  text-align: center;
+  margin-bottom: var(--space-5);
+}
+
+.modal-title {
+  font-size: 1.45rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: var(--c-text);
+  margin: 0 0 6px;
+}
+
+.modal-subtitle {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Social Buttons */
+.social-auth-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: var(--space-4);
+}
+
+.social-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  height: 42px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  background: var(--c-bg);
+  color: var(--c-text);
+  box-sizing: border-box;
+}
+
+.social-btn:hover {
+  background: var(--c-surface);
+  border-color: color-mix(in srgb, var(--c-text) 20%, var(--border));
+  transform: translateY(-1px);
+}
+
+.social-btn:active {
+  transform: translateY(0);
+}
+
+.social-btn.google {
+  background: var(--c-bg);
+  color: var(--c-text);
+}
+
+.social-btn.apple {
+  background: #000000;
+  color: #ffffff;
+  border-color: #000000;
+}
+
+.social-btn.apple:hover {
+  background: #1a1a1a;
+  border-color: #1a1a1a;
+}
+
+/* Divider row */
+.divider-row {
+  display: flex;
+  align-items: center;
+  margin: var(--space-4) 0;
+}
+
+.divider-line {
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.divider-text {
+  padding: 0 var(--space-3);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.8px;
+}
+
+/* Forms */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  text-align: left;
+}
+
+.form-label {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--c-text);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.input-icon-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 12px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.form-input {
+  width: 100%;
+  height: 42px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--c-bg);
+  color: var(--c-text);
+  padding: 0 14px;
+  font-size: 0.9rem;
+  box-sizing: border-box;
+  font-family: inherit;
+  transition: all 0.15s ease;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #0074f0;
+  box-shadow: 0 0 0 3px rgba(0, 116, 240, 0.12);
+}
+
+.form-actions-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.82rem;
+}
+
+.remember-me-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.remember-me-checkbox input {
+  cursor: pointer;
+}
+
+.forgot-pass-btn {
+  background: transparent;
+  border: none;
+  color: #0074f0;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: inherit;
+  padding: 0;
+  transition: opacity 0.12s;
+}
+
+.forgot-pass-btn:hover {
+  text-decoration: underline;
+  opacity: 0.85;
+}
+
+.submit-auth-btn {
+  width: 100%;
+  height: 46px;
+  font-size: 0.96rem;
+  font-weight: 700;
+  border-radius: var(--radius);
+  margin-top: 4px;
+  box-shadow: 0 4px 12px rgba(0, 116, 240, 0.15);
+  cursor: pointer;
+}
+
+/* Toggle Footer */
+.auth-mode-toggle-footer {
+  margin-top: var(--space-5);
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.toggle-mode-btn {
+  background: transparent;
+  border: none;
+  color: #0074f0;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+}
+
+.toggle-mode-btn:hover {
+  text-decoration: underline;
+}
+
+.toggle-mode-btn.back-to-login {
+  font-weight: 700;
+}
+
+/* Warnings and Success banners */
+.error-banner,
+.success-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border-radius: var(--radius);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-align: left;
+  line-height: 1.4;
+  margin-bottom: var(--space-3);
+  box-sizing: border-box;
+}
+
+.error-banner {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
+
+.success-banner {
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  color: #10b981;
+}
+
+/* Shake Animation for Auth Errors */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+.animate-shake {
+  animation: shake 0.2s ease-in-out 2;
+}
+
+/* Spinner for loading state */
+.spinner-border {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #ffffff;
+  animation: spinnerRotate 0.8s linear infinite;
+}
+
+/* 🧪 Testing Control Panel */
+.simulation-control-panel {
+  margin-top: 24px;
+  border-top: 1px dashed var(--border);
+  padding-top: 18px;
+  text-align: left;
+}
+
+.sim-dropdown-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  width: 100%;
+}
+
+.sim-dropdown-select {
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 4px var(--space-2);
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--c-surface);
+  color: var(--c-text);
+  outline: none;
+  cursor: pointer;
+}
+
+/* ── SPLIT AUTH MODAL STYLES ── */
+.auth-branding-panel {
+  flex: 1.1;
+  background-color: var(--s-block-lilac, #D6C4FF);
+  padding: 48px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  color: #000000;
+  box-sizing: border-box;
+}
+
+.auth-form-panel {
+  flex: 1;
+  padding: 44px 40px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .auth-branding-panel {
+    display: none;
+  }
+  .auth-form-panel {
+    padding: 40px 28px 28px;
+  }
+}

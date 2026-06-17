@@ -27,17 +27,7 @@ export function PageSidebar({
   removePage,
 }: PageSidebarProps) {
   return (
-    <aside
-      style={{
-        width: "200px",
-        minWidth: "200px",
-        backgroundColor: "var(--surface-raised)",
-        display: "flex",
-        flexDirection: "column",
-        overflowY: "auto",
-        borderRight: "1px solid var(--border)",
-      }}
-    >
+    <aside className="editor-page-sidebar">
       <div
         style={{
           padding: "12px 14px",

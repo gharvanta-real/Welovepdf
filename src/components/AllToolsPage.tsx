@@ -2,15 +2,17 @@ import React from "react";
 import { tools, sitemapGroups } from "../data/tools";
 import { ToolIcon, getToolColor } from "./ToolIcon";
 import { ArrowLeft, ArrowRight, CheckCircle2 } from "lucide-react";
+import { Footer } from "./Footer";
 
 interface AllToolsPageProps {
   onToolSelect: (toolName: string) => void;
   onPricingClick: () => void;
   onContactSalesClick: () => void;
   onBack: () => void;
+  onViewChange: (view: any) => void;
 }
 
-export function AllToolsPage({ onToolSelect, onPricingClick, onContactSalesClick, onBack }: AllToolsPageProps) {
+export function AllToolsPage({ onToolSelect, onPricingClick, onContactSalesClick, onBack, onViewChange }: AllToolsPageProps) {
   // We'll define a popular list matching the figma specs exactly:
   // PDF to Word, Merge PDF, JPG to PDF, Sign PDF, Split PDF, Compress PDF
   const popularTools = [
@@ -23,7 +25,7 @@ export function AllToolsPage({ onToolSelect, onPricingClick, onContactSalesClick
   ];
 
   return (
-    <div className="stitch-landing" style={{ width: "100%", minHeight: "100vh", backgroundColor: "var(--s-background, #f9f9f9)", paddingBottom: "120px" }}>
+    <div className="stitch-landing" style={{ width: "100%", minHeight: "100vh", backgroundColor: "var(--s-background, #f9f9f9)" }}>
       <div className="stitch-container" style={{ paddingTop: "60px" }}>
         
         {/* Back Button */}
@@ -62,7 +64,7 @@ export function AllToolsPage({ onToolSelect, onPricingClick, onContactSalesClick
             borderRadius: "24px", 
             padding: "clamp(32px, 5vw, 64px)", 
             marginBottom: "64px",
-            border: "1px solid rgba(0,0,0,0.05)"
+            border: "1px solid var(--s-hairline)"
           }}
         >
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "40px", flexWrap: "wrap", gap: "20px" }}>
@@ -77,7 +79,7 @@ export function AllToolsPage({ onToolSelect, onPricingClick, onContactSalesClick
             <a 
               href="#sitemap" 
               className="stitch-pill-outline" 
-              style={{ backgroundColor: "rgba(255,255,255,0.4)", borderColor: "rgba(0,0,0,0.15)", color: "var(--s-primary)", fontSize: "14px" }}
+              style={{ backgroundColor: "rgba(255,255,255,0.4)", borderColor: "var(--s-hairline)", color: "var(--s-primary)", fontSize: "14px" }}
             >
               See All 24 Tools
             </a>
@@ -156,7 +158,7 @@ export function AllToolsPage({ onToolSelect, onPricingClick, onContactSalesClick
             flexWrap: "wrap",
             gap: "48px",
             alignItems: "center",
-            border: "1px solid rgba(0,0,0,0.05)"
+            border: "1px solid var(--s-hairline)"
           }}
         >
           <div style={{ flex: "1 1 350px", display: "flex", justifyContent: "center" }}>
@@ -279,7 +281,8 @@ export function AllToolsPage({ onToolSelect, onPricingClick, onContactSalesClick
             color: "var(--s-on-primary)", 
             borderRadius: "24px", 
             padding: "clamp(48px, 6vw, 96px)", 
-            textAlign: "center" 
+            textAlign: "center",
+            marginBottom: "80px"
           }}
         >
           <h2 style={{ fontSize: "clamp(32px, 5vw, 56px)", fontWeight: 340, letterSpacing: "-1px", lineHeight: 1.1, marginBottom: "24px" }}>
@@ -312,6 +315,7 @@ export function AllToolsPage({ onToolSelect, onPricingClick, onContactSalesClick
         </div>
 
       </div>
+      <Footer onToolSelect={onToolSelect} onViewChange={onViewChange} />
     </div>
   );
 }

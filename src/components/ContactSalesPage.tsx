@@ -153,7 +153,7 @@ export function ContactSalesPage({ onBack }: ContactSalesPageProps) {
                       placeholder="Jane" 
                       value={firstName} 
                       onChange={e => setFirstName(e.target.value)}
-                      style={{ padding: "12px 16px", borderRadius: "8px", border: "1px solid var(--s-hairline)", outline: "none", fontSize: "14px" }}
+                      style={{ padding: "10px 18px", borderRadius: "9999px", border: "1px solid var(--s-hairline)", outline: "none", fontSize: "14px", fontFamily: "inherit" }}
                     />
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
@@ -163,7 +163,7 @@ export function ContactSalesPage({ onBack }: ContactSalesPageProps) {
                       placeholder="Doe" 
                       value={lastName} 
                       onChange={e => setLastName(e.target.value)}
-                      style={{ padding: "12px 16px", borderRadius: "8px", border: "1px solid var(--s-hairline)", outline: "none", fontSize: "14px" }}
+                      style={{ padding: "10px 18px", borderRadius: "9999px", border: "1px solid var(--s-hairline)", outline: "none", fontSize: "14px", fontFamily: "inherit" }}
                     />
                   </div>
                 </div>
@@ -176,7 +176,7 @@ export function ContactSalesPage({ onBack }: ContactSalesPageProps) {
                     placeholder="jane@company.com" 
                     value={email} 
                     onChange={e => setEmail(e.target.value)}
-                    style={{ padding: "12px 16px", borderRadius: "8px", border: "1px solid var(--s-hairline)", outline: "none", fontSize: "14px" }}
+                    style={{ padding: "10px 18px", borderRadius: "9999px", border: "1px solid var(--s-hairline)", outline: "none", fontSize: "14px", fontFamily: "inherit" }}
                   />
                 </div>
                 
@@ -187,7 +187,7 @@ export function ContactSalesPage({ onBack }: ContactSalesPageProps) {
                     placeholder="Acme Inc." 
                     value={company} 
                     onChange={e => setCompany(e.target.value)}
-                    style={{ padding: "12px 16px", borderRadius: "8px", border: "1px solid var(--s-hairline)", outline: "none", fontSize: "14px" }}
+                    style={{ padding: "10px 18px", borderRadius: "9999px", border: "1px solid var(--s-hairline)", outline: "none", fontSize: "14px", fontFamily: "inherit" }}
                   />
                 </div>
 
@@ -196,7 +196,7 @@ export function ContactSalesPage({ onBack }: ContactSalesPageProps) {
                   <select 
                     value={volume} 
                     onChange={e => setVolume(e.target.value)}
-                    style={{ padding: "12px 16px", borderRadius: "8px", border: "1px solid var(--s-hairline)", outline: "none", fontSize: "14px", backgroundColor: "#fff" }}
+                    style={{ padding: "10px 18px", borderRadius: "9999px", border: "1px solid var(--s-hairline)", outline: "none", fontSize: "14px", backgroundColor: "#fff", fontFamily: "inherit", appearance: "none" }}
                   >
                     <option>10,000 - 50,000 docs</option>
                     <option>50,000 - 250,000 docs</option>
@@ -211,7 +211,7 @@ export function ContactSalesPage({ onBack }: ContactSalesPageProps) {
                     placeholder="Tell us about your project goals..." 
                     value={message} 
                     onChange={e => setMessage(e.target.value)}
-                    style={{ padding: "12px 16px", borderRadius: "8px", border: "1px solid var(--s-hairline)", outline: "none", fontSize: "14px", resize: "none" }}
+                    style={{ padding: "12px 18px", borderRadius: "16px", border: "1px solid var(--s-hairline)", outline: "none", fontSize: "14px", resize: "none", fontFamily: "inherit" }}
                   />
                 </div>
 

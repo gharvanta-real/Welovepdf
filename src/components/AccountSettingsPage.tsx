@@ -104,7 +104,6 @@ export function AccountSettingsPage({ onBack, currentUser, onLogout }: AccountSe
           <aside style={{ display: "flex", flexDirection: "column", gap: "8px", position: "sticky", top: "120px" }}>
             {[
               { id: "profile", label: "Profile", icon: User },
-              { id: "billing", label: "Plan & Billing", icon: CreditCard },
               { id: "security", label: "Security", icon: Shield },
               { id: "notifications", label: "Notifications", icon: Bell }
             ].map(tab => {
@@ -202,7 +201,7 @@ export function AccountSettingsPage({ onBack, currentUser, onLogout }: AccountSe
                         type="text" 
                         value={firstName} 
                         onChange={e => setFirstName(e.target.value)}
-                        style={{ padding: "12px", borderRadius: "8px", border: "1px solid var(--s-hairline)", outline: "none", fontSize: "14px" }}
+                        style={{ padding: "10px 18px", borderRadius: "9999px", border: "1px solid var(--s-hairline)", outline: "none", fontSize: "14px", fontFamily: "inherit" }}
                       />
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
@@ -211,7 +210,7 @@ export function AccountSettingsPage({ onBack, currentUser, onLogout }: AccountSe
                         type="text" 
                         value={lastName} 
                         onChange={e => setLastName(e.target.value)}
-                        style={{ padding: "12px", borderRadius: "8px", border: "1px solid var(--s-hairline)", outline: "none", fontSize: "14px" }}
+                        style={{ padding: "10px 18px", borderRadius: "9999px", border: "1px solid var(--s-hairline)", outline: "none", fontSize: "14px", fontFamily: "inherit" }}
                       />
                     </div>
                   </div>
@@ -222,7 +221,7 @@ export function AccountSettingsPage({ onBack, currentUser, onLogout }: AccountSe
                       type="email" 
                       value={email} 
                       onChange={e => setEmail(e.target.value)}
-                      style={{ padding: "12px", borderRadius: "8px", border: "1px solid var(--s-hairline)", outline: "none", fontSize: "14px" }}
+                      style={{ padding: "10px 18px", borderRadius: "9999px", border: "1px solid var(--s-hairline)", outline: "none", fontSize: "14px", fontFamily: "inherit" }}
                     />
                   </div>
 
@@ -334,7 +333,7 @@ export function AccountSettingsPage({ onBack, currentUser, onLogout }: AccountSe
                       placeholder="Current Password" 
                       value={currentPass} 
                       onChange={e => setCurrentPass(e.target.value)}
-                      style={{ padding: "12px", borderRadius: "8px", border: "1px solid var(--s-hairline)", outline: "none", fontSize: "14px" }}
+                      style={{ padding: "10px 18px", borderRadius: "9999px", border: "1px solid var(--s-hairline)", outline: "none", fontSize: "14px", fontFamily: "inherit" }}
                     />
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
                       <input 
@@ -342,14 +341,14 @@ export function AccountSettingsPage({ onBack, currentUser, onLogout }: AccountSe
                         placeholder="New Password" 
                         value={newPass} 
                         onChange={e => setNewPass(e.target.value)}
-                        style={{ padding: "12px", borderRadius: "8px", border: "1px solid var(--s-hairline)", outline: "none", fontSize: "14px" }}
+                        style={{ padding: "10px 18px", borderRadius: "9999px", border: "1px solid var(--s-hairline)", outline: "none", fontSize: "14px", fontFamily: "inherit" }}
                       />
                       <input 
                         type="password" 
                         placeholder="Confirm New Password" 
                         value={confirmPass} 
                         onChange={e => setConfirmPass(e.target.value)}
-                        style={{ padding: "12px", borderRadius: "8px", border: "1px solid var(--s-hairline)", outline: "none", fontSize: "14px" }}
+                        style={{ padding: "10px 18px", borderRadius: "9999px", border: "1px solid var(--s-hairline)", outline: "none", fontSize: "14px", fontFamily: "inherit" }}
                       />
                     </div>
                   </div>

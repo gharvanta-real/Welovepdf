@@ -10,6 +10,7 @@ use tokio::{fs, io::AsyncWriteExt};
 pub async fn save_multipart_files(
     state: &AppState,
     mut multipart: Multipart,
+    max_bytes: u64,
 ) -> Result<Vec<PathBuf>, String> {
     let upload_dir = state.config.work_dir.join("uploads").join(uuid_like());
     fs::create_dir_all(&upload_dir)
@@ -33,7 +34,7 @@ pub async fn save_multipart_files(
         let mut field = field;
         while let Some(chunk) = field.chunk().await.map_err(|error| error.to_string())? {
             total_bytes += chunk.len() as u64;
-            if total_bytes > state.config.max_input_bytes {
+            if total_bytes > max_bytes {
                 let _ = fs::remove_file(&path).await;
                 return Err("uploaded file exceeds max size".into());
             }

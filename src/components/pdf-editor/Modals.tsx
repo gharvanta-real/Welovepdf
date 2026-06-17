@@ -75,7 +75,7 @@ export function SignatureModal({ onClose, onSaveSignature, toolColor }: Signatur
 
   return (
     <ModalOverlay onClose={onClose}>
-      <div style={{ width: "480px" }}>
+      <div style={{ maxWidth: "480px", width: "100%", boxSizing: "border-box" }}>
         <h3 style={{ fontSize: "1.1rem", fontWeight: "800", color: "var(--c-text)", marginBottom: "4px" }}>
           Electronic Signature
         </h3>
@@ -133,7 +133,7 @@ export function SignatureModal({ onClose, onSaveSignature, toolColor }: Signatur
               width: "100%",
               padding: "16px",
               border: "2px dashed var(--border)",
-              borderRadius: "8px",
+              borderRadius: "16px",
               backgroundColor: "var(--c-bg)",
               font: "italic 36px 'Brush Script MT', cursive",
               color: "var(--c-text)",
@@ -173,7 +173,7 @@ export function CommentModal({ onClose, onAddComment, toolColor }: CommentModalP
 
   return (
     <ModalOverlay onClose={onClose}>
-      <div style={{ width: "360px" }}>
+      <div style={{ maxWidth: "360px", width: "100%", boxSizing: "border-box" }}>
         <h3 style={{ fontSize: "1rem", fontWeight: "800", color: "var(--c-text)", marginBottom: "12px" }}>
           Add Comment
         </h3>
@@ -186,7 +186,7 @@ export function CommentModal({ onClose, onAddComment, toolColor }: CommentModalP
             width: "100%",
             padding: "10px",
             border: "1px solid var(--border)",
-            borderRadius: "8px",
+            borderRadius: "16px",
             fontSize: "0.85rem",
             resize: "vertical",
             outline: "none",
@@ -229,7 +229,7 @@ export function LinkModal({ onClose, onInsertLink, toolColor }: LinkModalProps) 
 
   return (
     <ModalOverlay onClose={onClose}>
-      <div style={{ width: "360px" }}>
+      <div style={{ maxWidth: "360px", width: "100%", boxSizing: "border-box" }}>
         <h3 style={{ fontSize: "1rem", fontWeight: "800", color: "var(--c-text)", marginBottom: "12px" }}>
           Insert Hyperlink
         </h3>
@@ -280,7 +280,7 @@ export function WatermarkModal({ onClose, onApplyWatermark, toolColor }: Waterma
 
   return (
     <ModalOverlay onClose={onClose}>
-      <div style={{ width: "360px" }}>
+      <div style={{ maxWidth: "360px", width: "100%", boxSizing: "border-box" }}>
         <h3 style={{ fontSize: "1rem", fontWeight: "800", color: "var(--c-text)", marginBottom: "12px" }}>
           Add Watermark
         </h3>

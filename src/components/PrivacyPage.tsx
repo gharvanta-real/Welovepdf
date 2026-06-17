@@ -108,9 +108,14 @@ export function PrivacyPage({ onBack }: PrivacyPageProps) {
             <div style={{ width: "100%", height: "1px", backgroundColor: "rgba(0,0,0,0.05)" }} />
 
             <div>
-              <h2 style={{ fontSize: "20px", fontWeight: 540, marginBottom: "12px", letterSpacing: "-0.2px" }}>3. Cookies &amp; Ads</h2>
-              <p style={{ fontSize: "16px", fontWeight: 320, color: "rgba(0,0,0,0.6)", lineHeight: 1.6, margin: 0 }}>
-                We use standard session cookies to remember your workspace settings (like current theme or tool selections). Our monetization model relies on display advertisements. Third-party ad networks (like Google AdSense) may set cookies to serve personalized ads based on your browser history.
+              <h2 style={{ fontSize: "20px", fontWeight: 540, marginBottom: "12px", letterSpacing: "-0.2px" }}>3. Cookies &amp; Advertising</h2>
+              <p style={{ fontSize: "16px", fontWeight: 320, color: "rgba(0,0,0,0.6)", lineHeight: 1.6, margin: "0 0 12px 0" }}>
+                We use standard session cookies to remember your workspace preferences (like current theme or tool selections). Our monetization model relies on display advertisements. Third-party ad networks (like Google AdSense) set cookies to serve personalized ads based on your visits to our site and other sites on the Internet.
+              </p>
+              <p style={{ fontSize: "15px", fontWeight: 320, color: "rgba(0,0,0,0.6)", lineHeight: 1.6, margin: 0 }}>
+                • Google, as a third-party vendor, uses cookies to serve ads on our site.<br />
+                • Google's use of advertising cookies enables it and its partners to serve ads to our users based on their visit to our sites and/or other sites on the Internet.<br />
+                • Users may opt out of personalized advertising by visiting <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer" style={{ color: "var(--s-primary)", textDecoration: "underline" }}>Google Ads Settings</a>. Alternatively, users can opt out of a third-party vendor's use of cookies for personalized advertising by visiting <a href="https://www.aboutads.info" target="_blank" rel="noopener noreferrer" style={{ color: "var(--s-primary)", textDecoration: "underline" }}>www.aboutads.info</a>.
               </p>
             </div>
 

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { ChevronDown, ArrowRight } from "lucide-react";
+import { ChevronDown, ArrowRight, X, Menu } from "lucide-react";
 import { ToolIcon, getToolColor } from "./ToolIcon";
 
 type HeaderProps = {
@@ -35,6 +35,16 @@ const dropdownColumns: DropdownGroup[][] = [
   ]
 ];
 
+// Flatten all tools for mobile menu
+const allNavLinks = [
+  { label: "Convert", tool: "PDF to Word" },
+  { label: "Compress", tool: "Compress PDF" },
+  { label: "Merge", tool: "Merge PDF" },
+  { label: "Edit", tool: "Organize PDF" },
+  { label: "Sign", tool: "Sign PDF" },
+  { label: "AI PDF", tool: "AI Document Copilot" },
+];
+
 export function Header({ 
   onLogoClick, 
   onToolSelect, 
@@ -48,9 +58,24 @@ export function Header({
   onWorkspaceClick
 }: HeaderProps) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [mobileToolsExpanded, setMobileToolsExpanded] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLDivElement>(null);
 
+  // Close mobile menu on resize to desktop
+  useEffect(() => {
+    function handleResize() {
+      if (window.innerWidth > 860) {
+        setIsMobileMenuOpen(false);
+        setMobileToolsExpanded(false);
+      }
+    }
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Close desktop dropdown on outside click
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (
@@ -64,130 +89,248 @@ export function Header({
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") setIsDropdownOpen(false);
+      if (event.key === "Escape") {
+        setIsDropdownOpen(false);
+        setIsMobileMenuOpen(false);
+      }
     }
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, []);
 
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => { document.body.style.overflow = ""; };
+  }, [isMobileMenuOpen]);
+
+  function handleToolSelect(toolName: string) {
+    onToolSelect(toolName);
+    setIsDropdownOpen(false);
+    setIsMobileMenuOpen(false);
+    setMobileToolsExpanded(false);
+  }
+
   return (
-    <header className="app-header">
-      {/* Logo */}
-      <a
-        className="stitch-brand"
-        href="#home"
-        aria-label="WeLovePDF home"
-        onClick={(e) => { e.preventDefault(); setIsDropdownOpen(false); onLogoClick(); }}
-      >
-        WeLovePDF
-      </a>
-
-      {/* Center nav */}
-      <nav className="stitch-nav">
-        {/* Tools dropdown trigger */}
-        <div className="nav-dropdown-trigger" ref={triggerRef}>
-          <button
-            className={`stitch-nav-link stitch-nav-tools ${isDropdownOpen ? "active" : ""}`}
-            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            aria-expanded={isDropdownOpen}
+    <>
+      <header className="app-header">
+        <div style={{ display: "flex", alignItems: "center", gap: "28px" }}>
+          {/* Logo */}
+          <a
+            className="stitch-brand"
+            href="#home"
+            aria-label="WeLovePDF home"
+            onClick={(e) => { e.preventDefault(); setIsDropdownOpen(false); setIsMobileMenuOpen(false); onLogoClick(); }}
           >
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style={{ opacity: 0.7 }}>
-              <path d="M4 4h4v4H4V4zm6 0h4v4h-4V4zm6 0h4v4h-4V4zM4 10h4v4H4v-4zm6 0h4v4h-4v-4zm6 0h4v4h-4v-4zM4 16h4v4H4v-4zm6 0h4v4h-4v-4zm6 0h4v4h-4v-4z"/>
-            </svg>
-            Tools
-            <ChevronDown size={13} style={{ transform: isDropdownOpen ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" }} />
-          </button>
+            WeLovePDF
+          </a>
 
-          {isDropdownOpen && (
-            <div className="mega-dropdown" ref={dropdownRef}>
-              <div className="mega-dropdown-inner">
-                {dropdownColumns.map((column, colIdx) => (
-                  <div className="mega-column" key={colIdx}>
-                    {column.map((group, groupIdx) => (
-                      <div className="mega-group" key={groupIdx}>
-                        <h4 className="mega-group-title">{group.title}</h4>
-                        <ul className="mega-group-list">
-                          {group.items.map((item, itemIdx) => {
-                            const toolColor = getToolColor(item.name);
-                            return (
-                              <li key={itemIdx}>
-                                <a
-                                  href={`#${item.name.toLowerCase().replace(/\s+/g, "-")}`}
-                                  className="mega-item"
-                                  style={{ "--item-hover-bg": `color-mix(in srgb, ${toolColor} 8%, var(--s-surface-soft))` } as React.CSSProperties}
-                                  onClick={(e) => { e.preventDefault(); onToolSelect(item.name); setIsDropdownOpen(false); }}
-                                >
-                                  <ToolIcon toolNameOrId={item.name} size={14} className="mega-icon" style={{ width: "22px", height: "22px", borderRadius: "5px" }} />
-                                  <span className="mega-item-name">{item.name}</span>
-                                </a>
-                              </li>
-                            );
-                          })}
-                        </ul>
+          {/* Desktop Center nav */}
+          <nav className="stitch-nav stitch-nav-desktop">
+            {/* Tools dropdown trigger */}
+            <div className="nav-dropdown-trigger" ref={triggerRef}>
+              <button
+                className={`stitch-nav-link stitch-nav-tools ${isDropdownOpen ? "active" : ""}`}
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                aria-expanded={isDropdownOpen}
+              >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style={{ opacity: 0.7 }}>
+                  <path d="M4 4h4v4H4V4zm6 0h4v4h-4V4zm6 0h4v4h-4V4zM4 10h4v4H4v-4zm6 0h4v4h-4v-4zm6 0h4v4h-4v-4zM4 16h4v4H4v-4zm6 0h4v4h-4v-4zm6 0h4v4h-4v-4z"/>
+                </svg>
+                Tools
+                <ChevronDown size={13} style={{ transform: isDropdownOpen ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" }} />
+              </button>
+
+              {isDropdownOpen && (
+                <div className="mega-dropdown" ref={dropdownRef}>
+                  <div className="mega-dropdown-inner">
+                    {dropdownColumns.map((column, colIdx) => (
+                      <div className="mega-column" key={colIdx}>
+                        {column.map((group, groupIdx) => (
+                          <div className="mega-group" key={groupIdx}>
+                            <h4 className="mega-group-title">{group.title}</h4>
+                            <ul className="mega-group-list">
+                              {group.items.map((item, itemIdx) => {
+                                const toolColor = getToolColor(item.name);
+                                const softBg = `color-mix(in srgb, ${toolColor} 12%, var(--s-surface-low))`;
+                                return (
+                                  <li key={itemIdx}>
+                                    <a
+                                      href={`#${item.name.toLowerCase().replace(/\s+/g, "-")}`}
+                                      className="mega-item"
+                                      style={{
+                                        "--icon-color-strong": toolColor,
+                                        "--icon-bg-soft": softBg,
+                                      } as React.CSSProperties}
+                                      onClick={(e) => { e.preventDefault(); handleToolSelect(item.name); }}
+                                    >
+                                      <ToolIcon toolNameOrId={item.name} size={11} className="mega-icon" style={{ width: "22px", height: "22px", borderRadius: "5px" }} />
+                                      <span className="mega-item-name">{item.name}</span>
+                                    </a>
+                                  </li>
+                                );
+                              })}
+                            </ul>
+                          </div>
+                        ))}
                       </div>
                     ))}
                   </div>
-                ))}
-              </div>
-              <div 
-                style={{ 
-                  borderTop: "1px solid var(--s-hairline)", 
-                  padding: "16px 24px", 
-                  display: "flex", 
-                  justifyContent: "flex-end", 
-                  backgroundColor: "var(--s-surface-soft)" 
-                }}
-              >
-                <a 
-                  href="#all-tools" 
-                  onClick={(e) => { e.preventDefault(); setIsDropdownOpen(false); onToolsClick?.(); }}
-                  style={{ fontSize: "14px", fontWeight: "600", color: "var(--s-primary)", display: "inline-flex", alignItems: "center", gap: "6px", textDecoration: "none" }}
-                >
-                  Browse All 24 Tools <ArrowRight size={14} />
-                </a>
-              </div>
+                  <div className="mega-dropdown-footer">
+                    <a 
+                      href="#all-tools" 
+                      className="mega-dropdown-footer-link"
+                      onClick={(e) => { e.preventDefault(); setIsDropdownOpen(false); onToolsClick?.(); }}
+                    >
+                      Browse All 24 Tools <ArrowRight size={13} />
+                    </a>
+                  </div>
+                </div>
+              )}
             </div>
-          )}
+
+            {/* Daily Use Tools Links */}
+            <a className="stitch-nav-link" href="#pdf-to-word" onClick={(e) => { e.preventDefault(); handleToolSelect("PDF to Word"); }}>Convert</a>
+            <a className="stitch-nav-link" href="#compress" onClick={(e) => { e.preventDefault(); handleToolSelect("Compress PDF"); }}>Compress</a>
+            <a className="stitch-nav-link" href="#merge" onClick={(e) => { e.preventDefault(); handleToolSelect("Merge PDF"); }}>Merge</a>
+            <a className="stitch-nav-link" href="#organize" onClick={(e) => { e.preventDefault(); handleToolSelect("Organize PDF"); }}>Edit</a>
+            <a className="stitch-nav-link" href="#esign" onClick={(e) => { e.preventDefault(); handleToolSelect("Sign PDF"); }}>Sign</a>
+            <a className="stitch-nav-link" href="#ai-copilot" onClick={(e) => { e.preventDefault(); handleToolSelect("AI Document Copilot"); }}>AI PDF</a>
+
+            {currentUser && (
+              <>
+                <span style={{ width: "1px", height: "16px", backgroundColor: "var(--s-hairline)", margin: "0 8px" }} />
+                <a className="stitch-nav-link" href="#workspace" style={{ fontWeight: "600" }} onClick={(e) => { e.preventDefault(); setIsDropdownOpen(false); onWorkspaceClick?.(); }}>My Workspace</a>
+              </>
+            )}
+          </nav>
         </div>
 
-        {currentUser && (
-          <a className="stitch-nav-link" href="#workspace" style={{ fontWeight: "600" }} onClick={(e) => { e.preventDefault(); setIsDropdownOpen(false); onWorkspaceClick?.(); }}>My Workspace</a>
-        )}
-        <a className="stitch-nav-link" href="#pricing" onClick={(e) => { e.preventDefault(); setIsDropdownOpen(false); onPricingClick(); }}>Pricing</a>
-        <a className="stitch-nav-link" href="#contact-sales" onClick={(e) => { e.preventDefault(); setIsDropdownOpen(false); onContactSalesClick?.(); }}>Contact Sales</a>
-      </nav>
+        {/* Right actions */}
+        <div className="stitch-header-actions">
+          {!currentUser ? (
+            <>
+              <button
+                className="stitch-login-btn stitch-desktop-only"
+                onClick={() => { setIsDropdownOpen(false); onLoginClick(); }}
+              >
+                Log In
+              </button>
+              <button
+                className="stitch-cta-btn"
+                onClick={() => { setIsDropdownOpen(false); onLoginClick(); }}
+              >
+                Get Started
+              </button>
+            </>
+          ) : (
+            <button
+              className="header-avatar-btn"
+              onClick={onAvatarClick}
+              title={`Account: ${currentUser.email}`}
+              aria-label="Open account menu"
+              style={{ background: "transparent", border: "none", padding: 0, cursor: "pointer" }}
+            >
+              <div className="user-avatar" style={{ background: "var(--s-primary)", color: "var(--s-on-primary)" }}>
+                {currentUser.name ? currentUser.name[0].toUpperCase() : currentUser.email[0].toUpperCase()}
+              </div>
+            </button>
+          )}
 
-      {/* Right actions */}
-      <div className="stitch-header-actions">
-        {!currentUser ? (
-          <>
-            <button
-              className="stitch-login-btn"
-              onClick={() => { setIsDropdownOpen(false); onLoginClick(); }}
-            >
-              Log In
-            </button>
-            <button
-              className="stitch-cta-btn"
-              onClick={() => { setIsDropdownOpen(false); onLoginClick(); }}
-            >
-              Get Started
-            </button>
-          </>
-        ) : (
+          {/* Mobile Hamburger Button */}
           <button
-            className="header-avatar-btn"
-            onClick={onAvatarClick}
-            title={`Account: ${currentUser.email}`}
-            aria-label="Open account menu"
-            style={{ background: "transparent", border: "none", padding: 0, cursor: "pointer" }}
+            className="mobile-menu-btn"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={isMobileMenuOpen}
           >
-            <div className="user-avatar" style={{ background: "var(--s-primary)", color: "var(--s-on-primary)" }}>
-              {currentUser.name ? currentUser.name[0].toUpperCase() : currentUser.email[0].toUpperCase()}
-            </div>
+            {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
-        )}
+        </div>
+      </header>
+
+      {/* Mobile Menu Drawer */}
+      {isMobileMenuOpen && (
+        <div className="mobile-menu-backdrop" onClick={() => setIsMobileMenuOpen(false)} />
+      )}
+      <div className={`mobile-menu-drawer ${isMobileMenuOpen ? "is-open" : ""}`}>
+        <div className="mobile-menu-header">
+          <span className="stitch-brand" style={{ fontSize: "16px" }}>WeLovePDF</span>
+          <button className="mobile-menu-close" onClick={() => setIsMobileMenuOpen(false)}>
+            <X size={20} />
+          </button>
+        </div>
+
+        <nav className="mobile-menu-nav">
+          {/* Quick Links */}
+          <div className="mobile-nav-section">
+            <span className="mobile-nav-label">Quick Tools</span>
+            <div className="mobile-nav-links">
+              {allNavLinks.map(({ label, tool }) => (
+                <button key={tool} className="mobile-nav-link" onClick={() => handleToolSelect(tool)}>
+                  {label}
+                </button>
+              ))}
+              {currentUser && (
+                <button className="mobile-nav-link" style={{ fontWeight: 600 }} onClick={() => { setIsMobileMenuOpen(false); onWorkspaceClick?.(); }}>
+                  My Workspace
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* All Tools Expandable */}
+          <div className="mobile-nav-section">
+            <button 
+              className="mobile-nav-expand-btn"
+              onClick={() => setMobileToolsExpanded(!mobileToolsExpanded)}
+            >
+              <span>All Tools</span>
+              <ChevronDown size={16} style={{ transform: mobileToolsExpanded ? "rotate(180deg)" : "rotate(0)", transition: "transform 0.2s" }} />
+            </button>
+            {mobileToolsExpanded && (
+              <div className="mobile-tools-grid">
+                {dropdownColumns.flat().flatMap(group => group.items).map((item) => {
+                  const toolColor = getToolColor(item.name);
+                  return (
+                    <button
+                      key={item.name}
+                      className="mobile-tool-item"
+                      onClick={() => handleToolSelect(item.name)}
+                      style={{ "--tool-color": toolColor } as React.CSSProperties}
+                    >
+                      <ToolIcon toolNameOrId={item.name} size={11} style={{ width: "28px", height: "28px", borderRadius: "7px", flexShrink: 0 }} />
+                      <span>{item.name}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* Auth Action */}
+          {!currentUser ? (
+            <div className="mobile-nav-section mobile-auth-section">
+              <button className="mobile-auth-btn-primary" onClick={() => { setIsMobileMenuOpen(false); onLoginClick(); }}>
+                Get Started — Free
+              </button>
+              <button className="mobile-auth-btn-ghost" onClick={() => { setIsMobileMenuOpen(false); onLoginClick(); }}>
+                Log In
+              </button>
+            </div>
+          ) : (
+            <div className="mobile-nav-section mobile-auth-section">
+              <button className="mobile-auth-btn-ghost" onClick={() => { setIsMobileMenuOpen(false); onLogout(); }}>
+                Log Out
+              </button>
+            </div>
+          )}
+        </nav>
       </div>
-    </header>
+    </>
   );
 }

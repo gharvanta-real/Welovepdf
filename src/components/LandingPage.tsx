@@ -3,6 +3,7 @@ import { tools, sitemapGroups } from "../data/tools";
 import { FileUp, ShieldCheck, Check, ArrowRight, ChevronRight, Award, Users, Star, Headset, FolderPlus, Download, Type, PenTool, Trash2, MessageSquare, Image, FileText, Square, Circle, Minimize2, Edit2 } from "lucide-react";
 import React from "react";
 import { ToolIcon, getToolColor } from "./ToolIcon";
+import { Footer } from "./Footer";
 
 type LandingPageProps = {
   onToolSelect: (toolName: string) => void;
@@ -775,9 +776,6 @@ export function LandingPage({ onToolSelect, onViewChange }: LandingPageProps) {
               <button className="stitch-pill-primary" onClick={scrollToTools}>
                 Explore All Tools
               </button>
-              <button className="stitch-pill-secondary" onClick={() => onViewChange("pricing")}>
-                View Pricing
-              </button>
             </div>
           </div>
 
@@ -965,66 +963,13 @@ export function LandingPage({ onToolSelect, onViewChange }: LandingPageProps) {
             <button className="stitch-pill-primary stitch-pill-lg" onClick={scrollToTools}>
               Get Started for Free
             </button>
-            <button className="stitch-pill-secondary stitch-pill-lg" onClick={() => onViewChange("pricing")}>
-              View Pricing
-            </button>
           </div>
           <p className="eyebrow" style={{ marginTop: "32px", fontSize: "12px" }}>No credit card required</p>
         </div>
       </section>
 
       {/* ── FOOTER — Dark Navy ── */}
-      <footer className="stitch-footer">
-        <div className="stitch-container">
-          <div className="stitch-footer-grid">
-            <div className="stitch-footer-brand">
-              <a className="stitch-footer-logo" href="#home" onClick={(e) => { e.preventDefault(); window.scrollTo(0, 0); }}>
-                WeLovePDF
-              </a>
-              <p className="stitch-footer-tagline">
-                The precision-focused suite for document management.
-                Designed for creators, by creators.
-              </p>
-            </div>
-
-            {sitemapGroups.slice(0, 3).map((group) => {
-              const groupTools = tools.filter((tool) => tool.sitemapGroup === group);
-              return (
-                <div className="stitch-footer-col" key={group}>
-                  <span className="eyebrow" style={{ color: "rgba(255,255,255,0.35)", fontSize: "11px", marginBottom: "16px" }}>{group}</span>
-                  <ul>
-                    {groupTools.slice(0, 6).map((tool) => (
-                      <li key={tool.id}>
-                        <a href={`#${tool.id}`} onClick={(e) => { e.preventDefault(); onToolSelect(tool.name); }}>
-                          {tool.name}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              );
-            })}
-
-            <div className="stitch-footer-col">
-              <span className="eyebrow" style={{ color: "rgba(255,255,255,0.35)", fontSize: "11px", marginBottom: "16px" }}>Legal</span>
-              <ul>
-                <li><a href="#privacy" onClick={(e) => { e.preventDefault(); onViewChange("privacy"); }}>Privacy Policy</a></li>
-                <li><a href="#terms" onClick={(e) => { e.preventDefault(); onViewChange("terms"); }}>Terms of Service</a></li>
-                <li><a href="#faq" onClick={(e) => { e.preventDefault(); onViewChange("faq"); }}>FAQ</a></li>
-                <li><a href="#contact" onClick={(e) => { e.preventDefault(); onViewChange("contact"); }}>Contact</a></li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="stitch-footer-bottom">
-            <p>© {new Date().getFullYear()} WeLovePDF. All rights reserved.</p>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              <ShieldCheck size={14} />
-              <span>ISO/IEC 27001 Certified · Privacy Compliant</span>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <Footer onToolSelect={onToolSelect} onViewChange={onViewChange} />
     </div>
   );
 }

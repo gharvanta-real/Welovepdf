@@ -84,7 +84,7 @@ export function FaqPage({ onBack }: FaqPageProps) {
                 style={{
                   backgroundColor: "#ffffff",
                   borderRadius: "16px",
-                  border: "1px solid rgba(0,0,0,0.06)",
+                  border: "1px solid var(--s-hairline)",
                   boxShadow: "0 2px 8px rgba(0,0,0,0.02)",
                   overflow: "hidden",
                   transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)"
@@ -132,8 +132,8 @@ export function FaqPage({ onBack }: FaqPageProps) {
                     padding: isOpen ? "0 28px 24px" : "0 28px"
                   }}
                 >
-                  <div style={{ height: "1px", backgroundColor: "rgba(0,0,0,0.05)", marginBottom: "16px" }} />
-                  <p style={{ fontSize: "16px", fontWeight: 320, color: "rgba(0,0,0,0.6)", lineHeight: 1.6, margin: 0 }}>
+                  <div style={{ height: "1px", backgroundColor: "var(--s-hairline-soft)", marginBottom: "16px" }} />
+                  <p style={{ fontSize: "16px", fontWeight: 320, color: "var(--s-on-surface-variant)", lineHeight: 1.6, margin: 0 }}>
                     {faq.a}
                   </p>
                 </div>

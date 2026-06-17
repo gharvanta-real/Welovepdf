@@ -249,9 +249,9 @@ export const propActionBtn: React.CSSProperties = {
 
 export const modalInput: React.CSSProperties = {
   width: "100%",
-  padding: "8px 10px",
+  padding: "10px 18px",
   border: "1px solid var(--border)",
-  borderRadius: "8px",
+  borderRadius: "9999px",
   fontSize: "0.85rem",
   outline: "none",
   boxSizing: "border-box",

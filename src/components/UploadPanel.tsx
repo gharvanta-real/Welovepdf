@@ -1,6 +1,8 @@
 import React, { useRef, useState, useEffect } from "react";
-import { ChevronDown, Check, Share2, RotateCcw, File, Download, Cloud, Plus, Image as ImageIcon } from "lucide-react";
+import { ChevronDown, Check, Share2, RotateCcw, File, Download, Cloud, Plus, Image as ImageIcon, ArrowRight } from "lucide-react";
 import { getToolColor } from "./ToolIcon";
+import { Footer } from "./Footer";
+import { RecentJobs } from "./RecentJobs";
 import { PdfEditor } from "./PdfEditor";
 import {
   CompressSettings,
@@ -43,6 +45,9 @@ type UploadPanelProps = {
   activeJob: any;
   onReset: () => void;
   onStagedChange?: (hasStaged: boolean) => void;
+  onToolSelect: (toolName: string) => void;
+  onViewChange: (view: any) => void;
+  jobs?: any[];
 };
 
 const processingSteps = [
@@ -633,7 +638,17 @@ function PdfPreviewViewer({ file, scale, rotation }: { file: File; scale: number
   );
 }
 
-export function UploadPanel({ selectedTool, onUpload, onBack, activeJob, onReset, onStagedChange }: UploadPanelProps) {
+export function UploadPanel({ 
+  selectedTool, 
+  onUpload, 
+  onBack, 
+  activeJob, 
+  onReset, 
+  onStagedChange,
+  onToolSelect,
+  onViewChange,
+  jobs
+}: UploadPanelProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const addMoreInputRef = useRef<HTMLInputElement>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -718,6 +733,7 @@ export function UploadPanel({ selectedTool, onUpload, onBack, activeJob, onReset
   const [removedPages, setRemovedPages] = useState<Set<number>>(new Set());
   const [selectedPages, setSelectedPages] = useState<Set<number>>(new Set());
   const [pageOrder, setPageOrder] = useState<number[]>([]);
+  const [loadingPdf, setLoadingPdf] = useState(false);
 
   const isPageOrientedTool = [
     "Rotate PDF",
@@ -744,7 +760,8 @@ export function UploadPanel({ selectedTool, onUpload, onBack, activeJob, onReset
     if (stagedFiles && stagedFiles.length > 0) {
       const file = stagedFiles[0];
       const ext = file.name.split(".").pop()?.toLowerCase();
-      if (ext === "pdf" && isPageOrientedTool) {
+      if (ext === "pdf") {
+        setLoadingPdf(true);
         const fileReader = new FileReader();
         fileReader.onload = async function() {
           const typedarray = new Uint8Array(this.result as ArrayBuffer);
@@ -768,13 +785,19 @@ export function UploadPanel({ selectedTool, onUpload, onBack, activeJob, onReset
               setSelectedPages(selected);
             } catch (err) {
               console.error("PDF load error for interactive layout:", err);
+            } finally {
+              setLoadingPdf(false);
             }
+          } else {
+            setLoadingPdf(false);
           }
         };
+        fileReader.onerror = () => setLoadingPdf(false);
         fileReader.readAsArrayBuffer(file);
       } else {
         setPdfDoc(null);
         setTotalPdfPages(0);
+        setLoadingPdf(false);
       }
     } else {
       setPdfDoc(null);
@@ -783,6 +806,7 @@ export function UploadPanel({ selectedTool, onUpload, onBack, activeJob, onReset
       setRemovedPages(new Set());
       setSelectedPages(new Set());
       setPageOrder([]);
+      setLoadingPdf(false);
     }
   }, [stagedFiles, selectedTool]);
 
@@ -1197,7 +1221,7 @@ export function UploadPanel({ selectedTool, onUpload, onBack, activeJob, onReset
     const isOcr = selectedTool === "PDF OCR";
 
     return (
-      <>
+      <React.Fragment>
         <h3 className="sidebar-heading">{selectedTool} Options</h3>
         <div style={{ overflowY: "auto", flex: 1, paddingBottom: "12px" }}>
 
@@ -1500,19 +1524,40 @@ export function UploadPanel({ selectedTool, onUpload, onBack, activeJob, onReset
         )}
 
         </div>
-        <div className="sidebar-action-footer">
+        <div className="sidebar-action-footer" style={{ background: "transparent", borderTop: "none", paddingTop: "8px" }}>
           <button 
             className="primary-button process-sidebar-btn" 
             onClick={runProcess}
           >
             {selectedTool.toUpperCase()} →
           </button>
-          <button className="quiet-button cancel-sidebar-btn" onClick={clearSelection}>
-            Cancel & Back
+          <button 
+            className="cancel-sidebar-btn" 
+            onClick={clearSelection}
+            style={{
+              background: "#ffffff",
+              color: "#000000",
+              border: "1px solid rgba(0, 0, 0, 0.1)",
+              minHeight: "44px",
+              fontSize: "14px",
+              fontWeight: 500,
+              borderRadius: "9999px",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              transition: "background 0.15s, border-color 0.15s",
+              fontFamily: "Plus Jakarta Sans, sans-serif",
+              width: "100%"
+            }}
+            onMouseOver={e => { e.currentTarget.style.background = "#f5f5f7"; e.currentTarget.style.borderColor = "rgba(0, 0, 0, 0.15)"; }}
+            onMouseOut={e => { e.currentTarget.style.background = "#ffffff"; e.currentTarget.style.borderColor = "rgba(0, 0, 0, 0.1)"; }}
+          >
+            Cancel &amp; Back
           </button>
-          <p style={{ textAlign: "center", fontSize: "11px", color: "#7e7576", margin: "4px 0 0", fontFamily: "Plus Jakarta Sans, sans-serif", fontWeight: 320 }}>No registration required</p>
+          <p style={{ textAlign: "center", fontSize: "11px", color: "rgba(0, 0, 0, 0.6)", margin: "4px 0 0", fontFamily: "Plus Jakarta Sans, sans-serif", fontWeight: 400 }}>No registration required</p>
         </div>
-      </>
+      </React.Fragment>
     );
   }
 
@@ -1531,7 +1576,7 @@ export function UploadPanel({ selectedTool, onUpload, onBack, activeJob, onReset
                 display: "flex",
                 alignItems: "center",
                 gap: "48px",
-                overflow: "hidden",
+                overflow: "visible",
                 position: "relative",
                 minHeight: "380px"
               }}>
@@ -1567,7 +1612,7 @@ export function UploadPanel({ selectedTool, onUpload, onBack, activeJob, onReset
                     fontWeight: 320
                   }}>{heroDesc}</p>
 
-                  <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", position: "relative" }}>
+                  <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
                     <button
                       onClick={(e) => { e.stopPropagation(); triggerFileInput(); }}
                       style={{
@@ -1595,57 +1640,57 @@ export function UploadPanel({ selectedTool, onUpload, onBack, activeJob, onReset
                       </svg>
                     </button>
 
-                    {/* Dropdown button */}
-                    <button
-                      onClick={(e) => { e.stopPropagation(); setIsDropdownOpen(!isDropdownOpen); }}
-                      style={{
-                        background: "rgba(0,0,0,0.08)",
-                        color: "#000000",
-                        border: "none",
-                        borderRadius: "9999px",
-                        padding: "16px 20px",
-                        fontSize: "16px",
-                        cursor: "pointer",
-                        display: "inline-flex",
-                        alignItems: "center",
-                        transition: "background 0.15s"
-                      }}
-                      onMouseOver={e => (e.currentTarget.style.background = "rgba(0,0,0,0.14)")}
-                      onMouseOut={e => (e.currentTarget.style.background = "rgba(0,0,0,0.08)")}
-                    >
-                      <ChevronDown size={18} style={{ transform: isDropdownOpen ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" }} />
-                    </button>
+                    {/* Dropdown button wrapper */}
+                    <div style={{ position: "relative" }}>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setIsDropdownOpen(!isDropdownOpen); }}
+                        style={{
+                          background: "rgba(0,0,0,0.08)",
+                          color: "#000000",
+                          border: "none",
+                          borderRadius: "9999px",
+                          padding: "16px 20px",
+                          fontSize: "16px",
+                          cursor: "pointer",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          transition: "background 0.15s"
+                        }}
+                        onMouseOver={e => (e.currentTarget.style.background = "rgba(0,0,0,0.14)")}
+                        onMouseOut={e => (e.currentTarget.style.background = "rgba(0,0,0,0.08)")}
+                      >
+                        <ChevronDown size={18} style={{ transform: isDropdownOpen ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" }} />
+                      </button>
 
-                    {/* Dropdown menu */}
-                    {isDropdownOpen && (
-                      <div style={{
-                        position: "absolute",
-                        top: "calc(100% + 8px)",
-                        left: 0,
-                        width: "220px",
-                        background: "#ffffff",
-                        borderRadius: "12px",
-                        boxShadow: "0 10px 30px rgba(0,0,0,0.15)",
-                        border: "1px solid #E6E6E6",
-                        overflow: "hidden",
-                        zIndex: 50,
-                        display: "flex",
-                        flexDirection: "column"
-                      }} onClick={(e) => e.stopPropagation()}>
-                        <button className="dropdown-item" onClick={() => { triggerFileInput(); setIsDropdownOpen(false); }}>
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
-                          <span>From device</span>
-                        </button>
-                        <button className="dropdown-item" onClick={() => { alert("Dropbox coming soon!"); setIsDropdownOpen(false); }}>
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="#0061ff"><path d="M6 2l6 4-6 4-6-4 6-4zm12 0l6 4-6 4-6-4 6-4zM6 16l6-4-6-4-6 4 6 4zm12 0l6-4-6-4-6 4 6 4zM12 13v6l-6 4V17l6-4zm0 0v6l6 4V17l-6-4z"/></svg>
-                          <span>From Dropbox</span>
-                        </button>
-                        <button className="dropdown-item" onClick={() => { alert("Google Drive coming soon!"); setIsDropdownOpen(false); }}>
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M2 14.5l3.5-6h13l-3.5 6H2z" fill="#00a859"/><path d="M8.5 2.5l3.5 6H22l-3.5-6H8.5z" fill="#ffc72c"/><path d="M15 8.5l3.5 6-6.5 11.5-3.5-6 6.5-11.5z" fill="#0066b3"/></svg>
-                          <span>From Google Drive</span>
-                        </button>
-                      </div>
-                    )}
+                      {/* Dropdown menu */}
+                      {isDropdownOpen && (
+                        <div 
+                          className="choose-dropdown-menu" 
+                          style={{
+                            position: "absolute",
+                            top: "calc(100% + 8px)",
+                            right: 0,
+                            left: "auto",
+                            transform: "none",
+                            zIndex: 50
+                          }} 
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <button className="dropdown-item" onClick={() => { triggerFileInput(); setIsDropdownOpen(false); }}>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+                            <span>From device</span>
+                          </button>
+                          <button className="dropdown-item" onClick={() => { alert("Dropbox coming soon!"); setIsDropdownOpen(false); }}>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="#0061ff"><path d="M6 2l6 4-6 4-6-4 6-4zm12 0l6 4-6 4-6-4 6-4zM6 16l6-4-6-4-6 4 6 4zm12 0l6-4-6-4-6 4 6 4zM12 13v6l-6 4V17l6-4zm0 0v6l6 4V17l-6-4z"/></svg>
+                            <span>From Dropbox</span>
+                          </button>
+                          <button className="dropdown-item" onClick={() => { alert("Google Drive coming soon!"); setIsDropdownOpen(false); }}>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M2 14.5l3.5-6h13l-3.5 6H2z" fill="#00a859"/><path d="M8.5 2.5l3.5 6H22l-3.5-6H8.5z" fill="#ffc72c"/><path d="M15 8.5l3.5 6-6.5 11.5-3.5-6 6.5-11.5z" fill="#0066b3"/></svg>
+                            <span>From Google Drive</span>
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   <input
@@ -1663,7 +1708,9 @@ export function UploadPanel({ selectedTool, onUpload, onBack, activeJob, onReset
                   style={{
                     flex: "1",
                     height: "320px",
-                    position: "relative"
+                    position: "relative",
+                    overflow: "hidden",
+                    borderRadius: "16px"
                   }}
                   onDragOver={handleDragOver}
                   onDrop={handleDrop}
@@ -1693,6 +1740,12 @@ export function UploadPanel({ selectedTool, onUpload, onBack, activeJob, onReset
                 </div>
               </div>
             </section>
+
+            {jobs && jobs.length > 0 && (
+              <section style={{ padding: "40px 24px 0" }}>
+                <RecentJobs jobs={jobs} />
+              </section>
+            )}
 
             {/* ── FEATURES SECTION ── */}
             <section style={{ padding: "80px 24px", maxWidth: "1200px", margin: "0 auto" }}>
@@ -1752,9 +1805,9 @@ export function UploadPanel({ selectedTool, onUpload, onBack, activeJob, onReset
               </div>
             </section>
 
-            {/* ── NAVY CTA SECTION ── */}
+            {/* ── LILAC CTA SECTION ── */}
             <section style={{
-              background: "#10162F",
+              background: "var(--s-block-lilac, #D6C4FF)",
               padding: "80px 24px",
               display: "flex",
               flexDirection: "column",
@@ -1765,21 +1818,22 @@ export function UploadPanel({ selectedTool, onUpload, onBack, activeJob, onReset
             }}>
               <p style={{
                 fontFamily: "Plus Jakarta Sans, sans-serif",
-                fontSize: "18px",
-                color: "rgba(255,255,255,0.65)",
+                fontSize: "20px",
+                color: "#000000",
                 margin: 0,
-                fontWeight: 320
-              }}>Ready to <span style={{ color: "#ADEFD1" }}>process</span> your <span style={{ color: "#D3F57B" }}>documents?</span></p>
+                fontWeight: 540,
+                letterSpacing: "-0.3px"
+              }}>Ready to process your documents?</p>
               <button
                 onClick={triggerFileInput}
                 style={{
-                  background: "#ffffff",
-                  color: "#000000",
+                  background: "#000000",
+                  color: "#ffffff",
                   border: "none",
                   borderRadius: "9999px",
                   padding: "18px 48px",
                   fontSize: "18px",
-                  fontWeight: 480,
+                  fontWeight: 540,
                   fontFamily: "Plus Jakarta Sans, sans-serif",
                   cursor: "pointer",
                   transition: "transform 0.15s ease",
@@ -1791,6 +1845,8 @@ export function UploadPanel({ selectedTool, onUpload, onBack, activeJob, onReset
                 Start {selectedTool} Now
               </button>
             </section>
+
+            <Footer onToolSelect={onToolSelect} onViewChange={onViewChange} />
           </>
         ) : (
           /* Processing state */
@@ -1831,31 +1887,211 @@ export function UploadPanel({ selectedTool, onUpload, onBack, activeJob, onReset
           }}
         />
       ) : viewMode === "staged" && stagedFiles ? (
-        <div style={{
-          display: "flex",
-          height: "100%",
-          width: "100%",
-          alignItems: "stretch",
-          background: "#f9f9f9"
-        }}>
-          {/* ── LEFT: Settings Panel (Stitch style) ── */}
-          <div style={{
-            width: "320px",
-            flexShrink: 0,
-            height: "100%",
-            overflowY: "auto",
-            background: "#F5F5F5",
-            borderRight: "1px solid #E6E6E6",
-            display: "flex",
-            flexDirection: "column"
-          }}>
+        <div className="workspace-split-container">
+          {/* ── LEFT-CENTER: Workspace Canvas Preview Frame ── */}
+          <div className="workspace-canvas">
+            {/* White floating card representing Figma preview frame */}
+            <div className="document-preview-frame" style={{
+              display: "flex",
+              flexDirection: "column",
+              flex: 1,
+              background: "var(--c-bg)",
+              border: "1px solid var(--border)",
+              borderRadius: "12px",
+              boxShadow: "0 8px 30px rgba(0,0,0,0.03)",
+              overflow: "hidden",
+              height: "100%",
+              width: "100%"
+            }}>
+              {/* File header bar (inside preview frame) */}
+              <div style={{
+                padding: "16px 24px",
+                borderBottom: "1px solid var(--border)",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                background: "var(--c-bg)"
+              }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                  {/* PDF Icon or Generic Icon */}
+                  <span style={{ fontSize: "22px", color: toolColor, display: "flex", alignItems: "center" }}>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ display: "block" }}>
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                      <polyline points="14 2 14 8 20 8" />
+                    </svg>
+                  </span>
+                  <div>
+                    <div style={{ fontFamily: "Plus Jakarta Sans, sans-serif", fontSize: "15px", fontWeight: 600, color: "var(--c-text)" }}>
+                      {stagedFiles.length === 1 ? stagedFiles[0].name : `${stagedFiles.length} files selected`}
+                    </div>
+                    <div style={{ fontFamily: "Plus Jakarta Sans, sans-serif", fontSize: "12px", color: "var(--text-muted)", marginTop: "2px" }}>
+                      {stagedFiles.reduce((acc, f) => acc + f.size, 0) > 1024 * 1024
+                        ? `${(stagedFiles.reduce((acc, f) => acc + f.size, 0) / (1024 * 1024)).toFixed(1)} MB`
+                        : `${(stagedFiles.reduce((acc, f) => acc + f.size, 0) / 1024).toFixed(0)} KB`}
+                      {totalPdfPages > 0 && ` • ${totalPdfPages} ${totalPdfPages === 1 ? "page" : "pages"}`}
+                      {stagedFiles.length > 1 && ` • ${stagedFiles.length} files`}
+                    </div>
+                  </div>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  <button
+                    onClick={triggerAddMoreInput}
+                    style={{
+                      background: "transparent",
+                      border: "1px solid var(--border)",
+                      borderRadius: "8px",
+                      padding: "6px 14px",
+                      fontSize: "13px",
+                      fontWeight: 540,
+                      color: "var(--c-text)",
+                      cursor: "pointer",
+                      fontFamily: "Plus Jakarta Sans, sans-serif",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "6px",
+                      transition: "background 0.15s"
+                    }}
+                    onMouseOver={e => (e.currentTarget.style.background = "var(--accent-soft)")}
+                    onMouseOut={e => (e.currentTarget.style.background = "transparent")}
+                  >
+                    <Plus size={14} /> Add more
+                  </button>
+                  <input
+                    type="file"
+                    ref={addMoreInputRef}
+                    onChange={handleAddMoreChange}
+                    multiple
+                    style={{ display: "none" }}
+                    accept={getAcceptAttribute(selectedTool)}
+                  />
+                  <button
+                    onClick={clearSelection}
+                    style={{
+                      background: "transparent",
+                      border: "none",
+                      cursor: "pointer",
+                      padding: "6px",
+                      borderRadius: "6px",
+                      color: "var(--text-muted)",
+                      display: "flex",
+                      alignItems: "center",
+                      fontSize: "20px",
+                      lineHeight: 1,
+                      transition: "background 0.15s"
+                    }}
+                    onMouseOver={e => (e.currentTarget.style.background = "var(--accent-soft)")}
+                    onMouseOut={e => (e.currentTarget.style.background = "transparent")}
+                  >×</button>
+                </div>
+              </div>
+
+              {/* Page/file grid inside the preview frame card */}
+              <div style={{
+                flex: 1,
+                padding: "32px",
+                overflowY: "auto",
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fill, minmax(145px, 1fr))",
+                gap: "28px",
+                alignContent: "start",
+                background: "var(--s-surface-low)"
+              }}>
+                {loadingPdf ? (
+                  Array.from({ length: 4 }).map((_, idx) => (
+                    <div 
+                      key={idx}
+                      className="canvas-file-card page-card skeleton"
+                      style={{
+                        aspectRatio: "3/4",
+                        background: "var(--c-bg)",
+                        borderRadius: "8px",
+                        border: "1px solid var(--border)",
+                        padding: "12px",
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        opacity: 0.6
+                      }}
+                    >
+                      <div className="file-card-preview-box page-preview-box" style={{ width: "100%", height: "100%", background: "var(--accent-soft)", borderRadius: "4px", display: "flex", alignItems: "center", justifyItems: "center" }}>
+                        <div className="mini-spinner" style={{ margin: "auto", width: "16px", height: "16px", border: "2px solid var(--border)", borderTopColor: toolColor, borderRadius: "50%", animation: "spin 0.6s linear infinite" }}></div>
+                      </div>
+                      <div style={{ width: "60px", height: "10px", background: "var(--border)", borderRadius: "2px", marginTop: "8px" }}></div>
+                    </div>
+                  ))
+                ) : pdfDoc ? (
+                  pageOrder.map((pageNum, idx) => (
+                    <PdfPageCard
+                      key={`${pageNum}-${idx}`}
+                      pdfDoc={pdfDoc}
+                      pageNum={pageNum}
+                      rotation={rotationMap[pageNum] || 0}
+                      isRemoved={removedPages.has(pageNum)}
+                      isSelected={selectedPages.has(pageNum)}
+                      onRotate={() => rotatePage(pageNum)}
+                      onRemove={() => toggleRemovePage(pageNum)}
+                      onToggleSelect={() => toggleSelectPage(pageNum)}
+                      toolColor={toolColor}
+                      selectedTool={selectedTool}
+                      indexInGrid={idx}
+                      totalGridItems={pageOrder.length}
+                      onMoveLeft={() => movePage(idx, "left")}
+                      onMoveRight={() => movePage(idx, "right")}
+                    />
+                  ))
+                ) : (
+                  stagedFiles.map((file, idx) => (
+                    <FilePreviewCard
+                      key={idx}
+                      file={file}
+                      idx={idx}
+                      toolColor={toolColor}
+                      onRemove={removeStagedFile}
+                      onPreviewClick={openPreview}
+                    />
+                  ))
+                )}
+
+                {/* If it's a non-PDF oriented tool or non-PDF file, render add files card */}
+                {(!pdfDoc && !loadingPdf) && (
+                  <div
+                    onClick={triggerAddMoreInput}
+                    style={{
+                      aspectRatio: "3/4",
+                      border: "2px dashed var(--border)",
+                      borderRadius: "12px",
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: "8px",
+                      cursor: "pointer",
+                      color: "var(--text-muted)",
+                      fontSize: "13px",
+                      fontFamily: "Plus Jakarta Sans, sans-serif",
+                      fontWeight: 500,
+                      transition: "border-color 0.15s, background 0.15s"
+                    }}
+                    onMouseOver={e => { (e.currentTarget as HTMLElement).style.borderColor = "var(--c-accent)"; (e.currentTarget as HTMLElement).style.background = "var(--accent-soft)"; }}
+                    onMouseOut={e => { (e.currentTarget as HTMLElement).style.borderColor = "var(--border)"; (e.currentTarget as HTMLElement).style.background = "transparent"; }}
+                  >
+                    <Plus size={24} />
+                    <span>Add Files</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* ── RIGHT: Settings Panel (Options / Controller Sidebar) ── */}
+          <div className="workspace-sidebar" style={{ background: blockColor }}>
             {/* Panel header */}
             <div style={{
-              padding: "20px 24px",
-              borderBottom: "1px solid #E6E6E6",
+              padding: "20px 24px 0px",
               display: "flex",
               alignItems: "center",
-              gap: "10px"
+              background: "transparent"
             }}>
               <button
                 onClick={() => { clearSelection(); onBack(); }}
@@ -1863,265 +2099,248 @@ export function UploadPanel({ selectedTool, onUpload, onBack, activeJob, onReset
                   background: "transparent",
                   border: "none",
                   cursor: "pointer",
-                  padding: "4px",
-                  borderRadius: "6px",
-                  display: "flex",
+                  padding: "0",
+                  display: "inline-flex",
                   alignItems: "center",
-                  color: "#4c4546",
-                  transition: "background 0.15s"
+                  gap: "6px",
+                  fontSize: "13px",
+                  fontWeight: 540,
+                  color: "rgba(0, 0, 0, 0.6)",
+                  fontFamily: "Plus Jakarta Sans, sans-serif",
+                  transition: "color 0.15s"
                 }}
-                onMouseOver={e => (e.currentTarget.style.background = "#E6E6E6")}
-                onMouseOut={e => (e.currentTarget.style.background = "transparent")}
+                onMouseOver={e => (e.currentTarget.style.color = "#000000")}
+                onMouseOut={e => (e.currentTarget.style.color = "rgba(0, 0, 0, 0.6)")}
               >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ display: "block" }}>
+                  <path d="M15 18l-6-6 6-6"/>
+                </svg>
+                <span>{selectedTool}</span>
               </button>
-              <span style={{
-                fontFamily: "Plus Jakarta Sans, sans-serif",
-                fontSize: "15px",
-                fontWeight: 600,
-                color: "#1b1b1b"
-              }}>{selectedTool}</span>
             </div>
 
-            {/* Settings content (existing renderOptionsSidebar) */}
+            {/* Settings content */}
             <div style={{ flex: 1, padding: "0" }}>
               {renderOptionsSidebar()}
-            </div>
-          </div>
-
-          {/* ── RIGHT: File Preview Panel (Stitch style) ── */}
-          <div style={{
-            flex: 1,
-            height: "100%",
-            overflowY: "auto",
-            background: "#ffffff",
-            display: "flex",
-            flexDirection: "column"
-          }}>
-            {/* File header bar */}
-            <div style={{
-              padding: "16px 24px",
-              borderBottom: "1px solid #E6E6E6",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center"
-            }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                <span style={{ fontSize: "20px" }}>📄</span>
-                <div>
-                  <div style={{ fontFamily: "Plus Jakarta Sans, sans-serif", fontSize: "15px", fontWeight: 600, color: "#1b1b1b" }}>
-                    {stagedFiles.length === 1 ? stagedFiles[0].name : `${stagedFiles.length} files selected`}
-                  </div>
-                  <div style={{ fontFamily: "Plus Jakarta Sans, sans-serif", fontSize: "12px", color: "#4c4546", marginTop: "2px" }}>
-                    {stagedFiles.reduce((acc, f) => acc + f.size, 0) > 1024 * 1024
-                      ? `${(stagedFiles.reduce((acc, f) => acc + f.size, 0) / (1024 * 1024)).toFixed(1)} MB`
-                      : `${(stagedFiles.reduce((acc, f) => acc + f.size, 0) / 1024).toFixed(0)} KB`}
-                    {" • "}{stagedFiles.length} {stagedFiles.length === 1 ? "file" : "files"}
-                  </div>
-                </div>
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <button
-                  onClick={triggerAddMoreInput}
-                  style={{
-                    background: "transparent",
-                    border: "1px solid #E6E6E6",
-                    borderRadius: "8px",
-                    padding: "6px 14px",
-                    fontSize: "13px",
-                    fontWeight: 500,
-                    color: "#1b1b1b",
-                    cursor: "pointer",
-                    fontFamily: "Plus Jakarta Sans, sans-serif",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "6px",
-                    transition: "background 0.15s"
-                  }}
-                  onMouseOver={e => (e.currentTarget.style.background = "#f5f5f5")}
-                  onMouseOut={e => (e.currentTarget.style.background = "transparent")}
-                >
-                  <Plus size={14} /> Add more
-                </button>
-                <input
-                  type="file"
-                  ref={addMoreInputRef}
-                  onChange={handleAddMoreChange}
-                  multiple
-                  style={{ display: "none" }}
-                  accept={getAcceptAttribute(selectedTool)}
-                />
-                <button
-                  onClick={clearSelection}
-                  style={{
-                    background: "transparent",
-                    border: "none",
-                    cursor: "pointer",
-                    padding: "6px",
-                    borderRadius: "6px",
-                    color: "#4c4546",
-                    display: "flex",
-                    alignItems: "center",
-                    fontSize: "20px",
-                    lineHeight: 1,
-                    transition: "background 0.15s"
-                  }}
-                  onMouseOver={e => (e.currentTarget.style.background = "#f5f5f5")}
-                  onMouseOut={e => (e.currentTarget.style.background = "transparent")}
-                >×</button>
-              </div>
-            </div>
-
-            {/* Page/file grid */}
-            <div style={{
-              flex: 1,
-              padding: "24px",
-              overflowY: "auto",
-              display: "grid",
-              gridTemplateColumns: isPageOrientedTool
-                ? "repeat(auto-fill, minmax(140px, 1fr))"
-                : "repeat(auto-fill, minmax(160px, 1fr))",
-              gap: "20px",
-              alignContent: "start",
-              background: "#fafafa"
-            }}>
-              {isPageOrientedTool && pdfDoc ? (
-                pageOrder.map((pageNum, idx) => (
-                  <PdfPageCard
-                    key={`${pageNum}-${idx}`}
-                    pdfDoc={pdfDoc}
-                    pageNum={pageNum}
-                    rotation={rotationMap[pageNum] || 0}
-                    isRemoved={removedPages.has(pageNum)}
-                    isSelected={selectedPages.has(pageNum)}
-                    onRotate={() => rotatePage(pageNum)}
-                    onRemove={() => toggleRemovePage(pageNum)}
-                    onToggleSelect={() => toggleSelectPage(pageNum)}
-                    toolColor={toolColor}
-                    selectedTool={selectedTool}
-                    indexInGrid={idx}
-                    totalGridItems={pageOrder.length}
-                    onMoveLeft={() => movePage(idx, "left")}
-                    onMoveRight={() => movePage(idx, "right")}
-                  />
-                ))
-              ) : (
-                stagedFiles.map((file, idx) => (
-                  <FilePreviewCard
-                    key={idx}
-                    file={file}
-                    idx={idx}
-                    toolColor={toolColor}
-                    onRemove={removeStagedFile}
-                    onPreviewClick={openPreview}
-                  />
-                ))
-              )}
-
-              {!isPageOrientedTool && (
-                <div
-                  onClick={triggerAddMoreInput}
-                  style={{
-                    aspectRatio: "3/4",
-                    border: "2px dashed #E6E6E6",
-                    borderRadius: "12px",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: "8px",
-                    cursor: "pointer",
-                    color: "#4c4546",
-                    fontSize: "13px",
-                    fontFamily: "Plus Jakarta Sans, sans-serif",
-                    fontWeight: 500,
-                    transition: "border-color 0.15s, background 0.15s"
-                  }}
-                  onMouseOver={e => { (e.currentTarget as HTMLElement).style.borderColor = "#000000"; (e.currentTarget as HTMLElement).style.background = "#f5f5f5"; }}
-                  onMouseOut={e => { (e.currentTarget as HTMLElement).style.borderColor = "#E6E6E6"; (e.currentTarget as HTMLElement).style.background = "transparent"; }}
-                >
-                  <Plus size={24} />
-                  <span>Add Files</span>
-                </div>
-              )}
             </div>
           </div>
         </div>
       ) : (
         activeJob && (
-          <div className="workspace-split-container">
-            {/* Left Delivery Canvas */}
-            <div className="workspace-canvas center-content">
-              <div className="delivery-document-preview">
-                <div className="completed-svg-box" style={{ color: toolColor }}>
-                  <File size={110} strokeWidth={1.2} />
-                  <div className="completed-success-badge" style={{ backgroundColor: toolColor }}>
-                    <Check size={26} color="#ffffff" strokeWidth={3.5} />
+          <div style={{ width: "100%", background: "#f9f9f9", display: "flex", flexDirection: "column", minHeight: "100%" }}>
+            <div style={{ maxWidth: "1100px", width: "100%", margin: "0 auto", padding: "48px 24px 80px 24px", boxSizing: "border-box", flex: 1 }}>
+              {/* Header Section */}
+              <header style={{ marginBottom: "40px" }}>
+                <span className="eyebrow" style={{ fontFamily: "JetBrains Mono, monospace", fontSize: "14px", color: "var(--s-primary)", letterSpacing: "0.54px", display: "block", marginBottom: "16px", textTransform: "uppercase" }}>
+                  PROCESS COMPLETE
+                </span>
+                <h1 style={{ fontFamily: "Plus Jakarta Sans, sans-serif", fontSize: "clamp(36px, 6vw, 64px)", fontWeight: 340, letterSpacing: "-1.5px", lineHeight: 1.05, margin: 0, color: "var(--s-primary)" }}>
+                  Success!
+                </h1>
+              </header>
+
+              {/* Success Grid */}
+              <div className="success-grid-layout">
+                {/* Left Side: Status & Identity */}
+                <div className="success-left-col">
+                  {/* Visual Anchor */}
+                  <div style={{
+                    background: blockColor,
+                    borderRadius: "16px",
+                    padding: "48px",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    minHeight: "320px",
+                    position: "relative",
+                    overflow: "hidden"
+                  }}>
+                    <div style={{ position: "relative", zIndex: 10, display: "flex", flexDirection: "column", alignItems: "center" }}>
+                      <div style={{
+                        width: "80px",
+                        height: "110px",
+                        backgroundColor: "#ffffff",
+                        borderRadius: "8px",
+                        boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
+                        border: "1px solid var(--s-hairline)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        marginBottom: "24px"
+                      }}>
+                        <div style={{
+                          width: "36px",
+                          height: "36px",
+                          borderRadius: "50%",
+                          backgroundColor: "#000000",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          color: "#ffffff"
+                        }}>
+                          <Check size={20} strokeWidth={3} />
+                        </div>
+                      </div>
+                      <p style={{
+                        fontFamily: "Plus Jakarta Sans, sans-serif",
+                        fontSize: "20px",
+                        fontWeight: 540,
+                        color: "#000000",
+                        textAlign: "center",
+                        margin: 0,
+                        maxWidth: "280px",
+                        lineHeight: 1.3
+                      }}>
+                        Your PDF is ready for high-fidelity output.
+                      </p>
+                    </div>
+                    {/* Abstract pattern icon floating in background */}
+                    <div style={{ position: "absolute", top: "0", right: "0", padding: "32px", opacity: 0.05, pointerEvents: "none" }}>
+                      <File size={200} />
+                    </div>
+                  </div>
+
+                  {/* Process Logs */}
+                  <div style={{
+                    backgroundColor: "#ffffff",
+                    borderRadius: "16px",
+                    padding: "32px",
+                    border: "1px solid var(--s-hairline)",
+                    width: "100%",
+                    boxSizing: "border-box"
+                  }}>
+                    <h3 style={{ fontFamily: "Plus Jakarta Sans, sans-serif", fontSize: "20px", fontWeight: 600, margin: "0 0 24px 0" }}>Process Logs</h3>
+                    <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "20px" }}>
+                      <li style={{ display: "flex", alignItems: "center", gap: "16px", fontSize: "16px" }}>
+                        <div style={{ width: "32px", height: "32px", borderRadius: "50%", backgroundColor: "var(--s-surface-low)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                          <Check size={14} strokeWidth={3} />
+                        </div>
+                        <span style={{ fontFamily: "Plus Jakarta Sans, sans-serif", color: "var(--s-on-surface)" }}>Document parsed successfully</span>
+                      </li>
+                      <li style={{ display: "flex", alignItems: "center", gap: "16px", fontSize: "16px" }}>
+                        <div style={{ width: "32px", height: "32px", borderRadius: "50%", backgroundColor: "var(--s-surface-low)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                          <Check size={14} strokeWidth={3} />
+                        </div>
+                        <span style={{ fontFamily: "Plus Jakarta Sans, sans-serif", color: "var(--s-on-surface)" }}>Processed by our high-performance engine</span>
+                      </li>
+                      <li style={{ display: "flex", alignItems: "center", gap: "16px", fontSize: "16px" }}>
+                        <div style={{ width: "32px", height: "32px", borderRadius: "50%", backgroundColor: "var(--s-surface-low)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                          <Check size={14} strokeWidth={3} />
+                        </div>
+                        <span style={{ fontFamily: "Plus Jakarta Sans, sans-serif", color: "var(--s-on-surface)" }}>Output formatted to specification</span>
+                      </li>
+                    </ul>
                   </div>
                 </div>
-                
-                <ul className="delivery-status-checklist">
-                  <li><Check size={14} className="green-check" /> Document parsed successfully</li>
-                  <li><Check size={14} className="green-check" /> Processed by our high-performance engine</li>
-                  <li><Check size={14} className="green-check" /> Output formatted to specification</li>
-                </ul>
-              </div>
-            </div>
 
-            {/* Right Delivery Sidebar */}
-            <div className="workspace-sidebar delivery-sidebar">
-              <h2 className="success-heading">Success!</h2>
-              <p className="success-paragraph">Your file has been processed and is ready for download.</p>
+                {/* Right Side: Actions & File Info */}
+                <div className="success-right-col">
+                  {/* File Info Card */}
+                  <div style={{
+                    backgroundColor: "var(--s-surface-soft, #F5F5F5)",
+                    borderRadius: "16px",
+                    padding: "32px",
+                    border: "1px solid var(--s-hairline)"
+                  }}>
+                    <div style={{ display: "flex", alignItems: "start", gap: "16px", marginBottom: "32px" }}>
+                      <div style={{
+                        width: "48px",
+                        height: "48px",
+                        backgroundColor: "var(--s-primary)",
+                        borderRadius: "8px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        color: "#ffffff",
+                        flexShrink: 0
+                      }}>
+                        <File size={24} />
+                      </div>
+                      <div style={{ minWidth: 0 }}>
+                        <h4 style={{ fontFamily: "Plus Jakarta Sans, sans-serif", fontSize: "20px", fontWeight: 600, margin: "0 0 4px 0", wordBreak: "break-all", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }} title={activeJob.file}>{activeJob.file}</h4>
+                        <p style={{ fontFamily: "Plus Jakarta Sans, sans-serif", fontSize: "14px", color: "var(--s-on-surface-variant)", opacity: 0.6, margin: 0 }}>
+                          {activeJob.size} • PDF Document
+                          {selectedTool === "Compress PDF" && activeJob.originalSizeBytes && activeJob.finalSizeBytes && (
+                            <span className="savings-badge">
+                              ({Math.round(((activeJob.originalSizeBytes - activeJob.finalSizeBytes) / activeJob.originalSizeBytes) * 100)}% smaller!)
+                            </span>
+                          )}
+                        </p>
+                      </div>
+                    </div>
 
-              <div className="delivery-card">
-                <div className="file-info-left">
-                  <div className="file-icon-box" style={{ color: toolColor }}>
-                    <File size={22} />
+                    {/* Primary Action Button */}
+                    <a 
+                      href={activeJob.downloadUrl} 
+                      className="download-btn"
+                      style={{ textDecoration: "none", marginBottom: "16px" }}
+                      download
+                    >
+                      <Download size={18} />
+                      Download File
+                    </a>
+
+                    {/* Secondary Action Buttons */}
+                    <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                      <button className="sub-action-sidebar-btn" onClick={handleShare}>
+                        <Share2 size={15} />
+                        <span>{copied ? "Link Copied!" : "Copy Share Link"}</span>
+                      </button>
+                      <button 
+                        className="sub-action-sidebar-btn" 
+                        onClick={() => alert("Google Drive integration coming soon!")}
+                      >
+                        <Cloud size={15} />
+                        <span>Save to Google Drive</span>
+                      </button>
+                      <hr style={{ margin: "8px 0", border: "none", borderTop: "1px solid var(--s-hairline)" }} />
+                      <button className="sub-action-sidebar-btn" onClick={clearSelection}>
+                        <RotateCcw size={15} />
+                        <span>Start Over</span>
+                      </button>
+                    </div>
                   </div>
-                  <div className="file-name-meta">
-                    <strong className="file-name">{activeJob.file}</strong>
-                    <span className="file-size">
-                      {activeJob.size} 
-                      {selectedTool === "Compress PDF" && activeJob.originalSizeBytes && activeJob.finalSizeBytes && (
-                        <span className="savings-badge">
-                          ({Math.round(((activeJob.originalSizeBytes - activeJob.finalSizeBytes) / activeJob.originalSizeBytes) * 100)}% smaller!)
-                        </span>
-                      )}
+
+                  {/* Integration Suggestion */}
+                  <div style={{
+                    backgroundColor: "var(--s-block-navy)",
+                    color: "#ffffff",
+                    borderRadius: "16px",
+                    padding: "32px",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "16px"
+                  }}>
+                    <span className="eyebrow" style={{ fontFamily: "JetBrains Mono, monospace", fontSize: "11px", color: "var(--s-block-mint)", letterSpacing: "1px", display: "block" }}>
+                      POWER UP
                     </span>
+                    <h5 style={{ fontFamily: "Plus Jakarta Sans, sans-serif", fontSize: "20px", fontWeight: 600, margin: 0 }}>Integrate with your API</h5>
+                    <p style={{ fontFamily: "Plus Jakarta Sans, sans-serif", fontSize: "14px", opacity: 0.7, margin: 0, lineHeight: 1.4 }}>
+                      Automate your PDF workflows with our high-performance processing engine.
+                    </p>
+                    <a 
+                      href="#api-docs" 
+                      style={{
+                        fontFamily: "Plus Jakarta Sans, sans-serif",
+                        fontSize: "14px",
+                        fontWeight: 600,
+                        color: "var(--s-block-mint)",
+                        textDecoration: "none",
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: "8px"
+                      }}
+                      onClick={(e) => { e.preventDefault(); alert("API integration documentation is coming soon!"); }}
+                    >
+                      View API Documentation
+                      <ArrowRight size={14} />
+                    </a>
                   </div>
                 </div>
               </div>
-
-              <div className="delivery-actions">
-                <a 
-                  href={activeJob.downloadUrl} 
-                  className="primary-button download-btn"
-                  style={{ textDecoration: "none" }}
-                  download
-                >
-                  <Download size={18} />
-                  DOWNLOAD FILE
-                </a>
-
-                <div className="delivery-vertical-actions">
-                  <button className="sub-action-sidebar-btn" onClick={handleShare}>
-                    <Share2 size={15} />
-                    <span>{copied ? "Link Copied!" : "Copy Share Link"}</span>
-                  </button>
-                  <button 
-                    className="sub-action-sidebar-btn" 
-                    onClick={() => alert("Google Drive integration coming soon!")}
-                  >
-                    <Cloud size={15} />
-                    <span>Save to Google Drive</span>
-                  </button>
-                  <button className="sub-action-sidebar-btn start-over-btn" onClick={clearSelection}>
-                    <RotateCcw size={15} />
-                    <span>Start Over</span>
-                  </button>
-                </div>
-              </div>
             </div>
+            <Footer onToolSelect={onToolSelect} onViewChange={onViewChange} />
           </div>
         )
       )}

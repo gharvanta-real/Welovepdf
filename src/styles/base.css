@@ -32,6 +32,7 @@ a {
   background: var(--s-background);
   color: var(--s-on-surface);
   font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  overflow-x: clip;
 }
 
 .app[data-theme="dark"] {

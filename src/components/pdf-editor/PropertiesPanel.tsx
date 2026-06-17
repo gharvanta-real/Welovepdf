@@ -95,7 +95,7 @@ export function PropertiesPanel({
   toolColor
 }: PropertiesPanelProps) {
   return (
-    <aside style={{ width: "220px", minWidth: "220px", backgroundColor: "var(--c-surface)", borderLeft: "1px solid var(--border)", display: "flex", flexDirection: "column", overflowY: "auto" }}>
+    <aside className="editor-properties-panel">
       <div style={{ padding: "12px 14px", borderBottom: "1px solid var(--border)" }}>
         <span style={{ fontSize: "0.76rem", fontWeight: "500", color: "var(--c-text)" }}>Properties</span>
       </div>

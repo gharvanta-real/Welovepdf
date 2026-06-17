@@ -1,0 +1,310 @@
+/* ── ENTERPRISE / SPLIT SECTION ── */
+.stitch-split-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+
+.stitch-split-visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stitch-feature-window {
+  background: rgba(255,255,255,0.6);
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 16px;
+  padding: 20px;
+  backdrop-filter: blur(12px);
+  width: 100%;
+  overflow: hidden;
+}
+
+.stitch-split-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.stitch-feature-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.stitch-feature-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: 400;
+  color: rgba(0,0,0,0.7);
+}
+
+/* ── FEATURES WALKTHROUGH ── */
+.stitch-features-section {
+  background: #f9f9f9;
+  padding: 100px 0;
+}
+
+.stitch-feature-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+  margin-bottom: 100px;
+}
+
+.stitch-feature-row:last-child {
+  margin-bottom: 0;
+}
+
+.stitch-feature-row.reverse {
+  direction: rtl;
+}
+
+.stitch-feature-row.reverse > * {
+  direction: ltr;
+}
+
+.stitch-feature-copy {
+  display: flex;
+  flex-direction: column;
+}
+
+.stitch-feature-visual {
+  width: 100%;
+}
+
+.stitch-text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 15px;
+  font-weight: 480;
+  color: var(--s-primary);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: gap 0.15s;
+}
+
+.stitch-text-link:hover {
+  gap: 10px;
+}
+
+/* ── WHY GRID ── */
+.stitch-why-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.stitch-why-card {
+  background: rgba(255,255,255,0.55);
+  border: 1px solid rgba(0,0,0,0.07);
+  border-radius: 16px;
+  padding: 28px;
+  backdrop-filter: blur(8px);
+}
+
+.stitch-why-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: rgba(0,0,0,0.07);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--s-primary);
+  margin-bottom: 18px;
+}
+
+/* ── CTA SECTION ── */
+.stitch-cta-section {
+  background: #ffffff;
+  padding: 120px 0;
+}
+
+.stitch-cta-actions {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+/* ── FOOTER ── */
+.stitch-footer {
+  background: var(--s-block-navy, #10162f);
+  color: rgba(255,255,255,0.75);
+  padding: 80px 0 40px;
+}
+
+.stitch-footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+  gap: 40px;
+  margin-bottom: 60px;
+}
+
+.stitch-footer-brand {
+  grid-column: 1;
+}
+
+.stitch-footer-logo {
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  color: #ffffff;
+  text-decoration: none;
+  display: block;
+  margin-bottom: 16px;
+}
+
+.stitch-footer-tagline {
+  font-size: 14px;
+  font-weight: 320;
+  line-height: 1.65;
+  color: rgba(255,255,255,0.45);
+  margin: 0;
+  max-width: 240px;
+}
+
+.stitch-footer-col ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.stitch-footer-col a {
+  font-size: 14px;
+  font-weight: 320;
+  color: rgba(255,255,255,0.55);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.stitch-footer-col a:hover {
+  color: #ffffff;
+}
+
+.stitch-footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  padding-top: 28px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.35);
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.stitch-footer-bottom p {
+  margin: 0;
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   RESPONSIVE — ALL BREAKPOINTS (single source of truth)
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* Tablets: 1024px */
+@media (max-width: 1024px) {
+  .stitch-tools-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .stitch-footer-grid {
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 32px;
+  }
+  .stitch-footer-brand {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Tablets & Large Mobile: 860px */
+@media (max-width: 860px) {
+  .stitch-hero-inner {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    padding: 0 24px;
+  }
+
+  .stitch-hero {
+    padding: 60px 0 50px;
+    min-height: auto;
+  }
+
+  .stitch-split-section,
+  .stitch-feature-row {
+    grid-template-columns: 1fr;
+    gap: 32px;
+    direction: ltr;
+  }
+
+  .stitch-feature-row.reverse {
+    direction: ltr;
+  }
+
+  .stitch-why-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .stitch-tools-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stitch-container {
+    padding: 0 20px;
+  }
+
+  .stitch-block-section {
+    padding: 50px 0;
+  }
+
+  .stitch-hero-illustration {
+    display: none;
+  }
+
+  .stitch-footer-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .stitch-block-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+}
+
+/* Mobile: 600px */
+@media (max-width: 600px) {
+  .stitch-hero-copy h1 {
+    font-size: 40px;
+  }
+
+  .stitch-why-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stitch-footer-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stitch-cta-section {
+    padding: 60px 0;
+  }
+
+  .stitch-container {
+    padding: 0 16px;
+  }
+}

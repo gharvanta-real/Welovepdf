@@ -860,8 +860,7 @@ export function PdfEditor({ file, selectedTool, onClose, onSave }: PdfEditorProp
         pageOrder={pageOrder}
       />
 
-      {/* ══ MAIN EDITOR FRAME ════════════════════════════════════════════════ */}
-      <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
+      <div className="editor-main-frame">
 
         {/* ── LEFT SIDEBAR (Page Thumbnails) ────────────────────────────── */}
         <PageSidebar

@@ -204,13 +204,6 @@ export function UserDashboardPage({ onBack, onToolSelect, onBrowseTools, jobs, c
                 </div>
               </div>
             </div>
-            
-            <button 
-              onClick={onManageSubscription}
-              style={{ border: "none", background: "none", color: "var(--s-primary)", textDecoration: "underline", textUnderlineOffset: "4px", fontSize: "14px", fontWeight: "600", textAlign: "left", cursor: "pointer", padding: 0 }}
-            >
-              Manage Subscription
-            </button>
           </div>
 
         </div>

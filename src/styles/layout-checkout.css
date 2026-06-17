@@ -1,0 +1,192 @@
+/* Checkout Modal Overlay */
+.checkout-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(10px);
+  display: grid;
+  place-items: center;
+  z-index: 10010;
+  padding: var(--space-4);
+  animation: modalOverlayFadeIn 0.25s ease-out;
+}
+
+.checkout-modal {
+  background: var(--c-bg);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  box-shadow: 0 24px 48px -12px rgba(15, 23, 42, 0.18);
+  width: 100%;
+  max-width: 440px;
+  box-sizing: border-box;
+  padding: 28px;
+  position: relative;
+  overflow: hidden;
+  animation: modalSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.checkout-close-btn {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  transition: all 0.15s ease;
+}
+
+.checkout-close-btn:hover {
+  background: var(--c-surface);
+  color: var(--c-text);
+}
+
+.checkout-header {
+  text-align: left;
+  margin-bottom: 20px;
+  padding-right: 32px;
+}
+
+.checkout-header h3 {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--c-text);
+  margin: 0 0 4px;
+}
+
+.checkout-header p {
+  font-size: 0.86rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* Mock Credit Card graphic */
+.payment-card-graphic {
+  width: 100%;
+  height: 185px;
+  background: linear-gradient(135deg, #0074f0, #1e3a8a);
+  border-radius: 12px;
+  color: #ffffff;
+  padding: 24px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 116, 240, 0.2);
+  text-align: left;
+}
+
+.payment-card-graphic::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.15), transparent 60%);
+  pointer-events: none;
+}
+
+.card-chip {
+  width: 38px;
+  height: 28px;
+  background: #cbd5e1;
+  border-radius: 6px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.card-number-display {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 2.2px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  font-family: monospace;
+}
+
+.card-meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.card-holder-display {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.card-expiry-display {
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Payment Form */
+.checkout-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.form-row-cols-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+
+.checkout-submit-btn {
+  width: 100%;
+  height: 46px;
+  font-size: 0.98rem;
+  font-weight: 700;
+  border-radius: var(--radius);
+  margin-top: 4px;
+  box-shadow: 0 4px 12px rgba(0, 116, 240, 0.15);
+  cursor: pointer;
+}
+
+/* Success payment modal view */
+.checkout-success-view {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: var(--space-6) 0;
+}
+
+.success-icon-spin {
+  color: #10b981;
+  margin-bottom: 20px;
+  animation: scaleSuccess 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes scaleSuccess {
+  from { transform: scale(0.6); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.checkout-success-view h3 {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--c-text);
+  margin: 0 0 8px;
+}
+
+.checkout-success-view p {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.checkout-sim {
+  border-top: 1px dashed var(--border);
+  margin-top: 20px;
+  padding-top: 14px;
+}

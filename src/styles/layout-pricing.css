@@ -1,0 +1,372 @@
+/* Pricing Page & Billing Switch */
+.pricing-page-wrapper {
+  width: 100%;
+  padding: 40px var(--space-8) 80px;
+  box-sizing: border-box;
+  background: var(--surface-raised);
+}
+
+.pricing-header-nav {
+  display: flex;
+  justify-content: flex-start;
+  max-width: 1100px;
+  margin: 0 auto 24px;
+  width: 100%;
+}
+
+.back-home-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  color: var(--c-text);
+  background: transparent !important;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 8px 16px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.back-home-btn:hover {
+  background: transparent !important;
+  border-color: transparent !important;
+  color: var(--c-accent);
+  transform: translateX(-4px);
+}
+
+.pricing-content {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.pricing-title-section {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.pricing-main-title {
+  font-size: 2.6rem;
+  font-weight: 800;
+  color: var(--c-text);
+  letter-spacing: -0.8px;
+  margin: 0 0 12px;
+}
+
+.pricing-subtitle {
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  margin: 0 0 32px;
+  line-height: 1.4;
+}
+
+.billing-toggle-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.billing-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  transition: color 0.15s;
+}
+
+.billing-label.active {
+  color: var(--c-text);
+}
+
+.billing-switch-btn {
+  width: 50px;
+  height: 26px;
+  background: var(--border);
+  border-radius: 13px;
+  border: none;
+  position: relative;
+  cursor: pointer;
+  outline: none;
+  padding: 0;
+  transition: background 0.2s;
+}
+
+.billing-switch-slider {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #ffffff;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.billing-switch-btn.yearly .billing-switch-slider {
+  transform: translateX(24px);
+  background: #0074f0;
+}
+
+.discount-badge {
+  font-size: 0.65rem;
+  font-weight: 800;
+  background: #10b981;
+  color: #ffffff;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-left: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Pricing Grid */
+.pricing-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  width: 100%;
+  margin-bottom: 64px;
+}
+
+.pricing-card {
+  background: var(--c-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+}
+
+.pricing-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.04);
+}
+
+.pricing-card.premium-plan {
+  border: 2px solid #0074f0;
+  box-shadow: 0 16px 36px rgba(0, 116, 240, 0.08);
+}
+
+.pricing-card.premium-plan:hover {
+  box-shadow: 0 20px 48px rgba(0, 116, 240, 0.12);
+}
+
+.best-value-ribbon {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  font-size: 0.65rem;
+  font-weight: 900;
+  color: #ffffff;
+  background: #0074f0;
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+}
+
+.plan-header {
+  text-align: left;
+  margin-bottom: 24px;
+}
+
+.plan-name {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--c-text);
+  margin: 0 0 6px;
+}
+
+.plan-desc {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin: 0 0 20px;
+  min-height: 40px;
+}
+
+.plan-price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+}
+
+.price-symbol {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--c-text);
+}
+
+.price-amount {
+  font-size: 3rem;
+  font-weight: 800;
+  color: var(--c-text);
+  letter-spacing: -1px;
+  line-height: 1;
+}
+
+.price-period {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.yearly-bill-desc {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  display: block;
+  margin-top: 4px;
+  text-align: left;
+}
+
+.plan-cta-section {
+  margin-bottom: 28px;
+}
+
+.plan-cta-btn {
+  width: 100%;
+  height: 44px;
+  border-radius: var(--radius);
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.plan-cta-btn.disabled {
+  background: var(--surface-raised);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  cursor: not-allowed;
+}
+
+.plan-features {
+  text-align: left;
+}
+
+.features-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.8px;
+  display: block;
+  margin-bottom: 16px;
+}
+
+.plan-features-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-size: 0.88rem;
+  color: var(--c-text);
+}
+
+.plan-features-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 500;
+}
+
+.check-green {
+  color: #10b981;
+  flex-shrink: 0;
+}
+
+.check-blue {
+  color: #0074f0;
+  flex-shrink: 0;
+}
+
+/* Feature Comparison Chart */
+.comparison-section {
+  width: 100%;
+  margin-top: 24px;
+}
+
+.comparison-title {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--c-text);
+  letter-spacing: -0.5px;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.comparison-table-wrapper {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--c-bg);
+}
+
+.comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.comparison-table th,
+.comparison-table td {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.comparison-table th {
+  background: var(--surface-raised);
+  color: var(--c-text);
+  font-weight: 700;
+}
+
+.comparison-table td {
+  color: var(--c-text);
+  font-weight: 500;
+}
+
+.comparison-table tr:last-child td {
+  border-bottom: none;
+}
+
+.comparison-table .feature-col {
+  text-align: left;
+  font-weight: 700;
+  color: var(--c-text);
+  background: var(--surface-raised);
+  border-right: 1px solid var(--border);
+  width: 32%;
+}
+
+/* Responsive Pricing */
+@media (max-width: 900px) {
+  .pricing-cards-grid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .pricing-main-title {
+    font-size: 2.1rem;
+  }
+  .comparison-table th,
+  .comparison-table td {
+    padding: 12px 10px;
+    font-size: 0.82rem;
+  }
+  .comparison-table .feature-col {
+    width: 40%;
+  }
+}
