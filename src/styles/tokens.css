@@ -1,0 +1,57 @@
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&display=swap');
+
+:root {
+  font-family: "Source Sans 3", "Adjusted Arial Fallback", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.app[data-theme="white"] {
+  color-scheme: light;
+  --c-bg: #ffffff;
+  --c-surface: #f5f6f8;
+  --c-text: #20222a;
+  --c-accent: #0074f0;
+}
+
+.app[data-theme="light"] {
+  color-scheme: light;
+  --c-bg: #f7f3ef;
+  --c-surface: #ffffff;
+  --c-text: #28231f;
+  --c-accent: #0074f0;
+}
+
+.app[data-theme="dark"] {
+  color-scheme: dark;
+  --c-bg: #090a0f;
+  --c-surface: #12141c;
+  --c-text: #f3f4f6;
+  --c-accent: #0074f0;
+}
+
+
+
+
+.app {
+  --text-muted: color-mix(in srgb, var(--c-text) 62%, var(--c-bg));
+  --border: color-mix(in srgb, var(--c-text) 15%, var(--c-bg));
+  --surface-raised: color-mix(in srgb, var(--c-surface) 82%, var(--c-bg));
+  --accent-soft: color-mix(in srgb, var(--c-accent) 12%, var(--c-bg));
+  --accent-strong: color-mix(in srgb, var(--c-accent) 88%, var(--c-text));
+  --shadow: 0 16px 44px color-mix(in srgb, var(--c-text) 10%, transparent);
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --radius: 20px;
+  --radius-sm: 12px;
+  --header-h: 64px;
+  --sidebar-w: 236px;
+}
+
+.app.visual-editor-active {
+  --header-h: 0px;
+}
+

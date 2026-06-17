@@ -1,0 +1,10 @@
+[package]
+name = "pdf-engine"
+edition.workspace = true
+license.workspace = true
+version.workspace = true
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+thiserror = "2"
+uuid = { version = "1", features = ["v4"] }

@@ -1,0 +1,13 @@
+[package]
+name = "pdf-api"
+edition.workspace = true
+license.workspace = true
+version.workspace = true
+
+[dependencies]
+axum = { version = "0.8", features = ["multipart"] }
+pdf-engine = { path = "../pdf-engine" }
+serde = { version = "1", features = ["derive"] }
+tokio = { version = "1", features = ["fs", "io-util", "macros", "net", "rt-multi-thread"] }
+uuid = { version = "1", features = ["v4"] }
+

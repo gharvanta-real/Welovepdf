@@ -1,0 +1,20 @@
+pub mod capabilities;
+pub mod command;
+pub mod config;
+pub mod jobs;
+pub mod operations;
+pub mod pipeline;
+pub mod registry;
+pub mod tool;
+pub mod tools;
+pub mod workspace;
+
+pub use capabilities::{BinaryCapability, CapabilityReport};
+pub use config::EngineConfig;
+pub use jobs::{JobError, JobOutput};
+pub use metadata::PdfMetadata;
+pub mod metadata;
+pub use pipeline::{PipelinePlan, PipelineStep};
+pub use registry::ToolRegistry;
+pub use tool::{Tool, ToolGroup, ToolSpec};
+pub use workspace::JobWorkspace;
