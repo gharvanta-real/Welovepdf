@@ -46,7 +46,8 @@ export function App() {
         if (res.ok) {
           const user = await res.json();
           setCurrentUser(user);
-        } else {
+        } else if (res.status === 401 || res.status === 403) {
+          // Only discard token if the server explicitly rejects it
           localStorage.removeItem("authToken");
         }
       })
@@ -479,6 +480,17 @@ export function App() {
               window.setTimeout(() => setToast(""), 3000);
             }}
             onBack={() => setCurrentView("home")}
+            onToolSelect={(toolName) => {
+              setSelectedTool(toolName);
+              setCurrentView("workspace");
+              setActiveJobId(null);
+              setHasStagedFiles(false);
+            }}
+            onViewChange={(view) => {
+              setCurrentView(view);
+              setActiveJobId(null);
+              setHasStagedFiles(false);
+            }}
           />
         ) : currentView === "privacy" ? (
           <PrivacyPage onBack={() => setCurrentView("home")} />

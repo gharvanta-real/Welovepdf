@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react";
 import { ArrowLeft, CheckCircle2, Tag, X, Loader2, Crown, Zap } from "lucide-react";
+import { Footer } from "./Footer";
 
 interface PricingPageProps {
   currentUser: { name: string; email: string; plan?: string } | null;
   onUpgradeSuccess: (planName: string) => void;
   onLoginRequired: () => void;
   onBack: () => void;
+  onToolSelect: (toolName: string) => void;
+  onViewChange: (view: any) => void;
 }
 
 interface PlanInfo {
@@ -23,7 +26,7 @@ function formatDate(iso: string | null): string {
   }
 }
 
-export function PricingPage({ currentUser, onUpgradeSuccess, onLoginRequired, onBack }: PricingPageProps) {
+export function PricingPage({ currentUser, onUpgradeSuccess, onLoginRequired, onBack, onToolSelect, onViewChange }: PricingPageProps) {
   const [showPromoModal, setShowPromoModal] = useState(false);
   const [promoCode, setPromoCode] = useState("");
   const [promoLoading, setPromoLoading] = useState(false);
@@ -414,6 +417,7 @@ export function PricingPage({ currentUser, onUpgradeSuccess, onLoginRequired, on
         </section>
 
       </div>
+      <Footer onToolSelect={onToolSelect} onViewChange={onViewChange} />
     </div>
   );
 }
