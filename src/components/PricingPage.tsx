@@ -256,7 +256,7 @@ export function PricingPage({ currentUser, onUpgradeSuccess, onLoginRequired, on
         </div>
       )}
 
-      <div className="stitch-container" style={{ paddingTop: "60px" }}>
+      <div className="stitch-container" style={{ paddingTop: "120px" }}>
 
         {/* Back */}
         <button onClick={onBack} className="stitch-pill-outline" style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "8px 20px", fontSize: "14px", marginBottom: "40px" }}>
@@ -396,7 +396,7 @@ export function PricingPage({ currentUser, onUpgradeSuccess, onLoginRequired, on
         </section>
 
         {/* Promo Code CTA Banner */}
-        <section style={{ background: "linear-gradient(135deg, #000 0%, #10b981 100%)", borderRadius: "20px", padding: "64px 40px", textAlign: "center", color: "#fff" }}>
+        <section style={{ background: "linear-gradient(135deg, #000 0%, #10b981 100%)", borderRadius: "20px", padding: "64px 40px", textAlign: "center", color: "#fff", marginBottom: "120px" }}>
           <span style={{ fontFamily: "JetBrains Mono, monospace", fontSize: "12px", fontWeight: 500, textTransform: "uppercase", letterSpacing: "1px", color: "rgba(255,255,255,0.6)", display: "block", marginBottom: "16px" }}>
             Get Pro Access
           </span>
