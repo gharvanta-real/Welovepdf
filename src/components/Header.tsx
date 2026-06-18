@@ -198,19 +198,36 @@ export function Header({
             <a className="stitch-nav-link" href="#merge" onClick={(e) => { e.preventDefault(); handleToolSelect("Merge PDF"); }}>Merge</a>
             <a className="stitch-nav-link" href="#organize" onClick={(e) => { e.preventDefault(); handleToolSelect("Organize PDF"); }}>Edit</a>
             <a className="stitch-nav-link" href="#esign" onClick={(e) => { e.preventDefault(); handleToolSelect("Sign PDF"); }}>Sign</a>
-            <a className="stitch-nav-link" href="#pricing" onClick={(e) => { e.preventDefault(); onPricingClick?.(); }}>Pricing</a>
-
-            {currentUser && (
-              <>
-                <span style={{ width: "1px", height: "16px", backgroundColor: "var(--s-hairline)", margin: "0 8px" }} />
-                <a className="stitch-nav-link" href="#workspace" style={{ fontWeight: "600" }} onClick={(e) => { e.preventDefault(); setIsDropdownOpen(false); onWorkspaceClick?.(); }}>My Workspace</a>
-              </>
-            )}
           </nav>
         </div>
 
         {/* Right actions */}
         <div className="stitch-header-actions">
+          {/* Pricing & Workspace Links (Desktop Only) */}
+          <div className="stitch-desktop-only" style={{ display: "flex", alignItems: "center", gap: "16px", marginRight: "12px" }}>
+            <a 
+              className="stitch-nav-link" 
+              href="#pricing" 
+              onClick={(e) => { e.preventDefault(); onPricingClick?.(); }}
+              style={{ padding: 0 }}
+            >
+              Pricing
+            </a>
+            {currentUser && (
+              <>
+                <span style={{ width: "1px", height: "16px", backgroundColor: "var(--s-hairline)" }} />
+                <a 
+                  className="stitch-nav-link" 
+                  href="#workspace" 
+                  style={{ fontWeight: "600", padding: 0 }} 
+                  onClick={(e) => { e.preventDefault(); setIsDropdownOpen(false); onWorkspaceClick?.(); }}
+                >
+                  My Workspace
+                </a>
+              </>
+            )}
+          </div>
+
           {!currentUser ? (
             <>
               <button
