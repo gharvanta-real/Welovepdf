@@ -123,7 +123,9 @@ export function Header({
             href="#home"
             aria-label="Pdfmount.com home"
             onClick={(e) => { e.preventDefault(); setIsDropdownOpen(false); setIsMobileMenuOpen(false); onLogoClick(); }}
+            style={{ display: "flex", alignItems: "center", gap: "8px" }}
           >
+            <img src="/favicon-32x32.png" alt="" style={{ width: "22px", height: "22px", borderRadius: "5px", objectFit: "contain" }} />
             Pdfmount.com
           </a>
 

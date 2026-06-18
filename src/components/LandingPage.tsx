@@ -430,13 +430,9 @@ export function BrowserMockup() {
             color: "#1e293b",
             marginTop: "8px"
           }}>
-            {/* Tiny grid logo */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 3px)", gap: "1px" }}>
-              {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(i => (
-                <span key={i} style={{ width: "3px", height: "3px", backgroundColor: i <= 3 ? "#1d4ed8" : i <= 6 ? "#2563eb" : "#60a5fa" }}></span>
-              ))}
-            </div>
-            <span>Pdfmount</span>
+             {/* Brand favicon logo */}
+             <img src="/favicon-16x16.png" alt="" style={{ width: "12px", height: "12px", borderRadius: "2px", objectFit: "contain" }} />
+             <span>Pdfmount</span>
           </div>
 
           <div style={{

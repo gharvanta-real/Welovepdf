@@ -20,7 +20,9 @@ export function Footer({ onToolSelect, onViewChange }: FooterProps) {
                 window.scrollTo({ top: 0, behavior: "smooth" }); 
                 onViewChange("home"); 
               }}
+              style={{ display: "flex", alignItems: "center", gap: "8px" }}
             >
+              <img src="/favicon-32x32.png" alt="" style={{ width: "22px", height: "22px", borderRadius: "5px", objectFit: "contain" }} />
               Pdfmount.com
             </a>
             <p className="stitch-footer-tagline">
