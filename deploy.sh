@@ -26,6 +26,9 @@ npm run build
 # 3. Build Backend
 echo "[3/4] recompiles rust backend..."
 cd $PROJECT_DIR/backend
+if [ -f "$HOME/.cargo/env" ]; then
+    source "$HOME/.cargo/env"
+fi
 cargo build --release --workspace
 
 # 4. Restart Services
