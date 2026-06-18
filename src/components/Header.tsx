@@ -198,6 +198,7 @@ export function Header({
             <a className="stitch-nav-link" href="#merge" onClick={(e) => { e.preventDefault(); handleToolSelect("Merge PDF"); }}>Merge</a>
             <a className="stitch-nav-link" href="#organize" onClick={(e) => { e.preventDefault(); handleToolSelect("Organize PDF"); }}>Edit</a>
             <a className="stitch-nav-link" href="#esign" onClick={(e) => { e.preventDefault(); handleToolSelect("Sign PDF"); }}>Sign</a>
+            <a className="stitch-nav-link" href="#pricing" onClick={(e) => { e.preventDefault(); onPricingClick?.(); }}>Pricing</a>
 
             {currentUser && (
               <>
@@ -281,6 +282,9 @@ export function Header({
                   My Workspace
                 </button>
               )}
+              <button className="mobile-nav-link" style={{ fontWeight: 500 }} onClick={() => { setIsMobileMenuOpen(false); onPricingClick?.(); }}>
+                Pricing Plans
+              </button>
             </div>
           </div>
 
