@@ -1,0 +1,87 @@
+name: Build and Deploy PDFMount
+
+on:
+  push:
+    branches:
+      - main  # Triggers deployment on push to main branch
+
+jobs:
+  test:
+    name: Run Backend Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install Rust Toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Cargo Dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            backend/target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('backend/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+
+      - name: Run Cargo Tests
+        run: |
+          cd backend
+          cargo test --workspace
+
+  deploy:
+    name: Deploy to AWS Lightsail
+    needs: test  # Deploy only if tests pass successfully
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup SSH Agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.LIGHTSAIL_SSH_KEY }}
+
+      - name: Deploy files to Server
+        run: |
+          # Sync files to /opt/pdfmount, excluding local caches and dev environment files
+          rsync -avz --delete \
+            --exclude='node_modules' \
+            --exclude='backend/target' \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='backend/.env' \
+            --exclude='backend/.work' \
+            --exclude='release.zip' \
+            --exclude='*.pem' \
+            -e "ssh -o StrictHostKeyChecking=no" \
+            ./ ubuntu@${{ secrets.LIGHTSAIL_HOST }}:/opt/pdfmount/
+
+      - name: Run Build and Restart Service on Server
+        run: |
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.LIGHTSAIL_HOST }} "
+            # 1. Update Python dependencies
+            pip3 install pdf2docx --upgrade
+
+            # 2. Build Frontend
+            cd /opt/pdfmount
+            npm install
+            npm run build
+
+            # 3. Build Rust Backend
+            cd /opt/pdfmount/backend
+            [ -f ~/.cargo/env ] && . ~/.cargo/env
+            cargo build --release --workspace
+
+            # 4. Restart Services
+            sudo systemctl daemon-reload
+            sudo systemctl restart pdfmount.service
+            sudo systemctl status pdfmount.service
+          "

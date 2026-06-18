@@ -7,9 +7,11 @@ interface AccountDrawerProps {
   currentUser: { name: string; email: string; plan?: string } | null;
   onLogout: () => void;
   onSettingsClick: () => void;
+  onSupportClick: () => void;
 }
 
-export function AccountDrawer({ isOpen, onClose, currentUser, onLogout, onSettingsClick }: AccountDrawerProps) {
+export function AccountDrawer({ isOpen, onClose, currentUser, onLogout, onSettingsClick, onSupportClick }: AccountDrawerProps) {
+  const avatarUrl = localStorage.getItem("userAvatar");
   
   // Close on ESC key
   useEffect(() => {
@@ -43,11 +45,17 @@ export function AccountDrawer({ isOpen, onClose, currentUser, onLogout, onSettin
 
         {/* User Card */}
         <div className="drawer-user-card">
-          <div className="drawer-avatar dynamic-avatar-gradient" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: "55%", height: "55%" }}>
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-              <circle cx="12" cy="7" r="4" />
-            </svg>
+          <div className="drawer-avatar" style={{ display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", borderRadius: "50%", width: "44px", height: "44px", background: "var(--s-surface-low)" }}>
+            {avatarUrl ? (
+              <img src={avatarUrl} alt="Avatar" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            ) : (
+              <div className="dynamic-avatar-gradient" style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "#ffffff" }}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: "55%", height: "55%" }}>
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
+              </div>
+            )}
           </div>
           <div className="drawer-user-meta">
             <strong className="drawer-user-name">{currentUser.name || currentUser.email.split("@")[0]}</strong>
@@ -86,11 +94,11 @@ export function AccountDrawer({ isOpen, onClose, currentUser, onLogout, onSettin
 
           <ul className="services-list">
             <li className="service-item">
-              <span>High-Speed Conversion</span>
+              <span>Fast Layout Conversions</span>
               <span className="status-dot green">Active</span>
             </li>
             <li className="service-item">
-              <span>Unlimited PDF OCR</span>
+              <span>Digital E-Signatures</span>
               <span className="status-dot green">Active</span>
             </li>
           </ul>
@@ -113,7 +121,7 @@ export function AccountDrawer({ isOpen, onClose, currentUser, onLogout, onSettin
               </div>
               <span>Security & Password</span>
             </li>
-            <li className="settings-option-item" onClick={() => alert("Support ticket pipeline opened!")}>
+            <li className="settings-option-item" onClick={() => { onSupportClick(); onClose(); }}>
               <div className="settings-icon-wrapper support-color">
                 <HelpCircle size={14} />
               </div>

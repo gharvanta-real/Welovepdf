@@ -81,7 +81,7 @@ export function AllToolsPage({ onToolSelect, onPricingClick, onContactSalesClick
               className="stitch-pill-outline" 
               style={{ backgroundColor: "rgba(255,255,255,0.4)", borderColor: "var(--s-hairline)", color: "var(--s-primary)", fontSize: "14px" }}
             >
-              See All 24 Tools
+              See All 22 Tools
             </a>
           </div>
 
@@ -220,7 +220,7 @@ export function AllToolsPage({ onToolSelect, onPricingClick, onContactSalesClick
           </div>
         </div>
 
-        {/* Structured Sitemap Directory of all 24 tools */}
+        {/* Structured Sitemap Directory of all 22 active tools */}
         <div id="sitemap" style={{ borderTop: "1px solid var(--s-hairline)", paddingTop: "64px", marginBottom: "80px" }}>
           <div style={{ marginBottom: "40px" }}>
             <span className="eyebrow" style={{ textTransform: "uppercase", fontSize: "12px", color: "var(--s-secondary)", fontWeight: "600", display: "block", marginBottom: "8px" }}>
@@ -233,7 +233,7 @@ export function AllToolsPage({ onToolSelect, onPricingClick, onContactSalesClick
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "40px 30px" }}>
             {sitemapGroups.map(group => {
-              const groupTools = tools.filter(t => t.sitemapGroup === group);
+              const groupTools = tools.filter(t => t.sitemapGroup === group && t.status !== "coming-soon");
               return (
                 <div key={group} style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
                   <h4 style={{ fontSize: "14px", fontWeight: "700", textTransform: "uppercase", letterSpacing: "0.5px", color: "var(--s-secondary)", borderBottom: "1px solid var(--s-hairline)", paddingBottom: "10px", margin: 0 }}>
@@ -242,6 +242,7 @@ export function AllToolsPage({ onToolSelect, onPricingClick, onContactSalesClick
                   <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "10px" }}>
                     {groupTools.map(tool => {
                       const toolColor = getToolColor(tool.name);
+                      const isBeta = tool.status === "beta";
                       return (
                         <li key={tool.id}>
                           <a 
@@ -263,6 +264,9 @@ export function AllToolsPage({ onToolSelect, onPricingClick, onContactSalesClick
                           >
                             <ToolIcon toolNameOrId={tool.name} size={14} style={{ width: "22px", height: "22px", borderRadius: "5px" }} />
                             <span>{tool.name}</span>
+                            {isBeta && (
+                              <span style={{ fontSize: "10px", padding: "1px 5px", borderRadius: "4px", backgroundColor: "#fef3c7", color: "#d97706", fontWeight: "bold", marginLeft: "4px" }}>Beta</span>
+                            )}
                           </a>
                         </li>
                       );
@@ -289,7 +293,7 @@ export function AllToolsPage({ onToolSelect, onPricingClick, onContactSalesClick
             Ready to streamline your workflow?
           </h2>
           <p style={{ opacity: 0.7, fontSize: "18px", fontWeight: 320, maxWidth: "600px", margin: "0 auto 40px", lineHeight: 1.5 }}>
-            Join over 12 million professionals who trust Pdfmount.com for their daily document tasks.
+            Join professionals, students, and creators who trust Pdfmount.com for their daily document tasks.
           </p>
           <div style={{ display: "flex", gap: "16px", justifyContent: "center", flexWrap: "wrap" }}>
             <button 

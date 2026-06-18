@@ -32,6 +32,7 @@ type UploadPanelProps = {
   onViewChange: (view: any) => void;
   jobs?: any[];
   onRetry?: (job: any) => void;
+  onDeleteJob?: (jobId: string) => void;
 };
 
 export function UploadPanel({ 
@@ -44,7 +45,8 @@ export function UploadPanel({
   onToolSelect,
   onViewChange,
   jobs,
-  onRetry
+  onRetry,
+  onDeleteJob
 }: UploadPanelProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const addMoreInputRef = useRef<HTMLInputElement>(null);
@@ -456,6 +458,7 @@ export function UploadPanel({
             heroIllustration={heroIllustration}
             jobs={jobs}
             onRetry={onRetry}
+            onDeleteJob={onDeleteJob}
             features={features}
             onToolSelect={onToolSelect}
             onViewChange={onViewChange}

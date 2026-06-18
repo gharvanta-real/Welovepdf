@@ -58,9 +58,9 @@ export function TermsPage({ onBack }: TermsPageProps) {
           <div style={{ width: "100%", height: "1px", backgroundColor: "rgba(0,0,0,0.05)" }} />
 
           <div>
-            <h2 style={{ fontSize: "20px", fontWeight: 540, marginBottom: "12px", letterSpacing: "-0.2px" }}>2. Free Service &amp; Monetization</h2>
+            <h2 style={{ fontSize: "20px", fontWeight: 540, marginBottom: "12px", letterSpacing: "-0.2px" }}>2. Free Starter Plan &amp; Premium Subscriptions</h2>
             <p style={{ fontSize: "16px", fontWeight: 320, color: "rgba(0,0,0,0.6)", lineHeight: 1.6, margin: 0 }}>
-              Pdfmount.com is provided 100% Free of charge for all users. We display third-party advertisements and support optional UPI tips to fund server and operations costs. We do not sell subscriptions or charge for individual PDF features.
+              PDFMount offers a generous Free Starter plan with a daily limit on file processing tasks. Optional Pro and Enterprise subscription tiers are available to increase limits and enable advanced capabilities, which can also be unlocked through promotional codes. We do not sell user data and enforce strict quotas to ensure server stability.
             </p>
           </div>
 

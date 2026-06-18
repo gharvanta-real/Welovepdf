@@ -13,3 +13,15 @@ backend/*.log
 *.db-shm
 *.db-wal
 .env
+
+# Python Cache
+__pycache__/
+*.pyc
+
+# local screenshots & logs
+*.png
+backend/*.log
+*.pem
+backups/
+/backups/
+**/backups/

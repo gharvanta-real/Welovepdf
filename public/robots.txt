@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /upload/
+Disallow: /download/
+Disallow: /jobs/
+Disallow: /health
+Disallow: /engine/
+
+Sitemap: https://gharvanta.in/sitemap.xml

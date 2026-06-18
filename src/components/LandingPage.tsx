@@ -336,7 +336,7 @@ const whyChooseData = [
   },
   {
     title: "Loved Globally",
-    description: "Used by millions of students, writers, and professionals who just want things to work.",
+    description: "Designed for students, writers, and professionals who value privacy and simplicity.",
     icon: Users
   },
   {
@@ -819,7 +819,12 @@ export function LandingPage({ onToolSelect, onViewChange }: LandingPageProps) {
                       {tool.group || "PDF Tool"}
                     </span>
                   </div>
-                  <h3 className="stitch-tool-name">{tool.name}</h3>
+                  <h3 className="stitch-tool-name" style={{ display: "flex", alignItems: "center", gap: "8px", justifyContent: "space-between", margin: "0 0 8px" }}>
+                    <span>{tool.name}</span>
+                    {tool.status === "beta" && (
+                      <span style={{ fontSize: "10px", padding: "2px 6px", borderRadius: "4px", backgroundColor: "#fef3c7", color: "#d97706", fontWeight: "bold" }}>Beta</span>
+                    )}
+                  </h3>
                   <p className="stitch-tool-desc">{tool.description}</p>
                   <div className="stitch-tool-cta">
                     <span>Open Tool</span>
@@ -949,7 +954,7 @@ export function LandingPage({ onToolSelect, onViewChange }: LandingPageProps) {
             Ready to streamline<br/>your workflow?
           </h2>
           <p style={{ fontSize: "20px", fontWeight: 330, color: "rgba(0,0,0,0.55)", maxWidth: "560px", margin: "0 auto 40px" }}>
-            Join over 12 million professionals who trust Pdfmount.com for their daily document tasks.
+            Join professionals, students, and creators who trust Pdfmount.com for their daily document tasks.
           </p>
           <div className="stitch-cta-actions">
             <button className="stitch-pill-primary stitch-pill-lg" onClick={scrollToTools}>

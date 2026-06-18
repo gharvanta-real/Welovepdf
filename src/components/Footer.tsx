@@ -68,6 +68,9 @@ export function Footer({ onToolSelect, onViewChange }: FooterProps) {
             <ul>
               <li><a href="#about" onClick={(e) => { e.preventDefault(); onViewChange("about"); }}>About Us</a></li>
               <li><a href="#pricing" onClick={(e) => { e.preventDefault(); onViewChange("pricing"); }}>Pricing Plans</a></li>
+              <li><a href="#security" onClick={(e) => { e.preventDefault(); onViewChange("security"); }}>Security Policy</a></li>
+              <li><a href="#file-privacy" onClick={(e) => { e.preventDefault(); onViewChange("file-privacy"); }}>File Privacy</a></li>
+              <li><a href="#data-deletion" onClick={(e) => { e.preventDefault(); onViewChange("data-deletion"); }}>Data Deletion</a></li>
               <li><a href="#privacy" onClick={(e) => { e.preventDefault(); onViewChange("privacy"); }}>Privacy Policy</a></li>
               <li><a href="#terms" onClick={(e) => { e.preventDefault(); onViewChange("terms"); }}>Terms of Service</a></li>
               <li><a href="#faq" onClick={(e) => { e.preventDefault(); onViewChange("faq"); }}>FAQ</a></li>

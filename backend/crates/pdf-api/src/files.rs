@@ -1,7 +1,7 @@
-use crate::{bad_request, state::AppState};
+use crate::state::AppState;
 use axum::{
     extract::{Multipart, Path, State},
-    http::StatusCode,
+    http::{StatusCode, HeaderMap, HeaderValue, header},
     response::IntoResponse,
 };
 use std::path::PathBuf;
@@ -61,22 +61,71 @@ pub async fn download_file(
         .work_dir
         .join(job_id)
         .join("output")
-        .join(file_name);
-    match fs::read(path).await {
-        Ok(bytes) => bytes.into_response(),
+        .join(&file_name);
+
+    match fs::read(&path).await {
+        Ok(bytes) => {
+            let content_type = mime_for_extension(&file_name);
+            let disposition = format!("attachment; filename=\"{}\"", file_name);
+
+            let mut headers = HeaderMap::new();
+            if let Ok(ct) = HeaderValue::from_str(content_type) {
+                headers.insert(header::CONTENT_TYPE, ct);
+            }
+            if let Ok(cd) = HeaderValue::from_str(&disposition) {
+                headers.insert(header::CONTENT_DISPOSITION, cd);
+            }
+            // Allow file to be downloaded (not blocked by frame options)
+            headers.insert(
+                header::CACHE_CONTROL,
+                HeaderValue::from_static("private, no-store"),
+            );
+
+            (headers, bytes).into_response()
+        }
         Err(_) => StatusCode::NOT_FOUND.into_response(),
+    }
+}
+
+/// Returns the MIME type string for a given file name based on its extension.
+fn mime_for_extension(file_name: &str) -> &'static str {
+    let lower = file_name.to_lowercase();
+    if lower.ends_with(".pdf") {
+        "application/pdf"
+    } else if lower.ends_with(".zip") {
+        "application/zip"
+    } else if lower.ends_with(".docx") {
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    } else if lower.ends_with(".xlsx") {
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    } else if lower.ends_with(".pptx") {
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+    } else if lower.ends_with(".txt") {
+        "text/plain; charset=utf-8"
+    } else if lower.ends_with(".html") || lower.ends_with(".htm") {
+        "text/html; charset=utf-8"
+    } else if lower.ends_with(".png") {
+        "image/png"
+    } else if lower.ends_with(".jpg") || lower.ends_with(".jpeg") {
+        "image/jpeg"
+    } else if lower.ends_with(".gif") {
+        "image/gif"
+    } else if lower.ends_with(".webp") {
+        "image/webp"
+    } else {
+        "application/octet-stream"
     }
 }
 
 pub fn require_one(
     mut inputs: Vec<PathBuf>,
     label: &str,
-) -> Result<PathBuf, axum::response::Response> {
+) -> Result<PathBuf, String> {
     if inputs.len() == 1 {
         return Ok(inputs.remove(0));
     }
 
-    Err(bad_request(format!("{label} needs exactly one file")))
+    Err(format!("{label} needs exactly one file"))
 }
 
 fn safe_file_name(name: &str) -> String {

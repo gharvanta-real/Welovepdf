@@ -7,6 +7,8 @@ import { LoginModal } from "./components/LoginModal";
 import { AccountDrawer } from "./components/AccountDrawer";
 import { CookieBanner } from "./components/CookieBanner";
 import { supabase } from "./utils/supabase";
+import { tools } from "./data/tools";
+import { seoPages } from "./data/seoPages";
 
 // Lazy-loaded auxiliary pages to decrease initial bundle size and boost page load times
 const PricingPage = lazy(() => import("./components/PricingPage").then(m => ({ default: m.PricingPage })));
@@ -19,19 +21,335 @@ const AboutPage = lazy(() => import("./components/AboutPage").then(m => ({ defau
 const ContactSalesPage = lazy(() => import("./components/ContactSalesPage").then(m => ({ default: m.ContactSalesPage })));
 const AccountSettingsPage = lazy(() => import("./components/AccountSettingsPage").then(m => ({ default: m.AccountSettingsPage })));
 const UserDashboardPage = lazy(() => import("./components/UserDashboardPage").then(m => ({ default: m.UserDashboardPage })));
+const SecurityPage = lazy(() => import("./components/TrustPages").then(m => ({ default: m.SecurityPage })));
+const FilePrivacyPage = lazy(() => import("./components/TrustPages").then(m => ({ default: m.FilePrivacyPage })));
+const DataDeletionPage = lazy(() => import("./components/TrustPages").then(m => ({ default: m.DataDeletionPage })));
+
+const pathMap: Record<string, { view: "home" | "workspace" | "pricing" | "privacy" | "terms" | "faq" | "contact" | "tools" | "about" | "contact-sales" | "settings" | "dashboard" | "security" | "file-privacy" | "data-deletion"; tool?: string }> = {
+  "/": { view: "home" },
+  "/pricing": { view: "pricing" },
+  "/privacy": { view: "privacy" },
+  "/terms": { view: "terms" },
+  "/faq": { view: "faq" },
+  "/contact": { view: "contact" },
+  "/about": { view: "about" },
+  "/contact-sales": { view: "contact-sales" },
+  "/settings": { view: "settings" },
+  "/dashboard": { view: "dashboard" },
+  "/tools": { view: "tools" },
+  "/security": { view: "security" },
+  "/file-privacy": { view: "file-privacy" },
+  "/data-deletion": { view: "data-deletion" },
+  
+  // Tools
+  "/merge-pdf": { view: "workspace", tool: "Merge PDF" },
+  "/split-pdf": { view: "workspace", tool: "Split PDF" },
+  "/compress-pdf": { view: "workspace", tool: "Compress PDF" },
+  "/word-to-pdf": { view: "workspace", tool: "Word to PDF" },
+  "/jpg-to-pdf": { view: "workspace", tool: "JPG to PDF" },
+  "/pdf-to-word": { view: "workspace", tool: "PDF to Word" },
+  "/pdf-to-jpg": { view: "workspace", tool: "PDF to JPG" },
+  "/rotate-pdf": { view: "workspace", tool: "Rotate PDF" },
+  "/remove-pages": { view: "workspace", tool: "Remove Pages" },
+  "/extract-pages": { view: "workspace", tool: "Extract Pages" },
+  "/organize-pdf": { view: "workspace", tool: "Organize PDF" },
+  "/crop-pdf": { view: "workspace", tool: "Crop PDF" },
+  "/page-numbers": { view: "workspace", tool: "Page Numbers" },
+  "/pdf-annotator": { view: "workspace", tool: "PDF Annotator" },
+  "/header-footer-pdf": { view: "workspace", tool: "Header & Footer" },
+  "/resize-pdf": { view: "workspace", tool: "Resize PDF Pages" },
+  "/sign-pdf": { view: "workspace", tool: "Sign PDF" },
+  "/unlock-pdf": { view: "workspace", tool: "Unlock PDF" },
+  "/protect-pdf": { view: "workspace", tool: "Protect PDF" },
+  "/watermark-pdf": { view: "workspace", tool: "Watermark PDF" },
+  "/bates-numbering": { view: "workspace", tool: "Bates Numbering" },
+  "/edit-pdf-metadata": { view: "workspace", tool: "Edit PDF Metadata" },
+  "/ocr-pdf": { view: "workspace", tool: "PDF OCR" },
+};
+
+function getPathForState(view: string, tool?: string): string {
+  if (view === "workspace" && tool) {
+    switch (tool) {
+      case "Merge PDF": return "/merge-pdf";
+      case "Split PDF": return "/split-pdf";
+      case "Compress PDF": return "/compress-pdf";
+      case "Word to PDF": return "/word-to-pdf";
+      case "JPG to PDF": return "/jpg-to-pdf";
+      case "PDF to Word": return "/pdf-to-word";
+      case "PDF to JPG": return "/pdf-to-jpg";
+      case "Rotate PDF": return "/rotate-pdf";
+      case "Remove Pages": return "/remove-pages";
+      case "Extract Pages": return "/extract-pages";
+      case "Organize PDF": return "/organize-pdf";
+      case "Crop PDF": return "/crop-pdf";
+      case "Page Numbers": return "/page-numbers";
+      case "PDF Annotator": return "/pdf-annotator";
+      case "Header & Footer": return "/header-footer-pdf";
+      case "Resize PDF Pages": return "/resize-pdf";
+      case "Sign PDF": return "/sign-pdf";
+      case "Unlock PDF": return "/unlock-pdf";
+      case "Protect PDF": return "/protect-pdf";
+      case "Watermark PDF": return "/watermark-pdf";
+      case "Bates Numbering": return "/bates-numbering";
+      case "Edit PDF Metadata": return "/edit-pdf-metadata";
+      case "PDF OCR": return "/ocr-pdf";
+      default: return "/";
+    }
+  }
+  
+  switch (view) {
+    case "pricing": return "/pricing";
+    case "privacy": return "/privacy";
+    case "terms": return "/terms";
+    case "faq": return "/faq";
+    case "contact": return "/contact";
+    case "about": return "/about";
+    case "contact-sales": return "/contact-sales";
+    case "settings": return "/settings";
+    case "dashboard": return "/dashboard";
+    case "tools": return "/tools";
+    case "security": return "/security";
+    case "file-privacy": return "/file-privacy";
+    case "data-deletion": return "/data-deletion";
+    default: return "/";
+  }
+}
+
+const viewMetadata: Record<string, { title: string; desc: string }> = {
+  home: {
+    title: "PDFMount - Free Online PDF Tools & Editor",
+    desc: "Merge, split, compress, convert, sign, and secure PDF files online. Free, secure, and fast PDF tools inside your browser.",
+  },
+  pricing: {
+    title: "Simple Pricing Plans - PDFMount Pro & Enterprise",
+    desc: "Check out our affordable plans. Get larger file limits, batch processing, and priority support for PDFMount.",
+  },
+  privacy: {
+    title: "Privacy Policy - PDFMount",
+    desc: "Learn how PDFMount secures and handles your documents. We do not store files permanently.",
+  },
+  terms: {
+    title: "Terms of Service - PDFMount",
+    desc: "Review the terms and conditions for using PDFMount's online tools.",
+  },
+  faq: {
+    title: "Frequently Asked Questions - PDFMount Help",
+    desc: "Find answers to common questions about PDFMount, file limits, security, and billing.",
+  },
+  contact: {
+    title: "Contact Us - PDFMount Support",
+    desc: "Get in touch with the PDFMount team for support, feedback, or enterprise inquiries.",
+  },
+  "contact-sales": {
+    title: "Contact Sales - PDFMount Enterprise Solutions",
+    desc: "Talk to our sales team about custom enterprise limits, integrations, and dedicated support.",
+  },
+  about: {
+    title: "About Us - PDFMount",
+    desc: "Learn about PDFMount, our mission to build fast and secure PDF tools for everyone.",
+  },
+  tools: {
+    title: "All PDF Tools - PDFMount",
+    desc: "Explore all our free online PDF tools. Merge, split, compress, convert, rotate, and secure your files in seconds.",
+  },
+  dashboard: {
+    title: "User Dashboard - PDFMount",
+    desc: "Manage your processed PDF files, check job statuses, and update your subscription settings.",
+  },
+  settings: {
+    title: "Account Settings - PDFMount",
+    desc: "Update your profile information, password, and manage your PDFMount account settings.",
+  },
+  security: {
+    title: "Security Policy - PDFMount",
+    desc: "Learn about PDFMount's volatile in-memory sandboxing, HTTPS encryption, and document safety standards.",
+  },
+  "file-privacy": {
+    title: "File Privacy Policy - PDFMount",
+    desc: "We prioritize your privacy. Learn how your files are processed client-side or in volatile server workspaces without human intervention.",
+  },
+  "data-deletion": {
+    title: "Data Deletion Policy - PDFMount",
+    desc: "Details on our 60-minute auto-purge lifecycle and immediate manual data wiping controls.",
+  },
+};
 
 export function App() {
   const theme = "white";
   const [selectedTool, setSelectedTool] = useState("Compress PDF");
   const [toast, setToast] = useState("");
   const [jobs, setJobs] = useState<any[]>([]);
-  const [currentView, setCurrentView] = useState<"home" | "workspace" | "pricing" | "privacy" | "terms" | "faq" | "contact" | "tools" | "about" | "contact-sales" | "settings" | "dashboard">("home");
+  const [currentView, setCurrentView] = useState<"home" | "workspace" | "pricing" | "privacy" | "terms" | "faq" | "contact" | "tools" | "about" | "contact-sales" | "settings" | "dashboard" | "security" | "file-privacy" | "data-deletion">("home");
   const [activeJobId, setActiveJobId] = useState<string | null>(null);
   const [hasStagedFiles, setHasStagedFiles] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState<{ name: string; email: string; plan?: string } | null>(null);
   const [isAccountDrawerOpen, setIsAccountDrawerOpen] = useState(false);
   const jobInputsRef = useRef<Record<string, { files: File[]; options?: any; toolName: string }>>({});
+
+  // Synchronize state with pathname on load and browser navigation
+  useEffect(() => {
+    const handlePopState = () => {
+      const path = window.location.pathname;
+      const match = pathMap[path] || { view: "home" };
+      setCurrentView(match.view);
+      if (match.tool) {
+        setSelectedTool(match.tool);
+      }
+      setActiveJobId(null);
+      setHasStagedFiles(false);
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    // Parse current path on mount
+    handlePopState();
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, []);
+
+  // Synchronize browser URL history when state changes
+  useEffect(() => {
+    const currentPath = window.location.pathname;
+    const targetPath = getPathForState(currentView, currentView === "workspace" ? selectedTool : undefined);
+    if (currentPath !== targetPath) {
+      window.history.pushState(null, "", targetPath);
+    }
+  }, [currentView, selectedTool]);
+
+  // Dynamically update document title, meta tags, and structured JSON-LD schemas
+  useEffect(() => {
+    let title = "PDFMount - Free Online PDF Tools & Editor";
+    let desc = "Merge, split, compress, convert, sign, and secure PDF files online. Free, secure, and fast PDF tools inside your browser.";
+    
+    if (currentView === "workspace") {
+      const matchedTool = tools.find(t => t.name === selectedTool);
+      const toolId = matchedTool?.id;
+      if (toolId && seoPages[toolId]) {
+        title = seoPages[toolId].title;
+        desc = seoPages[toolId].desc;
+      }
+    } else if (viewMetadata[currentView]) {
+      title = viewMetadata[currentView].title;
+      desc = viewMetadata[currentView].desc;
+    }
+    
+    document.title = title;
+    
+    // Update meta description
+    let metaDesc = document.querySelector('meta[name="description"]');
+    if (!metaDesc) {
+      metaDesc = document.createElement("meta");
+      metaDesc.setAttribute("name", "description");
+      document.head.appendChild(metaDesc);
+    }
+    metaDesc.setAttribute("content", desc);
+    
+    // Update canonical link
+    const canonicalUrl = `https://gharvanta.in${getPathForState(currentView, currentView === "workspace" ? selectedTool : undefined)}`;
+    let canonicalLink = document.querySelector('link[rel="canonical"]');
+    if (!canonicalLink) {
+      canonicalLink = document.createElement("link");
+      canonicalLink.setAttribute("rel", "canonical");
+      document.head.appendChild(canonicalLink);
+    }
+    canonicalLink.setAttribute("href", canonicalUrl);
+    
+    // Inject schema scripts
+    const existingSchemas = document.querySelectorAll('script[data-seo-schema="true"]');
+    existingSchemas.forEach(el => el.remove());
+    
+    const schemas: any[] = [];
+    
+    // BreadcrumbList Schema (if not home)
+    if (currentView !== "home") {
+      const path = getPathForState(currentView, currentView === "workspace" ? selectedTool : undefined);
+      const pageName = currentView === "workspace" ? selectedTool : (currentView.charAt(0).toUpperCase() + currentView.slice(1));
+      schemas.push({
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://gharvanta.in/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": pageName,
+            "item": `https://gharvanta.in${path}`
+          }
+        ]
+      });
+    }
+    
+    // Tool-specific JSON-LD schemas
+    if (currentView === "workspace") {
+      const matchedTool = tools.find(t => t.name === selectedTool);
+      const toolId = matchedTool?.id;
+      if (toolId && seoPages[toolId]) {
+        const pageData = seoPages[toolId];
+        
+        // SoftwareApplication
+        schemas.push({
+          "@context": "https://schema.org",
+          "@type": "SoftwareApplication",
+          "name": pageData.h1,
+          "operatingSystem": "All",
+          "applicationCategory": "BusinessApplication",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+          },
+          "description": pageData.desc
+        });
+        
+        // HowTo Steps
+        if (pageData.steps && pageData.steps.length > 0) {
+          schemas.push({
+            "@context": "https://schema.org",
+            "@type": "HowTo",
+            "name": `How to use ${selectedTool}`,
+            "step": pageData.steps.map((stepText, idx) => ({
+              "@type": "HowToStep",
+              "position": idx + 1,
+              "text": stepText
+            }))
+          });
+        }
+        
+        // FAQs
+        if (pageData.faqs && pageData.faqs.length > 0) {
+          schemas.push({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": pageData.faqs.map(faq => ({
+              "@type": "Question",
+              "name": faq.q,
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": faq.a
+              }
+            }))
+          });
+        }
+      }
+    }
+    
+    // Inject scripts
+    schemas.forEach(schemaData => {
+      const script = document.createElement("script");
+      script.type = "application/ld+json";
+      script.setAttribute("data-seo-schema", "true");
+      script.text = JSON.stringify(schemaData);
+      document.head.appendChild(script);
+    });
+    
+  }, [currentView, selectedTool]);
 
   // Restore session on application load
   useEffect(() => {
@@ -180,6 +498,19 @@ export function App() {
     window.setTimeout(() => setToast(""), 2500);
   }
 
+  function handleToolSelect(toolName: string) {
+    const matched = tools.find(t => t.name === toolName);
+    if (matched && matched.status === "coming-soon") {
+      setToast("This tool is coming soon in a future release! Please stay tuned.");
+      window.setTimeout(() => setToast(""), 3500);
+      return;
+    }
+    setSelectedTool(toolName);
+    setCurrentView("workspace");
+    setActiveJobId(null);
+    setHasStagedFiles(false);
+  }
+
 
   function formatBytes(bytes: number, decimals = 1) {
     if (bytes === 0) return "0 Bytes";
@@ -194,6 +525,21 @@ export function App() {
     if (!files || files.length === 0) return;
 
     const filesArray = Array.from(files);
+
+    // Validate file extensions - block executable and dangerous types
+    const blockedExtensions = [
+      "exe", "bat", "cmd", "sh", "vbs", "msi", "scr", "pif", "com", "js", "ts", "lnk",
+      "sys", "dll", "bin", "jar", "py", "pl", "rb", "ps1", "wsf"
+    ];
+    for (const file of filesArray) {
+      const ext = file.name.split(".").pop()?.toLowerCase() || "";
+      if (blockedExtensions.includes(ext)) {
+        setToast(`Error: File format .${ext} is blocked for security reasons.`);
+        window.setTimeout(() => setToast(""), 5000);
+        return;
+      }
+    }
+
     const totalSizeBytes = filesArray.reduce((acc, f) => acc + f.size, 0);
     const limitBytes = currentUser 
       ? (currentUser.plan === "Pro" ? 500 * 1024 * 1024 : 50 * 1024 * 1024)
@@ -306,8 +652,25 @@ export function App() {
       window.setTimeout(() => setToast(""), 2200);
     } catch (error: any) {
       console.error(error);
-      const errMsg = error.message || "Failed to process job";
-      setToast(`Error: ${errMsg}`);
+      const rawMsg = error.message || "";
+      let friendlyMsg = "Failed to process job. Please check your document and try again.";
+      
+      const lowerMsg = rawMsg.toLowerCase();
+      if (lowerMsg.includes("uploaded file exceeds max size")) {
+        friendlyMsg = "File size exceeds your plan's upload limits. Please compress your file or upgrade your plan.";
+      } else if (lowerMsg.includes("failed to launch python") || lowerMsg.includes("python")) {
+        friendlyMsg = "Internal processing error on the server. Our development team has been notified.";
+      } else if (lowerMsg.includes("limit") || lowerMsg.includes("rate limit") || lowerMsg.includes("quota")) {
+        friendlyMsg = "Daily request quota reached. Please log in or upgrade to Pro for higher limits.";
+      } else if (lowerMsg.includes("password") || lowerMsg.includes("encrypt")) {
+        friendlyMsg = "Password-protected file. Please unlock it or enter the correct password.";
+      } else if (lowerMsg.includes("corrupted") || lowerMsg.includes("invalid pdf")) {
+        friendlyMsg = "The uploaded file appears to be corrupted. Try repairing it first.";
+      } else if (rawMsg) {
+        friendlyMsg = rawMsg;
+      }
+      
+      setToast(`Error: ${friendlyMsg}`);
       window.setTimeout(() => setToast(""), 5000);
       setJobs((prev) =>
         prev.map((job) => {
@@ -320,7 +683,7 @@ export function App() {
       setActiveJobId(null);
 
       // Handle daily rate limit responses
-      if (errMsg.toLowerCase().includes("limit")) {
+      if (rawMsg.toLowerCase().includes("limit")) {
         if (!currentUser) {
           setIsLoginModalOpen(true);
         } else if (currentUser.plan !== "Pro") {
@@ -343,6 +706,30 @@ export function App() {
     
     setSelectedTool(cached.toolName);
     handleUpload(cached.files, cached.options);
+  }
+
+  async function handleDeleteJob(jobId: string) {
+    // 1. Remove from local state immediately
+    setJobs((prev) => prev.filter((j) => j.id !== jobId));
+    setToast("File purged from storage successfully.");
+    window.setTimeout(() => setToast(""), 2200);
+
+    // 2. Call backend deletion API if it is a real job_id
+    if (!jobId.startsWith("temp-")) {
+      const token = localStorage.getItem("authToken");
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+      try {
+        await fetch(`/api/jobs/${jobId}/delete`, {
+          method: "POST",
+          headers,
+        });
+      } catch (e) {
+        console.error("Failed to notify backend of manual delete:", e);
+      }
+    }
   }
 
   const activeJob = jobs.find((j) => j.id === activeJobId) || null;
@@ -369,12 +756,7 @@ export function App() {
             setActiveJobId(null);
             setHasStagedFiles(false);
           }}
-          onToolSelect={(toolName) => {
-            setSelectedTool(toolName);
-            setCurrentView("workspace");
-            setActiveJobId(null);
-            setHasStagedFiles(false);
-          }}
+          onToolSelect={handleToolSelect}
           onLoginClick={() => setIsLoginModalOpen(true)}
           currentUser={currentUser}
           onLogout={handleLogout}
@@ -406,12 +788,7 @@ export function App() {
       }>
         {currentView === "home" ? (
           <LandingPage 
-            onToolSelect={(toolName) => {
-              setSelectedTool(toolName);
-              setCurrentView("workspace");
-              setActiveJobId(null);
-              setHasStagedFiles(false);
-            }} 
+            onToolSelect={handleToolSelect} 
             onViewChange={(view) => {
               if (view === "contact") {
                 setCurrentView("contact-sales");
@@ -424,12 +801,7 @@ export function App() {
           />
         ) : currentView === "tools" ? (
           <AllToolsPage 
-            onToolSelect={(toolName) => {
-              setSelectedTool(toolName);
-              setCurrentView("workspace");
-              setActiveJobId(null);
-              setHasStagedFiles(false);
-            }}
+            onToolSelect={handleToolSelect}
             onPricingClick={() => setCurrentView("pricing")}
             onContactSalesClick={() => setCurrentView("contact-sales")}
             onBack={() => setCurrentView("home")}
@@ -444,7 +816,14 @@ export function App() {
             }}
           />
         ) : currentView === "about" ? (
-          <AboutPage onBack={() => setCurrentView("home")} />
+          <AboutPage 
+            onBack={() => setCurrentView("home")} 
+            onViewChange={(view) => {
+              setCurrentView(view);
+              setActiveJobId(null);
+              setHasStagedFiles(false);
+            }}
+          />
         ) : currentView === "contact-sales" ? (
           <ContactSalesPage onBack={() => setCurrentView("home")} />
         ) : currentView === "settings" ? (
@@ -459,12 +838,7 @@ export function App() {
         ) : currentView === "dashboard" ? (
           <UserDashboardPage 
             onBack={() => setCurrentView("home")} 
-            onToolSelect={(toolName) => {
-              setSelectedTool(toolName);
-              setCurrentView("workspace");
-              setActiveJobId(null);
-              setHasStagedFiles(false);
-            }}
+            onToolSelect={handleToolSelect}
             onBrowseTools={() => setCurrentView("tools")}
             jobs={jobs}
             currentUser={currentUser}
@@ -480,12 +854,7 @@ export function App() {
               window.setTimeout(() => setToast(""), 3000);
             }}
             onBack={() => setCurrentView("home")}
-            onToolSelect={(toolName) => {
-              setSelectedTool(toolName);
-              setCurrentView("workspace");
-              setActiveJobId(null);
-              setHasStagedFiles(false);
-            }}
+            onToolSelect={handleToolSelect}
             onViewChange={(view) => {
               setCurrentView(view);
               setActiveJobId(null);
@@ -498,6 +867,12 @@ export function App() {
           <TermsPage onBack={() => setCurrentView("home")} />
         ) : currentView === "contact" ? (
           <ContactPage onBack={() => setCurrentView("home")} />
+        ) : currentView === "security" ? (
+          <SecurityPage onBack={() => setCurrentView("home")} />
+        ) : currentView === "file-privacy" ? (
+          <FilePrivacyPage onBack={() => setCurrentView("home")} />
+        ) : currentView === "data-deletion" ? (
+          <DataDeletionPage onBack={() => setCurrentView("home")} />
         ) : (
           <main className={`workspace-page-wrapper ${hasStagedFiles && activeJob?.status !== "Done" ? "staged-view-active" : ""}`}>
             <div className="workspace-full-bleed-container">
@@ -515,12 +890,7 @@ export function App() {
                   setHasStagedFiles(false);
                 }}
                 onStagedChange={setHasStagedFiles}
-                onToolSelect={(toolName) => {
-                  setSelectedTool(toolName);
-                  setCurrentView("workspace");
-                  setActiveJobId(null);
-                  setHasStagedFiles(false);
-                }}
+                onToolSelect={handleToolSelect}
                 onViewChange={(view) => {
                   if (view === "contact") {
                     setCurrentView("contact-sales");
@@ -532,6 +902,7 @@ export function App() {
                 }}
                 jobs={jobs}
                 onRetry={handleRetryJob}
+                onDeleteJob={handleDeleteJob}
               />
             </div>
           </main>
@@ -554,6 +925,10 @@ export function App() {
         onLogout={handleLogout}
         onSettingsClick={() => {
           setCurrentView("settings");
+          setIsAccountDrawerOpen(false);
+        }}
+        onSupportClick={() => {
+          setCurrentView("contact");
           setIsAccountDrawerOpen(false);
         }}
       />

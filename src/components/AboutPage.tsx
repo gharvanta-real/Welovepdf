@@ -3,9 +3,10 @@ import { ArrowLeft, ArrowUpRight } from "lucide-react";
 
 interface AboutPageProps {
   onBack: () => void;
+  onViewChange: (view: any) => void;
 }
 
-export function AboutPage({ onBack }: AboutPageProps) {
+export function AboutPage({ onBack, onViewChange }: AboutPageProps) {
   const teamMembers = [
     {
       name: "Marcus Thorne",
@@ -48,7 +49,7 @@ export function AboutPage({ onBack }: AboutPageProps) {
         >
           <ArrowLeft size={16} /> Back
         </button>
-
+ 
         {/* Identity Hero */}
         <div style={{ marginBottom: "64px", maxWidth: "900px" }}>
           <span className="eyebrow" style={{ color: "var(--s-secondary)", textTransform: "uppercase", fontSize: "14px", letterSpacing: "1px", display: "block", marginBottom: "16px" }}>
@@ -58,7 +59,7 @@ export function AboutPage({ onBack }: AboutPageProps) {
             Redefining the document <span style={{ fontStyle: "italic" }}>interface.</span>
           </h1>
         </div>
-
+ 
         {/* The Mission Navy Block */}
         <div 
           style={{ 
@@ -85,7 +86,9 @@ export function AboutPage({ onBack }: AboutPageProps) {
             </p>
             <div>
               <button 
-                onClick={() => alert("Learn Our Story simulation: Full brand chronicle loaded!")}
+                onClick={() => {
+                  document.getElementById("stitch-values-section")?.scrollIntoView({ behavior: "smooth" });
+                }}
                 className="stitch-pill-outline" 
                 style={{ backgroundColor: "#ffffff", color: "#10162F", border: "none", display: "inline-flex", alignItems: "center", gap: "8px", padding: "14px 28px", fontSize: "15px", fontWeight: "600" }}
                 onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--s-block-mint)"}
@@ -109,9 +112,9 @@ export function AboutPage({ onBack }: AboutPageProps) {
             }}
           ></div>
         </div>
-
+ 
         {/* Brand Values Block */}
-        <div style={{ backgroundColor: "var(--s-surface-soft)", borderRadius: "24px", padding: "48px", border: "1px solid var(--s-hairline)", marginBottom: "64px" }}>
+        <div id="stitch-values-section" style={{ backgroundColor: "var(--s-surface-soft)", borderRadius: "24px", padding: "48px", border: "1px solid var(--s-hairline)", marginBottom: "64px" }}>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "48px" }}>
             <div>
               <span className="eyebrow" style={{ fontSize: "12px", color: "var(--s-secondary)" }}>01 / UTILITY</span>
@@ -130,7 +133,7 @@ export function AboutPage({ onBack }: AboutPageProps) {
             </div>
           </div>
         </div>
-
+ 
         {/* Team Section */}
         <div style={{ marginBottom: "80px" }}>
           <div style={{ marginBottom: "48px" }}>
@@ -142,7 +145,7 @@ export function AboutPage({ onBack }: AboutPageProps) {
               A diverse group of engineers, designers, and document enthusiasts working to rebuild the standard of digital communication.
             </p>
           </div>
-
+ 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "32px" }}>
             {teamMembers.map((member, idx) => (
               <div 
@@ -188,7 +191,7 @@ export function AboutPage({ onBack }: AboutPageProps) {
             ))}
           </div>
         </div>
-
+ 
         {/* Ready to edit future CTA */}
         <div 
           style={{ 
@@ -204,14 +207,17 @@ export function AboutPage({ onBack }: AboutPageProps) {
           </h2>
           <div style={{ display: "flex", gap: "16px", justifyContent: "center", flexWrap: "wrap" }}>
             <button 
-              onClick={() => alert("Simulation: Redirected to tools setup")}
+              onClick={() => onViewChange("home")}
               className="stitch-pill-outline" 
               style={{ backgroundColor: "#ffffff", borderColor: "#ffffff", color: "var(--s-primary)", padding: "14px 32px", fontSize: "15px" }}
             >
               Get Started Free
             </button>
             <button 
-              onClick={() => alert("Simulation: Showing current open positions in document processing team.")}
+              onClick={() => {
+                alert("We are always looking for passionate document engineers! Please let us know your profile details using this contact form.");
+                onViewChange("contact");
+              }}
               className="stitch-pill-outline" 
               style={{ borderColor: "rgba(255,255,255,0.3)", color: "#ffffff", padding: "14px 32px", fontSize: "15px" }}
               onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.1)"}
@@ -221,7 +227,7 @@ export function AboutPage({ onBack }: AboutPageProps) {
             </button>
           </div>
         </div>
-
+ 
       </div>
     </div>
   );

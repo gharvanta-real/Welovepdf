@@ -34,6 +34,7 @@ export function PricingPage({ currentUser, onUpgradeSuccess, onLoginRequired, on
   const [promoSuccess, setPromoSuccess] = useState(false);
   const [planInfo, setPlanInfo] = useState<PlanInfo | null>(null);
   const [planLoading, setPlanLoading] = useState(false);
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
 
   const effectivePlan = planInfo?.plan || currentUser?.plan || "Free";
   const isProActive = effectivePlan === "Pro";
@@ -57,6 +58,37 @@ export function PricingPage({ currentUser, onUpgradeSuccess, onLoginRequired, on
     setPromoError("");
     setPromoSuccess(false);
     setShowPromoModal(true);
+  };
+
+  const handleSubscribe = async (planName: string) => {
+    if (!currentUser) { onLoginRequired(); return; }
+    const token = localStorage.getItem("authToken");
+    if (!token) { onLoginRequired(); return; }
+    setCheckoutLoading(true);
+    try {
+      const res = await fetch("/api/payments/create-checkout-session", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ plan: planName }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        if (data.error && data.error.toLowerCase().includes("not configured")) {
+          alert("Stripe payments are currently under maintenance. Please use the 'Enter Promo Code' button at the bottom of the page to activate your Pro plan trial.");
+        } else {
+          alert(data.error || "Failed to initiate checkout session.");
+        }
+      } else if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch {
+      alert("Network error. Please try again.");
+    } finally {
+      setCheckoutLoading(false);
+    }
   };
 
   const handleActivatePromo = async () => {
@@ -122,10 +154,10 @@ export function PricingPage({ currentUser, onUpgradeSuccess, onLoginRequired, on
         "Priority processing",
         "Advanced annotations & editor",
         "Priority support (24/5)",
-        "Plan active for 1 full year",
+        "Billed monthly, cancel anytime",
       ],
-      cta: isProActive ? "✓ Current Plan" : "Activate with Promo Code",
-      ctaAction: handleOpenPromo,
+      cta: isProActive ? "✓ Current Plan" : "Subscribe Now",
+      ctaAction: isProActive ? () => {} : () => handleSubscribe("Pro"),
     },
     {
       name: "Enterprise",
@@ -156,7 +188,7 @@ export function PricingPage({ currentUser, onUpgradeSuccess, onLoginRequired, on
     { feature: "All PDF Tools", starter: "✓", pro: "✓", enterprise: "✓" },
     { feature: "Priority Processing", starter: "—", pro: "✓", enterprise: "✓" },
     { feature: "Annotations & Editor", starter: "Basic", pro: "Full", enterprise: "Full" },
-    { feature: "Plan Duration", starter: "Permanent", pro: "1 year / code", enterprise: "Custom" },
+    { feature: "Plan Duration", starter: "Permanent", pro: "Monthly (or 1 Year via Code)", enterprise: "Custom" },
     { feature: "API Access", starter: "—", pro: "Add-on", enterprise: "✓" },
     { feature: "SSO / Security", starter: "—", pro: "—", enterprise: "✓" },
     { feature: "Support", starter: "Community", pro: "24/5 Priority", enterprise: "24/7 VIP" },
@@ -321,7 +353,7 @@ export function PricingPage({ currentUser, onUpgradeSuccess, onLoginRequired, on
                     <span style={{ fontSize: "48px", fontWeight: 340, color: tier.featured ? "#fff" : "#000" }}>{tier.price}</span>
                     {tier.sub && <span style={{ fontSize: "14px", color: tier.featured ? "rgba(255,255,255,0.6)" : "var(--s-secondary)" }}>{tier.sub}</span>}
                     {tier.name === "Pro" && (
-                      <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.5)", margin: "4px 0 0" }}>Billed via promo code activation</p>
+                      <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.5)", margin: "4px 0 0" }}>Billed via secure Stripe checkout</p>
                     )}
                   </div>
 
@@ -336,7 +368,7 @@ export function PricingPage({ currentUser, onUpgradeSuccess, onLoginRequired, on
 
                   <button
                     onClick={tier.ctaAction}
-                    disabled={tier.isCurrent && tier.name !== "Starter"}
+                    disabled={(tier.isCurrent && tier.name !== "Starter") || checkoutLoading}
                     style={{
                       width: "100%",
                       padding: "14px",
@@ -344,7 +376,7 @@ export function PricingPage({ currentUser, onUpgradeSuccess, onLoginRequired, on
                       border: "none",
                       fontSize: "15px",
                       fontWeight: 600,
-                      cursor: (tier.isCurrent && tier.name !== "Starter") ? "default" : "pointer",
+                      cursor: ((tier.isCurrent && tier.name !== "Starter") || checkoutLoading) ? "default" : "pointer",
                       fontFamily: "Plus Jakarta Sans, sans-serif",
                       backgroundColor: tier.featured
                         ? (tier.isCurrent ? "rgba(255,255,255,0.15)" : "#ffffff")
@@ -352,11 +384,15 @@ export function PricingPage({ currentUser, onUpgradeSuccess, onLoginRequired, on
                       color: tier.featured
                         ? (tier.isCurrent ? "rgba(255,255,255,0.7)" : "#000000")
                         : tier.isCurrent ? "#9ca3af" : "#ffffff",
-                      opacity: (tier.isCurrent && tier.name !== "Starter") ? 0.7 : 1,
+                      opacity: ((tier.isCurrent && tier.name !== "Starter") || checkoutLoading) ? 0.7 : 1,
                       transition: "opacity 0.15s",
                     }}
                   >
-                    {planLoading && tier.name === "Pro" ? "Loading..." : tier.cta}
+                    {checkoutLoading && tier.name === "Pro"
+                      ? "Processing..."
+                      : planLoading && tier.name === "Pro"
+                      ? "Loading..."
+                      : tier.cta}
                   </button>
                 </div>
               ))}
@@ -404,7 +440,7 @@ export function PricingPage({ currentUser, onUpgradeSuccess, onLoginRequired, on
             Have a promo code?
           </h2>
           <p style={{ fontSize: "17px", color: "rgba(255,255,255,0.7)", margin: "0 0 36px", fontWeight: 320 }}>
-            Enter your code to unlock Pro for a full year — 500MB files, 100 jobs/day, priority support.
+            Enter your code to activate a 1-year Pro trial plan — 500MB files, 100 jobs/day, priority support.
           </p>
           <div style={{ display: "flex", gap: "16px", justifyContent: "center", flexWrap: "wrap" }}>
             <button onClick={handleOpenPromo} style={{ padding: "16px 40px", borderRadius: "9999px", background: "#fff", color: "#000", border: "none", fontSize: "16px", fontWeight: 600, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: "8px", fontFamily: "Plus Jakarta Sans, sans-serif" }}>

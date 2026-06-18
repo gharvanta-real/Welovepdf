@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { ArrowLeft, User, Shield, CreditCard, Bell, LogOut, CheckCircle2, Key, ToggleLeft, ToggleRight, Smartphone, Laptop, Crown, Tag } from "lucide-react";
 
 interface AccountSettingsPageProps {
@@ -13,6 +13,8 @@ type SettingsTab = "profile" | "billing" | "security" | "notifications";
 
 export function AccountSettingsPage({ onBack, currentUser, onLogout, onUpdateUser, onPricingClick }: AccountSettingsPageProps) {
   const [activeTab, setActiveTab] = useState<SettingsTab>("profile");
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(() => localStorage.getItem("userAvatar"));
   const [toastMsg, setToastMsg] = useState("");
   const [loading, setLoading] = useState(false);
   
@@ -309,18 +311,41 @@ export function AccountSettingsPage({ onBack, currentUser, onLogout, onUpdateUse
                 
                 <div style={{ display: "flex", alignItems: "center", gap: "24px", paddingBottom: "24px", borderBottom: "1px solid var(--s-hairline)" }}>
                   <div style={{ position: "relative" }}>
-                    <div className="dynamic-avatar-gradient" style={{ width: "96px", height: "96px", borderRadius: "50%", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: "50%", height: "50%" }}>
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                        <circle cx="12" cy="7" r="4" />
-                      </svg>
-                    </div>
+                    {avatarUrl ? (
+                      <img src={avatarUrl} alt="Avatar" style={{ width: "96px", height: "96px", borderRadius: "50%", objectFit: "cover", border: "1px solid var(--s-hairline)" }} />
+                    ) : (
+                      <div className="dynamic-avatar-gradient" style={{ width: "96px", height: "96px", borderRadius: "50%", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: "50%", height: "50%" }}>
+                          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                          <circle cx="12" cy="7" r="4" />
+                        </svg>
+                      </div>
+                    )}
+                    <input 
+                      type="file" 
+                      ref={fileInputRef} 
+                      accept="image/*" 
+                      style={{ display: "none" }} 
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onloadend = () => {
+                            const base64String = reader.result as string;
+                            localStorage.setItem("userAvatar", base64String);
+                            setAvatarUrl(base64String);
+                            showToast("Profile picture updated!");
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                    />
                     <button 
-                      onClick={() => alert("Simulation: Select file window opened to change avatar.")}
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
                       style={{ position: "absolute", bottom: 0, right: 0, backgroundColor: "var(--s-primary)", color: "var(--s-on-primary)", border: "none", borderRadius: "50%", padding: "6px", cursor: "pointer" }}
                     >
                       <span style={{ fontSize: "12px", lineHeight: 1 }}>✎</span>
-
                     </button>
                   </div>
                   <div>

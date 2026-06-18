@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Download, MoreHorizontal, RefreshCw } from "lucide-react";
+import { Download, MoreHorizontal, RefreshCw, Trash2 } from "lucide-react";
 import { ToolIcon } from "./ToolIcon";
 
 type JobStatus = "Done" | "Processing" | "Queued" | "Failed";
@@ -16,9 +16,10 @@ type Job = {
 type RecentJobsProps = {
   jobs: Job[];
   onRetry?: (job: Job) => void;
+  onDeleteJob?: (jobId: string) => void;
 };
 
-export function RecentJobs({ jobs, onRetry }: RecentJobsProps) {
+export function RecentJobs({ jobs, onRetry, onDeleteJob }: RecentJobsProps) {
   const [hoveredRowId, setHoveredRowId] = useState<string | null>(null);
   const [hoveredBtnId, setHoveredBtnId] = useState<string | null>(null);
 
@@ -120,6 +121,23 @@ export function RecentJobs({ jobs, onRetry }: RecentJobsProps) {
                       }}
                     >
                       <Download size={16} />
+                    </button>
+                  )}
+
+                  {(job.status === "Done" || job.status === "Failed") && (
+                    <button 
+                      aria-label={`Delete ${job.file} permanently`}
+                      onClick={() => onDeleteJob && onDeleteJob(job.id)}
+                      onMouseEnter={() => setHoveredBtnId(`${job.id}-del`)}
+                      onMouseLeave={() => setHoveredBtnId(null)}
+                      className="recent-job-btn"
+                      style={{
+                        background: hoveredBtnId === `${job.id}-del` ? "var(--s-surface-low)" : "transparent",
+                        cursor: "pointer",
+                        color: "#ef4444",
+                      }}
+                    >
+                      <Trash2 size={16} />
                     </button>
                   )}
 

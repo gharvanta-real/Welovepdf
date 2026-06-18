@@ -2,6 +2,9 @@ import React from "react";
 import { ChevronDown } from "lucide-react";
 import { Footer } from "../Footer";
 import { RecentJobs } from "../RecentJobs";
+import { tools } from "../../data/tools";
+import { seoPages } from "../../data/seoPages";
+
 
 interface UploadHeroProps {
   selectedTool: string;
@@ -19,6 +22,7 @@ interface UploadHeroProps {
   heroIllustration: React.ReactNode;
   jobs?: any[];
   onRetry?: (job: any) => void;
+  onDeleteJob?: (jobId: string) => void;
   features: { icon: string; title: string; desc: string; color: string }[];
   onToolSelect: (toolName: string) => void;
   onViewChange: (view: any) => void;
@@ -40,6 +44,7 @@ export function UploadHero({
   heroIllustration,
   jobs,
   onRetry,
+  onDeleteJob,
   features,
   onToolSelect,
   onViewChange,
@@ -173,6 +178,19 @@ export function UploadHero({
               </div>
             </div>
 
+            <div style={{
+              fontSize: "12px",
+              color: "rgba(0,0,0,0.45)",
+              marginTop: "16px",
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              fontFamily: "Plus Jakarta Sans, sans-serif",
+              fontWeight: 400
+            }}>
+              <span>🔒 <strong>Volatile Processing:</strong> Files are encrypted in transit and purged automatically after 60 minutes.</span>
+            </div>
+
             <input
               type="file"
               ref={fileInputRef}
@@ -224,7 +242,7 @@ export function UploadHero({
 
       {jobs && jobs.length > 0 && (
         <section style={{ padding: "40px 24px 0" }}>
-          <RecentJobs jobs={jobs} onRetry={onRetry} />
+          <RecentJobs jobs={jobs} onRetry={onRetry} onDeleteJob={onDeleteJob} />
         </section>
       )}
 
@@ -285,6 +303,271 @@ export function UploadHero({
           ))}
         </div>
       </section>
+
+      {(() => {
+        const toolObj = tools.find(t => t.name === selectedTool);
+        const toolId = toolObj?.id;
+        const seoData = toolId ? seoPages[toolId] : null;
+        const [openFaq, setOpenFaq] = React.useState<number | null>(null);
+
+        if (!seoData) return null;
+
+        return (
+          <section style={{
+            padding: "80px 24px 100px",
+            maxWidth: "1200px",
+            margin: "0 auto",
+            fontFamily: "Plus Jakarta Sans, sans-serif"
+          }}>
+            {/* Divider */}
+            <div style={{
+              height: "1px",
+              background: "linear-gradient(90deg, rgba(0,0,0,0.02) 0%, rgba(0,0,0,0.08) 50%, rgba(0,0,0,0.02) 100%)",
+              marginBottom: "80px"
+            }} />
+
+            {/* Intro & Detailed Content */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "64px", marginBottom: "80px" }}>
+              <div>
+                <span style={{
+                  fontFamily: "JetBrains Mono, monospace",
+                  fontSize: "13px",
+                  letterSpacing: "0.8px",
+                  color: "rgba(0,0,0,0.45)",
+                  display: "block",
+                  marginBottom: "16px",
+                  textTransform: "uppercase"
+                }}>Overview</span>
+                <h2 style={{
+                  fontFamily: "Plus Jakarta Sans, sans-serif",
+                  fontSize: "clamp(28px, 3.5vw, 42px)",
+                  fontWeight: 340,
+                  lineHeight: 1.15,
+                  color: "#000000",
+                  margin: "0 0 24px",
+                  letterSpacing: "-0.8px"
+                }}>{seoData.h1}</h2>
+                <p style={{
+                  fontSize: "18px",
+                  lineHeight: "1.65",
+                  color: "rgba(0,0,0,0.7)",
+                  fontWeight: 320,
+                  margin: 0
+                }}>{seoData.intro}</p>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: "24px", justifyContent: "center" }}>
+                {seoData.detailedContent.map((para, idx) => (
+                  <p key={idx} style={{
+                    fontSize: "16px",
+                    lineHeight: "1.65",
+                    color: "#4c4546",
+                    margin: 0,
+                    fontWeight: 320
+                  }}>{para}</p>
+                ))}
+              </div>
+            </div>
+
+            {/* How-To Steps */}
+            {seoData.steps && seoData.steps.length > 0 && (
+              <div style={{ marginBottom: "80px" }}>
+                <div style={{ textAlign: "center", marginBottom: "48px" }}>
+                  <span style={{
+                    fontFamily: "JetBrains Mono, monospace",
+                    fontSize: "13px",
+                    letterSpacing: "0.8px",
+                    color: "rgba(0,0,0,0.45)",
+                    display: "block",
+                    marginBottom: "12px",
+                    textTransform: "uppercase"
+                  }}>Step-by-Step Guide</span>
+                  <h3 style={{
+                    fontFamily: "Plus Jakarta Sans, sans-serif",
+                    fontSize: "28px",
+                    fontWeight: 340,
+                    color: "#000000",
+                    letterSpacing: "-0.5px"
+                  }}>How to use our free {selectedTool} tool</h3>
+                </div>
+                <div style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+                  gap: "32px"
+                }}>
+                  {seoData.steps.map((stepText, idx) => (
+                    <div key={idx} style={{
+                      background: "rgba(0,0,0,0.015)",
+                      border: "1px solid rgba(0,0,0,0.04)",
+                      borderRadius: "16px",
+                      padding: "32px 24px",
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "16px",
+                      transition: "transform 0.2s, box-shadow 0.2s"
+                    }}
+                    className="step-card"
+                    >
+                      <span style={{
+                        fontFamily: "JetBrains Mono, monospace",
+                        fontSize: "36px",
+                        fontWeight: 200,
+                        color: "rgba(0,0,0,0.15)",
+                        lineHeight: 1
+                      }}>0{idx + 1}</span>
+                      <p style={{
+                        fontSize: "15px",
+                        lineHeight: "1.55",
+                        color: "rgba(0,0,0,0.8)",
+                        margin: 0,
+                        fontWeight: 350
+                      }}>{stepText}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* FAQ Accordions */}
+            {seoData.faqs && seoData.faqs.length > 0 && (
+              <div style={{ marginBottom: "80px" }}>
+                <div style={{ textAlign: "center", marginBottom: "48px" }}>
+                  <span style={{
+                    fontFamily: "JetBrains Mono, monospace",
+                    fontSize: "13px",
+                    letterSpacing: "0.8px",
+                    color: "rgba(0,0,0,0.45)",
+                    display: "block",
+                    marginBottom: "12px",
+                    textTransform: "uppercase"
+                  }}>FAQ</span>
+                  <h3 style={{
+                    fontFamily: "Plus Jakarta Sans, sans-serif",
+                    fontSize: "28px",
+                    fontWeight: 340,
+                    color: "#000000",
+                    letterSpacing: "-0.5px"
+                  }}>Frequently Asked Questions</h3>
+                </div>
+                <div style={{
+                  maxWidth: "800px",
+                  margin: "0 auto",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "16px"
+                }}>
+                  {seoData.faqs.map((faq, idx) => {
+                    const isOpen = openFaq === idx;
+                    return (
+                      <div key={idx} style={{
+                        borderBottom: "1px solid rgba(0,0,0,0.06)",
+                        paddingBottom: "12px",
+                        overflow: "hidden"
+                      }}>
+                        <button
+                          onClick={() => setOpenFaq(isOpen ? null : idx)}
+                          style={{
+                            width: "100%",
+                            background: "none",
+                            border: "none",
+                            padding: "16px 0",
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            textAlign: "left",
+                            cursor: "pointer",
+                            fontFamily: "inherit",
+                            fontSize: "17px",
+                            fontWeight: 450,
+                            color: "#000000"
+                          }}
+                        >
+                          <span>{faq.q}</span>
+                          <ChevronDown size={18} style={{
+                            transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
+                            transition: "transform 0.2s",
+                            color: "rgba(0,0,0,0.5)"
+                          }} />
+                        </button>
+                        <div style={{
+                          maxHeight: isOpen ? "300px" : "0",
+                          opacity: isOpen ? 1 : 0,
+                          transition: "max-height 0.3s ease, opacity 0.3s ease",
+                          overflow: "hidden"
+                        }}>
+                          <p style={{
+                            margin: "0 0 16px",
+                            fontSize: "15px",
+                            lineHeight: "1.6",
+                            color: "rgba(0,0,0,0.65)",
+                            fontWeight: 320
+                          }}>{faq.a}</p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Internal Links/Related Workflows block */}
+            <div style={{
+              background: "rgba(0,0,0,0.015)",
+              border: "1px solid rgba(0,0,0,0.04)",
+              borderRadius: "16px",
+              padding: "40px",
+              textAlign: "center"
+            }}>
+              <h4 style={{
+                fontFamily: "Plus Jakarta Sans, sans-serif",
+                fontSize: "16px",
+                fontWeight: 600,
+                textTransform: "uppercase",
+                letterSpacing: "0.5px",
+                color: "rgba(0,0,0,0.5)",
+                margin: "0 0 24px"
+              }}>Popular PDF Workflows</h4>
+              <div style={{
+                display: "flex",
+                justifyContent: "center",
+                flexWrap: "wrap",
+                gap: "12px 16px"
+              }}>
+                {tools
+                  .filter(t => t.status !== "coming-soon" && t.name !== selectedTool)
+                  .slice(0, 6)
+                  .map((t) => (
+                    <button
+                      key={t.id}
+                      onClick={() => onToolSelect(t.name)}
+                      style={{
+                        background: "#ffffff",
+                        border: "1px solid rgba(0,0,0,0.06)",
+                        borderRadius: "9999px",
+                        padding: "8px 18px",
+                        fontSize: "14px",
+                        fontWeight: 450,
+                        color: "rgba(0,0,0,0.7)",
+                        cursor: "pointer",
+                        transition: "all 0.15s ease",
+                        boxShadow: "0 2px 4px rgba(0,0,0,0.01)"
+                      }}
+                      onMouseOver={e => {
+                        e.currentTarget.style.borderColor = "rgba(0,0,0,0.15)";
+                        e.currentTarget.style.color = "#000000";
+                      }}
+                      onMouseOut={e => {
+                        e.currentTarget.style.borderColor = "rgba(0,0,0,0.06)";
+                        e.currentTarget.style.color = "rgba(0,0,0,0.7)";
+                      }}
+                    >
+                      {t.name}
+                    </button>
+                  ))}
+              </div>
+            </div>
+          </section>
+        );
+      })()}
 
       {/* ── LILAC CTA SECTION ── */}
       <section style={{

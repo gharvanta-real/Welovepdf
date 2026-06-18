@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { ChevronDown, ArrowRight, X, Menu } from "lucide-react";
 import { ToolIcon, getToolColor } from "./ToolIcon";
+import { tools } from "../data/tools";
 
 type HeaderProps = {
   onLogoClick: () => void;
@@ -156,19 +157,37 @@ export function Header({
                               {group.items.map((item, itemIdx) => {
                                 const toolColor = getToolColor(item.name);
                                 const softBg = `color-mix(in srgb, ${toolColor} 12%, var(--s-surface-low))`;
+                                const matchedTool = tools.find(t => t.name === item.name);
+                                const isComingSoon = matchedTool?.status === "coming-soon";
+                                const isBeta = matchedTool?.status === "beta";
                                 return (
                                   <li key={itemIdx}>
                                     <a
                                       href={`#${item.name.toLowerCase().replace(/\s+/g, "-")}`}
                                       className="mega-item"
                                       style={{
-                                        "--icon-color-strong": toolColor,
-                                        "--icon-bg-soft": softBg,
+                                        "--icon-color-strong": isComingSoon ? "#94a3b8" : toolColor,
+                                        "--icon-bg-soft": isComingSoon ? "#f1f5f9" : softBg,
+                                        opacity: isComingSoon ? 0.55 : 1,
+                                        cursor: isComingSoon ? "not-allowed" : "pointer",
                                       } as React.CSSProperties}
-                                      onClick={(e) => { e.preventDefault(); handleToolSelect(item.name); }}
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        if (isComingSoon) {
+                                          alert("This tool is coming soon in a future release! Please stay tuned.");
+                                          return;
+                                        }
+                                        handleToolSelect(item.name);
+                                      }}
                                     >
-                                      <ToolIcon toolNameOrId={item.name} size={14} className="mega-icon" style={{ width: "22px", height: "22px", borderRadius: "5px" }} />
-                                      <span className="mega-item-name">{item.name}</span>
+                                      <ToolIcon toolNameOrId={item.name} size={14} className="mega-icon" style={{ width: "22px", height: "22px", borderRadius: "5px", opacity: isComingSoon ? 0.6 : 1 }} />
+                                      <span className="mega-item-name" style={{ color: isComingSoon ? "#64748b" : "inherit" }}>{item.name}</span>
+                                      {isComingSoon && (
+                                        <span style={{ marginLeft: "auto", fontSize: "10px", padding: "1px 5px", borderRadius: "4px", backgroundColor: "#e2e8f0", color: "#64748b", fontWeight: "bold" }}>Soon</span>
+                                      )}
+                                      {isBeta && (
+                                        <span style={{ marginLeft: "auto", fontSize: "10px", padding: "1px 5px", borderRadius: "4px", backgroundColor: "#fef3c7", color: "#d97706", fontWeight: "bold" }}>Beta</span>
+                                      )}
                                     </a>
                                   </li>
                                 );
@@ -185,7 +204,7 @@ export function Header({
                       className="mega-dropdown-footer-link"
                       onClick={(e) => { e.preventDefault(); setIsDropdownOpen(false); onToolsClick?.(); }}
                     >
-                      Browse All 24 Tools <ArrowRight size={13} />
+                      Browse All 22 Tools <ArrowRight size={13} />
                     </a>
                   </div>
                 </div>

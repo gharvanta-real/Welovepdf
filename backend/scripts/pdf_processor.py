@@ -116,13 +116,13 @@ def main():
         elif tool_id in ["pdf-to-png", "pdf-png"]:
             processors.pdf_to_png(input_paths, output_path)
 
-        elif tool_id in ["metadata-pdf", "metadata"]:
+        elif tool_id in ["metadata-pdf", "metadata", "edit-pdf-metadata"]:
             processors.edit_metadata(input_paths, output_path)
 
-        elif tool_id in ["header-footer-pdf", "header-footer"]:
+        elif tool_id in ["header-footer-pdf", "header-footer", "header-&-footer"]:
             processors.add_header_footer(input_paths, output_path)
 
-        elif tool_id in ["resize-pdf", "resize"]:
+        elif tool_id in ["resize-pdf", "resize", "resize-pdf-pages"]:
             processors.resize_pdf(input_paths, output_path)
 
         # 14. PDF OCR

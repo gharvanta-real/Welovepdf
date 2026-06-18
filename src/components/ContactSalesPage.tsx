@@ -301,7 +301,7 @@ export function ContactSalesPage({ onBack }: ContactSalesPageProps) {
             </div>
             <h3 style={{ fontSize: "20px", fontWeight: "600", margin: 0 }}>High Velocity</h3>
             <p style={{ fontSize: "15px", color: "var(--s-on-surface-variant)", lineHeight: 1.5, margin: 0 }}>
-              Optimized endpoints designed for parallel processing of millions of files simultaneously.
+              Optimized endpoints designed for parallel processing of high-concurrency document workloads.
             </p>
           </div>
 

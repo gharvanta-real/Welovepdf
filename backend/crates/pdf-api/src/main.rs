@@ -7,10 +7,11 @@ use axum::{
     middleware::{self, Next},
 };
 use serde::{Deserialize, Serialize};
-use std::{net::SocketAddr, path::PathBuf, str::FromStr};
+use std::{env, net::SocketAddr, path::PathBuf, str::FromStr};
 
 mod files;
 mod state;
+mod payments;
 
 use files::{download_file, require_one, save_multipart_files};
 use pdf_engine::{
@@ -284,6 +285,19 @@ async fn main() {
         }
     });
 
+    // Spawn a background task to run database backup every 24 hours
+    let backup_pool = state.db.clone();
+    tokio::spawn(async move {
+        // Initial sleep of 10 seconds before first backup to ensure system booted up
+        tokio::time::sleep(std::time::Duration::from_secs(10)).await;
+        loop {
+            if let Err(error) = perform_db_backup(&backup_pool).await {
+                eprintln!("Database Backup task error: {error}");
+            }
+            tokio::time::sleep(std::time::Duration::from_secs(24 * 3600)).await;
+        }
+    });
+
     let app = Router::new()
         .route("/health", get(health))
         .route("/engine/status", get(engine_status))
@@ -291,6 +305,7 @@ async fn main() {
         .route("/capabilities", get(capabilities))
         .route("/tools/{tool_id}/plan", get(tool_plan))
         .route("/jobs/{job_id}", get(job_status))
+        .route("/api/jobs/{job_id}/delete", post(delete_job_endpoint))
         .route("/jobs/merge", post(run_merge))
         .route("/jobs/compress", post(run_compress))
         .route("/jobs/jpg-to-pdf", post(run_jpg_to_pdf))
@@ -310,8 +325,11 @@ async fn main() {
         .route("/api/auth/logout", post(logout))
         .route("/api/auth/me", get(me))
         .route("/api/user/activate-promo", post(activate_promo))
+        .route("/api/user/upgrade", post(upgrade_plan_endpoint))
         .route("/api/user/downgrade", post(downgrade_plan))
         .route("/api/user/plan", get(get_plan))
+        .route("/api/payments/create-checkout-session", post(payments::create_checkout_session))
+        .route("/api/webhooks/stripe", post(payments::stripe_webhook))
         .route("/api/user/stats", get(get_stats))
         .route("/api/user/jobs", get(get_user_jobs_endpoint))
         .route("/api/contact", post(handle_contact))
@@ -320,7 +338,11 @@ async fn main() {
         .with_state(state)
         .layer(middleware::from_fn(add_security_headers));
 
-    let addr = SocketAddr::from(([127, 0, 0, 1], 8080));
+    let port = env::var("PDFMOUNT_PORT")
+        .ok()
+        .and_then(|value| value.parse::<u16>().ok())
+        .unwrap_or(8080);
+    let addr = SocketAddr::from(([127, 0, 0, 1], port));
     let listener = tokio::net::TcpListener::bind(addr)
         .await
         .expect("bind pdf api");
@@ -369,6 +391,55 @@ async fn perform_cleanup(state: &AppState) -> std::io::Result<()> {
                         }
                     }
                 }
+            }
+        }
+    }
+
+    Ok(())
+}
+
+async fn perform_db_backup(db: &sqlx::SqlitePool) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    tokio::fs::create_dir_all("backups").await?;
+
+    let timestamp = chrono::Utc::now().format("%Y%m%d_%H%M%S").to_string();
+    let backup_file = format!("backups/welovepdf_backup_{}.db", timestamp);
+
+    println!("Starting automated database backup to: {}", backup_file);
+    
+    // Execute hot backup via SQLite VACUUM INTO
+    let query_str = format!("VACUUM INTO '{}'", backup_file);
+    sqlx::query(&query_str).execute(db).await?;
+    
+    println!("Automated database backup completed successfully.");
+
+    // Clean up older backups (keep last 5 backups only)
+    let mut entries = Vec::new();
+    let mut dir = tokio::fs::read_dir("backups").await?;
+    while let Some(entry) = dir.next_entry().await? {
+        let path = entry.path();
+        if path.is_file() {
+            if let Some(filename) = path.file_name().and_then(|f| f.to_str()) {
+                if filename.starts_with("welovepdf_backup_") && filename.ends_with(".db") {
+                    if let Ok(metadata) = entry.metadata().await {
+                        if let Ok(modified) = metadata.modified() {
+                            entries.push((path, modified));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Sort by modification time ascending (oldest first)
+    entries.sort_by_key(|x| x.1);
+    if entries.len() > 5 {
+        let to_delete = entries.len() - 5;
+        for i in 0..to_delete {
+            let path = &entries[i].0;
+            if let Err(e) = tokio::fs::remove_file(path).await {
+                eprintln!("Failed to remove old backup {:?}: {}", path, e);
+            } else {
+                println!("Deleted old backup: {:?}", path);
             }
         }
     }
@@ -487,6 +558,35 @@ async fn job_status(
     }
 }
 
+async fn delete_job_endpoint(
+    State(state): State<AppState>,
+    Path(job_id): Path<String>,
+) -> impl IntoResponse {
+    // Verify safe path segment (prevents directory traversal)
+    if job_id.is_empty() 
+        || job_id == "." 
+        || job_id == ".." 
+        || job_id.contains("..") 
+        || !job_id.chars().all(|ch| ch.is_ascii_alphanumeric() || ch == '-') 
+    {
+        return StatusCode::BAD_REQUEST.into_response();
+    }
+
+    // Delete folder from scratch workspace disk
+    let path = state.config.work_dir.join(&job_id);
+    if path.exists() && path.is_dir() {
+        let _ = tokio::fs::remove_dir_all(&path).await;
+    }
+
+    // Delete job record metadata from database
+    let _ = sqlx::query("DELETE FROM jobs WHERE id = ?")
+        .bind(&job_id)
+        .execute(&state.db)
+        .await;
+
+    StatusCode::OK.into_response()
+}
+
 async fn job_response(
     state: &AppState,
     result: Result<JobOutput, pdf_engine::JobError>,
@@ -515,7 +615,7 @@ async fn job_response(
 }
 
 // Authentication Helpers
-async fn authenticate_user(
+pub(crate) async fn authenticate_user(
     state: &AppState,
     headers: &axum::http::HeaderMap,
 ) -> Option<state::User> {
@@ -621,7 +721,7 @@ async fn upload_compress(
                     let result = run_compress_job(&state.config, input);
                     job_response(&state, result, user_id, Some(&ip)).await
                 }
-                Err(response) => response,
+                Err(err_msg) => bad_request(err_msg),
             },
             Err(error) => bad_request(error),
         },
@@ -664,7 +764,7 @@ async fn upload_pdf_to_jpg(
                     let result = run_pdf_to_jpg_job(&state.config, input);
                     job_response(&state, result, user_id, Some(&ip)).await
                 }
-                Err(response) => response,
+                Err(err_msg) => bad_request(err_msg),
             },
             Err(error) => bad_request(error),
         },
@@ -755,14 +855,15 @@ fn run_python_processor(
         ));
     }
 
-    let mut cmd = std::process::Command::new("python");
+    let python_bin = std::env::var("PYTHON_BIN").unwrap_or_else(|_| "python3".to_string());
+    let mut cmd = std::process::Command::new(python_bin);
 
     // Forward all headers starting with "x-" as uppercase environment variables
     for (name, value) in headers.iter() {
         let name_str = name.as_str();
-        if name_str.starts_with("x-") {
+        if let Some(stripped) = name_str.strip_prefix("x-") {
             if let Ok(val_str) = value.to_str() {
-                let env_name = name_str["x-".len()..].to_uppercase().replace("-", "_");
+                let env_name = stripped.to_uppercase().replace("-", "_");
                 cmd.env(env_name, val_str);
             }
         }
@@ -847,10 +948,7 @@ async fn login(
         None => return (StatusCode::UNAUTHORIZED, "Invalid email or password").into_response(),
     };
 
-    let password_match = match bcrypt::verify(&payload.password, &user_db.password_hash) {
-        Ok(v) => v,
-        Err(_) => false,
-    };
+    let password_match = bcrypt::verify(&payload.password, &user_db.password_hash).unwrap_or(false);
 
     if !password_match {
         return (StatusCode::UNAUTHORIZED, "Invalid email or password").into_response();
@@ -1098,6 +1196,67 @@ async fn get_plan(
     }
 }
 
+#[derive(Deserialize)]
+struct UpgradePlanRequest {
+    plan: String,
+}
+
+// ── Plan: Upgrade ──────────────────────────────────────────────────────────
+async fn upgrade_plan_endpoint(
+    State(state): State<AppState>,
+    headers: axum::http::HeaderMap,
+    Json(payload): Json<UpgradePlanRequest>,
+) -> impl IntoResponse {
+    let user = match authenticate_user(&state, &headers).await {
+        Some(u) => u,
+        None => return (StatusCode::UNAUTHORIZED, Json(ErrorBody { error: "Authentication required".into() })).into_response(),
+    };
+
+    let plan = payload.plan;
+    if plan != "Pro" && plan != "Enterprise" {
+        return (StatusCode::BAD_REQUEST, Json(ErrorBody { error: "Invalid plan name".into() })).into_response();
+    }
+
+    let now = chrono::Utc::now().to_rfc3339();
+    let expires_at = if plan == "Pro" {
+        (chrono::Utc::now() + chrono::Duration::days(365)).to_rfc3339()
+    } else {
+        (chrono::Utc::now() + chrono::Duration::days(365 * 5)).to_rfc3339()
+    };
+
+    let sub_id = uuid::Uuid::new_v4().to_string();
+
+    let result = sqlx::query(
+        "INSERT INTO subscriptions (id, user_id, plan, promo_code_used, activated_at, expires_at)
+         VALUES (?, ?, ?, ?, ?, ?)
+         ON CONFLICT(user_id) DO UPDATE SET
+           plan = excluded.plan,
+           promo_code_used = excluded.promo_code_used,
+           activated_at = excluded.activated_at,
+           expires_at = excluded.expires_at"
+    )
+    .bind(&sub_id)
+    .bind(&user.id)
+    .bind(&plan)
+    .bind(Option::<String>::None)
+    .bind(&now)
+    .bind(&expires_at)
+    .execute(&state.db)
+    .await;
+
+    if let Err(e) = result {
+        return (StatusCode::INTERNAL_SERVER_ERROR, Json(ErrorBody { error: format!("Failed to upgrade plan: {}", e) })).into_response();
+    }
+
+    let _ = state.upgrade_user_plan(&user.id, &plan).await;
+
+    Json(UserPlanInfo {
+        plan,
+        expires_at: Some(expires_at),
+        activated_at: Some(now),
+    }).into_response()
+}
+
 // ── Plan: Downgrade to Free ────────────────────────────────────────────────
 async fn downgrade_plan(
     State(state): State<AppState>,
@@ -1301,5 +1460,104 @@ async fn change_password(
     }
 
     StatusCode::OK.into_response()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use axum::{
+        body::Body,
+        http::{Request, StatusCode},
+    };
+    use tower::util::ServiceExt;
+
+    #[tokio::test]
+    async fn test_health_endpoint() {
+        let database_url = "sqlite::memory:";
+        let options = sqlx::sqlite::SqliteConnectOptions::from_str(database_url)
+            .unwrap()
+            .create_if_missing(true);
+        let pool = sqlx::SqlitePool::connect_with(options).await.unwrap();
+        init_db(&pool).await.unwrap();
+        let state = AppState::new(pool);
+
+        let app = Router::new()
+            .route("/health", get(health))
+            .with_state(state);
+
+        let response = app
+            .oneshot(Request::builder().uri("/health").body(Body::empty()).unwrap())
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), StatusCode::OK);
+        let body = axum::body::to_bytes(response.into_body(), 1024).await.unwrap();
+        let body_str = String::from_utf8(body.to_vec()).unwrap();
+        assert!(body_str.contains(r#""status":"ok""#));
+    }
+
+    #[tokio::test]
+    async fn test_tools_endpoint() {
+        let database_url = "sqlite::memory:";
+        let options = sqlx::sqlite::SqliteConnectOptions::from_str(database_url)
+            .unwrap()
+            .create_if_missing(true);
+        let pool = sqlx::SqlitePool::connect_with(options).await.unwrap();
+        init_db(&pool).await.unwrap();
+        let state = AppState::new(pool);
+
+        let app = Router::new()
+            .route("/tools", get(tools))
+            .with_state(state);
+
+        let response = app
+            .oneshot(Request::builder().uri("/tools").body(Body::empty()).unwrap())
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), StatusCode::OK);
+        let body = axum::body::to_bytes(response.into_body(), 10240).await.unwrap();
+        let body_str = String::from_utf8(body.to_vec()).unwrap();
+        assert!(body_str.contains(r#""id":"merge_pdf""#));
+    }
+
+    #[tokio::test]
+    async fn test_db_backup() {
+        let database_url = "sqlite://test_temp_db.db";
+        let options = sqlx::sqlite::SqliteConnectOptions::from_str(database_url)
+            .unwrap()
+            .create_if_missing(true);
+        let pool = sqlx::SqlitePool::connect_with(options).await.unwrap();
+        init_db(&pool).await.unwrap();
+
+        // Perform backup (should execute VACUUM INTO and create a file in backups/ folder)
+        let res = perform_db_backup(&pool).await;
+        assert!(res.is_ok(), "Backup failed: {:?}", res);
+
+        // Verify backups directory contains at least one backup file
+        let mut dir = tokio::fs::read_dir("backups").await.unwrap();
+        let mut found = false;
+        while let Some(entry) = dir.next_entry().await.unwrap() {
+            let path = entry.path();
+            if path.is_file() {
+                if let Some(filename) = path.file_name().and_then(|f| f.to_str()) {
+                    if filename.starts_with("welovepdf_backup_") && filename.ends_with(".db") {
+                        found = true;
+                        // Clean up the test file
+                        let _ = tokio::fs::remove_file(path).await;
+                    }
+                }
+            }
+        }
+
+        // Clean up database pool and temp files
+        drop(pool);
+        tokio::time::sleep(std::time::Duration::from_millis(100)).await;
+        let _ = tokio::fs::remove_file("test_temp_db.db").await;
+        let _ = tokio::fs::remove_file("test_temp_db.db-wal").await;
+        let _ = tokio::fs::remove_file("test_temp_db.db-shm").await;
+
+        assert!(found, "No backup file was created");
+    }
 }
 
