@@ -212,11 +212,13 @@
   font-weight: 320;
   color: rgba(255,255,255,0.55);
   text-decoration: none;
-  transition: color 0.15s;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-block;
 }
 
 .stitch-footer-col a:hover {
   color: #ffffff;
+  transform: translateX(4px);
 }
 
 .stitch-footer-bottom {
