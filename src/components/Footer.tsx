@@ -20,10 +20,9 @@ export function Footer({ onToolSelect, onViewChange }: FooterProps) {
                 window.scrollTo({ top: 0, behavior: "smooth" }); 
                 onViewChange("home"); 
               }}
-              style={{ display: "flex", alignItems: "center", gap: "8px" }}
+              style={{ display: "flex", alignItems: "center" }}
             >
-              <img src="/favicon-32x32.png" alt="" style={{ width: "22px", height: "22px", borderRadius: "5px", objectFit: "contain" }} />
-              Pdfmount.com
+              <img src="/logo.png" alt="Pdfmount.com" style={{ height: "30px", width: "auto", objectFit: "contain", filter: "brightness(0) invert(1)" }} />
             </a>
             <p className="stitch-footer-tagline">
               Simple, fast, and free PDF tools to help you get work done.
