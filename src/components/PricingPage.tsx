@@ -163,7 +163,7 @@ export function PricingPage({ currentUser, onUpgradeSuccess, onLoginRequired, on
   ];
 
   return (
-    <div className="stitch-landing" style={{ width: "100%", minHeight: "100vh", backgroundColor: "#ffffff", color: "#1b1b1b", paddingBottom: "120px" }}>
+    <div className="stitch-landing" style={{ width: "100%", minHeight: "100vh", backgroundColor: "#ffffff", color: "#1b1b1b" }}>
 
       {/* Promo Code Modal */}
       {showPromoModal && (
