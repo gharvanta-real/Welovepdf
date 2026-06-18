@@ -6,12 +6,10 @@ interface AccountDrawerProps {
   onClose: () => void;
   currentUser: { name: string; email: string; plan?: string } | null;
   onLogout: () => void;
-  theme: "white" | "light" | "dark";
-  setTheme: (theme: "white" | "light" | "dark") => void;
   onSettingsClick: () => void;
 }
 
-export function AccountDrawer({ isOpen, onClose, currentUser, onLogout, theme, setTheme, onSettingsClick }: AccountDrawerProps) {
+export function AccountDrawer({ isOpen, onClose, currentUser, onLogout, onSettingsClick }: AccountDrawerProps) {
   
   // Close on ESC key
   useEffect(() => {
@@ -39,14 +37,17 @@ export function AccountDrawer({ isOpen, onClose, currentUser, onLogout, theme, s
         <div className="drawer-header">
           <h3 className="drawer-header-title">Account Details</h3>
           <button className="drawer-close-btn" onClick={onClose} aria-label="Close menu">
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
 
         {/* User Card */}
         <div className="drawer-user-card">
-          <div className="drawer-avatar" style={{ backgroundColor: "#0074f0" }}>
-            {currentUser.name ? currentUser.name[0].toUpperCase() : currentUser.email[0].toUpperCase()}
+          <div className="drawer-avatar dynamic-avatar-gradient" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: "55%", height: "55%" }}>
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
           </div>
           <div className="drawer-user-meta">
             <strong className="drawer-user-name">{currentUser.name || currentUser.email.split("@")[0]}</strong>
@@ -56,7 +57,7 @@ export function AccountDrawer({ isOpen, onClose, currentUser, onLogout, theme, s
                 <UserCheck size={12} /> {currentUser.plan.toUpperCase()}
               </span>
             ) : (
-              <span className="free-badge" style={{ fontSize: '0.62rem', fontWeight: 800, color: 'var(--text-muted)', background: 'var(--border)', padding: '2px 6px', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', width: 'fit-content', marginTop: '4px' }}>
+              <span className="free-badge">
                 FREE MEMBER
               </span>
             )}
@@ -66,7 +67,9 @@ export function AccountDrawer({ isOpen, onClose, currentUser, onLogout, theme, s
         {/* Services & Storage Details */}
         <div className="drawer-section">
           <div className="section-header">
-            <HardDrive size={16} className="section-icon" />
+            <div className="settings-icon-wrapper storage-color">
+              <HardDrive size={14} />
+            </div>
             <span>Cloud Storage & Services</span>
           </div>
           
@@ -76,7 +79,7 @@ export function AccountDrawer({ isOpen, onClose, currentUser, onLogout, theme, s
               <strong>1.2 GB / 10 GB</strong>
             </div>
             <div className="progress-bar-bg">
-              <div className="progress-bar-fill" style={{ width: `${storagePercentage}%` }}></div>
+              <div className="progress-bar-fill dynamic-progress-gradient" style={{ width: `${storagePercentage}%` }}></div>
             </div>
             <span className="storage-subtext">Automatic files auto-delete: 7 days backup active.</span>
           </div>
@@ -90,51 +93,30 @@ export function AccountDrawer({ isOpen, onClose, currentUser, onLogout, theme, s
               <span>Unlimited PDF OCR</span>
               <span className="status-dot green">Active</span>
             </li>
-            <li className="service-item">
-              <span>AI Document Copilot</span>
-              <span className="status-dot green">Active</span>
-            </li>
           </ul>
         </div>
 
         {/* Settings Details */}
         <div className="drawer-section">
           <div className="section-header">
-            <Settings size={16} className="section-icon" />
+            <div className="settings-icon-wrapper preferences-color">
+              <Settings size={14} />
+            </div>
             <span>Preferences & Settings</span>
           </div>
 
-          <div className="theme-toggle-group">
-            <span className="theme-label">Appearance</span>
-            <div className="theme-segment-buttons">
-              <button 
-                className={`theme-seg-btn ${theme === "white" ? "active" : ""}`}
-                onClick={() => setTheme("white")}
-              >
-                White
-              </button>
-              <button 
-                className={`theme-seg-btn ${theme === "light" ? "active" : ""}`}
-                onClick={() => setTheme("light")}
-              >
-                Light
-              </button>
-              <button 
-                className={`theme-seg-btn ${theme === "dark" ? "active" : ""}`}
-                onClick={() => setTheme("dark")}
-              >
-                Dark
-              </button>
-            </div>
-          </div>
 
           <ul className="settings-options-list">
             <li className="settings-option-item" onClick={onSettingsClick}>
-              <Shield size={15} />
+              <div className="settings-icon-wrapper security-color">
+                <Shield size={14} />
+              </div>
               <span>Security & Password</span>
             </li>
             <li className="settings-option-item" onClick={() => alert("Support ticket pipeline opened!")}>
-              <HelpCircle size={15} />
+              <div className="settings-icon-wrapper support-color">
+                <HelpCircle size={14} />
+              </div>
               <span>Get Support</span>
             </li>
           </ul>
@@ -152,3 +134,4 @@ export function AccountDrawer({ isOpen, onClose, currentUser, onLogout, theme, s
     </>
   );
 }
+

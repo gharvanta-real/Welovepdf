@@ -29,3 +29,12 @@ export { PdfToPptSettings } from "./PdfToPptSettings";
 export { AnnotateSettings } from "./AnnotateSettings";
 export { OcrSettings } from "./OcrSettings";
 export { DefaultSettings } from "./DefaultSettings";
+export { GrayscaleSettings } from "./GrayscaleSettings";
+export { OptimizeSettings } from "./OptimizeSettings";
+export { PdfToTxtSettings } from "./PdfToTxtSettings";
+export { PdfToHtmlSettings } from "./PdfToHtmlSettings";
+export { PdfToPngSettings } from "./PdfToPngSettings";
+export { EditMetadataSettings } from "./EditMetadataSettings";
+export { HeaderFooterSettings } from "./HeaderFooterSettings";
+export { ResizeSettings } from "./ResizeSettings";
+

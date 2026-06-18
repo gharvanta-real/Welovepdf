@@ -55,14 +55,12 @@ export function PageSidebar({
                 borderRadius: "8px",
                 border: `2px solid ${isActive ? toolColor : isRemoved ? "#ef4444" : "transparent"}`,
                 padding: "6px",
-                backgroundColor: isActive
-                  ? `${toolColor}15`
-                  : isRemoved
+                backgroundColor: isRemoved
                   ? "rgba(239, 68, 68, 0.15)"
                   : "var(--c-bg)",
                 cursor: isRemoved ? "not-allowed" : "pointer",
                 transition: "all 0.2s",
-                boxShadow: isActive ? `0 2px 10px ${toolColor}33` : "0 1px 4px rgba(0,0,0,0.06)",
+                boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
               }}
             >
               <div

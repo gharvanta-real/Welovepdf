@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200..800&family=JetBrains+Mono:wght@400..700&display=swap');
 /* ── Google Stitch / Figma-style Monochrome Design System ── */
 
 
@@ -73,33 +72,12 @@
   --font-eyebrow: 18px;
 }
 
-/* Keep dark theme working for PdfEditor etc. */
-.app[data-theme="dark"] {
-  color-scheme: dark;
-  --c-bg:       #0f0f0f;
-  --c-surface:  #1a1a1a;
-  --c-text:     #f3f3f3;
-  --c-accent:   #ffffff;
-  --text-muted: #9ca3af;
-  --border:     #2e2e2e;
-  --surface-raised: #1a1a1a;
-  --accent-soft: #1f1f1f;
-  --accent-strong: #ffffff;
-  --shadow: 0 8px 30px rgba(0,0,0,0.4);
-  --s-primary:    #ffffff;
-  --s-on-primary: #000000;
-  --s-background: #0f0f0f;
-  --s-surface:    #1a1a1a;
-  --s-surface-low: #1f1f1f;
-  --s-on-surface:  #f3f3f3;
-  --s-on-surface-variant: #9ca3af;
-  --s-hairline:   #2e2e2e;
-  --s-hairline-soft: #252525;
-}
 
 .app[data-theme="white"],
 .app[data-theme="light"] {
   color-scheme: light;
+  --c-surface: #ffffff;
+  --surface-raised: #ffffff;
 }
 
 .app.visual-editor-active {

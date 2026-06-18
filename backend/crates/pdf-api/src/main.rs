@@ -1,9 +1,10 @@
 use axum::{
     extract::{ConnectInfo, Multipart, Path, State},
-    http::StatusCode,
-    response::IntoResponse,
+    http::{StatusCode, HeaderValue, header},
+    response::{IntoResponse, Response},
     routing::{get, post},
     Json, Router,
+    middleware::{self, Next},
 };
 use serde::{Deserialize, Serialize};
 use std::{net::SocketAddr, path::PathBuf, str::FromStr};
@@ -72,8 +73,22 @@ struct AuthResponse {
 }
 
 #[derive(Deserialize)]
-struct UpgradeRequest {
+struct SupabaseSyncRequest {
+    id: String,
+    email: String,
+    name: Option<String>,
+}
+
+#[derive(Deserialize)]
+struct ActivatePromoRequest {
+    promo_code: String,
+}
+
+#[derive(Serialize)]
+struct UserPlanInfo {
     plan: String,
+    expires_at: Option<String>,
+    activated_at: Option<String>,
 }
 
 #[derive(Serialize)]
@@ -81,6 +96,26 @@ struct UserStats {
     jobs_count_24h: i32,
     jobs_limit: i32,
     plan: String,
+}
+
+#[derive(Deserialize)]
+struct ContactRequest {
+    name: String,
+    email: String,
+    subject: Option<String>,
+    message: String,
+}
+
+#[derive(Deserialize)]
+struct UpdateProfileRequest {
+    name: Option<String>,
+    email: Option<String>,
+}
+
+#[derive(Deserialize)]
+struct ChangePasswordRequest {
+    current_password: String,
+    new_password: String,
 }
 
 pub async fn init_db(pool: &sqlx::SqlitePool) -> Result<(), sqlx::Error> {
@@ -124,7 +159,99 @@ pub async fn init_db(pool: &sqlx::SqlitePool) -> Result<(), sqlx::Error> {
     .execute(pool)
     .await?;
 
+    sqlx::query(
+        "CREATE TABLE IF NOT EXISTS contact_messages (
+            id TEXT PRIMARY KEY,
+            name TEXT NOT NULL,
+            email TEXT NOT NULL,
+            subject TEXT,
+            message TEXT NOT NULL,
+            created_at TEXT NOT NULL
+        );"
+    )
+    .execute(pool)
+    .await?;
+
+    // Subscriptions: tracks active paid plan per user with expiry
+    sqlx::query(
+        "CREATE TABLE IF NOT EXISTS subscriptions (
+            id TEXT PRIMARY KEY,
+            user_id TEXT NOT NULL UNIQUE,
+            plan TEXT NOT NULL DEFAULT 'Free',
+            promo_code_used TEXT,
+            activated_at TEXT NOT NULL,
+            expires_at TEXT NOT NULL,
+            FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+        );"
+    )
+    .execute(pool)
+    .await?;
+
+    // Promo codes: admin-seeded coupon codes that unlock plans
+    sqlx::query(
+        "CREATE TABLE IF NOT EXISTS promo_codes (
+            code TEXT PRIMARY KEY,
+            plan TEXT NOT NULL DEFAULT 'Pro',
+            max_uses INTEGER NOT NULL DEFAULT 100,
+            uses_so_far INTEGER NOT NULL DEFAULT 0,
+            expires_at TEXT NOT NULL
+        );"
+    )
+    .execute(pool)
+    .await?;
+
+    // Seed default promo code if not already present
+    sqlx::query(
+        "INSERT OR IGNORE INTO promo_codes (code, plan, max_uses, uses_so_far, expires_at)
+         VALUES ('WELOVEPDF2024', 'Pro', 500, 0, '2027-12-31T23:59:59Z');"
+    )
+    .execute(pool)
+    .await?;
+
+    sqlx::query(
+        "INSERT OR IGNORE INTO promo_codes (code, plan, max_uses, uses_so_far, expires_at)
+         VALUES ('PDFPRO2025', 'Pro', 200, 0, '2026-12-31T23:59:59Z');"
+    )
+    .execute(pool)
+    .await?;
+
+    sqlx::query(
+        "INSERT OR IGNORE INTO promo_codes (code, plan, max_uses, uses_so_far, expires_at)
+         VALUES ('PDFMOUNT2025', 'Pro', 500, 0, '2027-12-31T23:59:59Z');"
+    )
+    .execute(pool)
+    .await?;
+
+    sqlx::query(
+        "INSERT OR IGNORE INTO promo_codes (code, plan, max_uses, uses_so_far, expires_at)
+         VALUES ('PDFMOUNT.COM', 'Pro', 500, 0, '2027-12-31T23:59:59Z');"
+    )
+    .execute(pool)
+    .await?;
+
     Ok(())
+}
+
+async fn add_security_headers(req: axum::extract::Request, next: Next) -> Response {
+    let mut response = next.run(req).await;
+    let headers = response.headers_mut();
+    
+    headers.insert(header::X_FRAME_OPTIONS, HeaderValue::from_static("DENY"));
+    headers.insert(header::X_CONTENT_TYPE_OPTIONS, HeaderValue::from_static("nosniff"));
+    headers.insert(header::REFERRER_POLICY, HeaderValue::from_static("strict-origin-when-cross-origin"));
+    headers.insert(
+        header::CONTENT_SECURITY_POLICY,
+        HeaderValue::from_static("default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://efnxvidjqqvbbgcopjls.supabase.co wss://efnxvidjqqvbbgcopjls.supabase.co; img-src 'self' data:; frame-ancestors 'none';"),
+    );
+    headers.insert(
+        header::STRICT_TRANSPORT_SECURITY,
+        HeaderValue::from_static("max-age=63072000; includeSubDomains; preload"),
+    );
+    headers.insert(
+        header::HeaderName::from_static("permissions-policy"),
+        HeaderValue::from_static("camera=(), microphone=(), geolocation=(), interest-cohort=()"),
+    );
+    response
 }
 
 #[tokio::main]
@@ -133,7 +260,9 @@ async fn main() {
     let database_url = "sqlite://welovepdf.db";
     let options = sqlx::sqlite::SqliteConnectOptions::from_str(database_url)
         .expect("valid db url")
-        .create_if_missing(true);
+        .create_if_missing(true)
+        .journal_mode(sqlx::sqlite::SqliteJournalMode::Wal)
+        .synchronous(sqlx::sqlite::SqliteSynchronous::Normal);
 
     let pool = sqlx::SqlitePool::connect_with(options)
         .await
@@ -177,12 +306,19 @@ async fn main() {
         // New auth & user endpoints
         .route("/api/auth/register", post(register))
         .route("/api/auth/login", post(login))
+        .route("/api/auth/supabase-sync", post(supabase_sync))
         .route("/api/auth/logout", post(logout))
         .route("/api/auth/me", get(me))
-        .route("/api/user/upgrade", post(upgrade_plan))
+        .route("/api/user/activate-promo", post(activate_promo))
+        .route("/api/user/downgrade", post(downgrade_plan))
+        .route("/api/user/plan", get(get_plan))
         .route("/api/user/stats", get(get_stats))
         .route("/api/user/jobs", get(get_user_jobs_endpoint))
-        .with_state(state);
+        .route("/api/contact", post(handle_contact))
+        .route("/api/user/profile", axum::routing::patch(update_profile))
+        .route("/api/auth/change-password", post(change_password))
+        .with_state(state)
+        .layer(middleware::from_fn(add_security_headers));
 
     let addr = SocketAddr::from(([127, 0, 0, 1], 8080));
     let listener = tokio::net::TcpListener::bind(addr)
@@ -395,6 +531,25 @@ async fn authenticate_user(
     }
 }
 
+async fn get_active_plan(state: &AppState, user_id: &str) -> String {
+    // Check subscriptions table for a non-expired Pro subscription
+    let now = chrono::Utc::now().to_rfc3339();
+    let row: Option<(String, String)> = sqlx::query_as(
+        "SELECT plan, expires_at FROM subscriptions WHERE user_id = ? AND expires_at > ? LIMIT 1"
+    )
+    .bind(user_id)
+    .bind(&now)
+    .fetch_optional(&state.db)
+    .await
+    .ok()
+    .flatten();
+
+    match row {
+        Some((plan, _)) => plan,
+        None => "Free".to_string(),
+    }
+}
+
 async fn check_limits_and_authenticate(
     state: &AppState,
     headers: &axum::http::HeaderMap,
@@ -404,7 +559,9 @@ async fn check_limits_and_authenticate(
 
     let (max_bytes, max_jobs) = match &user {
         Some(u) => {
-            if u.plan == "Pro" {
+            // Always verify plan via subscriptions table (expiry-aware)
+            let active_plan = get_active_plan(state, &u.id).await;
+            if active_plan == "Pro" {
                 (500 * 1024 * 1024, 100) // 500 MB, 100 jobs
             } else {
                 (50 * 1024 * 1024, 5) // 50 MB, 5 jobs
@@ -542,7 +699,9 @@ async fn upload_generic(
                     "pdf-to-word" | "pdf-word" => "docx",
                     "pdf-to-excel" | "pdf-excel" => "xlsx",
                     "pdf-to-ppt" | "pdf-ppt" => "pptx",
-                    "split-pdf" | "split" => "zip",
+                    "pdf-to-txt" | "pdf-txt" | "pdf-to-text" => "txt",
+                    "pdf-to-html" | "pdf-html" => "html",
+                    "pdf-to-png" | "pdf-png" | "split-pdf" | "split" => "zip",
                     _ => "pdf",
                 };
 
@@ -719,6 +878,80 @@ async fn login(
     Json(AuthResponse { token, user }).into_response()
 }
 
+async fn supabase_sync(
+    State(state): State<AppState>,
+    Json(payload): Json<SupabaseSyncRequest>,
+) -> impl IntoResponse {
+    // 1. Check if user already exists
+    let user_db = match state.find_user_by_email(&payload.email).await {
+        Some(u) => u,
+        None => {
+            // User does not exist, let's create them in our local SQLite DB
+            // Use a random UUID for password hash since they will authenticate via Supabase
+            let random_pw = uuid::Uuid::new_v4().to_string();
+            let password_hash = match bcrypt::hash(&random_pw, bcrypt::DEFAULT_COST) {
+                Ok(h) => h,
+                Err(_) => {
+                    return (
+                        StatusCode::INTERNAL_SERVER_ERROR,
+                        "Failed to generate random password hash".to_string(),
+                    )
+                        .into_response()
+                }
+            };
+            
+            let name_val = payload.name.clone().unwrap_or_else(|| {
+                payload.email.split('@').next().unwrap_or("Supabase User").to_string()
+            });
+
+            if let Err(e) = state
+                .create_user(&payload.id, &payload.email, &name_val, &password_hash)
+                .await
+            {
+                return (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    format!("Failed to sync user: {}", e),
+                )
+                    .into_response();
+            }
+
+            // Fetch the newly created user
+            match state.find_user_by_email(&payload.email).await {
+                Some(u) => u,
+                None => {
+                    return (
+                        StatusCode::INTERNAL_SERVER_ERROR,
+                        "Failed to retrieve synced user".to_string(),
+                    )
+                        .into_response()
+                }
+            }
+        }
+    };
+
+    // 2. Create a standard WeLovePDF local session token
+    let token = uuid::Uuid::new_v4().to_string();
+    let expires_at = chrono::Utc::now() + chrono::Duration::days(7);
+
+    if let Err(e) = state.create_session(&token, &user_db.id, expires_at).await {
+        return (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            format!("Failed to create sync session: {}", e),
+        )
+            .into_response();
+    }
+
+    let user = state::User {
+        id: user_db.id,
+        email: user_db.email,
+        name: user_db.name,
+        plan: user_db.plan,
+        created_at: user_db.created_at,
+    };
+
+    Json(AuthResponse { token, user }).into_response()
+}
+
 async fn logout(State(state): State<AppState>, headers: axum::http::HeaderMap) -> impl IntoResponse {
     let token = headers
         .get(axum::http::header::AUTHORIZATION)
@@ -739,24 +972,152 @@ async fn me(State(state): State<AppState>, headers: axum::http::HeaderMap) -> im
     }
 }
 
-async fn upgrade_plan(
+// ── Plan: Activate Promo Code ─────────────────────────────────────────────
+async fn activate_promo(
     State(state): State<AppState>,
     headers: axum::http::HeaderMap,
-    Json(payload): Json<UpgradeRequest>,
+    Json(payload): Json<ActivatePromoRequest>,
 ) -> impl IntoResponse {
-    match authenticate_user(&state, &headers).await {
-        Some(user) => {
-            if let Err(e) = state.upgrade_user_plan(&user.id, &payload.plan).await {
-                return (
-                    StatusCode::INTERNAL_SERVER_ERROR,
-                    format!("Failed to upgrade plan: {}", e),
-                )
-                    .into_response();
-            }
-            StatusCode::OK.into_response()
-        }
-        None => StatusCode::UNAUTHORIZED.into_response(),
+    let user = match authenticate_user(&state, &headers).await {
+        Some(u) => u,
+        None => return (StatusCode::UNAUTHORIZED, Json(ErrorBody { error: "Authentication required".into() })).into_response(),
+    };
+
+    let code = payload.promo_code.trim().to_uppercase();
+    if code.is_empty() {
+        return (StatusCode::BAD_REQUEST, Json(ErrorBody { error: "Promo code cannot be empty".into() })).into_response();
     }
+
+    let now = chrono::Utc::now().to_rfc3339();
+
+    // Fetch promo code from DB
+    let promo: Option<(String, i64, i64, String)> = sqlx::query_as(
+        "SELECT plan, max_uses, uses_so_far, expires_at FROM promo_codes WHERE code = ?"
+    )
+    .bind(&code)
+    .fetch_optional(&state.db)
+    .await
+    .ok()
+    .flatten();
+
+    let (plan, max_uses, uses_so_far, code_expires_at) = match promo {
+        Some(p) => p,
+        None => return (StatusCode::BAD_REQUEST, Json(ErrorBody { error: "Invalid promo code".into() })).into_response(),
+    };
+
+    // Security: only allow whitelisted plans
+    if plan != "Pro" {
+        return (StatusCode::BAD_REQUEST, Json(ErrorBody { error: "Invalid promo code".into() })).into_response();
+    }
+
+    // Check code hasn't expired
+    if code_expires_at < now {
+        return (StatusCode::BAD_REQUEST, Json(ErrorBody { error: "This promo code has expired".into() })).into_response();
+    }
+
+    // Check usage limit
+    if uses_so_far >= max_uses {
+        return (StatusCode::BAD_REQUEST, Json(ErrorBody { error: "This promo code has reached its usage limit".into() })).into_response();
+    }
+
+    // Calculate subscription expiry (1 year from now)
+    let expires_at = (chrono::Utc::now() + chrono::Duration::days(365)).to_rfc3339();
+    let sub_id = uuid::Uuid::new_v4().to_string();
+
+    // Upsert subscription row (insert or update if user already has one)
+    let result = sqlx::query(
+        "INSERT INTO subscriptions (id, user_id, plan, promo_code_used, activated_at, expires_at)
+         VALUES (?, ?, ?, ?, ?, ?)
+         ON CONFLICT(user_id) DO UPDATE SET
+           plan = excluded.plan,
+           promo_code_used = excluded.promo_code_used,
+           activated_at = excluded.activated_at,
+           expires_at = excluded.expires_at"
+    )
+    .bind(&sub_id)
+    .bind(&user.id)
+    .bind(&plan)
+    .bind(&code)
+    .bind(&now)
+    .bind(&expires_at)
+    .execute(&state.db)
+    .await;
+
+    if let Err(e) = result {
+        return (StatusCode::INTERNAL_SERVER_ERROR, Json(ErrorBody { error: format!("Failed to activate plan: {}", e) })).into_response();
+    }
+
+    // Also update user's plan column for quick reads
+    let _ = state.upgrade_user_plan(&user.id, &plan).await;
+
+    // Increment promo code usage counter
+    let _ = sqlx::query("UPDATE promo_codes SET uses_so_far = uses_so_far + 1 WHERE code = ?")
+        .bind(&code)
+        .execute(&state.db)
+        .await;
+
+    Json(UserPlanInfo {
+        plan,
+        expires_at: Some(expires_at),
+        activated_at: Some(now),
+    }).into_response()
+}
+
+// ── Plan: Get Current Plan Info ────────────────────────────────────────────
+async fn get_plan(
+    State(state): State<AppState>,
+    headers: axum::http::HeaderMap,
+) -> impl IntoResponse {
+    let user = match authenticate_user(&state, &headers).await {
+        Some(u) => u,
+        None => return (StatusCode::UNAUTHORIZED, Json(ErrorBody { error: "Authentication required".into() })).into_response(),
+    };
+
+    let now = chrono::Utc::now().to_rfc3339();
+    let row: Option<(String, String, String)> = sqlx::query_as(
+        "SELECT plan, activated_at, expires_at FROM subscriptions WHERE user_id = ? LIMIT 1"
+    )
+    .bind(&user.id)
+    .fetch_optional(&state.db)
+    .await
+    .ok()
+    .flatten();
+
+    match row {
+        Some((plan, activated_at, expires_at)) => {
+            // Check if subscription is still active
+            let active_plan = if expires_at > now { plan } else { "Free".to_string() };
+            let (exp, act) = if expires_at > now {
+                (Some(expires_at), Some(activated_at))
+            } else {
+                (None, None)
+            };
+            Json(UserPlanInfo { plan: active_plan, expires_at: exp, activated_at: act }).into_response()
+        }
+        None => Json(UserPlanInfo { plan: "Free".to_string(), expires_at: None, activated_at: None }).into_response(),
+    }
+}
+
+// ── Plan: Downgrade to Free ────────────────────────────────────────────────
+async fn downgrade_plan(
+    State(state): State<AppState>,
+    headers: axum::http::HeaderMap,
+) -> impl IntoResponse {
+    let user = match authenticate_user(&state, &headers).await {
+        Some(u) => u,
+        None => return (StatusCode::UNAUTHORIZED, Json(ErrorBody { error: "Authentication required".into() })).into_response(),
+    };
+
+    // Remove active subscription
+    let _ = sqlx::query("DELETE FROM subscriptions WHERE user_id = ?")
+        .bind(&user.id)
+        .execute(&state.db)
+        .await;
+
+    // Update user's plan column back to Free
+    let _ = state.upgrade_user_plan(&user.id, "Free").await;
+
+    Json(UserPlanInfo { plan: "Free".to_string(), expires_at: None, activated_at: None }).into_response()
 }
 
 async fn get_stats(
@@ -818,3 +1179,127 @@ async fn get_user_jobs_endpoint(
         None => StatusCode::UNAUTHORIZED.into_response(),
     }
 }
+
+// ── Contact Message Handler ────────────────────────────────────────────────
+async fn handle_contact(
+    State(state): State<AppState>,
+    Json(payload): Json<ContactRequest>,
+) -> impl IntoResponse {
+    if payload.name.trim().is_empty() || payload.email.trim().is_empty() || payload.message.trim().is_empty() {
+        return (StatusCode::BAD_REQUEST, "Name, email, and message are required").into_response();
+    }
+
+    let id = uuid::Uuid::new_v4().to_string();
+    let result = sqlx::query(
+        "INSERT INTO contact_messages (id, name, email, subject, message, created_at) VALUES (?, ?, ?, ?, ?, ?)"
+    )
+    .bind(&id)
+    .bind(&payload.name)
+    .bind(&payload.email)
+    .bind(&payload.subject)
+    .bind(&payload.message)
+    .bind(chrono::Utc::now().to_rfc3339())
+    .execute(&state.db)
+    .await;
+
+    match result {
+        Ok(_) => (StatusCode::OK, "Message received! We'll get back to you soon.").into_response(),
+        Err(e) => (StatusCode::INTERNAL_SERVER_ERROR, format!("Failed to save message: {}", e)).into_response(),
+    }
+}
+
+// ── Profile Update Handler ─────────────────────────────────────────────────
+async fn update_profile(
+    State(state): State<AppState>,
+    headers: axum::http::HeaderMap,
+    Json(payload): Json<UpdateProfileRequest>,
+) -> impl IntoResponse {
+    let user = match authenticate_user(&state, &headers).await {
+        Some(u) => u,
+        None => return StatusCode::UNAUTHORIZED.into_response(),
+    };
+
+    // Update name if provided
+    if let Some(ref new_name) = payload.name {
+        if new_name.trim().is_empty() {
+            return (StatusCode::BAD_REQUEST, "Name cannot be empty").into_response();
+        }
+        if let Err(e) = sqlx::query("UPDATE users SET name = ? WHERE id = ?")
+            .bind(new_name)
+            .bind(&user.id)
+            .execute(&state.db)
+            .await
+        {
+            return (StatusCode::INTERNAL_SERVER_ERROR, format!("Failed to update name: {}", e)).into_response();
+        }
+    }
+
+    // Update email if provided
+    if let Some(ref new_email) = payload.email {
+        if new_email.trim().is_empty() {
+            return (StatusCode::BAD_REQUEST, "Email cannot be empty").into_response();
+        }
+        // Check uniqueness
+        if let Some(existing) = state.find_user_by_email(new_email).await {
+            if existing.id != user.id {
+                return (StatusCode::BAD_REQUEST, "Email is already in use by another account").into_response();
+            }
+        }
+        if let Err(e) = sqlx::query("UPDATE users SET email = ? WHERE id = ?")
+            .bind(new_email)
+            .bind(&user.id)
+            .execute(&state.db)
+            .await
+        {
+            return (StatusCode::INTERNAL_SERVER_ERROR, format!("Failed to update email: {}", e)).into_response();
+        }
+    }
+
+    StatusCode::OK.into_response()
+}
+
+// ── Change Password Handler ────────────────────────────────────────────────
+async fn change_password(
+    State(state): State<AppState>,
+    headers: axum::http::HeaderMap,
+    Json(payload): Json<ChangePasswordRequest>,
+) -> impl IntoResponse {
+    let user = match authenticate_user(&state, &headers).await {
+        Some(u) => u,
+        None => return StatusCode::UNAUTHORIZED.into_response(),
+    };
+
+    if payload.new_password.len() < 6 {
+        return (StatusCode::BAD_REQUEST, "New password must be at least 6 characters").into_response();
+    }
+
+    // Fetch current password hash
+    let user_db = match state.find_user_by_email(&user.email).await {
+        Some(u) => u,
+        None => return StatusCode::NOT_FOUND.into_response(),
+    };
+
+    // Verify current password
+    let matches = bcrypt::verify(&payload.current_password, &user_db.password_hash).unwrap_or(false);
+    if !matches {
+        return (StatusCode::UNAUTHORIZED, "Current password is incorrect").into_response();
+    }
+
+    // Hash new password and store
+    let new_hash = match bcrypt::hash(&payload.new_password, bcrypt::DEFAULT_COST) {
+        Ok(h) => h,
+        Err(e) => return (StatusCode::INTERNAL_SERVER_ERROR, format!("Hashing error: {}", e)).into_response(),
+    };
+
+    if let Err(e) = sqlx::query("UPDATE users SET password_hash = ? WHERE id = ?")
+        .bind(&new_hash)
+        .bind(&user.id)
+        .execute(&state.db)
+        .await
+    {
+        return (StatusCode::INTERNAL_SERVER_ERROR, format!("Failed to update password: {}", e)).into_response();
+    }
+
+    StatusCode::OK.into_response()
+}
+

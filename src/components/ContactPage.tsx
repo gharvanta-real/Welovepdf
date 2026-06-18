@@ -13,20 +13,29 @@ export function ContactPage({ onBack }: ContactPageProps) {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !email || !message) return;
 
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, subject, message }),
+      });
+      if (!res.ok) {
+        const errText = await res.text();
+        throw new Error(errText || "Failed to send message");
+      }
       setSubmitted(true);
-      setName("");
-      setEmail("");
-      setSubject("");
-      setMessage("");
-      setTimeout(() => setSubmitted(false), 4000);
-    }, 1200);
+      setName(""); setEmail(""); setSubject(""); setMessage("");
+      setTimeout(() => setSubmitted(false), 5000);
+    } catch (err: any) {
+      alert(err.message || "Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -203,7 +212,7 @@ export function ContactPage({ onBack }: ContactPageProps) {
               </h2>
             </div>
             <p style={{ color: "rgba(0,0,0,0.6)", fontSize: "16px", fontWeight: 320, lineHeight: 1.5, margin: 0 }}>
-              WeLovePDF is a completely free utility running on self-funded servers. If you appreciate the speed and ad-supported nature, scan the code to support our chai fund!
+              Pdfmount.com is a completely free utility running on self-funded servers. If you appreciate the speed and ad-supported nature, scan the code to support our chai fund!
             </p>
 
             <div 

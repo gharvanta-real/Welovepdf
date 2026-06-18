@@ -100,6 +100,31 @@ def main():
         elif tool_id == "pdf-to-ppt":
             processors.pdf_to_ppt(input_paths, output_path)
 
+        # 14b. Brand New Core Tools
+        elif tool_id in ["grayscale-pdf", "grayscale"]:
+            processors.grayscale_pdf(input_paths[0], output_path)
+
+        elif tool_id in ["optimize-pdf", "optimize"]:
+            processors.optimize_pdf(input_paths[0], output_path)
+
+        elif tool_id in ["pdf-to-txt", "pdf-txt", "pdf-to-text"]:
+            processors.pdf_to_txt(input_paths, output_path)
+
+        elif tool_id in ["pdf-to-html", "pdf-html"]:
+            processors.pdf_to_html(input_paths, output_path)
+
+        elif tool_id in ["pdf-to-png", "pdf-png"]:
+            processors.pdf_to_png(input_paths, output_path)
+
+        elif tool_id in ["metadata-pdf", "metadata"]:
+            processors.edit_metadata(input_paths, output_path)
+
+        elif tool_id in ["header-footer-pdf", "header-footer"]:
+            processors.add_header_footer(input_paths, output_path)
+
+        elif tool_id in ["resize-pdf", "resize"]:
+            processors.resize_pdf(input_paths, output_path)
+
         # 14. PDF OCR
         elif tool_id in ["pdf-ocr", "ocr-pdf"]:
             processors.run_ocr(input_paths, output_path)

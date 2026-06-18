@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { Download, MoreHorizontal } from "lucide-react";
+import { Download, MoreHorizontal, RefreshCw } from "lucide-react";
 import { ToolIcon } from "./ToolIcon";
 
-type JobStatus = "Done" | "Processing" | "Queued";
+type JobStatus = "Done" | "Processing" | "Queued" | "Failed";
 
 type Job = {
   id: string;
@@ -15,9 +15,10 @@ type Job = {
 
 type RecentJobsProps = {
   jobs: Job[];
+  onRetry?: (job: Job) => void;
 };
 
-export function RecentJobs({ jobs }: RecentJobsProps) {
+export function RecentJobs({ jobs, onRetry }: RecentJobsProps) {
   const [hoveredRowId, setHoveredRowId] = useState<string | null>(null);
   const [hoveredBtnId, setHoveredBtnId] = useState<string | null>(null);
 
@@ -25,7 +26,16 @@ export function RecentJobs({ jobs }: RecentJobsProps) {
     if (job.downloadUrl) {
       const link = document.createElement("a");
       link.href = job.downloadUrl;
-      link.download = job.file;
+      
+      let downloadName = job.file;
+      if (job.downloadUrl.toLowerCase().endsWith(".zip")) {
+        if (downloadName.toLowerCase().endsWith(".pdf")) {
+          downloadName = downloadName.slice(0, -4) + ".zip";
+        } else if (!downloadName.toLowerCase().endsWith(".zip")) {
+          downloadName = downloadName + ".zip";
+        }
+      }
+      link.download = downloadName;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -80,21 +90,38 @@ export function RecentJobs({ jobs }: RecentJobsProps) {
                     {job.status}
                   </span>
 
-                  <button 
-                    aria-label={`Download ${job.file}`}
-                    onClick={() => handleDownload(job)}
-                    disabled={job.status !== "Done"}
-                    onMouseEnter={() => setHoveredBtnId(`${job.id}-dl`)}
-                    onMouseLeave={() => setHoveredBtnId(null)}
-                    className="recent-job-btn"
-                    style={{
-                      background: hoveredBtnId === `${job.id}-dl` ? "var(--s-surface-low)" : "transparent",
-                      cursor: job.status === "Done" ? "pointer" : "not-allowed",
-                      opacity: job.status === "Done" ? 1 : 0.3,
-                    }}
-                  >
-                    <Download size={16} />
-                  </button>
+                  {job.status === "Failed" ? (
+                    <button 
+                      aria-label={`Retry ${job.file}`}
+                      onClick={() => onRetry && onRetry(job)}
+                      onMouseEnter={() => setHoveredBtnId(`${job.id}-retry`)}
+                      onMouseLeave={() => setHoveredBtnId(null)}
+                      className="recent-job-btn"
+                      style={{
+                        background: hoveredBtnId === `${job.id}-retry` ? "var(--s-surface-low)" : "transparent",
+                        cursor: "pointer",
+                        color: "#c62828",
+                      }}
+                    >
+                      <RefreshCw size={16} />
+                    </button>
+                  ) : (
+                    <button 
+                      aria-label={`Download ${job.file}`}
+                      onClick={() => handleDownload(job)}
+                      disabled={job.status !== "Done"}
+                      onMouseEnter={() => setHoveredBtnId(`${job.id}-dl`)}
+                      onMouseLeave={() => setHoveredBtnId(null)}
+                      className="recent-job-btn"
+                      style={{
+                        background: hoveredBtnId === `${job.id}-dl` ? "var(--s-surface-low)" : "transparent",
+                        cursor: job.status === "Done" ? "pointer" : "not-allowed",
+                        opacity: job.status === "Done" ? 1 : 0.3,
+                      }}
+                    >
+                      <Download size={16} />
+                    </button>
+                  )}
 
                   <button 
                     aria-label={`More actions for ${job.file}`}

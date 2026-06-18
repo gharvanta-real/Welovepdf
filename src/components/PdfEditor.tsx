@@ -4,6 +4,7 @@ import {
   FileText, Crop, Layers, Share2, Download
 } from "lucide-react";
 import { getToolColor } from "./ToolIcon";
+import { getPdfjsLib } from "../utils/pdfjs";
 
 // Subcomponents
 import { PageSidebar } from "./pdf-editor/PageSidebar";
@@ -188,38 +189,32 @@ export function PdfEditor({ file, selectedTool, onClose, onSave }: PdfEditorProp
     const fileReader = new FileReader();
     fileReader.onload = async function () {
       const typedarray = new Uint8Array(this.result as ArrayBuffer);
-      const pdfjsLib = (window as any).pdfjsLib;
-      if (pdfjsLib) {
-        try {
-          if (!pdfjsLib.GlobalWorkerOptions.workerSrc) {
-            pdfjsLib.GlobalWorkerOptions.workerSrc =
-              "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js";
-          }
-          const pdf = await pdfjsLib.getDocument({ data: typedarray }).promise;
-          setPdfDoc(pdf);
-          setTotalPages(pdf.numPages);
-          const order: number[] = [];
-          for (let i = 1; i <= pdf.numPages; i++) order.push(i);
-          setPageOrder(order);
+      try {
+        const pdfjsLib = await getPdfjsLib();
+        const pdf = await pdfjsLib.getDocument({ data: typedarray }).promise;
+        setPdfDoc(pdf);
+        setTotalPages(pdf.numPages);
+        const order: number[] = [];
+        for (let i = 1; i <= pdf.numPages; i++) order.push(i);
+        setPageOrder(order);
 
-          // Generate thumbnails
-          const thumbUrls: string[] = [];
-          for (let i = 1; i <= pdf.numPages; i++) {
-            const page = await pdf.getPage(i);
-            const viewport = page.getViewport({ scale: 0.18 });
-            const canvas = document.createElement("canvas");
-            canvas.height = viewport.height;
-            canvas.width = viewport.width;
-            const ctx = canvas.getContext("2d");
-            if (ctx) {
-              await page.render({ canvasContext: ctx, viewport }).promise;
-              thumbUrls.push(canvas.toDataURL());
-            }
+        // Generate thumbnails
+        const thumbUrls: string[] = [];
+        for (let i = 1; i <= pdf.numPages; i++) {
+          const page = await pdf.getPage(i);
+          const viewport = page.getViewport({ scale: 0.18 });
+          const canvas = document.createElement("canvas");
+          canvas.height = viewport.height;
+          canvas.width = viewport.width;
+          const ctx = canvas.getContext("2d");
+          if (ctx) {
+            await page.render({ canvasContext: ctx, viewport }).promise;
+            thumbUrls.push(canvas.toDataURL());
           }
-          setThumbnails(thumbUrls);
-        } catch (err) {
-          console.error("Error loading PDF in editor:", err);
         }
+        setThumbnails(thumbUrls);
+      } catch (err) {
+        console.error("Error loading PDF in editor:", err);
       }
     };
     fileReader.readAsArrayBuffer(file);
@@ -1287,8 +1282,8 @@ export function PdfEditor({ file, selectedTool, onClose, onSave }: PdfEditorProp
           {/* Status Bar */}
           <div style={{
             display: "flex", justifyContent: "space-between", alignItems: "center",
-            padding: "6px 20px", backgroundColor: "var(--surface-raised)", borderTop: "1px solid var(--border)",
-            color: "var(--text-muted)", fontSize: "0.72rem", flexShrink: 0
+            padding: "4px 20px", backgroundColor: "var(--surface-raised)", borderTop: "1px solid var(--border)",
+            color: "var(--text-muted)", fontSize: "0.70rem", flexShrink: 0
           }}>
             <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
               <span style={{ fontWeight: "600" }}>
@@ -1297,20 +1292,20 @@ export function PdfEditor({ file, selectedTool, onClose, onSave }: PdfEditorProp
               <span>Tool: <span style={{ color: toolColor, fontWeight: "600", textTransform: "capitalize" }}>{activeTool}</span></span>
               {selectedEl && <span>Selected: <span style={{ color: "var(--c-text)" }}>{selectedEl.type}</span></span>}
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
               <button onClick={() => setCurrentPage(p => Math.max(p - 1, 1))} disabled={currentPage === 1}
-                style={{ width: "24px", height: "24px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid var(--border)", background: "var(--c-bg)", color: "var(--text-muted)", cursor: currentPage === 1 ? "not-allowed" : "pointer", opacity: currentPage === 1 ? 0.4 : 1, padding: 0 }}>
-                <ChevronLeft size={13} />
+                style={{ width: "20px", height: "20px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid var(--border)", background: "var(--c-bg)", color: "var(--text-muted)", cursor: currentPage === 1 ? "not-allowed" : "pointer", opacity: currentPage === 1 ? 0.4 : 1, padding: 0 }}>
+                <ChevronLeft size={11} />
               </button>
               <button onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))} disabled={currentPage === totalPages}
-                style={{ width: "24px", height: "24px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid var(--border)", background: "var(--c-bg)", color: "var(--text-muted)", cursor: currentPage === totalPages ? "not-allowed" : "pointer", opacity: currentPage === totalPages ? 0.4 : 1, padding: 0 }}>
-                <ChevronRight size={13} />
+                style={{ width: "20px", height: "20px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid var(--border)", background: "var(--c-bg)", color: "var(--text-muted)", cursor: currentPage === totalPages ? "not-allowed" : "pointer", opacity: currentPage === totalPages ? 0.4 : 1, padding: 0 }}>
+                <ChevronRight size={11} />
               </button>
-              <div style={{ height: "14px", width: "1px", backgroundColor: "var(--border)", margin: "0 4px" }} />
-              <button onClick={() => setZoom(p => Math.max(p - 10, 30))} style={{ width: "24px", height: "24px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid var(--border)", background: "var(--c-bg)", color: "var(--text-muted)", cursor: "pointer", padding: 0 }}><ZoomOut size={12} /></button>
-              <span style={{ color: "var(--c-text)", fontWeight: "500", minWidth: "42px", textAlign: "center", fontSize: "0.75rem" }}>{zoom}%</span>
-              <button onClick={() => setZoom(p => Math.min(p + 10, 250))} style={{ width: "24px", height: "24px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid var(--border)", background: "var(--c-bg)", color: "var(--text-muted)", cursor: "pointer", padding: 0 }}><ZoomIn size={12} /></button>
-              <button onClick={() => setZoom(100)} style={{ height: "24px", padding: "0 8px", borderRadius: "9999px", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid var(--border)", background: "var(--c-bg)", color: "var(--text-muted)", cursor: "pointer", fontSize: "0.68rem", fontWeight: "500" }}><Maximize2 size={12} style={{ marginRight: "2px" }} /> 100%</button>
+              <div style={{ height: "10px", width: "1px", backgroundColor: "var(--border)", margin: "0 3px" }} />
+              <button onClick={() => setZoom(p => Math.max(p - 10, 30))} style={{ width: "20px", height: "20px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid var(--border)", background: "var(--c-bg)", color: "var(--text-muted)", cursor: "pointer", padding: 0 }}><ZoomOut size={11} /></button>
+              <span style={{ color: "var(--c-text)", fontWeight: "500", minWidth: "36px", textAlign: "center", fontSize: "0.72rem" }}>{zoom}%</span>
+              <button onClick={() => setZoom(p => Math.min(p + 10, 250))} style={{ width: "20px", height: "20px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid var(--border)", background: "var(--c-bg)", color: "var(--text-muted)", cursor: "pointer", padding: 0 }}><ZoomIn size={11} /></button>
+              <button onClick={() => setZoom(100)} style={{ height: "20px", padding: "0 6px", borderRadius: "9999px", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid var(--border)", background: "var(--c-bg)", color: "var(--text-muted)", cursor: "pointer", fontSize: "0.65rem", fontWeight: "500" }}><Maximize2 size={11} style={{ marginRight: "2px" }} /> 100%</button>
             </div>
           </div>
         </main>

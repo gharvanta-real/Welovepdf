@@ -44,7 +44,7 @@ export function getToolColor(identifier: string): string {
   if (key.includes("ocr")) return "#06b6d4"; // Bright Cyan
 
   // Default fallback
-  return "#0074f0"; // WeLovePDF Brand Blue
+  return "#0074f0"; // Pdfmount.com Brand Blue
 }
 
 export function getToolIconSVG(identifier: string, size = 20): React.ReactElement {
@@ -101,9 +101,9 @@ export function getToolIconSVG(identifier: string, size = 20): React.ReactElemen
   if (key.includes("compress")) {
     return (
       <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
-        <rect x="4" y="3" width="16" height="18" rx="2" />
-        <path d="M12 6.5v4M12 10.5l-2-2M12 10.5l2-2" stroke={toolColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-        <path d="M12 17.5v-4M12 13.5l-2 2M12 13.5l2-2" stroke={toolColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+        <rect x="4" y="3" width="16" height="18" rx="2" fillOpacity="0.3" />
+        <path d="M12 6.5v4M12 10.5l-2-2M12 10.5l2-2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+        <path d="M12 17.5v-4M12 13.5l-2 2M12 13.5l2-2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
       </svg>
     );
   }
@@ -112,9 +112,9 @@ export function getToolIconSVG(identifier: string, size = 20): React.ReactElemen
   if (key.includes("merge")) {
     return (
       <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
-        <rect x="3" y="7" width="12" height="14" rx="2" opacity="0.45" />
-        <rect x="9" y="3" width="12" height="14" rx="2" />
-        <path d="M14 9h2v-2h1v2h2v1h-2v2h-1v-2h-2v-1z" fill={toolColor} />
+        <rect x="3" y="7" width="12" height="14" rx="2" fillOpacity="0.2" />
+        <rect x="9" y="3" width="12" height="14" rx="2" fillOpacity="0.45" />
+        <path d="M14 9h2v-2h1v2h2v1h-2v2h-1v-2h-2v-1z" />
       </svg>
     );
   }
@@ -123,11 +123,11 @@ export function getToolIconSVG(identifier: string, size = 20): React.ReactElemen
   if (key.includes("split")) {
     return (
       <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
-        <path d="M4 3h16a1 1 0 011 1v7H3V4a1 1 0 011-1z" />
-        <path d="M3 13h18v7a1 1 0 01-1 1H4a1 1 0 01-1-1v-7z" />
-        <circle cx="7" cy="10" r="1.2" fill={toolColor} />
-        <circle cx="7" cy="14" r="1.2" fill={toolColor} />
-        <path d="M7.5 10.5L11 12M7.5 13.5L11 12M11 12h9" stroke={toolColor} strokeWidth="1.5" strokeLinecap="round" />
+        <path d="M4 3h16a1 1 0 011 1v7H3V4a1 1 0 011-1z" fillOpacity="0.3" />
+        <path d="M3 13h18v7a1 1 0 01-1 1H4a1 1 0 01-1-1v-7z" fillOpacity="0.3" />
+        <circle cx="7" cy="10" r="1.2" />
+        <circle cx="7" cy="14" r="1.2" />
+        <path d="M7.5 10.5L11 12M7.5 13.5L11 12M11 12h9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
       </svg>
     );
   }
@@ -136,8 +136,8 @@ export function getToolIconSVG(identifier: string, size = 20): React.ReactElemen
   if (key.includes("rotate")) {
     return (
       <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
-        <rect x="6" y="5" width="12" height="14" rx="1.5" />
-        <path d="M12 9a2.5 2.5 0 102.5 2.5h-1.2l1.8 2.2 1.8-2.2H15.5a4 4 0 11-4-4z" fill={toolColor} />
+        <rect x="6" y="5" width="12" height="14" rx="1.5" fillOpacity="0.3" />
+        <path d="M12 9a2.5 2.5 0 102.5 2.5h-1.2l1.8 2.2 1.8-2.2H15.5a4 4 0 11-4-4z" />
       </svg>
     );
   }
@@ -146,8 +146,8 @@ export function getToolIconSVG(identifier: string, size = 20): React.ReactElemen
   if (key.includes("remove") || key.includes("delete")) {
     return (
       <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
-        <rect x="4" y="3" width="16" height="18" rx="2" />
-        <path d="M8 7.5h8M9 9.5h6v7H9v-7zM11 11v4M13 11v4" stroke={toolColor} strokeWidth="1.5" strokeLinecap="round" />
+        <rect x="4" y="3" width="16" height="18" rx="2" fillOpacity="0.3" />
+        <path d="M8 7.5h8M9 9.5h6v7H9v-7zM11 11v4M13 11v4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
       </svg>
     );
   }
@@ -156,8 +156,8 @@ export function getToolIconSVG(identifier: string, size = 20): React.ReactElemen
   if (key.includes("watermark")) {
     return (
       <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
-        <rect x="4" y="3" width="16" height="18" rx="2" />
-        <text x="12" y="12.5" fill={toolColor} fontSize="5px" fontWeight="900" transform="rotate(-30 12 12.5)" textAnchor="middle" dominantBaseline="central">WATERMARK</text>
+        <rect x="4" y="3" width="16" height="18" rx="2" fillOpacity="0.3" />
+        <text x="12" y="12.5" fill="currentColor" fontSize="3px" fontWeight="900" transform="rotate(-30 12 12.5)" textAnchor="middle" dominantBaseline="central">WATERMARK</text>
       </svg>
     );
   }
@@ -166,9 +166,9 @@ export function getToolIconSVG(identifier: string, size = 20): React.ReactElemen
   if (key.includes("number")) {
     return (
       <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
-        <rect x="4" y="3" width="16" height="18" rx="2" />
-        <rect x="12" y="13" width="6" height="6" rx="1" fill={toolColor} />
-        <text x="15" y="16.5" fill="currentColor" fontSize="5.5px" fontWeight="900" textAnchor="middle" dominantBaseline="central">12</text>
+        <rect x="4" y="3" width="16" height="18" rx="2" fillOpacity="0.3" />
+        <rect x="12" y="13" width="6" height="6" rx="1" />
+        <text x="15" y="16.5" fill="var(--icon-bg-soft, #ffffff)" fontSize="5.5px" fontWeight="900" textAnchor="middle" dominantBaseline="central">12</text>
       </svg>
     );
   }
@@ -177,9 +177,9 @@ export function getToolIconSVG(identifier: string, size = 20): React.ReactElemen
   if (key.includes("sign") || key.includes("esign")) {
     return (
       <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
-        <rect x="4" y="3" width="16" height="18" rx="2" />
-        <path d="M13 6.5l2.5 2.5L9.5 15H7v-2.5L13 6.5z" fill={toolColor} />
-        <path d="M6 16.5c3-1.5 6-1.5 9-.5" stroke={toolColor} strokeWidth="1.5" strokeLinecap="round" fill="none" />
+        <rect x="4" y="3" width="16" height="18" rx="2" fillOpacity="0.3" />
+        <path d="M13 6.5l2.5 2.5L9.5 15H7v-2.5L13 6.5z" />
+        <path d="M6 16.5c3-1.5 6-1.5 9-.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" fill="none" />
       </svg>
     );
   }
@@ -190,8 +190,8 @@ export function getToolIconSVG(identifier: string, size = 20): React.ReactElemen
       <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
         <rect x="5" y="10" width="14" height="11" rx="2" fill="currentColor" />
         <path d="M8 10V6.5a4 4 0 017.5-2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-        <circle cx="12" cy="14.5" r="1.5" fill={toolColor} />
-        <path d="M12 16v2.5" stroke={toolColor} strokeWidth="1.2" strokeLinecap="round" />
+        <circle cx="12" cy="14.5" r="1.5" fill="var(--icon-bg-soft, #ffffff)" />
+        <path d="M12 16v2.5" stroke="var(--icon-bg-soft, #ffffff)" strokeWidth="1.2" strokeLinecap="round" />
       </svg>
     );
   }
@@ -202,8 +202,8 @@ export function getToolIconSVG(identifier: string, size = 20): React.ReactElemen
       <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
         <rect x="5" y="10" width="14" height="11" rx="2" fill="currentColor" />
         <path d="M8 10V6a4 4 0 118 0v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-        <circle cx="12" cy="14.5" r="1.5" fill={toolColor} />
-        <path d="M12 16v2.5" stroke={toolColor} strokeWidth="1.2" strokeLinecap="round" />
+        <circle cx="12" cy="14.5" r="1.5" fill="var(--icon-bg-soft, #ffffff)" />
+        <path d="M12 16v2.5" stroke="var(--icon-bg-soft, #ffffff)" strokeWidth="1.2" strokeLinecap="round" />
       </svg>
     );
   }
@@ -212,12 +212,12 @@ export function getToolIconSVG(identifier: string, size = 20): React.ReactElemen
   if (key.includes("ocr")) {
     return (
       <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
-        <rect x="4" y="3" width="16" height="18" rx="2" />
-        <rect x="7" y="7" width="10" height="1.2" rx="0.6" fill={toolColor} />
-        <rect x="7" y="10" width="10" height="1.2" rx="0.6" fill={toolColor} />
-        <rect x="7" y="13" width="6" height="1.2" rx="0.6" fill={toolColor} />
-        <circle cx="14.5" cy="14.5" r="2" fill="none" stroke={toolColor} strokeWidth="1.2" />
-        <path d="M16 16l2 2" stroke={toolColor} strokeWidth="1.2" strokeLinecap="round" />
+        <rect x="4" y="3" width="16" height="18" rx="2" fillOpacity="0.3" />
+        <rect x="7" y="7" width="10" height="1.2" rx="0.6" />
+        <rect x="7" y="10" width="10" height="1.2" rx="0.6" />
+        <rect x="7" y="13" width="6" height="1.2" rx="0.6" />
+        <circle cx="14.5" cy="14.5" r="2" fill="none" stroke="currentColor" strokeWidth="1.2" />
+        <path d="M16 16l2 2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
       </svg>
     );
   }
@@ -226,9 +226,9 @@ export function getToolIconSVG(identifier: string, size = 20): React.ReactElemen
   if (key.includes("jpg") || key.includes("png") || key.includes("image")) {
     return (
       <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
-        <rect x="4" y="4" width="16" height="16" rx="2" />
-        <circle cx="8.5" cy="8.5" r="1.8" fill={toolColor} />
-        <path d="M5 18l4.5-5.5 3.5 4.5 2.5-3 4.5 5H5z" fill={toolColor} />
+        <rect x="4" y="4" width="16" height="16" rx="2" fillOpacity="0.3" />
+        <circle cx="8.5" cy="8.5" r="1.8" />
+        <path d="M5 18l4.5-5.5 3.5 4.5 2.5-3 4.5 5H5z" />
       </svg>
     );
   }
@@ -237,8 +237,8 @@ export function getToolIconSVG(identifier: string, size = 20): React.ReactElemen
   if (key.includes("summarize") || key.includes("ai")) {
     return (
       <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
-        <rect x="4" y="3" width="16" height="18" rx="2" />
-        <path d="M9 11l.6-1.9 1.9-.6-1.9-.6L9 6l-.6 1.9-1.9.6 1.9.6L9 11zm5.5 5.5l.4-1.2 1.2-.4-1.2-.4-.4-1.2-.4 1.2-1.2.4 1.2.4.4 1.2z" fill={toolColor} />
+        <rect x="4" y="3" width="16" height="18" rx="2" fillOpacity="0.3" />
+        <path d="M9 11l.6-1.9 1.9-.6-1.9-.6L9 6l-.6 1.9-1.9.6 1.9.6L9 11zm5.5 5.5l.4-1.2 1.2-.4-1.2-.4-.4-1.2-.4 1.2-1.2.4 1.2.4.4 1.2z" />
       </svg>
     );
   }
@@ -247,11 +247,11 @@ export function getToolIconSVG(identifier: string, size = 20): React.ReactElemen
   if (key.includes("edit") || key.includes("annotator") || key.includes("reader") || key.includes("crop") || key.includes("redact") || key.includes("filler") || key.includes("share")) {
     return (
       <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
-        <rect x="4" y="3" width="16" height="18" rx="2" />
-        <path d="M14 6.5l2.5 2.5L10 15H7.5v-2.5L14 6.5z" fill={toolColor} />
-        <rect x="7" y="7" width="5" height="1.2" rx="0.6" fill={toolColor} opacity="0.4" />
-        <rect x="7" y="10" width="5" height="1.2" rx="0.6" fill={toolColor} opacity="0.4" />
-        <rect x="7" y="13" width="3" height="1.2" rx="0.6" fill={toolColor} opacity="0.4" />
+        <rect x="4" y="3" width="16" height="18" rx="2" fillOpacity="0.3" />
+        <path d="M14 6.5l2.5 2.5L10 15H7.5v-2.5L14 6.5z" />
+        <rect x="7" y="7" width="5" height="1.2" rx="0.6" opacity="0.4" />
+        <rect x="7" y="10" width="5" height="1.2" rx="0.6" opacity="0.4" />
+        <rect x="7" y="13" width="3" height="1.2" rx="0.6" opacity="0.4" />
       </svg>
     );
   }
@@ -259,8 +259,8 @@ export function getToolIconSVG(identifier: string, size = 20): React.ReactElemen
   // Default fallback
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
-      <rect x="4" y="3" width="16" height="18" rx="2" />
-      <path d="M7 7h10v2H7V7zm0 4h10v2H7v-2zm0 4h6v2H7v-2z" fill={toolColor} />
+      <rect x="4" y="3" width="16" height="18" rx="2" fillOpacity="0.3" />
+      <path d="M7 7h10v2H7V7zm0 4h10v2H7v-2zm0 4h6v2H7v-2z" />
     </svg>
   );
 }

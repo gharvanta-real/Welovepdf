@@ -1,4 +1,4 @@
-// LandingPage component for WeLovePDF application
+// LandingPage component for Pdfmount.com application
 import { tools, sitemapGroups } from "../data/tools";
 import { FileUp, ShieldCheck, Check, ArrowRight, ChevronRight, Award, Users, Star, Headset, FolderPlus, Download, Type, PenTool, Trash2, MessageSquare, Image, FileText, Square, Circle, Minimize2, Edit2 } from "lucide-react";
 import React from "react";
@@ -46,7 +46,7 @@ function EditorMockup() {
     <div style={{ display: "flex", flexDirection: "column", height: "100%", width: "100%", fontSize: "0.58rem", overflow: "hidden", color: "var(--c-text)", background: "var(--c-bg, #f8fafc)" }}>
       {/* Top ribbon bar */}
       <div style={{ display: "flex", gap: "6px", alignItems: "center", borderBottom: "1px solid var(--border)", padding: "4px 8px", backgroundColor: "var(--c-surface, #ffffff)" }}>
-        <span style={{ fontWeight: "700", color: "var(--c-accent, #4f46e5)", marginRight: "4px" }}>WeLovePDF Editor</span>
+        <span style={{ fontWeight: "700", color: "var(--c-accent, #4f46e5)", marginRight: "4px" }}>Pdfmount Editor</span>
         <div style={{ display: "flex", gap: "2px" }}>
           {["Text", "Highlight", "Pen", "Shape"].map((tool, i) => (
             <span key={tool} style={{ padding: "2px 6px", borderRadius: "4px", backgroundColor: i === 1 ? "var(--accent-soft, #e0e7ff)" : "transparent", color: i === 1 ? "var(--c-accent, #4f46e5)" : "var(--text-muted, #64748b)", fontWeight: "600" }}>{tool}</span>
@@ -326,32 +326,32 @@ function DashboardMockup() {
 const whyChooseData = [
   {
     title: "Pro Tools",
-    description: "Access premium PDF compression and advanced formatting tools built on native performance.",
+    description: "Get powerful PDF tools and layouts that do exactly what you want, in one place.",
     icon: Star
   },
   {
     title: "Security First",
-    description: "Fully compliant with ISO/IEC 27001, GDPR, and standard secure document deletion cycles.",
+    description: "We respect your privacy. All your uploaded documents are automatically deleted after one hour.",
     icon: ShieldCheck
   },
   {
-    title: "Over 1 Billion Users",
-    description: "Trusted globally by individuals, teams, and developers who love frictionless utilities.",
+    title: "Loved Globally",
+    description: "Used by millions of students, writers, and professionals who just want things to work.",
     icon: Users
   },
   {
-    title: "24/7 Support",
-    description: "Round-the-clock responsive documentation, tutorials, and human helper agents.",
+    title: "Helpful Support",
+    description: "Friendly help whenever you need it. We've got clear guides and a support team ready to assist.",
     icon: Headset
   },
   {
     title: "20+ PDF Tools",
-    description: "A comprehensive suite of conversion, structural optimization, and AI capabilities.",
+    description: "More than 20 tools. Merge, compress, convert, edit, and sign PDFs without jumping between websites.",
     icon: FolderPlus
   },
   {
-    title: "Award-winning UX",
-    description: "Recognized as G2 Category Leader for simplicity and functional web design interfaces.",
+    title: "Clean & Simple",
+    description: "No cluttered menus or complicated options — just click, process, and go.",
     icon: Award
   }
 ];
@@ -436,7 +436,7 @@ export function BrowserMockup() {
                 <span key={i} style={{ width: "3px", height: "3px", backgroundColor: i <= 3 ? "#1d4ed8" : i <= 6 ? "#2563eb" : "#60a5fa" }}></span>
               ))}
             </div>
-            <span>WeLovePDF</span>
+            <span>Pdfmount</span>
           </div>
 
           <div style={{
@@ -452,7 +452,7 @@ export function BrowserMockup() {
             color: "#64748b",
             border: "1px solid #e2e8f0"
           }}>
-            welovepdf.com/edit
+            pdfmount.com/edit
           </div>
         </div>
 
@@ -779,17 +779,15 @@ export function LandingPage({ onToolSelect, onViewChange }: LandingPageProps) {
             </div>
           </div>
 
-          {/* Right illustration */}
+          {/* Right illustration — transparent PNG from Hero-illustration folder */}
           <div className="stitch-hero-illustration">
             <div className="stitch-hero-glow" />
-            <div className="stitch-browser-card">
-              <div className="stitch-browser-dots">
-                <span style={{ background: "#ff5f56" }} />
-                <span style={{ background: "#ffbd2e" }} />
-                <span style={{ background: "#27c93f" }} />
-              </div>
-              <BrowserMockup />
-            </div>
+            <img
+              src="/hero-illustration.png"
+              alt="Pdfmount.com — All PDF tools illustrated"
+              className="stitch-hero-img"
+              draggable={false}
+            />
           </div>
         </div>
       </section>
@@ -841,17 +839,15 @@ export function LandingPage({ onToolSelect, onViewChange }: LandingPageProps) {
       {/* ── ENTERPRISE / SIGNING — Block Lime ── */}
       <section className="stitch-block-section stitch-block-lime">
         <div className="stitch-container">
-          <div className="stitch-split-section">
+          <div className="stitch-split-section has-large-visual">
             {/* Left visual */}
             <div className="stitch-split-visual">
-              <div className="stitch-feature-window">
-                <div className="stitch-browser-dots" style={{ marginBottom: "12px" }}>
-                  <span style={{ background: "#ff5f56" }} />
-                  <span style={{ background: "#ffbd2e" }} />
-                  <span style={{ background: "#27c93f" }} />
-                </div>
-                <SignatureMockup />
-              </div>
+              <img
+                src="/Secure Enterprise Signing for Modern Teams.png"
+                alt="Secure Enterprise Signing"
+                className="stitch-section-img stitch-section-img-large"
+                draggable={false}
+              />
             </div>
 
             {/* Right copy */}
@@ -889,7 +885,7 @@ export function LandingPage({ onToolSelect, onViewChange }: LandingPageProps) {
           </div>
 
           {featuresData.map((feature, idx) => (
-            <div className={`stitch-feature-row ${idx % 2 !== 0 ? "reverse" : ""}`} key={feature.title}>
+            <div className={`stitch-feature-row ${idx % 2 !== 0 ? "reverse" : ""} ${feature.id === "signature" ? "has-large-visual" : ""}`} key={feature.title}>
               <div className="stitch-feature-copy">
                 <h3 style={{ fontSize: "clamp(24px, 3vw, 36px)", fontWeight: 540, letterSpacing: "-0.3px", marginBottom: "16px" }}>
                   {feature.title}
@@ -906,17 +902,17 @@ export function LandingPage({ onToolSelect, onViewChange }: LandingPageProps) {
               </div>
 
               <div className="stitch-feature-visual">
-                <div className="stitch-feature-window">
-                  <div className="stitch-browser-dots" style={{ marginBottom: "8px" }}>
-                    <span style={{ background: "#ff5f56" }} />
-                    <span style={{ background: "#ffbd2e" }} />
-                    <span style={{ background: "#27c93f" }} />
-                  </div>
-                  {feature.id === "editor" && <EditorMockup />}
-                  {feature.id === "signature" && <SignatureMockup />}
-                  {feature.id === "organizer" && <OrganizerMockup />}
-                  {feature.id === "dashboard" && <DashboardMockup />}
-                </div>
+                <img
+                  src={
+                    feature.id === "editor"    ? "/Keep you task single work.png" :
+                    feature.id === "signature" ? "/Secure Enterprise Signing for Modern Teams.png" :
+                    feature.id === "organizer" ? "/Create the perfect document.png" :
+                                                 "/Smart conversion in progress.png"
+                  }
+                  alt={feature.illustrationText}
+                  className={`stitch-section-img ${feature.id === "signature" ? "stitch-section-img-large" : ""}`}
+                  draggable={false}
+                />
               </div>
             </div>
           ))}
@@ -927,7 +923,7 @@ export function LandingPage({ onToolSelect, onViewChange }: LandingPageProps) {
       <section className="stitch-block-section stitch-block-lilac">
         <div className="stitch-container">
           <div style={{ marginBottom: "48px" }}>
-            <span className="eyebrow" style={{ color: "rgba(0,0,0,0.5)" }}>Why WeLovePDF</span>
+            <span className="eyebrow" style={{ color: "rgba(0,0,0,0.5)" }}>Why Pdfmount.com</span>
             <h2 style={{ fontSize: "clamp(32px, 5vw, 56px)", fontWeight: 340, letterSpacing: "-0.8px" }}>
               Built for real workflows.
             </h2>
@@ -957,7 +953,7 @@ export function LandingPage({ onToolSelect, onViewChange }: LandingPageProps) {
             Ready to streamline<br/>your workflow?
           </h2>
           <p style={{ fontSize: "20px", fontWeight: 330, color: "rgba(0,0,0,0.55)", maxWidth: "560px", margin: "0 auto 40px" }}>
-            Join over 12 million professionals who trust WeLovePDF for their daily document tasks.
+            Join over 12 million professionals who trust Pdfmount.com for their daily document tasks.
           </p>
           <div className="stitch-cta-actions">
             <button className="stitch-pill-primary stitch-pill-lg" onClick={scrollToTools}>

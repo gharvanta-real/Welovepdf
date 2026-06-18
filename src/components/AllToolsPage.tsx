@@ -129,7 +129,7 @@ export function AllToolsPage({ onToolSelect, onPricingClick, onContactSalesClick
                           color: toolColor
                         }}
                       >
-                        <ToolIcon toolNameOrId={pop.name} size={16} style={{ width: "36px", height: "36px", borderRadius: "8px" }} />
+                        <ToolIcon toolNameOrId={pop.name} size={20} style={{ width: "36px", height: "36px", borderRadius: "8px" }} />
                       </div>
                       <span className="eyebrow" style={{ fontSize: "11px", color: "rgba(0,0,0,0.4)", textTransform: "uppercase", fontWeight: "600" }}>{pop.cat}</span>
                     </div>
@@ -261,7 +261,7 @@ export function AllToolsPage({ onToolSelect, onPricingClick, onContactSalesClick
                             onMouseEnter={(e) => e.currentTarget.style.color = toolColor}
                             onMouseLeave={(e) => e.currentTarget.style.color = "var(--s-on-surface)"}
                           >
-                            <ToolIcon toolNameOrId={tool.name} size={10} style={{ width: "22px", height: "22px", borderRadius: "5px" }} />
+                            <ToolIcon toolNameOrId={tool.name} size={14} style={{ width: "22px", height: "22px", borderRadius: "5px" }} />
                             <span>{tool.name}</span>
                           </a>
                         </li>
@@ -289,7 +289,7 @@ export function AllToolsPage({ onToolSelect, onPricingClick, onContactSalesClick
             Ready to streamline your workflow?
           </h2>
           <p style={{ opacity: 0.7, fontSize: "18px", fontWeight: 320, maxWidth: "600px", margin: "0 auto 40px", lineHeight: 1.5 }}>
-            Join over 12 million professionals who trust WeLovePDF for their daily document tasks.
+            Join over 12 million professionals who trust Pdfmount.com for their daily document tasks.
           </p>
           <div style={{ display: "flex", gap: "16px", justifyContent: "center", flexWrap: "wrap" }}>
             <button 

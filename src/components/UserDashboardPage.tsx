@@ -91,14 +91,14 @@ export function UserDashboardPage({ onBack, onToolSelect, onBrowseTools, jobs, c
 
   const handleCopyLink = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    navigator.clipboard.writeText(`https://welovepdf.com/shared/${id}`);
+    navigator.clipboard.writeText(`https://pdfmount.com/shared/${id}`);
     showToast("Share link copied to clipboard!");
     setActiveJobId(null);
   };
 
   // Sidebar Favorite Tools matching Figma exactly
   const favoriteTools = [
-    { name: "AI Summarize", desc: "Summarize PDF details", toolName: "Summarize PDF", color: "var(--s-block-lilac)", icon: Sparkles },
+    { name: "PDF to Word", desc: "Convert PDF to DOCX", toolName: "PDF to Word", color: "var(--s-block-lilac)", icon: FileText },
     { name: "Form Filler", desc: "Fill out PDF sheets", toolName: "Edit PDF", color: "var(--s-block-coral)", icon: Edit },
     { name: "E-Signature", desc: "Sign legal documents", toolName: "Sign PDF", color: "var(--s-block-lime)", icon: Stamp },
     { name: "Compress", desc: "Reduce visual file size", toolName: "Compress PDF", color: "var(--s-block-pink)", icon: Archive }

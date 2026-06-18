@@ -21,11 +21,11 @@ export function Footer({ onToolSelect, onViewChange }: FooterProps) {
                 onViewChange("home"); 
               }}
             >
-              WeLovePDF
+              Pdfmount.com
             </a>
             <p className="stitch-footer-tagline">
-              The precision-focused suite for document management.
-              Designed for creators, by creators.
+              Simple, fast, and free PDF tools to help you get work done.
+              No sign-up or installation required.
             </p>
           </div>
 
@@ -60,7 +60,7 @@ export function Footer({ onToolSelect, onViewChange }: FooterProps) {
         </div>
 
         <div className="stitch-footer-bottom">
-          <p>© {new Date().getFullYear()} WeLovePDF. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Pdfmount.com. All rights reserved.</p>
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             <ShieldCheck size={14} />
             <span>ISO/IEC 27001 Certified · Privacy Compliant</span>

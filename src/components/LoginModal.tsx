@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { X, Mail, Lock, User, AlertCircle, CheckCircle } from "lucide-react";
 
+import { supabase } from "../utils/supabase";
+
 interface LoginModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -76,49 +78,72 @@ export function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps)
         setErrorMsg("Passwords do not match.");
         return;
       }
-    } else if (authMode === "forgot") {
-      setErrorMsg("Password reset is currently mock-only. Simply register a new account if needed!");
-      return;
     }
 
     setLoading(true);
     try {
-      if (authMode === "signup") {
-        const registerResponse = await fetch("/api/auth/register", {
+      if (authMode === "forgot") {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: window.location.origin,
+        });
+        if (error) throw error;
+        setSuccessMsg("Password reset email sent successfully! Please check your inbox.");
+      } else if (authMode === "signup") {
+        // Sign up with Supabase
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              name,
+            },
+          },
+        });
+        if (error) throw error;
+        if (!data.user) throw new Error("Signup failed. Please try again.");
+
+        // Sync with local backend
+        const syncResponse = await fetch("/api/auth/supabase-sync", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, name, password }),
+          body: JSON.stringify({
+            id: data.user.id,
+            email: data.user.email,
+            name: name,
+          }),
         });
-        if (!registerResponse.ok) {
-          const errText = await registerResponse.text();
-          throw new Error(errText || "Registration failed");
+        if (!syncResponse.ok) {
+          throw new Error("Signup succeeded in Auth system, but sync failed. Please try logging in.");
         }
 
-        // Log in automatically
-        const loginResponse = await fetch("/api/auth/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password }),
-        });
-        if (!loginResponse.ok) {
-          throw new Error("Registration succeeded, but auto-login failed. Please log in manually.");
-        }
-        const authData = await loginResponse.json();
+        const authData = await syncResponse.json();
         localStorage.setItem("authToken", authData.token);
         onLoginSuccess(authData.user);
         onClose();
       } else {
-        // Login mode
-        const response = await fetch("/api/auth/login", {
+        // Login with Supabase
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+        if (error) throw error;
+        if (!data.user) throw new Error("Login failed.");
+
+        // Sync with local backend
+        const syncResponse = await fetch("/api/auth/supabase-sync", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password }),
+          body: JSON.stringify({
+            id: data.user.id,
+            email: data.user.email,
+            name: data.user.user_metadata?.name || name || email.split("@")[0],
+          }),
         });
-        if (!response.ok) {
-          const errText = await response.text();
-          throw new Error(errText || "Invalid email or password");
+        if (!syncResponse.ok) {
+          throw new Error("Credentials verified, but session sync failed.");
         }
-        const authData = await response.json();
+
+        const authData = await syncResponse.json();
         localStorage.setItem("authToken", authData.token);
         onLoginSuccess(authData.user);
         onClose();
@@ -130,21 +155,23 @@ export function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps)
     }
   };
 
-  const handleSocialAuth = (provider: "google" | "apple") => {
+  const handleSocialAuth = async (provider: "google" | "apple") => {
     setErrorMsg(null);
     setSuccessMsg(null);
     setLoading(true);
 
-    setTimeout(() => {
-      setLoading(false);
-      localStorage.setItem("authToken", `mock-${provider}-token`);
-      onLoginSuccess({
-        name: provider === "google" ? "Google User" : "Apple User",
-        email: `${provider.toLowerCase()}.user@example.com`,
-        plan: "Free",
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: window.location.origin,
+        },
       });
-      onClose();
-    }, 1000);
+      if (error) throw error;
+    } catch (err: any) {
+      setErrorMsg(err.message || "Social login failed.");
+      setLoading(false);
+    }
   };
 
   return (
@@ -248,7 +275,7 @@ export function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps)
             <p style={{ fontSize: "14px", fontWeight: 320, color: "var(--s-on-surface-variant)", margin: 0 }}>
               {authMode === "login" && (
                 <>
-                  New to WeLovePDF?{" "}
+                  New to Pdfmount.com?{" "}
                   <button 
                     onClick={() => { setErrorMsg(null); setAuthMode("signup"); }}
                     style={{ background: "none", border: "none", padding: 0, fontWeight: "600", textDecoration: "underline", color: "var(--s-primary)", cursor: "pointer" }}

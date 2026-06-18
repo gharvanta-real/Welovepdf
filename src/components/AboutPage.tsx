@@ -81,7 +81,7 @@ export function AboutPage({ onBack }: AboutPageProps) {
           <div style={{ flex: "1 1 400px", zIndex: 2, display: "flex", flexDirection: "column", gap: "24px" }}>
             <h2 style={{ fontSize: "clamp(32px, 4.5vw, 54px)", fontWeight: 340, letterSpacing: "-0.96px", margin: 0 }}>The Mission</h2>
             <p style={{ fontSize: "20px", fontWeight: 330, opacity: 0.8, lineHeight: 1.5, margin: 0, maxWidth: "480px" }}>
-              We believe that static documents shouldn't hold back dynamic ideas. WeLovePDF was founded to bridge the gap between fixed-format reliability and fluid creative potential.
+              We believe that static documents shouldn't hold back dynamic ideas. Pdfmount.com was founded to bridge the gap between fixed-format reliability and fluid creative potential.
             </p>
             <div>
               <button 

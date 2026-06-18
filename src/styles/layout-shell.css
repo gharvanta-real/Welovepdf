@@ -1,16 +1,6 @@
-.app-header {
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  min-height: var(--header-h);
-  padding: 0 var(--space-6);
-  border-bottom: 1px solid var(--border);
-  background: color-mix(in srgb, var(--c-bg) 88%, transparent);
-  backdrop-filter: blur(18px);
-}
+/* ── IMPORTANT: .app-header styling is fully owned by layout-header-stitch.css ──
+   Do not add .app-header rules here to avoid specificity conflicts. */
+
 
 .header-left {
   display: flex;
@@ -245,10 +235,7 @@
 }
 
 @media (max-width: 760px) {
-  .app-header {
-    grid-template-columns: auto auto 1fr auto;
-    padding: 0 var(--space-3);
-  }
+  /* NOTE: .app-header responsive rules are owned by layout-header-stitch.css */
 
   .mobile-only {
     display: grid;

@@ -18,13 +18,28 @@ export function ContactSalesPage({ onBack }: ContactSalesPageProps) {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) return;
+    if (!email || !firstName || !message) return;
 
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: `${firstName} ${lastName}`.trim(),
+          email: email,
+          subject: `Sales Inquiry (${company || "No Company"}) - Volume: ${volume}`,
+          message: message,
+        }),
+      });
+
+      if (!res.ok) {
+        const errText = await res.text();
+        throw new Error(errText || "Failed to submit sales inquiry");
+      }
+
       setSubmitted(true);
       setFirstName("");
       setLastName("");
@@ -33,7 +48,11 @@ export function ContactSalesPage({ onBack }: ContactSalesPageProps) {
       setVolume("10,000 - 50,000 docs");
       setMessage("");
       setTimeout(() => setSubmitted(false), 5000);
-    }, 1500);
+    } catch (err: any) {
+      alert(err.message || "Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const marqueeStyle = `
@@ -329,7 +348,7 @@ export function ContactSalesPage({ onBack }: ContactSalesPageProps) {
               <h2 style={{ fontSize: "24px", fontWeight: "600", margin: 0 }}>Buy the Dev a Chai ☕</h2>
             </div>
             <p style={{ color: "var(--s-on-surface-variant)", fontSize: "15px", lineHeight: 1.5, margin: 0 }}>
-              WeLovePDF is a completely free utility running on self-funded servers. If you appreciate the speed and ad-supported nature, scan the code to support our chai fund!
+              Pdfmount.com is a completely free utility running on self-funded servers. If you appreciate the speed and ad-supported nature, scan the code to support our chai fund!
             </p>
           </div>
 

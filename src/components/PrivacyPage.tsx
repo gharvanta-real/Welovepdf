@@ -92,7 +92,7 @@ export function PrivacyPage({ onBack }: PrivacyPageProps) {
             <div>
               <h2 style={{ fontSize: "20px", fontWeight: 540, marginBottom: "12px", letterSpacing: "-0.2px" }}>1. Information We Collect</h2>
               <p style={{ fontSize: "16px", fontWeight: 320, color: "rgba(0,0,0,0.6)", lineHeight: 1.6, margin: 0 }}>
-                WeLovePDF is a zero-registration document helper. We do not ask for personal details unless you contact support or submit feedback. We collect basic server logging information (such as anonymized IP addresses and browser configurations) solely to run rate limits and optimize server performance.
+                Pdfmount.com is a zero-registration document helper. We do not ask for personal details unless you contact support or submit feedback. We collect basic server logging information (such as anonymized IP addresses and browser configurations) solely to run rate limits and optimize server performance.
               </p>
             </div>
 

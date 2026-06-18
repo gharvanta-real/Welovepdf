@@ -22,6 +22,14 @@ import {
   Crop,
   Hash,
   FileCode,
+  Sliders,
+  Zap,
+  Droplet,
+  Info,
+  Heading,
+  Maximize,
+  Paintbrush,
+  Binary,
 } from "lucide-react";
 import type { ComponentType } from "react";
 
@@ -60,6 +68,8 @@ export const tools: PdfTool[] = [
   { id: "compress", name: "Compress PDF", group: "Popular", description: "Reduce the size of your PDF without losing quality", icon: Archive, sitemapGroup: "Compress & Merge" },
   { id: "flatten", name: "Flatten PDF", group: "Organize", description: "Flatten form fields and annotations into the page", icon: Layers, sitemapGroup: "Compress & Merge" },
   { id: "repair", name: "Repair PDF", group: "Organize", description: "Fix and recover corrupted or damaged PDF data", icon: Wrench, sitemapGroup: "Compress & Merge" },
+  { id: "grayscale-pdf", name: "Grayscale PDF", group: "Organize", description: "Convert colored PDF pages to clean black & white format", icon: Droplet, sitemapGroup: "Compress & Merge" },
+  { id: "optimize-pdf", name: "Optimize PDF", group: "Popular", description: "Optimize and linearize PDF documents for fast web viewing", icon: Zap, sitemapGroup: "Compress & Merge" },
 
   // Convert to PDF
   { id: "word-pdf", name: "Word to PDF", group: "Convert", description: "Convert DOCX and DOC files into stable PDFs", icon: FileText, sitemapGroup: "Convert to PDF" },
@@ -74,21 +84,27 @@ export const tools: PdfTool[] = [
   { id: "pdf-excel", name: "PDF to Excel", group: "Convert", description: "Convert PDFs to clean Excel spreadsheets", icon: Table2, sitemapGroup: "Convert from PDF" },
   { id: "pdf-ppt", name: "PDF to PPT", group: "Convert", description: "Convert PDF slides to editable PowerPoint presentations", icon: FileOutput, sitemapGroup: "Convert from PDF" },
   { id: "pdf-jpg", name: "PDF to JPG", group: "Convert", description: "Export PDF pages as sharp, independent JPG images", icon: FileImage, sitemapGroup: "Convert from PDF" },
+  { id: "pdf-txt", name: "PDF to TXT", group: "Convert", description: "Extract clean plain text from PDF document layout", icon: FileText, sitemapGroup: "Convert from PDF" },
+  { id: "pdf-html", name: "PDF to HTML", group: "Convert", description: "Convert PDF pages to responsive HTML web pages", icon: FileCode, sitemapGroup: "Convert from PDF" },
+  { id: "pdf-png", name: "PDF to PNG", group: "Convert", description: "Export PDF pages as individual high-quality PNG images", icon: Image, sitemapGroup: "Convert from PDF" },
 
   // View & Edit
   { id: "rotate", name: "Rotate PDF", group: "Organize", description: "Fix sideways pages or rotate entire documents", icon: RotateCw, sitemapGroup: "View & Edit" },
   { id: "remove", name: "Remove Pages", group: "Organize", description: "Delete unnecessary pages before sharing", icon: FolderKanban, sitemapGroup: "View & Edit" },
   { id: "extract", name: "Extract Pages", group: "Organize", description: "Extract specified page ranges into a new document", icon: Scissors, sitemapGroup: "View & Edit" },
   { id: "organize", name: "Organize PDF", group: "Organize", description: "Reorder, delete, and structure pages visually", icon: FolderKanban, sitemapGroup: "View & Edit" },
-
-  // AI
-  { id: "ai-copilot", name: "AI Document Copilot", group: "AI", description: "Interactive chat assistant to query document details", icon: MessageSquare, sitemapGroup: "View & Edit" },
-  { id: "summarize", name: "Summarize PDF", group: "AI", description: "Extract key bullet points and high-level summaries", icon: Sparkles, sitemapGroup: "View & Edit" },
-  { id: "translate", name: "Translate PDF", group: "AI", description: "Translate document pages to target languages instantly", icon: Languages, sitemapGroup: "View & Edit" },
+  { id: "crop-pdf", name: "Crop PDF", group: "Organize", description: "Crop page margins and define custom document boundaries", icon: Crop, sitemapGroup: "View & Edit" },
+  { id: "page-numbers", name: "Page Numbers", group: "Organize", description: "Number PDF pages automatically at custom locations", icon: Binary, sitemapGroup: "View & Edit" },
+  { id: "pdf-annotator", name: "PDF Annotator", group: "Popular", description: "Highlight, underline, draw, and add text comments to PDFs", icon: PenTool, sitemapGroup: "View & Edit" },
+  { id: "header-footer-pdf", name: "Header & Footer", group: "Organize", description: "Add customizable headers and footers to document pages", icon: Heading, sitemapGroup: "View & Edit" },
+  { id: "resize-pdf", name: "Resize PDF Pages", group: "Organize", description: "Change paper layout boundaries to A4, Letter, or Legal size", icon: Maximize, sitemapGroup: "View & Edit" },
 
   // Sign & Protect
   { id: "esign", name: "Sign PDF", group: "Popular", description: "Draw or type electronic signatures onto documents", icon: Stamp, sitemapGroup: "Brand & Security" },
   { id: "unlock", name: "Unlock PDF", group: "Secure", description: "Remove secure owner passwords and restrictions", icon: FileLock2, sitemapGroup: "Brand & Security" },
   { id: "protect", name: "Protect PDF", group: "Secure", description: "Encrypt your PDF with standard owner/user passwords", icon: ShieldCheck, sitemapGroup: "Brand & Security" },
   { id: "ocr", name: "PDF OCR", group: "AI", description: "Make scanned PDF pages fully searchable and editable", icon: RefreshCw, sitemapGroup: "Brand & Security" },
+  { id: "watermark-pdf", name: "Watermark PDF", group: "Popular", description: "Overlay customized text or image watermarks on pages", icon: Paintbrush, sitemapGroup: "Brand & Security" },
+  { id: "bates-numbering", name: "Bates Numbering", group: "Secure", description: "Index legal sheets with unique alphanumeric Bates numbering", icon: Hash, sitemapGroup: "Brand & Security" },
+  { id: "metadata-pdf", name: "Edit PDF Metadata", group: "Secure", description: "Edit title, author, subject, and keywords fields in a PDF", icon: Info, sitemapGroup: "Brand & Security" },
 ];

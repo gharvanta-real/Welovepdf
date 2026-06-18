@@ -20,8 +20,7 @@ interface DropdownGroup { title: string; items: DropdownItem[]; }
 
 const dropdownColumns: DropdownGroup[][] = [
   [
-    { title: "Optimize", items: [{ name: "Compress PDF" }, { name: "Flatten PDF" }, { name: "Repair PDF" }] },
-    { title: "AI Intelligence", items: [{ name: "AI Document Copilot" }, { name: "Summarize PDF" }, { name: "Translate PDF" }] }
+    { title: "Optimize", items: [{ name: "Compress PDF" }, { name: "Flatten PDF" }, { name: "Repair PDF" }] }
   ],
   [
     { title: "Page Operations", items: [{ name: "Merge PDF" }, { name: "Split PDF" }, { name: "Rotate PDF" }, { name: "Remove Pages" }, { name: "Extract Pages" }, { name: "Organize PDF" }] }
@@ -42,7 +41,6 @@ const allNavLinks = [
   { label: "Merge", tool: "Merge PDF" },
   { label: "Edit", tool: "Organize PDF" },
   { label: "Sign", tool: "Sign PDF" },
-  { label: "AI PDF", tool: "AI Document Copilot" },
 ];
 
 export function Header({ 
@@ -123,10 +121,10 @@ export function Header({
           <a
             className="stitch-brand"
             href="#home"
-            aria-label="WeLovePDF home"
+            aria-label="Pdfmount.com home"
             onClick={(e) => { e.preventDefault(); setIsDropdownOpen(false); setIsMobileMenuOpen(false); onLogoClick(); }}
           >
-            WeLovePDF
+            Pdfmount.com
           </a>
 
           {/* Desktop Center nav */}
@@ -168,7 +166,7 @@ export function Header({
                                       } as React.CSSProperties}
                                       onClick={(e) => { e.preventDefault(); handleToolSelect(item.name); }}
                                     >
-                                      <ToolIcon toolNameOrId={item.name} size={11} className="mega-icon" style={{ width: "22px", height: "22px", borderRadius: "5px" }} />
+                                      <ToolIcon toolNameOrId={item.name} size={14} className="mega-icon" style={{ width: "22px", height: "22px", borderRadius: "5px" }} />
                                       <span className="mega-item-name">{item.name}</span>
                                     </a>
                                   </li>
@@ -199,7 +197,6 @@ export function Header({
             <a className="stitch-nav-link" href="#merge" onClick={(e) => { e.preventDefault(); handleToolSelect("Merge PDF"); }}>Merge</a>
             <a className="stitch-nav-link" href="#organize" onClick={(e) => { e.preventDefault(); handleToolSelect("Organize PDF"); }}>Edit</a>
             <a className="stitch-nav-link" href="#esign" onClick={(e) => { e.preventDefault(); handleToolSelect("Sign PDF"); }}>Sign</a>
-            <a className="stitch-nav-link" href="#ai-copilot" onClick={(e) => { e.preventDefault(); handleToolSelect("AI Document Copilot"); }}>AI PDF</a>
 
             {currentUser && (
               <>
@@ -235,8 +232,11 @@ export function Header({
               aria-label="Open account menu"
               style={{ background: "transparent", border: "none", padding: 0, cursor: "pointer" }}
             >
-              <div className="user-avatar" style={{ background: "var(--s-primary)", color: "var(--s-on-primary)" }}>
-                {currentUser.name ? currentUser.name[0].toUpperCase() : currentUser.email[0].toUpperCase()}
+              <div className="user-avatar dynamic-avatar-gradient" style={{ color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: "55%", height: "55%" }}>
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
               </div>
             </button>
           )}
@@ -259,7 +259,7 @@ export function Header({
       )}
       <div className={`mobile-menu-drawer ${isMobileMenuOpen ? "is-open" : ""}`}>
         <div className="mobile-menu-header">
-          <span className="stitch-brand" style={{ fontSize: "16px" }}>WeLovePDF</span>
+          <span className="stitch-brand" style={{ fontSize: "16px" }}>Pdfmount.com</span>
           <button className="mobile-menu-close" onClick={() => setIsMobileMenuOpen(false)}>
             <X size={20} />
           </button>
@@ -303,7 +303,7 @@ export function Header({
                       onClick={() => handleToolSelect(item.name)}
                       style={{ "--tool-color": toolColor } as React.CSSProperties}
                     >
-                      <ToolIcon toolNameOrId={item.name} size={11} style={{ width: "28px", height: "28px", borderRadius: "7px", flexShrink: 0 }} />
+                      <ToolIcon toolNameOrId={item.name} size={16} style={{ width: "28px", height: "28px", borderRadius: "7px", flexShrink: 0 }} />
                       <span>{item.name}</span>
                     </button>
                   );

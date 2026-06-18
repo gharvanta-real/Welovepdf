@@ -149,17 +149,28 @@
   pointer-events: none;
 }
 
-.stitch-browser-card {
-  background: #1a1a1a;
-  border-radius: 14px;
-  padding: 14px 14px 10px;
+/* ── Hero illustration image (transparent PNG) ── */
+.stitch-hero-img {
   width: 100%;
-  max-width: 540px;
-  box-shadow: 0 32px 80px rgba(0,0,0,0.2), 0 8px 24px rgba(0,0,0,0.1);
-  overflow: hidden;
+  max-width: 580px;
+  height: auto;
+  object-fit: contain;
   position: relative;
   z-index: 1;
+  display: block;
+  user-select: none;
+  -webkit-user-drag: none;
+  /* Subtle drop shadow to lift it off the white background */
+  filter: drop-shadow(0 24px 48px rgba(0, 0, 0, 0.08));
+  animation: hero-float 6s ease-in-out infinite;
 }
+
+@keyframes hero-float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-10px); }
+}
+
+
 
 .stitch-browser-dots {
   display: flex;

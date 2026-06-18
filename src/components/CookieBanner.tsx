@@ -10,7 +10,7 @@ export function CookieBanner({ onPrivacyPolicyClick }: CookieBannerProps) {
 
   useEffect(() => {
     // Check if user has already made a choice
-    const consent = localStorage.getItem("welovepdf-cookie-consent");
+    const consent = localStorage.getItem("pdfmount-cookie-consent");
     if (!consent) {
       // Show with a slight delay for a premium entrance effect
       const timer = setTimeout(() => {
@@ -21,12 +21,12 @@ export function CookieBanner({ onPrivacyPolicyClick }: CookieBannerProps) {
   }, []);
 
   const handleAccept = () => {
-    localStorage.setItem("welovepdf-cookie-consent", "accepted");
+    localStorage.setItem("pdfmount-cookie-consent", "accepted");
     setIsVisible(false);
   };
 
   const handleDecline = () => {
-    localStorage.setItem("welovepdf-cookie-consent", "declined");
+    localStorage.setItem("pdfmount-cookie-consent", "declined");
     setIsVisible(false);
   };
 

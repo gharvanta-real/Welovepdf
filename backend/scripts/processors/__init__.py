@@ -22,3 +22,12 @@ from .ocr import run_ocr
 from .ai_summarize import run_ai_summarize
 from .ai_translate import run_ai_translate
 from .ai_copilot import run_ai_copilot
+from .grayscale import grayscale_pdf
+from .optimize import optimize_pdf
+from .pdf_to_txt import pdf_to_txt
+from .pdf_to_html import pdf_to_html
+from .pdf_to_png import pdf_to_png
+from .metadata import edit_metadata
+from .header_footer import add_header_footer
+from .resize import resize_pdf
+

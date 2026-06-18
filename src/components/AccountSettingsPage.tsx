@@ -1,22 +1,25 @@
-import React, { useState } from "react";
-import { ArrowLeft, User, Shield, CreditCard, Bell, LogOut, CheckCircle2, Key, ToggleLeft, ToggleRight, Smartphone, Laptop, Download, Edit2 } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { ArrowLeft, User, Shield, CreditCard, Bell, LogOut, CheckCircle2, Key, ToggleLeft, ToggleRight, Smartphone, Laptop, Crown, Tag } from "lucide-react";
 
 interface AccountSettingsPageProps {
   onBack: () => void;
   currentUser: { name: string; email: string; plan?: string } | null;
   onLogout: () => void;
+  onUpdateUser?: (user: { name: string; email: string; plan?: string }) => void;
+  onPricingClick?: () => void;
 }
 
 type SettingsTab = "profile" | "billing" | "security" | "notifications";
 
-export function AccountSettingsPage({ onBack, currentUser, onLogout }: AccountSettingsPageProps) {
+export function AccountSettingsPage({ onBack, currentUser, onLogout, onUpdateUser, onPricingClick }: AccountSettingsPageProps) {
   const [activeTab, setActiveTab] = useState<SettingsTab>("profile");
   const [toastMsg, setToastMsg] = useState("");
+  const [loading, setLoading] = useState(false);
   
   // Profile Fields
-  const [firstName, setFirstName] = useState(currentUser?.name?.split(" ")[0] || "Julian");
-  const [lastName, setLastName] = useState(currentUser?.name?.split(" ")[1] || "Thorne");
-  const [email, setEmail] = useState(currentUser?.email || "julian@architype.design");
+  const [firstName, setFirstName] = useState(currentUser?.name?.split(" ")[0] || "");
+  const [lastName, setLastName] = useState(currentUser?.name?.split(" ").slice(1).join(" ") || "");
+  const [email, setEmail] = useState(currentUser?.email || "");
   
   // Security Fields
   const [currentPass, setCurrentPass] = useState("");
@@ -30,33 +33,162 @@ export function AccountSettingsPage({ onBack, currentUser, onLogout }: AccountSe
     { id: 2, device: "Safari on iPhone 15", location: "San Francisco, CA • 192.168.1.4", isCurrent: false, icon: Smartphone }
   ]);
 
+  // Plan info from backend
+  const [planInfo, setPlanInfo] = useState<{ plan: string; expires_at: string | null; activated_at: string | null } | null>(null);
+  const [planLoading, setPlanLoading] = useState(false);
+  const [downgradeLoading, setDowngradeLoading] = useState(false);
+
+  function formatDate(iso: string | null): string {
+    if (!iso) return "";
+    try { return new Date(iso).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" }); }
+    catch { return iso; }
+  }
+
+  // Fetch real plan info
+  useEffect(() => {
+    const token = localStorage.getItem("authToken");
+    if (!token || !currentUser) return;
+    setPlanLoading(true);
+    fetch("/api/user/plan", { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => r.ok ? r.json() : null)
+      .then(data => { if (data) setPlanInfo(data); })
+      .catch(() => {})
+      .finally(() => setPlanLoading(false));
+  }, [currentUser]);
+
+  async function handleDowngrade() {
+    if (!window.confirm("Downgrade to Free plan? Your Pro access will end immediately.")) return;
+    const token = localStorage.getItem("authToken");
+    if (!token) return;
+    setDowngradeLoading(true);
+    try {
+      const res = await fetch("/api/user/downgrade", { method: "POST", headers: { Authorization: `Bearer ${token}` } });
+      if (res.ok) {
+        const data = await res.json();
+        setPlanInfo(data);
+        if (onUpdateUser && currentUser) onUpdateUser({ ...currentUser, plan: "Free" });
+        showToast("Downgraded to Free plan.");
+      } else {
+        showToast("Failed to downgrade. Please try again.");
+      }
+    } catch {
+      showToast("Network error.");
+    } finally {
+      setDowngradeLoading(false);
+    }
+  }
+
+  const effectivePlan = planInfo?.plan || currentUser?.plan || "Free";
+  const isProActive = effectivePlan === "Pro";
+
   // Notifications State
-  const [notifs, setNotifs] = useState({
-    security: true,
-    updates: true,
-    newsletter: false
+  const [notifs, setNotifs] = useState<{ security: boolean; updates: boolean; newsletter: boolean }>(() => {
+    const saved = localStorage.getItem("user_notifs");
+    if (saved) {
+      try { return JSON.parse(saved); }
+      catch (e) { console.error(e); }
+    }
+    return { security: true, updates: true, newsletter: false };
   });
+
+  useEffect(() => {
+    localStorage.setItem("user_notifs", JSON.stringify(notifs));
+  }, [notifs]);
 
   const showToast = (msg: string) => {
     setToastMsg(msg);
     setTimeout(() => setToastMsg(""), 3000);
   };
 
-  const handleProfileSubmit = (e: React.FormEvent) => {
+  const handleProfileSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    showToast("Profile changes saved successfully!");
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+      showToast("Error: You must be logged in to update your profile.");
+      return;
+    }
+    
+    setLoading(true);
+    try {
+      const res = await fetch("/api/user/profile", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          name: `${firstName} ${lastName}`.trim(),
+          email: email
+        })
+      });
+      
+      if (res.ok) {
+        showToast("Profile changes saved successfully!");
+        if (onUpdateUser) {
+          onUpdateUser({
+            name: `${firstName} ${lastName}`.trim(),
+            email: email,
+            plan: currentUser?.plan || "Free"
+          });
+        }
+      } else {
+        const errMsg = await res.text();
+        showToast(`Error: ${errMsg || "Failed to update profile"}`);
+      }
+    } catch (err) {
+      console.error(err);
+      showToast("Network error: Failed to update profile.");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handlePasswordSubmit = (e: React.FormEvent) => {
+  const handlePasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newPass || newPass !== confirmPass) {
       showToast("Error: Passwords do not match or are empty.");
       return;
     }
-    showToast("Password updated successfully!");
-    setCurrentPass("");
-    setNewPass("");
-    setConfirmPass("");
+    if (newPass.length < 6) {
+      showToast("Error: New password must be at least 6 characters.");
+      return;
+    }
+    
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+      showToast("Error: You must be logged in to update password.");
+      return;
+    }
+    
+    setLoading(true);
+    try {
+      const res = await fetch("/api/auth/change-password", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          current_password: currentPass,
+          new_password: newPass
+        })
+      });
+      
+      if (res.ok) {
+        showToast("Password updated successfully!");
+        setCurrentPass("");
+        setNewPass("");
+        setConfirmPass("");
+      } else {
+        const errMsg = await res.text();
+        showToast(`Error: ${errMsg || "Failed to update password"}`);
+      }
+    } catch (err) {
+      console.error(err);
+      showToast("Network error: Failed to update password.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleLogoutSession = (id: number) => {
@@ -177,14 +309,18 @@ export function AccountSettingsPage({ onBack, currentUser, onLogout }: AccountSe
                 
                 <div style={{ display: "flex", alignItems: "center", gap: "24px", paddingBottom: "24px", borderBottom: "1px solid var(--s-hairline)" }}>
                   <div style={{ position: "relative" }}>
-                    <div style={{ width: "96px", height: "96px", borderRadius: "50%", backgroundColor: "var(--s-block-lilac)", color: "var(--s-primary)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "32px", fontWeight: "700" }}>
-                      {firstName[0]?.toUpperCase()}{lastName[0]?.toUpperCase()}
+                    <div className="dynamic-avatar-gradient" style={{ width: "96px", height: "96px", borderRadius: "50%", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: "50%", height: "50%" }}>
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                        <circle cx="12" cy="7" r="4" />
+                      </svg>
                     </div>
                     <button 
                       onClick={() => alert("Simulation: Select file window opened to change avatar.")}
                       style={{ position: "absolute", bottom: 0, right: 0, backgroundColor: "var(--s-primary)", color: "var(--s-on-primary)", border: "none", borderRadius: "50%", padding: "6px", cursor: "pointer" }}
                     >
-                      <Edit2 size={12} />
+                      <span style={{ fontSize: "12px", lineHeight: 1 }}>✎</span>
+
                     </button>
                   </div>
                   <div>
@@ -241,77 +377,84 @@ export function AccountSettingsPage({ onBack, currentUser, onLogout }: AccountSe
                   <h2 style={{ fontSize: "28px", fontWeight: "600", margin: "8px 0 0 0" }}>Plan & Billing</h2>
                 </div>
 
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "24px" }}>
-                  {/* Current Plan Card */}
-                  <div style={{ backgroundColor: "var(--s-block-navy)", color: "#ffffff", padding: "28px", borderRadius: "16px", display: "flex", flexDirection: "column", justifyContent: "space-between", minHeight: "180px" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "16px" }}>
-                      <span style={{ backgroundColor: "var(--s-block-lime)", color: "var(--s-primary)", padding: "4px 10px", borderRadius: "9999px", fontSize: "11px", fontWeight: "700", textTransform: "uppercase" }}>
-                        {currentUser?.plan || "PRO PLAN"}
-                      </span>
-                      <span style={{ fontSize: "28px", fontWeight: "700" }}>$24<span style={{ fontSize: "14px", opacity: 0.6 }}>/mo</span></span>
-                    </div>
-                    <p style={{ fontSize: "13px", opacity: 0.8, lineHeight: 1.4, margin: "0 0 20px 0" }}>Full access to advanced PDF editing tools, unlimited storage, and priority support.</p>
-                    <div style={{ display: "flex", gap: "12px" }}>
-                      <button onClick={() => alert("Manage Plan Simulator")} style={{ padding: "8px 16px", backgroundColor: "#ffffff", color: "var(--s-primary)", border: "none", borderRadius: "9999px", fontSize: "13px", fontWeight: "600", cursor: "pointer" }}>Manage Plan</button>
-                      <button onClick={() => alert("Compare Plans Simulator")} style={{ padding: "8px 16px", backgroundColor: "transparent", color: "#ffffff", border: "1px solid rgba(255,255,255,0.3)", borderRadius: "9999px", fontSize: "13px", cursor: "pointer" }}>Compare</button>
-                    </div>
-                  </div>
+                {planLoading ? (
+                  <div style={{ padding: "40px", textAlign: "center", color: "var(--s-secondary)", fontSize: "14px" }}>Loading plan info...</div>
+                ) : (
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "24px" }}>
 
-                  {/* Payment Method */}
-                  <div style={{ border: "1px solid var(--s-hairline)", padding: "28px", borderRadius: "16px", display: "flex", flexDirection: "column", justifyContent: "space-between", minHeight: "180px" }}>
-                    <div>
-                      <span className="eyebrow" style={{ fontSize: "11px", color: "var(--s-secondary)", display: "block", marginBottom: "16px" }}>DEFAULT PAYMENT METHOD</span>
-                      <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
-                        <div style={{ width: "44px", height: "32px", backgroundColor: "var(--s-surface-low)", borderRadius: "4px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                          <span style={{ fontWeight: "700", fontSize: "11px" }}>VISA</span>
+                    {/* Current Plan Card */}
+                    {isProActive ? (
+                      <div style={{ background: "linear-gradient(135deg,#000 0%,#10b981 100%)", color: "#ffffff", padding: "28px", borderRadius: "16px", display: "flex", flexDirection: "column", justifyContent: "space-between", minHeight: "200px" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "12px" }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                            <Crown size={16} color="#fff" />
+                            <span style={{ backgroundColor: "rgba(255,255,255,0.2)", color: "#fff", padding: "4px 10px", borderRadius: "9999px", fontSize: "11px", fontWeight: "700", textTransform: "uppercase" }}>PRO PLAN</span>
+                          </div>
+                          <span style={{ fontSize: "26px", fontWeight: "700" }}>$19<span style={{ fontSize: "13px", opacity: 0.65 }}>/mo</span></span>
                         </div>
-                        <div>
-                          <strong style={{ fontSize: "14px", display: "block" }}>Visa ending in 4242</strong>
-                          <span style={{ fontSize: "12px", color: "var(--s-secondary)" }}>Expires 12/26</span>
-                        </div>
-                      </div>
-                    </div>
-                    <button onClick={() => alert("Add payment method simulator")} style={{ border: "none", background: "none", color: "var(--s-primary)", fontSize: "13px", fontWeight: "600", textAlign: "left", cursor: "pointer", padding: 0 }}>
-                      + Add new method
-                    </button>
-                  </div>
-                </div>
-
-                {/* Invoices List */}
-                <div>
-                  <h3 style={{ fontSize: "18px", fontWeight: "600", marginBottom: "16px" }}>Recent Invoices</h3>
-                  <div style={{ border: "1px solid var(--s-hairline)", borderRadius: "12px", overflow: "hidden" }}>
-                    {[
-                      { date: "Dec 01, 2024", id: "INV-09823", amt: "$24.00" },
-                      { date: "Nov 01, 2024", id: "INV-08711", amt: "$24.00" },
-                      { date: "Oct 01, 2024", id: "INV-07654", amt: "$24.00" }
-                    ].map((inv, i) => (
-                      <div 
-                        key={inv.id} 
-                        style={{ 
-                          display: "flex", 
-                          justifyContent: "space-between", 
-                          alignItems: "center", 
-                          padding: "16px 24px", 
-                          borderBottom: i === 2 ? "none" : "1px solid var(--s-hairline)",
-                          backgroundColor: i % 2 === 0 ? "transparent" : "var(--s-background)" 
-                        }}
-                      >
-                        <div>
-                          <strong style={{ fontSize: "14px", display: "block" }}>{inv.date}</strong>
-                          <span className="eyebrow" style={{ fontSize: "11px", color: "var(--s-secondary)" }}>{inv.id}</span>
-                        </div>
-                        <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-                          <span style={{ fontSize: "14px", color: "var(--s-secondary)" }}>{inv.amt}</span>
-                          <button 
-                            onClick={() => alert(`Downloading Invoice ${inv.id}...`)}
-                            style={{ border: "none", background: "none", padding: "6px", cursor: "pointer" }}
+                        <p style={{ fontSize: "13px", opacity: 0.85, lineHeight: 1.5, margin: "0 0 8px" }}>500 MB files · 100 jobs/day · Priority processing · Priority support</p>
+                        {planInfo?.expires_at && (
+                          <p style={{ fontSize: "12px", opacity: 0.7, margin: "0 0 20px", display: "flex", alignItems: "center", gap: "6px" }}>
+                            <Tag size={11} /> Active until {formatDate(planInfo.expires_at)}
+                          </p>
+                        )}
+                        <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+                          <button
+                            onClick={downgradeLoading ? undefined : handleDowngrade}
+                            disabled={downgradeLoading}
+                            style={{ padding: "8px 16px", backgroundColor: "rgba(255,255,255,0.15)", color: "#ffffff", border: "1px solid rgba(255,255,255,0.25)", borderRadius: "9999px", fontSize: "12px", cursor: downgradeLoading ? "not-allowed" : "pointer", opacity: downgradeLoading ? 0.6 : 1 }}
                           >
-                            <Download size={16} />
+                            {downgradeLoading ? "Downgrading..." : "Downgrade to Free"}
                           </button>
                         </div>
                       </div>
-                    ))}
+                    ) : (
+                      <div style={{ border: "1px solid var(--s-hairline)", backgroundColor: "#ffffff", padding: "28px", borderRadius: "16px", display: "flex", flexDirection: "column", justifyContent: "space-between", minHeight: "200px" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "12px" }}>
+                          <span style={{ backgroundColor: "var(--s-hairline)", color: "var(--s-primary)", padding: "4px 10px", borderRadius: "9999px", fontSize: "11px", fontWeight: "700", textTransform: "uppercase" }}>FREE PLAN</span>
+                          <span style={{ fontSize: "26px", fontWeight: "700" }}>$0<span style={{ fontSize: "13px", opacity: 0.55 }}>/mo</span></span>
+                        </div>
+                        <p style={{ fontSize: "13px", color: "var(--s-secondary)", lineHeight: 1.5, margin: "0 0 20px" }}>50 MB file limit · 5 jobs/day. Upgrade to Pro for 500MB, 100 jobs/day, and priority processing.</p>
+                        <button
+                          onClick={() => onPricingClick ? onPricingClick() : onBack()}
+                          style={{ padding: "10px 20px", backgroundColor: "var(--s-primary)", color: "#ffffff", border: "none", borderRadius: "9999px", fontSize: "13px", fontWeight: "600", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: "8px", alignSelf: "flex-start" }}
+                        >
+                          <Crown size={14} /> Upgrade to Pro — $19/mo
+                        </button>
+                      </div>
+                    )}
+
+                    {/* Pro Features Summary */}
+                    <div style={{ border: "1px solid var(--s-hairline)", padding: "28px", borderRadius: "16px", display: "flex", flexDirection: "column", gap: "12px" }}>
+                      <span className="eyebrow" style={{ fontSize: "11px", color: "var(--s-secondary)", display: "block" }}>WHAT YOU GET</span>
+                      {isProActive ? (
+                        ["500 MB per file", "100 jobs per day", "Priority processing queue", "Priority support (24/5)", "1 year subscription"].map(f => (
+                          <div key={f} style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "14px" }}>
+                            <CheckCircle2 size={14} style={{ color: "#10b981", flexShrink: 0 }} />{f}
+                          </div>
+                        ))
+                      ) : (
+                        ["50 MB per file", "5 jobs per day", "Standard processing", "Community support"].map(f => (
+                          <div key={f} style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "14px", color: "var(--s-secondary)" }}>
+                            <CheckCircle2 size={14} style={{ color: "#d1d5db", flexShrink: 0 }} />{f}
+                          </div>
+                        ))
+                      )}
+                    </div>
+
+                  </div>
+                )}
+
+                {/* Invoices */}
+                <div>
+                  <h3 style={{ fontSize: "18px", fontWeight: "600", marginBottom: "16px" }}>Invoices</h3>
+                  <div style={{ border: "1px dashed var(--s-hairline)", padding: "32px", borderRadius: "12px", textAlign: "center", color: "var(--s-secondary)" }}>
+                    <CreditCard size={28} style={{ color: "var(--s-hairline)", marginBottom: "12px" }} />
+                    <p style={{ margin: 0, fontSize: "14px" }}>
+                      {isProActive
+                        ? "Invoice history will appear here once payment gateway is integrated."
+                        : "Upgrade to Pro to see billing history."}
+                    </p>
                   </div>
                 </div>
               </div>
