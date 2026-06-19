@@ -662,12 +662,12 @@ async fn check_limits_and_authenticate(
             // Always verify plan via subscriptions table (expiry-aware)
             let active_plan = get_active_plan(state, &u.id).await;
             if active_plan == "Pro" {
-                (500 * 1024 * 1024, 100) // 500 MB, 100 jobs
+                (500 * 1024 * 1024, 100) // 500 MB, 100 jobs/day
             } else {
-                (50 * 1024 * 1024, 5) // 50 MB, 5 jobs
+                (50 * 1024 * 1024, 10) // 50 MB, 10 jobs/day (free registered)
             }
         }
-        None => (10 * 1024 * 1024, 2), // 10 MB, 2 jobs
+        None => (25 * 1024 * 1024, 10), // 25 MB, 10 jobs/day (anonymous)
     };
 
     let user_id = user.as_ref().map(|u| u.id.as_str());
@@ -677,9 +677,18 @@ async fn check_limits_and_authenticate(
         .map_err(|e| format!("Failed to verify usage limits: {}", e))?;
 
     if current_jobs >= max_jobs {
+        // Signal whether this is an anonymous user (no auth token) so the frontend
+        // can show the login wall vs the upgrade/pricing page.
+        let is_anon = user.is_none();
         return Err(format!(
-            "Bhai, daily limit reach ho gayi hai! Your limit is {} jobs per 24 hours. Please log in or upgrade to upgrade your limit.",
-            max_jobs
+            "DAILY_LIMIT_REACHED:{}:Daily limit of {} tool uses reached. {}.",
+            if is_anon { "LOGIN_REQUIRED" } else { "UPGRADE_REQUIRED" },
+            max_jobs,
+            if is_anon {
+                "Please log in to continue using PDFMount"
+            } else {
+                "Upgrade to Pro for 100 jobs per day and 500 MB file size"
+            }
         ));
     }
 
@@ -1304,10 +1313,10 @@ async fn get_stats(
             if u.plan == "Pro" {
                 100
             } else {
-                5
+                10 // Free registered users: 10 jobs/day
             }
         }
-        None => 2,
+        None => 10, // Anonymous users: 10 jobs/day
     };
 
     let plan = user

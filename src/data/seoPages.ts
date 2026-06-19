@@ -23,7 +23,7 @@ export const seoPages: Record<string, SeoPageData> = {
     faqs: [
       {
         q: "How many files can I merge at once?",
-        a: "Starter tier users can merge up to 5 files (up to 50 MB total) per daily run. Pro tier users can combine up to 100 documents of up to 500 MB."
+        a: "Starter tier users can merge up to 5 files (up to 50 MB total) per session, with 10 tool uses per day. Pro tier users can combine up to 100 documents of up to 500 MB."
       },
       {
         q: "Will my merged PDF have a watermark?",

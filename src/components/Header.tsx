@@ -204,7 +204,7 @@ export function Header({
                       className="mega-dropdown-footer-link"
                       onClick={(e) => { e.preventDefault(); setIsDropdownOpen(false); onToolsClick?.(); }}
                     >
-                      Browse All 22 Tools <ArrowRight size={13} />
+                      Browse All Tools <ArrowRight size={13} />
                     </a>
                   </div>
                 </div>

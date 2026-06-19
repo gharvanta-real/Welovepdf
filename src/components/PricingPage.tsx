@@ -129,7 +129,7 @@ export function PricingPage({ currentUser, onUpgradeSuccess, onLoginRequired, on
       isCurrent: !isProActive,
       featured: false,
       features: [
-        "5 jobs per day",
+        "10 jobs per day",
         "50 MB file size limit",
         "All core PDF tools",
         "Basic annotations",

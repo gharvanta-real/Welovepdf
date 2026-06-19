@@ -25,7 +25,7 @@ export function Footer({ onToolSelect, onViewChange }: FooterProps) {
               <img src="/logo.png" alt="Pdfmount.com" style={{ height: "32px", width: "auto", objectFit: "contain", filter: "brightness(0) invert(1)" }} />
             </a>
             <p className="stitch-footer-tagline" style={{ fontSize: "14px", lineHeight: "1.6", color: "rgba(255,255,255,0.5)", marginBottom: "20px" }}>
-              Secure, browser-first tools designed to handle your documents with absolute privacy. We process files locally on your device, ensuring they never leave your sight.
+              Fast, secure tools for all your PDF needs. Files are processed on isolated servers and auto-deleted within 60 minutes. Your documents are never shared or sold.
             </p>
             
             {/* Trust Pills */}

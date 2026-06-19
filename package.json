@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 127.0.0.1",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && tsx scripts/generate-seo.mts",
+    "build:vite-only": "tsc -b && vite build",
+    "seo": "tsx scripts/generate-seo.mts",
     "preview": "vite preview --host 127.0.0.1"
   },
   "dependencies": {
@@ -20,6 +22,7 @@
   "devDependencies": {
     "@types/node": "^25.9.3",
     "@types/react": "^19.2.17",
-    "@types/react-dom": "^19.2.3"
+    "@types/react-dom": "^19.2.3",
+    "tsx": "^4.22.4"
   }
 }

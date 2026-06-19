@@ -81,7 +81,7 @@ export function AllToolsPage({ onToolSelect, onPricingClick, onContactSalesClick
               className="stitch-pill-outline" 
               style={{ backgroundColor: "rgba(255,255,255,0.4)", borderColor: "var(--s-hairline)", color: "var(--s-primary)", fontSize: "14px" }}
             >
-              See All 22 Tools
+              See All {tools.filter(t => t.status !== "coming-soon").length} Tools
             </a>
           </div>
 
@@ -220,14 +220,14 @@ export function AllToolsPage({ onToolSelect, onPricingClick, onContactSalesClick
           </div>
         </div>
 
-        {/* Structured Sitemap Directory of all 22 active tools */}
+        {/* Structured Sitemap Directory */}
         <div id="sitemap" style={{ borderTop: "1px solid var(--s-hairline)", paddingTop: "64px", marginBottom: "80px" }}>
           <div style={{ marginBottom: "40px" }}>
             <span className="eyebrow" style={{ textTransform: "uppercase", fontSize: "12px", color: "var(--s-secondary)", fontWeight: "600", display: "block", marginBottom: "8px" }}>
               Suite Index
             </span>
             <h2 style={{ fontSize: "32px", fontWeight: 540, letterSpacing: "-0.5px", margin: 0, color: "var(--s-primary)" }}>
-              Browse Sitemap
+              Browse all {tools.filter(t => t.status !== "coming-soon").length} available tools
             </h2>
           </div>
 

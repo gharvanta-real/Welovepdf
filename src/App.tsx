@@ -174,12 +174,25 @@ const viewMetadata: Record<string, { title: string; desc: string }> = {
   },
 };
 
+// Derive the initial view and tool from the URL path synchronously so the
+// very first render matches the requested route (no homepage flash, no
+// "Loading interactive workspace…" flicker visible to crawlers or SSG shells).
+function getInitialState(): { view: "home" | "workspace" | "pricing" | "privacy" | "terms" | "faq" | "contact" | "tools" | "about" | "contact-sales" | "settings" | "dashboard" | "security" | "file-privacy" | "data-deletion"; tool: string } {
+  const path = typeof window !== "undefined" ? window.location.pathname : "/";
+  const match = pathMap[path];
+  if (match) {
+    return { view: match.view, tool: match.tool || "Compress PDF" };
+  }
+  return { view: "home", tool: "Compress PDF" };
+}
+
 export function App() {
   const theme = "white";
-  const [selectedTool, setSelectedTool] = useState("Compress PDF");
+  const _initial = getInitialState();
+  const [selectedTool, setSelectedTool] = useState(_initial.tool);
   const [toast, setToast] = useState("");
   const [jobs, setJobs] = useState<any[]>([]);
-  const [currentView, setCurrentView] = useState<"home" | "workspace" | "pricing" | "privacy" | "terms" | "faq" | "contact" | "tools" | "about" | "contact-sales" | "settings" | "dashboard" | "security" | "file-privacy" | "data-deletion">("home");
+  const [currentView, setCurrentView] = useState<"home" | "workspace" | "pricing" | "privacy" | "terms" | "faq" | "contact" | "tools" | "about" | "contact-sales" | "settings" | "dashboard" | "security" | "file-privacy" | "data-deletion">(_initial.view);
   const [activeJobId, setActiveJobId] = useState<string | null>(null);
   const [hasStagedFiles, setHasStagedFiles] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -543,17 +556,17 @@ export function App() {
     const totalSizeBytes = filesArray.reduce((acc, f) => acc + f.size, 0);
     const limitBytes = currentUser 
       ? (currentUser.plan === "Pro" ? 500 * 1024 * 1024 : 50 * 1024 * 1024)
-      : 10 * 1024 * 1024; // 10 MB for anonymous/guests
+      : 25 * 1024 * 1024; // 25 MB for anonymous/guests
 
     if (totalSizeBytes > limitBytes) {
       if (!currentUser) {
-        setToast("Guest users get a 10 MB limit. Please log in to raise it to 50 MB!");
+        setToast("Free limit is 25 MB. Log in to get 50 MB upload limit!");
         setIsLoginModalOpen(true);
       } else if (currentUser.plan !== "Pro") {
-        setToast("Bhai, Free users enforce a 50 MB limit. Upgrade to Pro to get 500 MB!");
+        setToast("Free plan has a 50 MB file limit. Upgrade to Pro for 500 MB!");
         setCurrentView("pricing");
       } else {
-        setToast("Bhai, Pro users have a 500 MB file limit!");
+        setToast("Pro plan allows up to 500 MB per upload.");
       }
       window.setTimeout(() => setToast(""), 5000);
       return;
@@ -682,8 +695,23 @@ export function App() {
       );
       setActiveJobId(null);
 
-      // Handle daily rate limit responses
-      if (rawMsg.toLowerCase().includes("limit")) {
+      // Handle daily rate limit responses — parse structured backend error
+      // Format: DAILY_LIMIT_REACHED:LOGIN_REQUIRED:message
+      //      or DAILY_LIMIT_REACHED:UPGRADE_REQUIRED:message
+      if (rawMsg.includes("DAILY_LIMIT_REACHED")) {
+        if (rawMsg.includes("LOGIN_REQUIRED")) {
+          // Anonymous user hit 10 job limit → show login wall
+          setToast("You've used your 10 free tool uses today. Log in to keep going!");
+          window.setTimeout(() => setToast(""), 4000);
+          setIsLoginModalOpen(true);
+        } else if (rawMsg.includes("UPGRADE_REQUIRED")) {
+          // Logged-in free user hit 10 job limit → show pricing
+          setToast("Daily limit reached. Upgrade to Pro for 100 jobs/day!");
+          window.setTimeout(() => setToast(""), 4000);
+          setCurrentView("pricing");
+        }
+      } else if (rawMsg.toLowerCase().includes("limit")) {
+        // Legacy fallback
         if (!currentUser) {
           setIsLoginModalOpen(true);
         } else if (currentUser.plan !== "Pro") {

@@ -439,7 +439,7 @@ export function AccountSettingsPage({ onBack, currentUser, onLogout, onUpdateUse
                           <span style={{ backgroundColor: "var(--s-hairline)", color: "var(--s-primary)", padding: "4px 10px", borderRadius: "9999px", fontSize: "11px", fontWeight: "700", textTransform: "uppercase" }}>FREE PLAN</span>
                           <span style={{ fontSize: "26px", fontWeight: "700" }}>$0<span style={{ fontSize: "13px", opacity: 0.55 }}>/mo</span></span>
                         </div>
-                        <p style={{ fontSize: "13px", color: "var(--s-secondary)", lineHeight: 1.5, margin: "0 0 20px" }}>50 MB file limit · 5 jobs/day. Upgrade to Pro for 500MB, 100 jobs/day, and priority processing.</p>
+                        <p style={{ fontSize: "13px", color: "var(--s-secondary)", lineHeight: 1.5, margin: "0 0 20px" }}>50 MB file limit · 10 jobs/day. Upgrade to Pro for 500MB, 100 jobs/day, and priority processing.</p>
                         <button
                           onClick={() => onPricingClick ? onPricingClick() : onBack()}
                           style={{ padding: "10px 20px", backgroundColor: "var(--s-primary)", color: "#ffffff", border: "none", borderRadius: "9999px", fontSize: "13px", fontWeight: "600", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: "8px", alignSelf: "flex-start" }}
@@ -459,7 +459,7 @@ export function AccountSettingsPage({ onBack, currentUser, onLogout, onUpdateUse
                           </div>
                         ))
                       ) : (
-                        ["50 MB per file", "5 jobs per day", "Standard processing", "Community support"].map(f => (
+                        ["50 MB per file", "10 jobs per day", "Standard processing", "Community support"].map(f => (
                           <div key={f} style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "14px", color: "var(--s-secondary)" }}>
                             <CheckCircle2 size={14} style={{ color: "#d1d5db", flexShrink: 0 }} />{f}
                           </div>

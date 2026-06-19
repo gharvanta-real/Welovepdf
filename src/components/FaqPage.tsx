@@ -28,7 +28,7 @@ export function FaqPage({ onBack }: FaqPageProps) {
     },
     {
       q: "Are there size limits for uploading files?",
-      a: "To keep our servers fast for everyone, files are capped at 50MB per upload. Most normal documents, presentations, and images fall well within this limit."
+      a: "Yes. Guest (not logged in) users can process up to 10 tools per day, with files up to 25 MB each. Logged-in free users can upload up to 50 MB per file with the same 10 jobs/day limit. Pro users get 500 MB per file and 100 jobs per day."
     },
     {
       q: "Can I cancel or delete my files before the 1-hour auto-delete timer?",
