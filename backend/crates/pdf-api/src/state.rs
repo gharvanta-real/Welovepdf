@@ -214,6 +214,39 @@ impl AppState {
         Ok(count.0)
     }
 
+
+    pub async fn get_job_count_last_24h_by_tool(
+        &self,
+        user_id: Option<&str>,
+        ip_address: Option<&str>,
+        tool_id: &str,
+    ) -> Result<i32, sqlx::Error> {
+        let threshold = (chrono::Utc::now() - chrono::Duration::hours(24)).to_rfc3339();
+
+        let count: (i32,) = if let Some(uid) = user_id {
+            // For logged-in users, count how many jobs of this specific tool they ran
+            sqlx::query_as(
+                "SELECT COUNT(*) FROM jobs WHERE user_id = ? AND tool_id = ? AND created_at > ?"
+            )
+            .bind(uid)
+            .bind(tool_id)
+            .bind(&threshold)
+            .fetch_one(&self.db)
+            .await?
+        } else {
+            // For anonymous users, we count their overall usage across ALL tools to prompt them to log in
+            sqlx::query_as(
+                "SELECT COUNT(*) FROM jobs WHERE ip_address = ? AND user_id IS NULL AND created_at > ?"
+            )
+            .bind(ip_address)
+            .bind(&threshold)
+            .fetch_one(&self.db)
+            .await?
+        };
+
+        Ok(count.0)
+    }
+
     pub async fn get_user_jobs(&self, user_id: &str) -> Result<Vec<JobRecord>, sqlx::Error> {
         let rows: Vec<(String, String, String, String, i64)> = sqlx::query_as(
             "SELECT id, tool_id, status, output_path, bytes FROM jobs WHERE user_id = ? ORDER BY created_at DESC LIMIT 50"

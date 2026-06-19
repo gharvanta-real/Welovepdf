@@ -337,8 +337,9 @@
 
 .option-card.active {
   border-color: var(--c-accent);
+  border-width: 2px;
   background: var(--accent-soft);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-accent) 10%, transparent);
 }
 
 .option-title {
@@ -623,40 +624,44 @@
 
 /* ── MOBILE / TABLET RESPONSIVENESS OVERRIDES ── */
 @media (max-width: 900px) {
-  /* Allow natural scrolling on mobile in staged mode */
+  /* Keep viewport fixed on mobile in staged mode so canvas and sidebar scroll internally */
   .workspace-page-wrapper.staged-view-active {
-    height: auto !important;
-    min-height: calc(100vh - var(--header-h)) !important;
-    overflow: visible !important;
+    height: calc(100vh - var(--header-h)) !important;
+    overflow: hidden !important;
   }
   .workspace-page-wrapper.staged-view-active .workspace-full-bleed-container {
-    height: auto !important;
-    overflow: visible !important;
+    height: 100% !important;
+    overflow: hidden !important;
   }
 
   .workspace-grid {
-    padding: 16px !important;
-    gap: 16px !important;
-    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)) !important;
+    padding: 12px !important;
+    gap: 12px !important;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)) !important;
   }
 
   /* Workspace Uploader Split Container Staged Mode */
   .workspace-split-container {
     flex-direction: column !important;
-    height: auto !important;
-    min-height: calc(100vh - var(--header-h)) !important;
+    height: 100% !important;
+    overflow: hidden !important;
   }
   .workspace-canvas {
-    height: auto !important;
-    flex: none !important;
-    padding: 16px !important;
+    flex: 1 !important;
+    overflow-y: auto !important;
+    padding: 12px !important;
   }
   .workspace-sidebar {
     width: 100% !important;
     height: auto !important;
+    max-height: 48vh !important;
+    overflow-y: auto !important;
     border-left: none !important;
-    border-top: 1px solid var(--border) !important;
+    border-top: 1.5px solid var(--border) !important;
     flex: none !important;
+    background: var(--c-surface) !important;
+    box-shadow: 0 -4px 12px rgba(0,0,0,0.05) !important;
+    padding-bottom: 24px !important;
   }
 
   /* PDF Editor Main Layout collapse */

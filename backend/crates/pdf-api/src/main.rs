@@ -46,6 +46,8 @@ struct MergeRequest {
 #[derive(Deserialize)]
 struct CompressRequest {
     input: PathBuf,
+    #[serde(default)]
+    level: Option<String>,
 }
 
 #[derive(Serialize)]
@@ -503,9 +505,10 @@ async fn run_compress(
     State(state): State<AppState>,
     Json(payload): Json<CompressRequest>,
 ) -> impl IntoResponse {
+    let level = payload.level.as_deref().unwrap_or("recommended");
     job_response(
         &state,
-        run_compress_job(&state.config, payload.input),
+        run_compress_job(&state.config, payload.input, level),
         None,
         Some("127.0.0.1"),
     )
@@ -654,25 +657,27 @@ async fn check_limits_and_authenticate(
     state: &AppState,
     headers: &axum::http::HeaderMap,
     ip_address: &str,
+    tool_id: &str,
 ) -> Result<(Option<state::User>, u64), String> {
     let user = authenticate_user(state, headers).await;
+    let normalized_tool_id = tool_id.replace('-', "_");
 
     let (max_bytes, max_jobs) = match &user {
         Some(u) => {
             // Always verify plan via subscriptions table (expiry-aware)
             let active_plan = get_active_plan(state, &u.id).await;
             if active_plan == "Pro" {
-                (500 * 1024 * 1024, 100) // 500 MB, 100 jobs/day
+                (500 * 1024 * 1024, 100) // 500 MB, 100 jobs/day per tool
             } else {
-                (50 * 1024 * 1024, 10) // 50 MB, 10 jobs/day (free registered)
+                (50 * 1024 * 1024, 10) // 50 MB, 10 jobs/day per tool (free registered)
             }
         }
-        None => (25 * 1024 * 1024, 10), // 25 MB, 10 jobs/day (anonymous)
+        None => (25 * 1024 * 1024, 10), // 25 MB, 10 jobs/day overall (anonymous)
     };
 
     let user_id = user.as_ref().map(|u| u.id.as_str());
     let current_jobs = state
-        .get_job_count_last_24h(user_id, Some(ip_address))
+        .get_job_count_last_24h_by_tool(user_id, Some(ip_address), &normalized_tool_id)
         .await
         .map_err(|e| format!("Failed to verify usage limits: {}", e))?;
 
@@ -702,7 +707,7 @@ async fn upload_merge(
     multipart: Multipart,
 ) -> impl IntoResponse {
     let ip = addr.ip().to_string();
-    match check_limits_and_authenticate(&state, &headers, &ip).await {
+    match check_limits_and_authenticate(&state, &headers, &ip, "merge_pdf").await {
         Ok((user, max_bytes)) => match save_multipart_files(&state, multipart, max_bytes).await {
             Ok(inputs) => {
                 let user_id = user.as_ref().map(|u| u.id.as_str());
@@ -722,12 +727,18 @@ async fn upload_compress(
     multipart: Multipart,
 ) -> impl IntoResponse {
     let ip = addr.ip().to_string();
-    match check_limits_and_authenticate(&state, &headers, &ip).await {
+    // Read the compression level from the request header (sent by frontend as x-compression-level)
+    let level = headers
+        .get("x-compression-level")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("recommended")
+        .to_string();
+    match check_limits_and_authenticate(&state, &headers, &ip, "compress_pdf").await {
         Ok((user, max_bytes)) => match save_multipart_files(&state, multipart, max_bytes).await {
             Ok(inputs) => match require_one(inputs, "compress") {
                 Ok(input) => {
                     let user_id = user.as_ref().map(|u| u.id.as_str());
-                    let result = run_compress_job(&state.config, input);
+                    let result = run_compress_job(&state.config, input, &level);
                     job_response(&state, result, user_id, Some(&ip)).await
                 }
                 Err(err_msg) => bad_request(err_msg),
@@ -745,7 +756,7 @@ async fn upload_jpg_to_pdf(
     multipart: Multipart,
 ) -> impl IntoResponse {
     let ip = addr.ip().to_string();
-    match check_limits_and_authenticate(&state, &headers, &ip).await {
+    match check_limits_and_authenticate(&state, &headers, &ip, "jpg_to_pdf").await {
         Ok((user, max_bytes)) => match save_multipart_files(&state, multipart, max_bytes).await {
             Ok(inputs) => {
                 let user_id = user.as_ref().map(|u| u.id.as_str());
@@ -765,7 +776,7 @@ async fn upload_pdf_to_jpg(
     multipart: Multipart,
 ) -> impl IntoResponse {
     let ip = addr.ip().to_string();
-    match check_limits_and_authenticate(&state, &headers, &ip).await {
+    match check_limits_and_authenticate(&state, &headers, &ip, "pdf_to_jpg").await {
         Ok((user, max_bytes)) => match save_multipart_files(&state, multipart, max_bytes).await {
             Ok(inputs) => match require_one(inputs, "pdf-to-jpg") {
                 Ok(input) => {
@@ -789,7 +800,7 @@ async fn upload_generic(
     multipart: Multipart,
 ) -> impl IntoResponse {
     let ip = addr.ip().to_string();
-    match check_limits_and_authenticate(&state, &headers, &ip).await {
+    match check_limits_and_authenticate(&state, &headers, &ip, &tool_id).await {
         Ok((user, max_bytes)) => match save_multipart_files(&state, multipart, max_bytes).await {
             Ok(inputs) => {
                 if inputs.is_empty() {
