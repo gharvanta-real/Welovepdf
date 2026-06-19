@@ -160,11 +160,19 @@ export function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps)
     setSuccessMsg(null);
     setLoading(true);
 
+    // Determine the correct redirect URL.
+    // On localhost (dev), Supabase must redirect back to the production URL
+    // because Google OAuth only allows registered origins.
+    // We always redirect to the canonical production URL so Supabase's
+    // allow-list check passes and users don't see "localhost" in the redirect.
+    const isLocalhost = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+    const redirectUrl = isLocalhost ? "https://gharvanta.in" : window.location.origin;
+
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          redirectTo: window.location.origin,
+          redirectTo: redirectUrl,
         },
       });
       if (error) throw error;

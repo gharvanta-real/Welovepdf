@@ -388,31 +388,50 @@ export function App() {
 
   // Listen for Supabase auth state changes (crucial for Google OAuth redirects)
   useEffect(() => {
+    const syncSupabaseSession = async (session: any) => {
+      if (!session?.user) return;
+      try {
+        const res = await fetch("/api/auth/supabase-sync", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            id: session.user.id,
+            email: session.user.email,
+            name: session.user.user_metadata?.full_name || session.user.user_metadata?.name || session.user.email?.split("@")[0]
+          })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          localStorage.setItem("authToken", data.token);
+          setCurrentUser(data.user);
+        }
+      } catch (e) {
+        console.error("Supabase sync failed:", e);
+      }
+    };
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === "SIGNED_IN" && session) {
-        const token = localStorage.getItem("authToken");
-        if (!token) {
-          try {
-            const res = await fetch("/api/auth/supabase-sync", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                id: session.user.id,
-                email: session.user.email,
-                name: session.user.user_metadata?.full_name || session.user.user_metadata?.name || session.user.email?.split("@")[0]
-              })
-            });
-            if (res.ok) {
-              const data = await res.json();
-              localStorage.setItem("authToken", data.token);
-              setCurrentUser(data.user);
-              setToast(`Welcome back, ${data.user.name || data.user.email}!`);
-              window.setTimeout(() => setToast(""), 2000);
-            }
-          } catch (e) {
-            console.error("Supabase sync failed:", e);
-          }
+        const isOAuthProvider = session.user?.app_metadata?.provider !== "email";
+        const hasToken = !!localStorage.getItem("authToken");
+
+        // Always sync OAuth logins (Google, Apple) to ensure correct user is shown.
+        // For email/password logins, only sync if we don't already have a token.
+        if (isOAuthProvider || !hasToken) {
+          await syncSupabaseSession(session);
+          setToast(`Welcome, ${session.user.user_metadata?.full_name || session.user.email}!`);
+          window.setTimeout(() => setToast(""), 2500);
         }
+      } else if (event === "INITIAL_SESSION" && session) {
+        // Page was reloaded and Supabase restored an existing OAuth session.
+        // Sync to ensure our backend token reflects the correct user.
+        const isOAuthProvider = session.user?.app_metadata?.provider !== "email";
+        if (isOAuthProvider && !localStorage.getItem("authToken")) {
+          await syncSupabaseSession(session);
+        }
+      } else if (event === "SIGNED_OUT") {
+        localStorage.removeItem("authToken");
+        setCurrentUser(null);
       }
     });
 
