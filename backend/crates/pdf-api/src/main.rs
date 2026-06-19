@@ -828,6 +828,7 @@ async fn upload_generic(
                 let output = workspace.output_dir().join(format!("output.{}", extension));
 
                 if let Err(err) = run_python_processor(&tool_id, &output, &inputs, &headers) {
+                    eprintln!("Python processor error for tool {}: {}", tool_id, err);
                     return bad_request(err);
                 }
 
