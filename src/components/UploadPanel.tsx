@@ -540,7 +540,7 @@ export function UploadPanel({
               </div>
 
               {/* Page/file grid inside the preview frame card */}
-              <div style={{ flex: 1, padding: "32px", overflowY: "auto", display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(145px, 1fr))", gap: "28px", alignContent: "start", background: "var(--s-surface-low)" }}>
+              <div className="workspace-grid">
                 {loadingPdf ? (
                   Array.from({ length: 4 }).map((_, idx) => (
                     <div key={idx} className="canvas-file-card page-card skeleton" style={{ aspectRatio: "3/4", background: "var(--c-bg)", borderRadius: "8px", border: "1px solid var(--border)", padding: "12px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "space-between", opacity: 0.6 }}>
@@ -586,6 +586,7 @@ export function UploadPanel({
                 {(!pdfDoc && !loadingPdf) && (
                   <div
                     onClick={triggerAddMoreInput}
+                    className="add-file-card"
                     style={{ aspectRatio: "3/4", border: "2px dashed var(--border)", borderRadius: "12px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "8px", cursor: "pointer", color: "var(--text-muted)", fontSize: "13px", fontFamily: "Plus Jakarta Sans, sans-serif", fontWeight: 500, transition: "border-color 0.15s, background 0.15s" }}
                     onMouseOver={e => { (e.currentTarget as HTMLElement).style.borderColor = "var(--c-accent)"; (e.currentTarget as HTMLElement).style.background = "var(--accent-soft)"; }}
                     onMouseOut={e => { (e.currentTarget as HTMLElement).style.borderColor = "var(--border)"; (e.currentTarget as HTMLElement).style.background = "transparent"; }}
