@@ -260,7 +260,7 @@ export function App() {
     metaDesc.setAttribute("content", desc);
     
     // Update canonical link
-    const canonicalUrl = `https://gharvanta.in${getPathForState(currentView, currentView === "workspace" ? selectedTool : undefined)}`;
+    const canonicalUrl = `https://pdfmount.online${getPathForState(currentView, currentView === "workspace" ? selectedTool : undefined)}`;
     let canonicalLink = document.querySelector('link[rel="canonical"]');
     if (!canonicalLink) {
       canonicalLink = document.createElement("link");
@@ -287,13 +287,13 @@ export function App() {
             "@type": "ListItem",
             "position": 1,
             "name": "Home",
-            "item": "https://gharvanta.in/"
+            "item": "https://pdfmount.online/"
           },
           {
             "@type": "ListItem",
             "position": 2,
             "name": pageName,
-            "item": `https://gharvanta.in${path}`
+            "item": `https://pdfmount.online${path}`
           }
         ]
       });

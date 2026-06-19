@@ -48,7 +48,7 @@ pub async fn create_checkout_session(
     };
 
     let redirect_url = env::var("CLIENT_REDIRECT_URL")
-        .unwrap_or_else(|_| "https://gharvanta.in/pricing".into());
+        .unwrap_or_else(|_| "https://pdfmount.online/pricing".into());
 
     let unit_amount = if plan == "Pro" { "1900" } else { "2900" };
     let product_name = format!("PDFMount {}", plan);

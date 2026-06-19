@@ -5,4 +5,4 @@ Allow: /
 Disallow: /dashboard
 Disallow: /settings
 
-Sitemap: https://gharvanta.in/sitemap.xml
+Sitemap: https://pdfmount.online/sitemap.xml

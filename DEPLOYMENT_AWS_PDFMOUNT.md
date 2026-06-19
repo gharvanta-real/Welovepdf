@@ -4,8 +4,8 @@ This file documents how PDFMount was deployed on the same AWS EC2 server where `
 
 ## Current Live Setup
 
-- Domain: `gharvanta.in`
-- Public URL: `https://gharvanta.in`
+- Domain: `pdfmount.online`
+- Public URL: `https://pdfmount.online`
 - Server IP: `3.109.44.87`
 - Server OS: Ubuntu 22.04 on AWS EC2/Lightsail-style instance
 - SSH user used: `ubuntu`
@@ -23,7 +23,7 @@ To avoid any clash:
 
 - Vidlord keeps using `0.0.0.0:8080`
 - PDFMount runs on `127.0.0.1:8081`
-- Nginx routes only `gharvanta.in` PDFMount API/backend routes to `127.0.0.1:8081`
+- Nginx routes only `pdfmount.online` PDFMount API/backend routes to `127.0.0.1:8081`
 
 Do not move PDFMount back to port `8080` unless Vidlord is also reconfigured.
 
@@ -150,7 +150,7 @@ Enabled symlink:
 Main behavior:
 
 - HTTP redirects to HTTPS.
-- `www.gharvanta.in` redirects to `gharvanta.in`.
+- `www.pdfmount.online` redirects to `pdfmount.online`.
 - Static frontend is served from `/opt/pdfmount/dist`.
 - API and PDF job routes proxy to `http://127.0.0.1:8081`.
 
@@ -181,21 +181,21 @@ sudo systemctl status nginx
 Certificate path:
 
 ```text
-/etc/letsencrypt/live/gharvanta.in/fullchain.pem
-/etc/letsencrypt/live/gharvanta.in/privkey.pem
+/etc/letsencrypt/live/pdfmount.online/fullchain.pem
+/etc/letsencrypt/live/pdfmount.online/privkey.pem
 ```
 
 Certificate was issued for:
 
 ```text
-gharvanta.in
-www.gharvanta.in
+pdfmount.online
+www.pdfmount.online
 ```
 
 Certbot renews automatically. Dry-run command:
 
 ```bash
-sudo certbot renew --dry-run --cert-name gharvanta.in
+sudo certbot renew --dry-run --cert-name pdfmount.online
 ```
 
 Note: Certbot initially failed because the server was trying IPv6 for Let's Encrypt and getting TLS resets. The fix added IPv4 preference in:
@@ -244,7 +244,7 @@ pdf2docx
 Capability check endpoint:
 
 ```bash
-curl https://gharvanta.in/capabilities
+curl https://pdfmount.online/capabilities
 ```
 
 At deployment time, the core tools were ready:
@@ -296,7 +296,7 @@ sudo systemctl reload nginx
 Health check:
 
 ```bash
-curl -fsS https://gharvanta.in/health
+curl -fsS https://pdfmount.online/health
 ```
 
 Expected response:
@@ -308,7 +308,7 @@ Expected response:
 Frontend check:
 
 ```bash
-curl -I https://gharvanta.in/
+curl -I https://pdfmount.online/
 ```
 
 Vidlord still OK:
@@ -333,7 +333,7 @@ Expected:
 A real PDF compress upload was tested:
 
 ```bash
-curl -fsS -F 'file=@/tmp/pdfmount-smoke.pdf' https://gharvanta.in/upload/compress
+curl -fsS -F 'file=@/tmp/pdfmount-smoke.pdf' https://pdfmount.online/upload/compress
 ```
 
 It returned a completed job with an output PDF path under:
@@ -352,7 +352,7 @@ It returned a completed job with an output PDF path under:
 
 ## Quick Troubleshooting
 
-If `gharvanta.in` frontend works but API fails:
+If `pdfmount.online` frontend works but API fails:
 
 ```bash
 sudo systemctl status pdfmount.service
@@ -371,13 +371,13 @@ sudo systemctl reload nginx
 If SSL renewal fails:
 
 ```bash
-sudo certbot renew --dry-run --cert-name gharvanta.in
+sudo certbot renew --dry-run --cert-name pdfmount.online
 ```
 
 If tools show unavailable:
 
 ```bash
-curl https://gharvanta.in/capabilities
+curl https://pdfmount.online/capabilities
 which qpdf pdftoppm img2pdf mutool gs libreoffice tesseract
 ```
 

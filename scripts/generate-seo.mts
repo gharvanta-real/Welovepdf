@@ -30,7 +30,7 @@ import { fileURLToPath } from "url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
 const DIST = path.join(ROOT, "dist");
-const DOMAIN = "https://gharvanta.in";
+const DOMAIN = "https://pdfmount.online";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 1.  COMPLETE SEO DATA  (mirrors src/data/seoPages.ts — kept in sync here)
@@ -433,7 +433,7 @@ function buildPrivacyContent(): string {
         </div>
         <div>
           <h2 style="font-size:1.2rem;font-weight:600;margin-bottom:10px">5. Contact Us</h2>
-          <p style="font-size:16px;color:#4b5563;line-height:1.7;margin:0">If you have any questions regarding this Privacy Policy, please contact us at <a href="mailto:support@gharvanta.in" style="color:#2563eb">support@gharvanta.in</a>.</p>
+          <p style="font-size:16px;color:#4b5563;line-height:1.7;margin:0">If you have any questions regarding this Privacy Policy, please contact us at <a href="mailto:support@pdfmount.online" style="color:#2563eb">support@pdfmount.online</a>.</p>
         </div>
       </div>
       ${NAV_LINKS}
@@ -473,7 +473,7 @@ function buildTermsContent(): string {
         </div>
         <div>
           <h2 style="font-size:1.2rem;font-weight:600;margin-bottom:10px">7. Contact</h2>
-          <p style="font-size:16px;color:#4b5563;line-height:1.7;margin:0">For questions about these terms, contact us at <a href="mailto:support@gharvanta.in" style="color:#2563eb">support@gharvanta.in</a>.</p>
+          <p style="font-size:16px;color:#4b5563;line-height:1.7;margin:0">For questions about these terms, contact us at <a href="mailto:support@pdfmount.online" style="color:#2563eb">support@pdfmount.online</a>.</p>
         </div>
       </div>
       ${NAV_LINKS}
@@ -569,7 +569,7 @@ function buildSecurityContent(): string {
           <p style="font-size:15px;color:#4b5563;line-height:1.7;margin:0">PDFMount enforces strict HTTP security headers including Content-Security-Policy, X-Frame-Options (DENY), X-Content-Type-Options (nosniff), and HSTS (Strict-Transport-Security) with a 2-year max-age. These headers protect against XSS attacks, clickjacking, and other common web vulnerabilities.</p>
         </div>
       </div>
-      <p style="margin-top:32px;font-size:15px;color:#4b5563">Security questions? Contact <a href="mailto:support@gharvanta.in" style="color:#2563eb">support@gharvanta.in</a></p>
+      <p style="margin-top:32px;font-size:15px;color:#4b5563">Security questions? Contact <a href="mailto:support@pdfmount.online" style="color:#2563eb">support@pdfmount.online</a></p>
       ${NAV_LINKS}
     </div>`;
 }
@@ -1009,7 +1009,7 @@ function main() {
       <p style="font-size:1.1rem;color:#4b5563;line-height:1.7;margin-bottom:32px">Have questions, feedback, or need enterprise support? We'd love to hear from you. Reach out using the contact form on this page or email us directly.</p>
       <div style="background:#fff;border-radius:16px;border:1px solid #e5e7eb;padding:32px;margin-bottom:32px">
         <h2 style="font-size:1.1rem;font-weight:600;margin-bottom:16px">Get in Touch</h2>
-        <p style="color:#4b5563;margin-bottom:12px">&#x1F4E7; Email: <a href="mailto:support@gharvanta.in" style="color:#2563eb">support@gharvanta.in</a></p>
+        <p style="color:#4b5563;margin-bottom:12px">&#x1F4E7; Email: <a href="mailto:support@pdfmount.online" style="color:#2563eb">support@pdfmount.online</a></p>
         <p style="color:#4b5563;margin:0">We typically respond within 24 business hours.</p>
       </div>
       <div style="background:#f0f9ff;border-radius:12px;border:1px solid #bae6fd;padding:24px">

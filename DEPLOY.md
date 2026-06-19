@@ -67,16 +67,16 @@ Create the server block in `/etc/nginx/sites-available/pdfmount` (and link it to
 ```nginx
 server {
     listen 80;
-    server_name gharvanta.in;
+    server_name pdfmount.online;
     return 301 https://$host$request_uri;
 }
 
 server {
     listen 443 ssl http2;
-    server_name gharvanta.in;
+    server_name pdfmount.online;
 
-    ssl_certificate /etc/letsencrypt/live/gharvanta.in/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/gharvanta.in/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/pdfmount.online/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/pdfmount.online/privkey.pem;
 
     # Nginx security headers
     add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;

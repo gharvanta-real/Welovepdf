@@ -62,8 +62,8 @@ export function SecurityPage({ onBack }: PageProps) {
           <p style={{ fontSize: "14px", lineHeight: "1.5", color: "#4b5563", margin: "0 0 16px" }}>
             If you have questions about our infrastructure, audits, or enterprise security options, reach out to our support team.
           </p>
-          <a href="mailto:support@gharvanta.in" style={{ fontSize: "14px", fontWeight: 600, color: "#10b981", display: "inline-flex", alignItems: "center", gap: "6px", textDecoration: "none" }}>
-            <Mail size={14} /> support@gharvanta.in
+          <a href="mailto:support@pdfmount.online" style={{ fontSize: "14px", fontWeight: 600, color: "#10b981", display: "inline-flex", alignItems: "center", gap: "6px", textDecoration: "none" }}>
+            <Mail size={14} /> support@pdfmount.online
           </a>
         </section>
       </div>
