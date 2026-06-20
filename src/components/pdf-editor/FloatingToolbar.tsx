@@ -8,6 +8,21 @@ import {
 } from "lucide-react";
 import { ActiveTool } from "./types";
 
+function getHotkeyLabel(toolId: string): string {
+  switch (toolId) {
+    case "select": return "V";
+    case "text": return "T";
+    case "pen": return "P";
+    case "highlight": return "H";
+    case "shape": return "S";
+    case "signature": return "G";
+    case "comment": return "C";
+    case "crop": return "O";
+    case "watermark": return "W";
+    default: return "";
+  }
+}
+
 interface FloatingToolbarProps {
   activeTool: ActiveTool;
   setActiveTool: (tool: ActiveTool) => void;
@@ -186,7 +201,8 @@ export function FloatingToolbar({
             <button
               key={tool.id}
               onClick={() => handleToolClick(tool)}
-              title={tool.label}
+              className="editor-tooltip editor-tooltip-right"
+              data-tooltip={`${tool.label} (${getHotkeyLabel(tool.id)})`}
               style={{
                 width: "32px",
                 height: "32px",
@@ -262,7 +278,8 @@ export function FloatingToolbar({
               e.currentTarget.style.color = "#64748b";
             }
           }}
-          title="More tools and options"
+          className="editor-tooltip editor-tooltip-right"
+          data-tooltip="More tools (...)"
         >
           <MoreHorizontal size={15} />
         </button>

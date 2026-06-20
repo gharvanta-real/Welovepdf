@@ -798,3 +798,71 @@
   transform: scale(1.08);
 }
 
+/* Custom Premium Tooltip System */
+.editor-tooltip {
+  position: relative;
+}
+.editor-tooltip::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  background-color: #0f172a;
+  color: #ffffff;
+  font-size: 0.65rem;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1000;
+  border: 1px solid #1e293b;
+}
+.editor-tooltip:hover::after {
+  opacity: 1;
+}
+
+/* Tooltip directions */
+.editor-tooltip-right::after {
+  left: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%) scale(0.95);
+}
+.editor-tooltip-right:hover::after {
+  transform: translateY(-50%) scale(1);
+}
+
+.editor-tooltip-bottom::after {
+  top: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%) scale(0.95);
+}
+.editor-tooltip-bottom:hover::after {
+  transform: translateX(-50%) scale(1);
+}
+
+.editor-tooltip-top::after {
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%) scale(0.95);
+}
+.editor-tooltip-top:hover::after {
+  transform: translateX(-50%) scale(1);
+}
+
+/* Toast Slide-up Animation */
+@keyframes toastSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.toast-notification {
+  animation: toastSlideIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}

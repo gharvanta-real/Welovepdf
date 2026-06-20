@@ -95,6 +95,39 @@ export function PdfEditor({ file, selectedTool, onClose, onSave }: PdfEditorProp
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [toolbarPosition, setToolbarPosition] = useState({ x: 20, y: 24 });
 
+  // Toasts State & Handler
+  const [toasts, setToasts] = useState<{ id: string; message: string; type?: "info" | "success" | "warning" }[]>([]);
+  const showToast = (message: string, type: "info" | "success" | "warning" = "info") => {
+    const id = Math.random().toString(36).substring(2, 9);
+    setToasts(prev => [...prev, { id, message, type }]);
+    setTimeout(() => {
+      setToasts(prev => prev.filter(t => t.id !== id));
+    }, 2500);
+  };
+
+  const isFirstRenderTool = useRef(true);
+  useEffect(() => {
+    if (isFirstRenderTool.current) {
+      isFirstRenderTool.current = false;
+      return;
+    }
+    const toolLabels: { [key in ActiveTool]?: string } = {
+      pan: "Pan Tool",
+      select: "Select Mode",
+      text: "Text Tool",
+      pen: "Pen Drawing Tool",
+      highlight: "Highlighter",
+      shape: "Shapes Tool",
+      signature: "Signature Tool",
+      comment: "Comment Tool",
+      redact: "Redact Tool",
+      crop: "Crop Tool",
+      stamp: "Stamp Tool",
+      eraser: "Eraser"
+    };
+    showToast(`Switched to ${toolLabels[activeTool] || activeTool}`, "info");
+  }, [activeTool]);
+
   const handleToolbarDragStart = (e: React.MouseEvent) => {
     e.preventDefault();
     const startX = e.clientX;
@@ -229,14 +262,55 @@ export function PdfEditor({ file, selectedTool, onClose, onSave }: PdfEditorProp
   // Keyboard Event Shortcuts
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
-      if (e.ctrlKey || e.metaKey) {
-        if (e.key === "z" && !e.shiftKey) { e.preventDefault(); handleUndo(); }
-        if ((e.key === "y") || (e.key === "z" && e.shiftKey)) { e.preventDefault(); handleRedo(); }
+      // Ignore shortcuts if user is typing in inputs or textareas
+      const target = e.target as HTMLElement;
+      if (target.matches("input, textarea") || target.isContentEditable) {
+        return;
       }
+
+      if (e.ctrlKey || e.metaKey) {
+        if (e.key === "z" && !e.shiftKey) { 
+          e.preventDefault(); 
+          handleUndo(); 
+          showToast("Undo applied", "info"); 
+        }
+        if ((e.key === "y") || (e.key === "z" && e.shiftKey)) { 
+          e.preventDefault(); 
+          handleRedo(); 
+          showToast("Redo applied", "info"); 
+        }
+        if (e.key === "0") { 
+          e.preventDefault(); 
+          setZoom(100); 
+          showToast("Reset Zoom", "info"); 
+        }
+      } else {
+        // Single letter tool shortcuts
+        const key = e.key.toLowerCase();
+        if (key === "v") { setActiveTool("select"); }
+        else if (key === "t") { setActiveTool("text"); }
+        else if (key === "p") { setActiveTool("pen"); }
+        else if (key === "h") { setActiveTool("highlight"); }
+        else if (key === "s") { setActiveTool("shape"); }
+        else if (key === "c") { setActiveTool("comment"); }
+        else if (key === "r") { setActiveTool("redact"); }
+        else if (key === "o") { setActiveTool("crop"); }
+        else if (key === "w") { setActiveTool("stamp"); }
+        else if (e.key === "+" || e.key === "=") { 
+          e.preventDefault(); 
+          setZoom((z) => Math.min(z + 10, 250)); 
+        }
+        else if (e.key === "-") { 
+          e.preventDefault(); 
+          setZoom((z) => Math.max(z - 10, 30)); 
+        }
+      }
+
       if (e.key === "Delete" || e.key === "Backspace") {
-        if (selectedElementId && !(e.target as HTMLElement).matches("input, textarea")) {
+        if (selectedElementId) {
           e.preventDefault();
           deleteElement(selectedElementId);
+          showToast("Deleted element", "warning");
         }
       }
       if (e.key === "Escape") {
@@ -786,6 +860,8 @@ export function PdfEditor({ file, selectedTool, onClose, onSave }: PdfEditorProp
           rotatePage={rotatePage}
           removePage={removePage}
           onAddPages={() => alert("Please choose local files to merge/add.")}
+          setPageOrder={setPageOrder}
+          showToast={showToast}
         />
 
         {/* Center Document View canvas area */}
@@ -952,6 +1028,45 @@ export function PdfEditor({ file, selectedTool, onClose, onSave }: PdfEditorProp
           toolColor={toolColor}
         />
       )}
+
+      {/* ══ TOAST NOTIFICATIONS OVERLAY ══ */}
+      <div style={{
+        position: "fixed",
+        bottom: "80px",
+        right: "20px",
+        display: "flex",
+        flexDirection: "column",
+        gap: "8px",
+        zIndex: 9999,
+        pointerEvents: "none"
+      }}>
+        {toasts.map(toast => (
+          <div
+            key={toast.id}
+            className="toast-notification"
+            style={{
+              padding: "10px 16px",
+              borderRadius: "8px",
+              backgroundColor: "#0f172a",
+              color: "#ffffff",
+              fontSize: "0.78rem",
+              fontWeight: "500",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              pointerEvents: "auto",
+              border: "1px solid rgba(255,255,255,0.08)",
+              minWidth: "200px"
+            }}
+          >
+            {toast.type === "success" && <span style={{ color: "#10b981", fontWeight: "bold" }}>✓</span>}
+            {toast.type === "warning" && <span style={{ color: "#f59e0b", fontWeight: "bold" }}>⚠</span>}
+            {toast.type === "info" && <span style={{ color: "#3b82f6", fontWeight: "bold" }}>ℹ</span>}
+            <span>{toast.message}</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

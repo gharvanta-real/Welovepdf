@@ -15,6 +15,8 @@ interface PageSidebarProps {
   rotatePage: (pageNum: number, direction?: "cw" | "ccw") => void;
   removePage: (pageNum: number) => void;
   onAddPages?: () => void;
+  setPageOrder?: React.Dispatch<React.SetStateAction<number[]>>;
+  showToast?: (message: string, type?: "info" | "success" | "warning") => void;
 }
 
 export function PageSidebar({
@@ -28,8 +30,50 @@ export function PageSidebar({
   totalPages,
   rotatePage,
   removePage,
-  onAddPages
+  onAddPages,
+  setPageOrder,
+  showToast
 }: PageSidebarProps) {
+  const [draggedIndex, setDraggedIndex] = React.useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = React.useState<number | null>(null);
+
+  const handleDragStart = (e: React.DragEvent, index: number) => {
+    setDraggedIndex(index);
+    e.dataTransfer.effectAllowed = "move";
+  };
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    if (draggedIndex === null || draggedIndex === index) return;
+    setDragOverIndex(index);
+  };
+
+  const handleDrop = (e: React.DragEvent, targetIndex: number) => {
+    e.preventDefault();
+    if (draggedIndex === null || draggedIndex === targetIndex) return;
+
+    if (setPageOrder) {
+      setPageOrder((prev) => {
+        const result = [...prev];
+        const [removed] = result.splice(draggedIndex, 1);
+        result.splice(targetIndex, 0, removed);
+        return result;
+      });
+    }
+
+    if (showToast) {
+      showToast(`Moved Page ${pageOrder[draggedIndex]} to position ${targetIndex + 1}`, "success");
+    }
+
+    setCurrentPage(targetIndex + 1);
+    setDraggedIndex(null);
+    setDragOverIndex(null);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedIndex(null);
+    setDragOverIndex(null);
+  };
   return (
     <aside style={{
       width: "220px",
@@ -94,12 +138,20 @@ export function PageSidebar({
               key={pageNum}
               onClick={() => !isRemoved && setCurrentPage(idx + 1)}
               className="page-thumbnail-container"
+              draggable={!isRemoved}
+              onDragStart={(e) => handleDragStart(e, idx)}
+              onDragOver={(e) => handleDragOver(e, idx)}
+              onDrop={(e) => handleDrop(e, idx)}
+              onDragEnd={handleDragEnd}
               style={{
                 position: "relative",
                 display: "flex",
                 alignItems: "center",
                 gap: "10px",
-                width: "100%"
+                width: "100%",
+                opacity: draggedIndex === idx ? 0.4 : 1,
+                cursor: isRemoved ? "not-allowed" : "grab",
+                transition: "opacity 0.2s"
               }}
             >
               {/* Card Element */}
@@ -108,10 +160,12 @@ export function PageSidebar({
                   position: "relative",
                   flex: 1,
                   borderRadius: "8px",
-                  border: `2px solid ${isActive ? "#2563eb" : "transparent"}`,
+                  border: `2px solid ${isActive ? "#2563eb" : (dragOverIndex === idx ? "#3b82f6" : "transparent")}`,
+                  borderStyle: dragOverIndex === idx ? "dashed" : "solid",
                   padding: "4px",
-                  backgroundColor: isActive ? "#f8fafc" : "transparent",
-                  cursor: isRemoved ? "not-allowed" : "pointer",
+                  backgroundColor: isActive ? "#f8fafc" : (dragOverIndex === idx ? "#eff6ff" : "transparent"),
+                  cursor: isRemoved ? "not-allowed" : "inherit",
+                  transform: dragOverIndex === idx ? "scale(1.02)" : "scale(1)",
                   transition: "all 0.2s ease-in-out",
                   boxShadow: isActive ? "0 4px 12px rgba(37, 99, 235, 0.08)" : "none"
                 }}

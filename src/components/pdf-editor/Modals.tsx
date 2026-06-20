@@ -25,6 +25,18 @@ export function SignatureModal({ onClose, onSaveSignature, toolColor }: Signatur
     ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
   }
 
+  function startDrawingTouch(e: React.TouchEvent<HTMLCanvasElement>) {
+    const canvas = sigCanvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    setIsDrawingSig(true);
+    const rect = canvas.getBoundingClientRect();
+    const touch = e.touches[0];
+    ctx.beginPath();
+    ctx.moveTo(touch.clientX - rect.left, touch.clientY - rect.top);
+  }
+
   function draw(e: React.MouseEvent<HTMLCanvasElement>) {
     if (!isDrawingSig) return;
     const canvas = sigCanvasRef.current;
@@ -33,6 +45,22 @@ export function SignatureModal({ onClose, onSaveSignature, toolColor }: Signatur
     if (!ctx) return;
     const rect = canvas.getBoundingClientRect();
     ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+    ctx.strokeStyle = "#0f172a";
+    ctx.lineWidth = 2.5;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.stroke();
+  }
+
+  function drawTouch(e: React.TouchEvent<HTMLCanvasElement>) {
+    if (!isDrawingSig) return;
+    const canvas = sigCanvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    const rect = canvas.getBoundingClientRect();
+    const touch = e.touches[0];
+    ctx.lineTo(touch.clientX - rect.left, touch.clientY - rect.top);
     ctx.strokeStyle = "#0f172a";
     ctx.lineWidth = 2.5;
     ctx.lineCap = "round";
@@ -114,6 +142,9 @@ export function SignatureModal({ onClose, onSaveSignature, toolColor }: Signatur
             onMouseMove={draw}
             onMouseUp={stopDrawing}
             onMouseLeave={stopDrawing}
+            onTouchStart={startDrawingTouch}
+            onTouchMove={drawTouch}
+            onTouchEnd={stopDrawing}
             style={{
               border: "2px dashed var(--border)",
               borderRadius: "8px",
