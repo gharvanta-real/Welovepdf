@@ -8,8 +8,8 @@ def flatten_pdf(input_path, output_path):
     with pikepdf.open(input_path) as pdf:
         # Flatten Form Fields by marking them as Read-Only
         if mode in ["forms", "all"]:
-            if "/AcroForm" in pdf.root:
-                acro = pdf.root.AcroForm
+            if "/AcroForm" in pdf.Root:
+                acro = pdf.Root.AcroForm
                 if "/Fields" in acro:
                     for field in acro.Fields:
                         field.Ff = field.get("/Ff", 0) | 1
