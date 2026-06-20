@@ -1,5 +1,7 @@
 import React from "react";
-import { RotateCw, Check, X, FileText } from "lucide-react";
+import { 
+  RotateCw, RotateCcw, Trash2, FileText, LayoutGrid, MoreVertical, Plus, ChevronDown 
+} from "lucide-react";
 
 interface PageSidebarProps {
   pageOrder: number[];
@@ -10,8 +12,9 @@ interface PageSidebarProps {
   thumbnails: string[];
   toolColor: string;
   totalPages: number;
-  rotatePage: (pageNum: number) => void;
+  rotatePage: (pageNum: number, direction?: "cw" | "ccw") => void;
   removePage: (pageNum: number) => void;
+  onAddPages?: () => void;
 }
 
 export function PageSidebar({
@@ -25,140 +28,302 @@ export function PageSidebar({
   totalPages,
   rotatePage,
   removePage,
+  onAddPages
 }: PageSidebarProps) {
   return (
-    <aside className="editor-page-sidebar">
-      <div
-        style={{
-          padding: "12px 14px",
-          fontSize: "0.74rem",
-          fontWeight: "500",
-          color: "var(--text-muted)",
-          borderBottom: "1px solid var(--border)",
-          marginBottom: "8px",
+    <aside style={{
+      width: "220px",
+      minWidth: "220px",
+      backgroundColor: "#ffffff",
+      borderRight: "1px solid #e2e8f0",
+      display: "flex",
+      flexDirection: "column",
+      height: "100%",
+      flexShrink: 0,
+      userSelect: "none",
+      fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+    }}>
+      {/* Sidebar Header */}
+      <div style={{
+        padding: "14px 16px",
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        borderBottom: "1px solid #f1f5f9"
+      }}>
+        <span style={{
+          fontSize: "0.85rem",
+          fontWeight: "700",
+          color: "#1e293b"
+        }}>
+          Pages
+        </span>
+        <button style={{
+          background: "none",
+          border: "none",
+          color: "#64748b",
+          cursor: "pointer",
+          padding: "4px",
+          borderRadius: "4px",
+          display: "flex",
+          alignItems: "center"
         }}
-      >
-        Pages · {totalPages - removedPages.size}/{totalPages}
+        onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "#f1f5f9"; }}
+        onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; }}
+        >
+          <LayoutGrid size={15} />
+        </button>
       </div>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: "8px", padding: "0 10px 16px" }}>
+      {/* Pages List */}
+      <div className="editor-page-sidebar-scroll" style={{
+        flex: 1,
+        overflowY: "auto",
+        padding: "12px",
+        display: "flex",
+        flexDirection: "column",
+        gap: "14px"
+      }}>
         {pageOrder.map((pageNum, idx) => {
           const isRemoved = removedPages.has(pageNum);
           const rotation = pageRotations[pageNum] || 0;
           const isActive = currentPage === idx + 1;
+          
           return (
             <div
               key={pageNum}
               onClick={() => !isRemoved && setCurrentPage(idx + 1)}
+              className="page-thumbnail-container"
               style={{
                 position: "relative",
-                borderRadius: "8px",
-                border: `2px solid ${isActive ? toolColor : isRemoved ? "#ef4444" : "transparent"}`,
-                padding: "6px",
-                backgroundColor: isRemoved
-                  ? "rgba(239, 68, 68, 0.15)"
-                  : "var(--c-bg)",
-                cursor: isRemoved ? "not-allowed" : "pointer",
-                transition: "all 0.2s",
-                boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+                width: "100%"
               }}
             >
+              {/* Card Element */}
               <div
                 style={{
-                  width: "100%",
-                  aspectRatio: "8.5/11",
-                  overflow: "hidden",
+                  position: "relative",
+                  flex: 1,
+                  borderRadius: "8px",
+                  border: `2px solid ${isActive ? "#2563eb" : "transparent"}`,
+                  padding: "4px",
+                  backgroundColor: isActive ? "#f8fafc" : "transparent",
+                  cursor: isRemoved ? "not-allowed" : "pointer",
+                  transition: "all 0.2s ease-in-out",
+                  boxShadow: isActive ? "0 4px 12px rgba(37, 99, 235, 0.08)" : "none"
+                }}
+              >
+                {/* Image / Thumbnail Container */}
+                <div
+                  style={{
+                    width: "100%",
+                    aspectRatio: "0.75",
+                    overflow: "hidden",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderRadius: "6px",
+                    backgroundColor: "#ffffff",
+                    border: `1px solid ${isActive ? "#2563eb" : "#e2e8f0"}`,
+                    boxShadow: "0 1px 3px rgba(0,0,0,0.05)"
+                  }}
+                >
+                  {thumbnails[pageNum - 1] ? (
+                    <img
+                      src={thumbnails[pageNum - 1]}
+                      style={{
+                        maxHeight: "92%",
+                        maxWidth: "92%",
+                        objectFit: "contain",
+                        transform: `rotate(${rotation}deg)`,
+                        transition: "transform 0.25s ease"
+                      }}
+                      alt={`Page ${pageNum}`}
+                    />
+                  ) : (
+                    <FileText size={24} style={{ color: "#94a3b8" }} />
+                  )}
+                  {isRemoved && (
+                    <div
+                      style={{
+                        position: "absolute",
+                        inset: 4,
+                        backgroundColor: "rgba(239,68,68,0.5)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        borderRadius: "5px"
+                      }}
+                    >
+                      <span style={{ color: "#ffffff", fontSize: "0.62rem", fontWeight: "600" }}>
+                        Excluded
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Page Number Label bottom-left inside or below */}
+                <div style={{
+                  position: "absolute",
+                  bottom: "10px",
+                  left: "10px",
+                  width: "18px",
+                  height: "18px",
+                  borderRadius: "50%",
+                  backgroundColor: isActive ? "#2563eb" : "#94a3b8",
+                  color: "#ffffff",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  borderRadius: "4px",
-                  backgroundColor: "#ffffff",
-                  boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+                  fontSize: "0.65rem",
+                  fontWeight: "750",
+                  boxShadow: "0 1px 3px rgba(0,0,0,0.15)"
+                }}>
+                  {idx + 1}
+                </div>
+              </div>
+
+              {/* Actions side drawer - visible on hover/active */}
+              <div 
+                className="thumbnail-action-bar"
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "6px",
+                  width: "28px",
+                  alignItems: "center"
                 }}
               >
-                {thumbnails[pageNum - 1] ? (
-                  <img
-                    src={thumbnails[pageNum - 1]}
-                    style={{
-                      maxHeight: "100%",
-                      maxWidth: "100%",
-                      objectFit: "contain",
-                      transform: `rotate(${rotation}deg)`,
-                      transition: "transform 0.3s",
-                    }}
-                    alt={`Page ${pageNum}`}
-                  />
+                {isActive ? (
+                  <>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        rotatePage(pageNum, "ccw");
+                      }}
+                      style={{
+                        width: "24px",
+                        height: "24px",
+                        borderRadius: "50%",
+                        border: "1px solid #e2e8f0",
+                        background: "#ffffff",
+                        color: "#475569",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center"
+                      }}
+                      title="Rotate Counter-Clockwise"
+                    >
+                      <RotateCcw size={10} />
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        rotatePage(pageNum, "cw");
+                      }}
+                      style={{
+                        width: "24px",
+                        height: "24px",
+                        borderRadius: "50%",
+                        border: "1px solid #e2e8f0",
+                        background: "#ffffff",
+                        color: "#475569",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center"
+                      }}
+                      title="Rotate Clockwise"
+                    >
+                      <RotateCw size={10} />
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removePage(pageNum);
+                      }}
+                      style={{
+                        width: "24px",
+                        height: "24px",
+                        borderRadius: "50%",
+                        border: "1px solid #fee2e2",
+                        background: "#fef2f2",
+                        color: "#ef4444",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center"
+                      }}
+                      title="Delete Page"
+                    >
+                      <Trash2 size={10} />
+                    </button>
+                  </>
                 ) : (
-                  <FileText size={24} style={{ color: "var(--text-muted)" }} />
-                )}
-                {isRemoved && (
-                  <div
-                    style={{
-                      position: "absolute",
-                      inset: 0,
-                      backgroundColor: "rgba(239,68,68,0.6)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      borderRadius: "6px",
-                    }}
-                  >
-                    <span style={{ color: "#fff", fontSize: "0.68rem", fontWeight: "600" }}>
-                      Excluded
-                    </span>
-                  </div>
-                )}
-              </div>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "6px" }}>
-                <span
-                  style={{
-                    fontSize: "0.65rem",
-                    fontWeight: "700",
-                    color: isActive ? "var(--c-text)" : "var(--text-muted)",
-                  }}
-                >
-                  pg. {idx + 1}
-                </span>
-                <div style={{ display: "flex", gap: "2px" }}>
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      rotatePage(pageNum);
+                      setCurrentPage(idx + 1);
                     }}
                     style={{
-                      padding: "2px 4px",
-                      borderRadius: "3px",
-                      border: "1px solid var(--border)",
-                      background: "var(--c-surface)",
-                      color: "var(--text-muted)",
+                      background: "none",
+                      border: "none",
+                      color: "#94a3b8",
                       cursor: "pointer",
+                      padding: "4px"
                     }}
-                    title="Rotate"
                   >
-                    <RotateCw size={9} />
+                    <MoreVertical size={14} />
                   </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      removePage(pageNum);
-                    }}
-                    style={{
-                      padding: "2px 4px",
-                      borderRadius: "3px",
-                      border: `1px solid ${isRemoved ? "#22c55e" : "#ef4444"}33`,
-                      background: "var(--c-surface)",
-                      color: isRemoved ? "#22c55e" : "#ef4444",
-                      cursor: "pointer",
-                    }}
-                    title={isRemoved ? "Restore" : "Remove"}
-                  >
-                    {isRemoved ? <Check size={9} /> : <X size={9} />}
-                  </button>
-                </div>
+                )}
               </div>
             </div>
           );
         })}
+      </div>
+
+      {/* Sidebar Footer: Add Pages button */}
+      <div style={{
+        padding: "16px",
+        borderTop: "1px solid #f1f5f9"
+      }}>
+        <button
+          onClick={onAddPages || (() => {})}
+          style={{
+            width: "100%",
+            height: "36px",
+            border: "1px solid #e2e8f0",
+            borderRadius: "8px",
+            background: "#ffffff",
+            color: "#334155",
+            fontSize: "0.78rem",
+            fontWeight: "600",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            padding: "0 12px",
+            boxShadow: "0 1px 2px rgba(0,0,0,0.02)"
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.borderColor = "#cbd5e1";
+            e.currentTarget.style.backgroundColor = "#f8fafc";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.borderColor = "#e2e8f0";
+            e.currentTarget.style.backgroundColor = "#ffffff";
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <Plus size={14} style={{ color: "#475569" }} />
+            Add Pages
+          </div>
+          <ChevronDown size={12} style={{ color: "#94a3b8" }} />
+        </button>
       </div>
     </aside>
   );

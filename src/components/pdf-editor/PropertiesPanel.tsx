@@ -1,15 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import {
-  MousePointer, Bold, Italic, Underline, Strikethrough,
+  Bold, Italic, Underline, Strikethrough,
   AlignLeft, AlignCenter, AlignRight, AlignJustify,
-  Copy, Lock, Unlock, Plus, Minus, Trash2, Crop
+  Copy, Lock, Unlock, Plus, Minus, Trash2, Crop, X, ChevronDown, ChevronUp
 } from "lucide-react";
-import {
-  PropLabel, InfoRow, FormatBtn, propActionBtn
-} from "./shared-components";
-import {
-  OverlayElement, ActiveTool, FONTS, FONT_SIZES, STAMP_TYPES
-} from "./types";
+import { OverlayElement, ActiveTool, FONTS, FONT_SIZES, PRESET_COLORS } from "./types";
 
 interface PropertiesPanelProps {
   selectedEl: OverlayElement | undefined;
@@ -51,8 +46,9 @@ interface PropertiesPanelProps {
   stampType: string;
   setStampType: (s: string) => void;
   toolColor: string;
+  onClosePanel?: () => void;
 
-  // New tool-specific states
+  // Defaults props
   handleFontChange?: (font: string) => void;
   align?: "left" | "center" | "right" | "justify";
   updateAlignment?: (a: "left" | "center" | "right" | "justify") => void;
@@ -116,557 +112,866 @@ export function PropertiesPanel({
   stampType,
   setStampType,
   toolColor,
+  onClosePanel,
 
-  // Destructured new props
   handleFontChange = () => {},
   align = "left",
   updateAlignment = () => {},
-  textColor = "#1e293b",
+  textColor = "#111111",
   handleTextColorChange = () => {},
   penColor = "#ef4444",
   setPenColor = () => {},
   penThickness = 3,
   setPenThickness = () => {},
-  markerColor = "#fef08a",
+  markerColor = "#FFE83B",
   setMarkerColor = () => {},
   markerOpacity = 0.4,
   setMarkerOpacity = () => {},
   shapeType = "rectangle",
   setShapeType = () => {},
-  shapeColor = "#3b82f6",
+  shapeColor = "#2563eb",
   setShapeColor = () => {},
   shapeFillColor = "transparent",
   setShapeFillColor = () => {},
   shapeThickness = 2,
   setShapeThickness = () => {}
 }: PropertiesPanelProps) {
+  const [showColorDropdown, setShowColorDropdown] = useState<string | null>(null);
+  const [showSpacingCollapse, setShowSpacingCollapse] = useState(false);
+
+  // Helper component for Color Swatch Pill Dropdown
+  const ColorSwatchPill = ({ 
+    color, 
+    label, 
+    onChange, 
+    dropdownId 
+  }: { 
+    color: string; 
+    label: string; 
+    onChange: (c: string) => void; 
+    dropdownId: string;
+  }) => {
+    const isTransparent = color === "transparent" || !color;
+    return (
+      <div style={{ position: "relative", flex: 1 }}>
+        <button
+          onClick={() => setShowColorDropdown(showColorDropdown === dropdownId ? null : dropdownId)}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            width: "100%",
+            height: "32px",
+            padding: "0 10px",
+            border: "1px solid #cbd5e1",
+            borderRadius: "6px",
+            background: "#ffffff",
+            cursor: "pointer",
+            outline: "none"
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <div style={{
+              width: "14px",
+              height: "14px",
+              borderRadius: "3px",
+              border: "1px solid rgba(0,0,0,0.1)",
+              background: isTransparent 
+                ? "linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%)" 
+                : color,
+              backgroundSize: isTransparent ? "4px 4px" : "auto"
+            }} />
+            <span style={{ fontSize: "0.72rem", color: "#1e293b", fontWeight: "500" }}>
+              {isTransparent ? "Transparent" : color.toUpperCase()}
+            </span>
+          </div>
+          <ChevronDown size={11} style={{ color: "#94a3b8" }} />
+        </button>
+
+        {showColorDropdown === dropdownId && (
+          <div style={{
+            position: "absolute",
+            top: "36px",
+            right: 0,
+            zIndex: 50,
+            background: "#ffffff",
+            border: "1px solid #cbd5e1",
+            borderRadius: "8px",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+            padding: "8px",
+            width: "152px",
+            display: "grid",
+            gridTemplateColumns: "repeat(6, 20px)",
+            gap: "4px"
+          }}>
+            {dropdownId.includes("fill") && (
+              <button
+                onClick={() => { onChange("transparent"); setShowColorDropdown(null); }}
+                title="Transparent"
+                style={{
+                  gridColumn: "span 6",
+                  fontSize: "0.68rem",
+                  padding: "4px",
+                  border: "1px solid #cbd5e1",
+                  borderRadius: "4px",
+                  background: "#ffffff",
+                  cursor: "pointer",
+                  marginBottom: "4px"
+                }}
+              >
+                Clear Fill
+              </button>
+            )}
+            {PRESET_COLORS.map(c => (
+              <button
+                key={c}
+                onClick={() => { onChange(c); setShowColorDropdown(null); }}
+                style={{
+                  width: "20px",
+                  height: "20px",
+                  borderRadius: "4px",
+                  background: c,
+                  border: "1px solid rgba(0,0,0,0.15)",
+                  cursor: "pointer",
+                  padding: 0
+                }}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // ── Determine Active State ──
+  const titleText = selectedEl 
+    ? `${selectedEl.type.charAt(0).toUpperCase() + selectedEl.type.slice(1)} Properties`
+    : (selectedTool === "Crop PDF" || activeTool === "crop") 
+      ? "Crop Properties"
+      : "Editor Properties";
+
   return (
-    <aside className="editor-properties-panel">
-      <div style={{ padding: "12px 14px", borderBottom: "1px solid var(--border)" }}>
-        <span style={{ fontSize: "0.76rem", fontWeight: "500", color: "var(--c-text)" }}>Properties</span>
+    <aside style={{
+      width: "240px",
+      minWidth: "240px",
+      backgroundColor: "#ffffff",
+      borderLeft: "1px solid #e2e8f0",
+      display: "flex",
+      flexDirection: "column",
+      height: "100%",
+      flexShrink: 0,
+      fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+    }}>
+      {/* Title Bar */}
+      <div style={{
+        padding: "14px 16px",
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        borderBottom: "1px solid #f1f5f9"
+      }}>
+        <span style={{ fontSize: "0.8rem", fontWeight: "700", color: "#1e293b" }}>
+          {titleText}
+        </span>
+        {onClosePanel && (
+          <button 
+            onClick={onClosePanel}
+            style={{ background: "none", border: "none", color: "#94a3b8", cursor: "pointer", padding: "2px" }}
+          >
+            <X size={15} />
+          </button>
+        )}
       </div>
 
-      {selectedEl ? (
-        <div style={{ padding: "14px", display: "flex", flexDirection: "column", gap: "14px" }}>
-          {/* Element info */}
-          <div style={{ padding: "8px 10px", backgroundColor: "var(--c-bg)", borderRadius: "6px", border: "none", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
-            <div style={{ fontSize: "0.72rem", color: "var(--text-muted)", marginBottom: "4px" }}>Element</div>
-            <div style={{ fontSize: "0.8rem", fontWeight: "500", color: "var(--c-text)", textTransform: "capitalize" }}>{selectedEl.type}</div>
-            <div style={{ fontSize: "0.68rem", color: "var(--text-muted)", marginTop: "2px" }}>x:{Math.round(selectedEl.x)}% y:{Math.round(selectedEl.y)}%</div>
-          </div>
+      {/* Main Controls Panel */}
+      <div className="editor-page-sidebar-scroll" style={{
+        flex: 1,
+        overflowY: "auto",
+        padding: "16px",
+        display: "flex",
+        flexDirection: "column",
+        gap: "16px"
+      }}>
+        {selectedEl ? (
+          <>
+            {/* 1. CONTENT (Text only) */}
+            {selectedEl.type === "text" && (
+              <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                <label style={{ fontSize: "0.68rem", fontWeight: "700", color: "#64748b", textTransform: "uppercase", letterSpacing: "0.03em" }}>Content</label>
+                <textarea
+                  value={selectedEl.content || ""}
+                  onChange={e => updateElement(selectedEl.id, { content: e.target.value })}
+                  style={{
+                    width: "100%",
+                    height: "64px",
+                    padding: "8px 10px",
+                    border: "1px solid #cbd5e1",
+                    borderRadius: "6px",
+                    fontSize: "0.76rem",
+                    color: "#1e293b",
+                    fontFamily: "inherit",
+                    resize: "none",
+                    outline: "none"
+                  }}
+                />
+              </div>
+            )}
 
-          {/* Text properties */}
-          {selectedEl.type === "text" && (
-            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-              <PropLabel>Font</PropLabel>
-              <select value={selectedEl.fontFamily || textFont} onChange={e => updateElement(selectedEl.id, { fontFamily: e.target.value })}
-                style={{ width: "100%", padding: "5px 12px", borderRadius: "9999px", border: "1px solid var(--border)", fontSize: "0.75rem", color: "var(--c-text)", backgroundColor: "var(--c-bg)", outline: "none", cursor: "pointer" }}>
-                {FONTS.map(f => <option key={f} value={f}>{f}</option>)}
-              </select>
-              <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
-                <PropLabel>Size</PropLabel>
-                <select value={selectedEl.fontSize || textSize} onChange={e => handleTextSizeChange(parseInt(e.target.value))}
-                  style={{ flex: 1, padding: "4px 10px", borderRadius: "9999px", border: "1px solid var(--border)", fontSize: "0.75rem", color: "var(--c-text)", backgroundColor: "var(--c-bg)", outline: "none", cursor: "pointer" }}>
-                  {FONT_SIZES.map(s => <option key={s} value={s}>{s}pt</option>)}
+            {/* 2. FONT PROPERTIES (Text only) */}
+            {selectedEl.type === "text" && (
+              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                <label style={{ fontSize: "0.68rem", fontWeight: "700", color: "#64748b", textTransform: "uppercase", letterSpacing: "0.03em" }}>Font</label>
+                
+                {/* Font Family Dropdown */}
+                <select
+                  value={selectedEl.fontFamily || textFont}
+                  onChange={e => updateElement(selectedEl.id, { fontFamily: e.target.value })}
+                  style={{
+                    width: "100%",
+                    height: "32px",
+                    padding: "0 8px",
+                    border: "1px solid #cbd5e1",
+                    borderRadius: "6px",
+                    fontSize: "0.76rem",
+                    color: "#1e293b",
+                    background: "#ffffff",
+                    cursor: "pointer",
+                    outline: "none"
+                  }}
+                >
+                  {FONTS.map(f => <option key={f} value={f}>{f}</option>)}
                 </select>
-              </div>
-              <div style={{ display: "flex", gap: "4px" }}>
-                <FormatBtn active={!!selectedEl.isBold} onClick={toggleBold} title="Bold"><Bold size={12} /></FormatBtn>
-                <FormatBtn active={!!selectedEl.isItalic} onClick={toggleItalic} title="Italic"><Italic size={12} /></FormatBtn>
-                <FormatBtn active={!!selectedEl.isUnderline} onClick={toggleUnderline} title="Underline"><Underline size={12} /></FormatBtn>
-                <FormatBtn active={!!selectedEl.isStrike} onClick={toggleStrike} title="Strike"><Strikethrough size={12} /></FormatBtn>
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                <PropLabel>Color</PropLabel>
-                <input type="color" value={selectedEl.color || "var(--c-text)"} onChange={e => updateElement(selectedEl.id, { color: e.target.value })}
-                  style={{ width: "22px", height: "22px", padding: 0, border: "1px solid var(--border)", borderRadius: "50%", cursor: "pointer", backgroundColor: "transparent" }} />
-              </div>
-              <div style={{ display: "flex", gap: "4px" }}>
-                {(["left", "center", "right", "justify"] as const).map(a => (
-                  <FormatBtn key={a} active={(selectedEl.align || "left") === a} onClick={() => updateElement(selectedEl.id, { align: a })} title={a}>
-                    {a === "left" ? <AlignLeft size={11} /> : a === "center" ? <AlignCenter size={11} /> : a === "right" ? <AlignRight size={11} /> : <AlignJustify size={11} />}
-                  </FormatBtn>
-                ))}
-              </div>
-            </div>
-          )}
 
-          {/* Shape properties */}
-          {selectedEl.type === "shape" && (
-            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                <PropLabel>Border</PropLabel>
-                <input type="color" value={selectedEl.color || "#3b82f6"} onChange={e => updateElement(selectedEl.id, { color: e.target.value })}
-                  style={{ width: "22px", height: "22px", padding: 0, border: "1px solid var(--border)", borderRadius: "50%", cursor: "pointer", backgroundColor: "transparent" }} />
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                <PropLabel>Fill</PropLabel>
-                <input type="color" value={selectedEl.bgColor === "transparent" ? "#ffffff" : (selectedEl.bgColor || "#ffffff")} onChange={e => updateElement(selectedEl.id, { bgColor: e.target.value })}
-                  style={{ width: "22px", height: "22px", padding: 0, border: "1px solid var(--border)", borderRadius: "50%", cursor: "pointer", backgroundColor: "transparent" }} />
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                <PropLabel>Width</PropLabel>
-                <input type="range" min="1" max="10" value={selectedEl.thickness || 2} onChange={e => updateElement(selectedEl.id, { thickness: parseInt(e.target.value) })} style={{ flex: 1 }} />
-                <span style={{ fontSize: "0.7rem", color: "var(--text-muted)", minWidth: "22px" }}>{selectedEl.thickness || 2}px</span>
-              </div>
-            </div>
-          )}
+                {/* Font Weight & Size */}
+                <div style={{ display: "flex", gap: "6px" }}>
+                  <select
+                    style={{
+                      flex: 1,
+                      height: "32px",
+                      padding: "0 8px",
+                      border: "1px solid #cbd5e1",
+                      borderRadius: "6px",
+                      fontSize: "0.76rem",
+                      color: "#1e293b",
+                      background: "#ffffff",
+                      cursor: "pointer",
+                      outline: "none"
+                    }}
+                  >
+                    <option value="regular">Regular</option>
+                    <option value="medium">Medium</option>
+                    <option value="bold">Bold</option>
+                  </select>
 
-          {/* Highlight properties */}
-          {selectedEl.type === "highlight" && (
-            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                <PropLabel>Color</PropLabel>
-                <input type="color" value={selectedEl.color || "#fef08a"} onChange={e => updateElement(selectedEl.id, { color: e.target.value })}
-                  style={{ width: "22px", height: "22px", padding: 0, border: "1px solid var(--border)", borderRadius: "50%", cursor: "pointer", backgroundColor: "transparent" }} />
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                <PropLabel>Opacity</PropLabel>
-                <input type="range" min="0.1" max="0.9" step="0.05" value={selectedEl.opacity || 0.4} onChange={e => updateElement(selectedEl.id, { opacity: parseFloat(e.target.value) })} style={{ flex: 1 }} />
-                <span style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>{Math.round((selectedEl.opacity || 0.4) * 100)}%</span>
-              </div>
-            </div>
-          )}
+                  <select
+                    value={selectedEl.fontSize || textSize}
+                    onChange={e => handleTextSizeChange(parseInt(e.target.value))}
+                    style={{
+                      width: "68px",
+                      height: "32px",
+                      padding: "0 8px",
+                      border: "1px solid #cbd5e1",
+                      borderRadius: "6px",
+                      fontSize: "0.76rem",
+                      color: "#1e293b",
+                      background: "#ffffff",
+                      cursor: "pointer",
+                      outline: "none"
+                    }}
+                  >
+                    {FONT_SIZES.map(s => <option key={s} value={s}>{s}</option>)}
+                  </select>
+                </div>
 
-          {/* Position & size */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-            <PropLabel>Position & Size</PropLabel>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px" }}>
-              {[
-                { label: "X", key: "x" as const, val: selectedEl.x },
-                { label: "Y", key: "y" as const, val: selectedEl.y },
-                { label: "W", key: "width" as const, val: selectedEl.width || 20 },
-                { label: "H", key: "height" as const, val: selectedEl.height || 10 },
-              ].map(({ label, key, val }) => (
-                <div key={key} style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-                  <span style={{ fontSize: "0.65rem", color: "var(--text-muted)", fontWeight: "500" }}>{label}</span>
+                {/* Formatting & Alignment Buttons */}
+                <div style={{ display: "flex", gap: "4px" }}>
+                  {[
+                    { icon: <Bold size={13} />, active: !!selectedEl.isBold, action: toggleBold, title: "Bold" },
+                    { icon: <Italic size={13} />, active: !!selectedEl.isItalic, action: toggleItalic, title: "Italic" },
+                    { icon: <Underline size={13} />, active: !!selectedEl.isUnderline, action: toggleUnderline, title: "Underline" },
+                    { icon: <Strikethrough size={13} />, active: !!selectedEl.isStrike, action: toggleStrike, title: "Strike" }
+                  ].map((btn, idx) => (
+                    <button
+                      key={idx}
+                      onClick={btn.action}
+                      title={btn.title}
+                      style={{
+                        flex: 1,
+                        height: "28px",
+                        border: `1px solid ${btn.active ? "#2563eb" : "#cbd5e1"}`,
+                        background: btn.active ? "#eff6ff" : "#ffffff",
+                        color: btn.active ? "#2563eb" : "#475569",
+                        borderRadius: "6px",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        outline: "none"
+                      }}
+                    >
+                      {btn.icon}
+                    </button>
+                  ))}
+
+                  <div style={{ width: "1px", backgroundColor: "#e2e8f0", margin: "0 2px" }} />
+
+                  {(["left", "center", "right", "justify"] as const).map(a => (
+                    <button
+                      key={a}
+                      onClick={() => updateElement(selectedEl.id, { align: a })}
+                      title={`Align ${a}`}
+                      style={{
+                        flex: 1,
+                        height: "28px",
+                        border: `1px solid ${(selectedEl.align || "left") === a ? "#2563eb" : "#cbd5e1"}`,
+                        background: (selectedEl.align || "left") === a ? "#eff6ff" : "#ffffff",
+                        color: (selectedEl.align || "left") === a ? "#2563eb" : "#475569",
+                        borderRadius: "6px",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        outline: "none"
+                      }}
+                    >
+                      {a === "left" ? <AlignLeft size={12} /> : a === "center" ? <AlignCenter size={12} /> : a === "right" ? <AlignRight size={12} /> : <AlignJustify size={12} />}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* 3. COLOR SELECTION */}
+            {(selectedEl.type === "text" || selectedEl.type === "shape" || selectedEl.type === "highlight") && (
+              <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                <label style={{ fontSize: "0.68rem", fontWeight: "700", color: "#64748b", textTransform: "uppercase", letterSpacing: "0.03em" }}>Color</label>
+                <div style={{ display: "flex", gap: "8px" }}>
+                  <ColorSwatchPill 
+                    color={selectedEl.color || "#111111"} 
+                    label="Foreground" 
+                    onChange={(c) => updateElement(selectedEl.id, { color: c })} 
+                    dropdownId="fg"
+                  />
+                  {selectedEl.type === "text" && (
+                    <ColorSwatchPill 
+                      color={selectedEl.bgColor || "transparent"} 
+                      label="Background" 
+                      onChange={(c) => updateElement(selectedEl.id, { bgColor: c })} 
+                      dropdownId="bg"
+                    />
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* 4. OPACITY */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <label style={{ fontSize: "0.68rem", fontWeight: "700", color: "#64748b", textTransform: "uppercase", letterSpacing: "0.03em" }}>Opacity</label>
+                <span style={{ fontSize: "0.72rem", color: "#1e293b", fontWeight: "600" }}>
+                  {Math.round((selectedEl.opacity !== undefined ? selectedEl.opacity : 1) * 100)}%
+                </span>
+              </div>
+              <input
+                type="range"
+                min="0.1"
+                max="1.0"
+                step="0.05"
+                value={selectedEl.opacity !== undefined ? selectedEl.opacity : 1.0}
+                onChange={e => updateElement(selectedEl.id, { opacity: parseFloat(e.target.value) })}
+                style={{ width: "100%", cursor: "pointer", height: "4px" }}
+              />
+            </div>
+
+            {/* 5. TEXT BOX/CONTAINER PROPERTIES (Only for Text and Shapes) */}
+            {(selectedEl.type === "text" || selectedEl.type === "shape") && (
+              <div style={{ display: "flex", flexDirection: "column", gap: "10px", borderTop: "1px solid #f1f5f9", paddingTop: "14px" }}>
+                <label style={{ fontSize: "0.68rem", fontWeight: "700", color: "#64748b", textTransform: "uppercase", letterSpacing: "0.03em" }}>
+                  {selectedEl.type === "text" ? "Text Box" : "Shape Frame"}
+                </label>
+
+                {/* Fill & Border swatches */}
+                <div style={{ display: "flex", gap: "8px" }}>
+                  <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "4px" }}>
+                    <span style={{ fontSize: "0.62rem", color: "#64748b" }}>Fill</span>
+                    <ColorSwatchPill 
+                      color={selectedEl.bgColor || "transparent"} 
+                      label="Fill" 
+                      onChange={(c) => updateElement(selectedEl.id, { bgColor: c })} 
+                      dropdownId="shape_fill"
+                    />
+                  </div>
+                  <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "4px" }}>
+                    <span style={{ fontSize: "0.62rem", color: "#64748b" }}>Border</span>
+                    <ColorSwatchPill 
+                      color={selectedEl.color || "#0057C0"} 
+                      label="Border" 
+                      onChange={(c) => updateElement(selectedEl.id, { color: c })} 
+                      dropdownId="shape_border"
+                    />
+                  </div>
+                </div>
+
+                {/* Border Thickness slider */}
+                <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between" }}>
+                    <span style={{ fontSize: "0.62rem", color: "#64748b" }}>Border Thickness</span>
+                    <span style={{ fontSize: "0.65rem", fontWeight: "600", color: "#475569" }}>{selectedEl.thickness || 1.5} pt</span>
+                  </div>
                   <input
-                    type="number"
-                    value={Math.round(val * 10) / 10}
-                    onChange={e => updateElement(selectedEl.id, { [key]: parseFloat(e.target.value) })}
-                    min="0" max="100" step="0.5"
-                    style={{ width: "100%", padding: "3px 8px", borderRadius: "9999px", border: "1px solid var(--border)", fontSize: "0.72rem", color: "var(--c-text)", backgroundColor: "var(--c-bg)", outline: "none" }}
+                    type="range"
+                    min="0"
+                    max="10"
+                    step="0.5"
+                    value={selectedEl.thickness !== undefined ? selectedEl.thickness : 1.5}
+                    onChange={e => updateElement(selectedEl.id, { thickness: parseFloat(e.target.value) })}
+                    style={{ width: "100%", cursor: "pointer", height: "4px" }}
                   />
                 </div>
-              ))}
-            </div>
-          </div>
 
-          {/* Actions */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
-            <PropLabel>Actions</PropLabel>
-            <button onClick={() => duplicateElement(selectedEl.id)} style={propActionBtn}>
-              <Copy size={11} /> Duplicate
-            </button>
-            <button onClick={() => toggleLock(selectedEl.id)} style={{ ...propActionBtn, borderColor: selectedEl.locked ? "#f59e0b" : "var(--border)", color: selectedEl.locked ? "#f59e0b" : "var(--c-text)", backgroundColor: selectedEl.locked ? "rgba(245,158,11,0.1)" : "var(--c-surface)" }}>
-              <Lock size={11} /> {selectedEl.locked ? "Unlock" : "Lock"}
-            </button>
-            <button onClick={() => bringForward(selectedEl.id)} style={propActionBtn}>
-              <Plus size={11} /> Bring Forward
-            </button>
-            <button onClick={() => sendBackward(selectedEl.id)} style={propActionBtn}>
-              <Minus size={11} /> Send Backward
-            </button>
-            <button onClick={() => deleteElement(selectedEl.id)} style={{ ...propActionBtn, borderColor: "#fecaca", color: "#ef4444", backgroundColor: "rgba(239,68,68,0.1)" }}>
-              <Trash2 size={11} /> Delete Element
-            </button>
-          </div>
-        </div>
-      ) : (selectedTool === "Crop PDF" || activeTool === "crop") ? (
-        <div style={{ padding: "20px 14px", display: "flex", flexDirection: "column", gap: "14px" }}>
-          <div style={{ padding: "16px", backgroundColor: "var(--c-bg)", borderRadius: "8px", boxShadow: "0 1px 4px rgba(0,0,0,0.04)", display: "flex", flexDirection: "column", gap: "12px" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-              <Crop size={16} style={{ color: toolColor }} />
-              <span style={{ fontSize: "0.8rem", fontWeight: "600", color: "var(--c-text)" }}>Crop Boundaries</span>
-            </div>
-            <p style={{ fontSize: "0.72rem", color: "var(--text-muted)", lineHeight: 1.4, margin: 0 }}>
-              Adjust margins using sliders, coordinates, or by dragging handles directly on the document canvas.
-            </p>
+                {/* Corner Radius slider */}
+                <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between" }}>
+                    <span style={{ fontSize: "0.62rem", color: "#64748b" }}>Corner Radius</span>
+                    <span style={{ fontSize: "0.65rem", fontWeight: "600", color: "#475569" }}>{selectedEl.bgColor ? (selectedEl.thickness || 4) : 4} px</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="0"
+                    max="20"
+                    value={selectedEl.thickness !== undefined ? Math.round(selectedEl.thickness * 2.5) : 4}
+                    onChange={e => updateElement(selectedEl.id, { thickness: parseInt(e.target.value) / 2.5 })}
+                    style={{ width: "100%", cursor: "pointer", height: "4px" }}
+                  />
+                </div>
+              </div>
+            )}
 
-            <div style={{ height: "1px", backgroundColor: "var(--border)" }} />
+            {/* 6. SPACING ACCORDION COLLAPSE */}
+            {selectedEl.type === "text" && (
+              <div style={{ borderTop: "1px solid #f1f5f9", paddingTop: "10px" }}>
+                <button
+                  onClick={() => setShowSpacingCollapse(!showSpacingCollapse)}
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    width: "100%",
+                    background: "none",
+                    border: "none",
+                    padding: "4px 0",
+                    cursor: "pointer",
+                    fontSize: "0.68rem",
+                    fontWeight: "700",
+                    color: "#64748b",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.03em"
+                  }}
+                >
+                  Spacing
+                  {showSpacingCollapse ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+                </button>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                {showSpacingCollapse && (
+                  <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "8px" }}>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between" }}>
+                        <span style={{ fontSize: "0.62rem", color: "#64748b" }}>Letter Spacing</span>
+                        <span style={{ fontSize: "0.65rem", fontWeight: "600", color: "#475569" }}>0px</span>
+                      </div>
+                      <input type="range" min="-2" max="10" defaultValue="0" style={{ width: "100%", height: "4px" }} />
+                    </div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between" }}>
+                        <span style={{ fontSize: "0.62rem", color: "#64748b" }}>Line Height</span>
+                        <span style={{ fontSize: "0.65rem", fontWeight: "600", color: "#475569" }}>1.2</span>
+                      </div>
+                      <input type="range" min="0.8" max="2.5" step="0.1" defaultValue="1.2" style={{ width: "100%", height: "4px" }} />
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Quick Actions (Z-index operations) */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "6px", borderTop: "1px solid #f1f5f9", paddingTop: "14px", marginTop: "4px" }}>
+              <label style={{ fontSize: "0.68rem", fontWeight: "700", color: "#64748b", textTransform: "uppercase", letterSpacing: "0.03em" }}>Arrange & Actions</label>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px" }}>
+                <button onClick={() => duplicateElement(selectedEl.id)} style={propBtnStyle}>
+                  Duplicate
+                </button>
+                <button onClick={() => toggleLock(selectedEl.id)} style={{ ...propBtnStyle, background: selectedEl.locked ? "#fef3c7" : "#ffffff" }}>
+                  {selectedEl.locked ? "Unlock" : "Lock"}
+                </button>
+                <button onClick={() => bringForward(selectedEl.id)} style={propBtnStyle}>
+                  Bring Front
+                </button>
+                <button onClick={() => sendBackward(selectedEl.id)} style={propBtnStyle}>
+                  Send Back
+                </button>
+              </div>
               <button 
-                onClick={() => setIsCropLinked(!isCropLinked)}
+                onClick={() => deleteElement(selectedEl.id)} 
                 style={{
                   width: "100%",
-                  padding: "6px 12px",
-                  borderRadius: "9999px",
-                  border: `1px solid ${isCropLinked ? toolColor : "var(--border)"}`,
-                  background: isCropLinked ? `${toolColor}15` : "var(--c-bg)",
-                  color: isCropLinked ? toolColor : "var(--c-text)",
+                  height: "32px",
+                  borderRadius: "6px",
+                  border: "1px solid #fee2e2",
+                  background: "#fef2f2",
+                  color: "#ef4444",
                   fontSize: "0.72rem",
-                  fontWeight: "500",
+                  fontWeight: "600",
                   cursor: "pointer",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  gap: "6px",
-                  transition: "all 0.15s ease",
-                  outline: "none"
+                  gap: "4px",
+                  marginTop: "4px"
                 }}
               >
-                {isCropLinked ? <Lock size={12} /> : <Unlock size={12} />}
-                {isCropLinked ? "Link Margins (Uniform)" : "Unlink Margins (Custom)"}
+                <Trash2 size={12} /> Remove Element
               </button>
+            </div>
+          </>
+        ) : (selectedTool === "Crop PDF" || activeTool === "crop") ? (
+          // CROP PROPERTIES VIEW
+          <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <Crop size={14} style={{ color: "#2563eb" }} />
+              <span style={{ fontSize: "0.76rem", fontWeight: "600", color: "#1e293b" }}>Crop Boundaries</span>
+            </div>
+            
+            <button
+              onClick={() => setIsCropLinked(!isCropLinked)}
+              style={{
+                width: "100%",
+                height: "32px",
+                borderRadius: "6px",
+                border: `1px solid ${isCropLinked ? "#2563eb" : "#cbd5e1"}`,
+                background: isCropLinked ? "#eff6ff" : "#ffffff",
+                color: isCropLinked ? "#2563eb" : "#475569",
+                fontSize: "0.72rem",
+                fontWeight: "600",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "6px",
+                outline: "none"
+              }}
+            >
+              {isCropLinked ? <Lock size={12} /> : <Unlock size={12} />}
+              {isCropLinked ? "Link Margins (Uniform)" : "Unlink Margins (Custom)"}
+            </button>
 
-              {isCropLinked ? (
-                <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <span style={{ fontSize: "0.72rem", color: "var(--text-muted)" }}>Margin Percentage</span>
-                    <span style={{ fontSize: "0.72rem", fontWeight: "600", color: "var(--c-text)" }}>{cropMargin}%</span>
-                  </div>
-                  <input 
-                    type="range" 
-                    min="0" 
-                    max="40" 
-                    value={cropMargin} 
-                    onChange={e => handleCropMarginUniformChange(parseInt(e.target.value))} 
-                    style={{ width: "100%", cursor: "pointer" }} 
-                  />
-                  <div style={{ display: "flex", gap: "6px", alignItems: "center", justifyContent: "space-between" }}>
-                    <span style={{ fontSize: "0.68rem", color: "var(--text-muted)" }}>Custom (%):</span>
-                    <input 
-                      type="number" 
-                      min="0" 
-                      max="45" 
-                      value={cropMargin} 
-                      onChange={e => handleCropMarginUniformChange(Math.min(Math.max(parseInt(e.target.value) || 0, 0), 45))} 
-                      style={{ width: "60px", padding: "3px 8px", borderRadius: "9999px", border: "1px solid var(--border)", fontSize: "0.72rem", color: "var(--c-text)", backgroundColor: "var(--c-bg)", outline: "none" }} 
+            {isCropLinked ? (
+              <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                <div style={{ display: "flex", justifyContent: "space-between" }}>
+                  <span style={{ fontSize: "0.68rem", color: "#64748b" }}>Uniform Margin</span>
+                  <span style={{ fontSize: "0.68rem", fontWeight: "600", color: "#1e293b" }}>{cropMargin}%</span>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="40"
+                  value={cropMargin}
+                  onChange={e => handleCropMarginUniformChange(parseInt(e.target.value))}
+                  style={{ width: "100%", cursor: "pointer", height: "4px" }}
+                />
+              </div>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                {[
+                  { label: "Top Margin", val: cropTop, change: handleCropTopChange },
+                  { label: "Bottom Margin", val: cropBottom, change: handleCropBottomChange },
+                  { label: "Left Margin", val: cropLeft, change: handleCropLeftChange },
+                  { label: "Right Margin", val: cropRight, change: handleCropRightChange }
+                ].map((margin, idx) => (
+                  <div key={idx} style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between" }}>
+                      <span style={{ fontSize: "0.68rem", color: "#64748b" }}>{margin.label}</span>
+                      <span style={{ fontSize: "0.68rem", fontWeight: "600", color: "#1e293b" }}>{margin.val}%</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="45"
+                      step="0.5"
+                      value={margin.val}
+                      onChange={e => margin.change(parseFloat(e.target.value))}
+                      style={{ width: "100%", cursor: "pointer", height: "4px" }}
                     />
                   </div>
-                </div>
-              ) : (
-                <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                  {/* Left Margin */}
-                  <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <span style={{ fontSize: "0.72rem", color: "var(--text-muted)" }}>Left Margin</span>
-                      <span style={{ fontSize: "0.72rem", fontWeight: "600", color: "var(--c-text)" }}>{cropLeft}%</span>
-                    </div>
-                    <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
-                      <input 
-                        type="range" 
-                        min="0" 
-                        max="45" 
-                        step="0.5"
-                        value={cropLeft} 
-                        onChange={e => handleCropLeftChange(parseFloat(e.target.value))} 
-                        style={{ flex: 1, cursor: "pointer" }} 
-                      />
-                      <input 
-                        type="number" 
-                        min="0" 
-                        max="45" 
-                        step="0.5"
-                        value={cropLeft} 
-                        onChange={e => handleCropLeftChange(parseFloat(e.target.value) || 0)} 
-                        style={{ width: "48px", padding: "2px 6px", borderRadius: "9999px", border: "1px solid var(--border)", fontSize: "0.68rem", color: "var(--c-text)", backgroundColor: "var(--c-bg)", outline: "none", textAlign: "center" }} 
-                      />
-                    </div>
-                  </div>
+                ))}
+              </div>
+            )}
 
-                  {/* Right Margin */}
-                  <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <span style={{ fontSize: "0.72rem", color: "var(--text-muted)" }}>Right Margin</span>
-                      <span style={{ fontSize: "0.72rem", fontWeight: "600", color: "var(--c-text)" }}>{cropRight}%</span>
-                    </div>
-                    <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
-                      <input 
-                        type="range" 
-                        min="0" 
-                        max="45" 
-                        step="0.5"
-                        value={cropRight} 
-                        onChange={e => handleCropRightChange(parseFloat(e.target.value))} 
-                        style={{ flex: 1, cursor: "pointer" }} 
-                      />
-                      <input 
-                        type="number" 
-                        min="0" 
-                        max="45" 
-                        step="0.5"
-                        value={cropRight} 
-                        onChange={e => handleCropRightChange(parseFloat(e.target.value) || 0)} 
-                        style={{ width: "48px", padding: "2px 6px", borderRadius: "9999px", border: "1px solid var(--border)", fontSize: "0.68rem", color: "var(--c-text)", backgroundColor: "var(--c-bg)", outline: "none", textAlign: "center" }} 
-                      />
-                    </div>
-                  </div>
-
-                  {/* Top Margin */}
-                  <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <span style={{ fontSize: "0.72rem", color: "var(--text-muted)" }}>Top Margin</span>
-                      <span style={{ fontSize: "0.72rem", fontWeight: "600", color: "var(--c-text)" }}>{cropTop}%</span>
-                    </div>
-                    <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
-                      <input 
-                        type="range" 
-                        min="0" 
-                        max="45" 
-                        step="0.5"
-                        value={cropTop} 
-                        onChange={e => handleCropTopChange(parseFloat(e.target.value))} 
-                        style={{ flex: 1, cursor: "pointer" }} 
-                      />
-                      <input 
-                        type="number" 
-                        min="0" 
-                        max="45" 
-                        step="0.5"
-                        value={cropTop} 
-                        onChange={e => handleCropTopChange(parseFloat(e.target.value) || 0)} 
-                        style={{ width: "48px", padding: "2px 6px", borderRadius: "9999px", border: "1px solid var(--border)", fontSize: "0.68rem", color: "var(--c-text)", backgroundColor: "var(--c-bg)", outline: "none", textAlign: "center" }} 
-                      />
-                    </div>
-                  </div>
-
-                  {/* Bottom Margin */}
-                  <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <span style={{ fontSize: "0.72rem", color: "var(--text-muted)" }}>Bottom Margin</span>
-                      <span style={{ fontSize: "0.72rem", fontWeight: "600", color: "var(--c-text)" }}>{cropBottom}%</span>
-                    </div>
-                    <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
-                      <input 
-                        type="range" 
-                        min="0" 
-                        max="45" 
-                        step="0.5"
-                        value={cropBottom} 
-                        onChange={e => handleCropBottomChange(parseFloat(e.target.value))} 
-                        style={{ flex: 1, cursor: "pointer" }} 
-                      />
-                      <input 
-                        type="number" 
-                        min="0" 
-                        max="45" 
-                        step="0.5"
-                        value={cropBottom} 
-                        onChange={e => handleCropBottomChange(parseFloat(e.target.value) || 0)} 
-                        style={{ width: "48px", padding: "2px 6px", borderRadius: "9999px", border: "1px solid var(--border)", fontSize: "0.68rem", color: "var(--c-text)", backgroundColor: "var(--c-bg)", outline: "none", textAlign: "center" }} 
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              <div style={{ height: "1px", backgroundColor: "var(--border)", margin: "4px 0" }} />
-
-              {/* Presets */}
-              <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                <span style={{ fontSize: "0.68rem", color: "var(--text-muted)", fontWeight: "500" }}>Quick Presets</span>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px" }}>
-                  {[
-                    { label: "None (0%)", val: 0 },
-                    { label: "Narrow (5%)", val: 5 },
-                    { label: "Normal (10%)", val: 10 },
-                    { label: "Wide (15%)", val: 15 }
-                  ].map(preset => (
-                    <button
-                      key={preset.label}
-                      onClick={() => {
-                        if (isCropLinked) {
-                          handleCropMarginUniformChange(preset.val);
-                        } else {
-                          handleCropLeftChange(preset.val / 2);
-                          handleCropRightChange(preset.val / 2);
-                          handleCropTopChange(preset.val / 2);
-                          handleCropBottomChange(preset.val / 2);
-                        }
-                      }}
+            <div style={{ borderTop: "1px solid #f1f5f9", paddingTop: "12px", marginTop: "4px" }}>
+              <span style={{ fontSize: "0.62rem", color: "#94a3b8", display: "block", marginBottom: "8px", textTransform: "uppercase" }}>Quick Presets</span>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px" }}>
+                {[
+                  { label: "None (0%)", val: 0 },
+                  { label: "Narrow (5%)", val: 5 },
+                  { label: "Normal (10%)", val: 10 },
+                  { label: "Wide (15%)", val: 15 }
+                ].map(p => (
+                  <button
+                    key={p.label}
+                    onClick={() => {
+                      if (isCropLinked) handleCropMarginUniformChange(p.val);
+                      else {
+                        handleCropLeftChange(p.val / 2);
+                        handleCropRightChange(p.val / 2);
+                        handleCropTopChange(p.val / 2);
+                        handleCropBottomChange(p.val / 2);
+                      }
+                    }}
+                    style={{
+                      padding: "4px",
+                      borderRadius: "4px",
+                      border: "1px solid #cbd5e1",
+                      background: "#ffffff",
+                      color: "#475569",
+                      fontSize: "0.65rem",
+                      cursor: "pointer",
+                      outline: "none"
+                    }}
+                  >
+                    {p.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        ) : (
+          // DEFAULT VIEW OPTIONS BASED ON ACTIVE TOOL
+          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+            {activeTool !== "select" && activeTool !== "pan" ? (
+              <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                <span style={{ fontSize: "0.68rem", fontWeight: "700", color: "#64748b", textTransform: "uppercase", letterSpacing: "0.03em" }}>
+                  Tool Defaults: {activeTool}
+                </span>
+                
+                {/* Text Defaults */}
+                {activeTool === "text" && (
+                  <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                    <span style={{ fontSize: "0.65rem", color: "#64748b" }}>Font Style</span>
+                    <select
+                      value={textFont}
+                      onChange={e => handleFontChange(e.target.value)}
                       style={{
-                        padding: "4px 8px",
-                        borderRadius: "9999px",
-                        border: "1px solid var(--border)",
-                        background: "var(--c-bg)",
-                        color: "var(--c-text)",
-                        fontSize: "0.65rem",
+                        width: "100%",
+                        height: "32px",
+                        padding: "0 8px",
+                        border: "1px solid #cbd5e1",
+                        borderRadius: "6px",
+                        fontSize: "0.76rem",
+                        color: "#1e293b",
+                        background: "#ffffff",
                         cursor: "pointer",
-                        transition: "all 0.1s ease",
                         outline: "none"
                       }}
-                      onMouseEnter={e => { e.currentTarget.style.borderColor = toolColor; e.currentTarget.style.backgroundColor = `${toolColor}08`; }}
-                      onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.backgroundColor = "var(--c-bg)"; }}
                     >
-                      {preset.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Quick info */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-            <PropLabel>Document Info</PropLabel>
-            <InfoRow label="Pages" value={String(totalPages)} />
-            <InfoRow label="Current Page" value={String(currentPage)} />
-            <InfoRow label="Zoom" value={`${zoom}%`} />
-            <InfoRow label="Active Tool" value={activeTool} />
-          </div>
-        </div>
-      ) : (
-        <div style={{ padding: "20px 14px", display: "flex", flexDirection: "column", gap: "14px" }}>
-          {/* Active Tool Settings */}
-          {activeTool !== "select" && activeTool !== "pan" && (
-            <div style={{ padding: "14px", backgroundColor: "var(--c-bg)", borderRadius: "8px", border: "1px solid var(--border)", display: "flex", flexDirection: "column", gap: "12px" }}>
-              <div style={{ fontSize: "0.72rem", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em", fontWeight: "600" }}>
-                Tool Options: <span style={{ color: "var(--c-text)" }}>{activeTool}</span>
-              </div>
-              <div style={{ height: "1px", backgroundColor: "var(--border)" }} />
-              
-              {/* Text Defaults */}
-              {activeTool === "text" && (
-                <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                  <PropLabel>Font</PropLabel>
-                  <select value={textFont} onChange={e => handleFontChange(e.target.value)}
-                    style={{ width: "100%", padding: "5px 12px", borderRadius: "9999px", border: "1px solid var(--border)", fontSize: "0.75rem", color: "var(--c-text)", backgroundColor: "var(--c-bg)", outline: "none", cursor: "pointer" }}>
-                    {FONTS.map(f => <option key={f} value={f}>{f}</option>)}
-                  </select>
-                  
-                  <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
-                    <PropLabel>Size</PropLabel>
-                    <select value={textSize} onChange={e => handleTextSizeChange(parseInt(e.target.value))}
-                      style={{ flex: 1, padding: "4px 10px", borderRadius: "9999px", border: "1px solid var(--border)", fontSize: "0.75rem", color: "var(--c-text)", backgroundColor: "var(--c-bg)", outline: "none", cursor: "pointer" }}>
-                      {FONT_SIZES.map(s => <option key={s} value={s}>{s}pt</option>)}
+                      {FONTS.map(f => <option key={f} value={f}>{f}</option>)}
                     </select>
-                  </div>
-                  
-                  <div style={{ display: "flex", gap: "4px" }}>
-                    <FormatBtn active={isBold} onClick={toggleBold} title="Bold"><Bold size={12} /></FormatBtn>
-                    <FormatBtn active={isItalic} onClick={toggleItalic} title="Italic"><Italic size={12} /></FormatBtn>
-                    <FormatBtn active={isUnderline} onClick={toggleUnderline} title="Underline"><Underline size={12} /></FormatBtn>
-                    <FormatBtn active={isStrike} onClick={toggleStrike} title="Strike"><Strikethrough size={12} /></FormatBtn>
-                  </div>
-                  
-                  <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                    <PropLabel>Color</PropLabel>
-                    <input type="color" value={textColor} onChange={e => handleTextColorChange(e.target.value)}
-                      style={{ width: "22px", height: "22px", padding: 0, border: "1px solid var(--border)", borderRadius: "50%", cursor: "pointer", backgroundColor: "transparent" }} />
-                  </div>
-                  
-                  <div style={{ display: "flex", gap: "4px" }}>
-                    {(["left", "center", "right", "justify"] as const).map(a => (
-                      <FormatBtn key={a} active={align === a} onClick={() => updateAlignment(a)} title={a}>
-                        {a === "left" ? <AlignLeft size={11} /> : a === "center" ? <AlignCenter size={11} /> : a === "right" ? <AlignRight size={11} /> : <AlignJustify size={11} />}
-                      </FormatBtn>
-                    ))}
-                  </div>
-                </div>
-              )}
 
-              {/* Pen Defaults */}
-              {activeTool === "pen" && (
-                <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                    <PropLabel>Pen Color</PropLabel>
-                    <input type="color" value={penColor} onChange={e => setPenColor(e.target.value)}
-                      style={{ width: "22px", height: "22px", padding: 0, border: "1px solid var(--border)", borderRadius: "50%", cursor: "pointer", backgroundColor: "transparent" }} />
-                  </div>
-                  <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between" }}>
-                      <PropLabel>Thickness</PropLabel>
-                      <span style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>{penThickness}px</span>
+                    <div style={{ display: "flex", gap: "6px" }}>
+                      <select
+                        value={textSize}
+                        onChange={e => handleTextSizeChange(parseInt(e.target.value))}
+                        style={{
+                          flex: 1,
+                          height: "32px",
+                          padding: "0 8px",
+                          border: "1px solid #cbd5e1",
+                          borderRadius: "6px",
+                          fontSize: "0.76rem",
+                          color: "#1e293b",
+                          background: "#ffffff",
+                          cursor: "pointer",
+                          outline: "none"
+                        }}
+                      >
+                        {FONT_SIZES.map(s => <option key={s} value={s}>{s}</option>)}
+                      </select>
                     </div>
-                    <input type="range" min="1" max="15" value={penThickness} onChange={e => setPenThickness(parseInt(e.target.value))} style={{ width: "100%" }} />
-                  </div>
-                </div>
-              )}
 
-              {/* Highlighter Defaults */}
-              {activeTool === "highlight" && (
-                <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                    <PropLabel>Marker Color</PropLabel>
-                    <input type="color" value={markerColor} onChange={e => setMarkerColor(e.target.value)}
-                      style={{ width: "22px", height: "22px", padding: 0, border: "1px solid var(--border)", borderRadius: "50%", cursor: "pointer", backgroundColor: "transparent" }} />
-                  </div>
-                  <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between" }}>
-                      <PropLabel>Opacity</PropLabel>
-                      <span style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>{Math.round(markerOpacity * 100)}%</span>
+                    <div style={{ display: "flex", gap: "8px" }}>
+                      <ColorSwatchPill 
+                        color={textColor} 
+                        label="Text Color" 
+                        onChange={handleTextColorChange} 
+                        dropdownId="default_text_color"
+                      />
                     </div>
-                    <input type="range" min="0.1" max="0.9" step="0.05" value={markerOpacity} onChange={e => setMarkerOpacity(parseFloat(e.target.value))} style={{ width: "100%" }} />
                   </div>
-                </div>
-              )}
+                )}
 
-              {/* Shape Defaults */}
-              {activeTool === "shape" && (
-                <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                  <PropLabel>Shape Type</PropLabel>
-                  <select value={shapeType} onChange={e => setShapeType(e.target.value as any)}
-                    style={{ width: "100%", padding: "5px 12px", borderRadius: "9999px", border: "1px solid var(--border)", fontSize: "0.75rem", color: "var(--c-text)", backgroundColor: "var(--c-bg)", outline: "none", cursor: "pointer" }}>
-                    <option value="rectangle">Rectangle</option>
-                    <option value="circle">Circle</option>
-                    <option value="line">Line</option>
-                    <option value="arrow">Arrow</option>
-                    <option value="diamond">Diamond</option>
-                  </select>
-                  <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                    <PropLabel>Border</PropLabel>
-                    <input type="color" value={shapeColor} onChange={e => setShapeColor(e.target.value)}
-                      style={{ width: "22px", height: "22px", padding: 0, border: "1px solid var(--border)", borderRadius: "50%", cursor: "pointer", backgroundColor: "transparent" }} />
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                    <PropLabel>Fill</PropLabel>
-                    <input type="color" value={shapeFillColor === "transparent" ? "#ffffff" : shapeFillColor} onChange={e => setShapeFillColor(e.target.value)}
-                      style={{ width: "22px", height: "22px", padding: 0, border: "1px solid var(--border)", borderRadius: "50%", cursor: "pointer", backgroundColor: "transparent" }} />
-                    <button onClick={() => setShapeFillColor("transparent")} style={{ fontSize: "0.65rem", padding: "2px 8px", border: "1px solid var(--border)", borderRadius: "9999px", cursor: "pointer", background: "transparent", color: "var(--text-muted)", marginLeft: "6px" }}>Transparent</button>
-                  </div>
-                  <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between" }}>
-                      <PropLabel>Thickness</PropLabel>
-                      <span style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>{shapeThickness}px</span>
+                {/* Pen Defaults */}
+                {activeTool === "pen" && (
+                  <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                      <span style={{ fontSize: "0.65rem", color: "#64748b" }}>Pen Color</span>
+                      <ColorSwatchPill 
+                        color={penColor} 
+                        label="Pen Color" 
+                        onChange={setPenColor} 
+                        dropdownId="default_pen_color"
+                      />
                     </div>
-                    <input type="range" min="1" max="10" value={shapeThickness} onChange={e => setShapeThickness(parseInt(e.target.value))} style={{ width: "100%" }} />
+                    <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between" }}>
+                        <span style={{ fontSize: "0.62rem", color: "#64748b" }}>Line Thickness</span>
+                        <span style={{ fontSize: "0.65rem", fontWeight: "600", color: "#475569" }}>{penThickness}px</span>
+                      </div>
+                      <input
+                        type="range"
+                        min="1"
+                        max="15"
+                        value={penThickness}
+                        onChange={e => setPenThickness && setPenThickness(parseInt(e.target.value))}
+                        style={{ width: "100%", cursor: "pointer", height: "4px" }}
+                      />
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
 
-              {/* Stamp / Watermark Options */}
-              {activeTool === "stamp" && (
-                <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                  <PropLabel>Stamp Type</PropLabel>
-                  {STAMP_TYPES.map(s => (
-                    <button key={s} onClick={() => setStampType(s)}
-                      style={{
-                        padding: "5px 14px", borderRadius: "9999px", border: `1px solid ${stampType === s ? toolColor : "var(--border)"}`,
-                        background: stampType === s ? `${toolColor}15` : "var(--c-bg)",
-                        color: stampType === s ? toolColor : "var(--c-text)",
-                        fontWeight: stampType === s ? "600" : "500",
-                        fontSize: "0.72rem", cursor: "pointer", textAlign: "left", width: "100%"
-                      }}
-                    >
-                      {s}
-                    </button>
-                  ))}
-                </div>
-              )}
+                {/* Highlighter Defaults */}
+                {activeTool === "highlight" && (
+                  <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                      <span style={{ fontSize: "0.65rem", color: "#64748b" }}>Highlight Color</span>
+                      <ColorSwatchPill 
+                        color={markerColor} 
+                        label="Marker Color" 
+                        onChange={setMarkerColor} 
+                        dropdownId="default_marker_color"
+                      />
+                    </div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between" }}>
+                        <span style={{ fontSize: "0.62rem", color: "#64748b" }}>Opacity</span>
+                        <span style={{ fontSize: "0.65rem", fontWeight: "600", color: "#475569" }}>{Math.round(markerOpacity * 100)}%</span>
+                      </div>
+                      <input
+                        type="range"
+                        min="0.1"
+                        max="0.9"
+                        step="0.05"
+                        value={markerOpacity}
+                        onChange={e => setMarkerOpacity && setMarkerOpacity(parseFloat(e.target.value))}
+                        style={{ width: "100%", cursor: "pointer", height: "4px" }}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Shape Defaults */}
+                {activeTool === "shape" && (
+                  <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                      <span style={{ fontSize: "0.65rem", color: "#64748b" }}>Shape Type</span>
+                      <select
+                        value={shapeType}
+                        onChange={e => setShapeType && setShapeType(e.target.value as any)}
+                        style={{
+                          width: "100%",
+                          height: "32px",
+                          padding: "0 8px",
+                          border: "1px solid #cbd5e1",
+                          borderRadius: "6px",
+                          fontSize: "0.76rem",
+                          color: "#1e293b",
+                          background: "#ffffff",
+                          cursor: "pointer",
+                          outline: "none"
+                        }}
+                      >
+                        <option value="rectangle">Rectangle</option>
+                        <option value="circle">Circle</option>
+                        <option value="line">Line</option>
+                        <option value="arrow">Arrow</option>
+                        <option value="diamond">Diamond</option>
+                      </select>
+                    </div>
+
+                    <div style={{ display: "flex", gap: "8px" }}>
+                      <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "4px" }}>
+                        <span style={{ fontSize: "0.62rem", color: "#64748b" }}>Fill</span>
+                        <ColorSwatchPill 
+                          color={shapeFillColor} 
+                          label="Fill" 
+                          onChange={setShapeFillColor} 
+                          dropdownId="default_shape_fill"
+                        />
+                      </div>
+                      <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "4px" }}>
+                        <span style={{ fontSize: "0.62rem", color: "#64748b" }}>Border</span>
+                        <ColorSwatchPill 
+                          color={shapeColor} 
+                          label="Border" 
+                          onChange={setShapeColor} 
+                          dropdownId="default_shape_border"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div style={{
+                textAlign: "center",
+                padding: "24px 16px",
+                background: "#f8fafc",
+                borderRadius: "8px",
+                border: "1px dashed #cbd5e1"
+              }}>
+                <span style={{ fontSize: "0.72rem", color: "#64748b", lineHeight: 1.4, display: "block" }}>
+                  Select an overlay element or choose a tool from the left floating toolbar to edit.
+                </span>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Document Info Footer */}
+        <div style={{
+          marginTop: "auto",
+          paddingTop: "14px",
+          borderTop: "1px solid #f1f5f9"
+        }}>
+          <span style={{ fontSize: "0.62rem", color: "#94a3b8", fontWeight: "700", textTransform: "uppercase", display: "block", marginBottom: "6px" }}>Document Info</span>
+          <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.68rem" }}>
+              <span style={{ color: "#64748b" }}>Total Pages:</span>
+              <span style={{ fontWeight: "600", color: "#1e293b" }}>{totalPages}</span>
             </div>
-          )}
-
-          {/* Quick info / selection alert */}
-          {(activeTool === "select" || activeTool === "pan") && (
-            <div style={{ textAlign: "center", padding: "24px 16px", backgroundColor: "var(--c-bg)", borderRadius: "8px", border: "none", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
-              <MousePointer size={24} style={{ color: "var(--text-muted)", margin: "0 auto 8px" }} />
-              <p style={{ fontSize: "0.72rem", color: "var(--text-muted)", lineHeight: 1.4 }}>Select an element on the canvas to edit its layout and formatting.</p>
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.68rem" }}>
+              <span style={{ color: "#64748b" }}>Current Page:</span>
+              <span style={{ fontWeight: "600", color: "#1e293b" }}>{currentPage}</span>
             </div>
-          )}
-
-          {/* Quick document metadata summary */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "4px", marginTop: "4px" }}>
-            <PropLabel>Document Info</PropLabel>
-            <InfoRow label="Pages" value={String(totalPages)} />
-            <InfoRow label="Elements" value={String(elementsCount)} />
-            <InfoRow label="Current Page" value={String(currentPage)} />
-            <InfoRow label="Zoom" value={`${zoom}%`} />
-            <InfoRow label="Active Tool" value={activeTool} />
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.68rem" }}>
+              <span style={{ color: "#64748b" }}>Total Elements:</span>
+              <span style={{ fontWeight: "600", color: "#1e293b" }}>{elementsCount}</span>
+            </div>
           </div>
         </div>
-      )}
+      </div>
     </aside>
   );
 }
+
+const propBtnStyle: React.CSSProperties = {
+  height: "28px",
+  border: "1px solid #cbd5e1",
+  background: "#ffffff",
+  color: "#475569",
+  fontSize: "0.7rem",
+  fontWeight: "500",
+  borderRadius: "6px",
+  cursor: "pointer",
+  outline: "none",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center"
+};
