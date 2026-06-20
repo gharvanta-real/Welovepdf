@@ -190,7 +190,8 @@ export function AdminDashboard({ onBack, currentUser }: AdminDashboardProps) {
       const isUserAdmin = 
         currentUser.plan === "Admin" || 
         currentUser.email.endsWith("@pdfmount.com") || 
-        currentUser.email === "anshu@gemini.com"; // local developer fallback
+        currentUser.email === "anshu@gemini.com" || // local developer fallback
+        currentUser.email === "anshubhati190@gmail.com";
       
       setIsAdmin(isUserAdmin);
     } else {
