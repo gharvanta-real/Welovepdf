@@ -733,6 +733,7 @@ export function PdfEditor({ file, selectedTool, onClose, onSave }: PdfEditorProp
       {/* ══ TOP HEADER ══ */}
       <Header
         fileName={customFileName}
+        selectedTool={selectedTool}
         onRenameFile={setCustomFileName}
         onClose={onClose}
         onDownload={handleDownload}

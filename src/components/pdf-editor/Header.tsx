@@ -5,6 +5,7 @@ import {
 
 interface HeaderProps {
   fileName: string;
+  selectedTool: string;
   lastSavedText?: string;
   onClose: () => void;
   onDownload: () => void;
@@ -19,6 +20,7 @@ interface HeaderProps {
 
 export function Header({
   fileName,
+  selectedTool,
   lastSavedText = "Last saved 2m ago",
   onClose,
   onDownload,
@@ -59,13 +61,24 @@ export function Header({
           onClick={onClose}
           style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer" }}
         >
-          {/* Logo P Box */}
+          {/* Logo Image */}
+          <img 
+            src="/logo.png" 
+            alt="PDFMount" 
+            style={{ height: "24px", width: "auto", objectFit: "contain" }}
+            onError={(e) => {
+              e.currentTarget.style.display = "none";
+              const sib = e.currentTarget.nextSibling as HTMLElement;
+              if (sib) sib.style.display = "flex";
+            }}
+          />
+          {/* Logo P Box (Fallback if logo.png fails) */}
           <div style={{
             width: "28px",
             height: "28px",
             borderRadius: "6px",
             backgroundColor: "#2563eb",
-            display: "flex",
+            display: "none",
             alignItems: "center",
             justifyContent: "center",
             color: "#ffffff",
@@ -76,11 +89,12 @@ export function Header({
           </div>
           <span style={{ 
             color: "#1e293b", 
-            fontWeight: "700", 
+            fontWeight: "750", 
             fontSize: "0.95rem", 
-            letterSpacing: "-0.3px" 
+            letterSpacing: "-0.3px",
+            marginLeft: "4px"
           }}>
-            PDF Editor
+            {selectedTool || "PDF Editor"}
           </span>
         </div>
 
