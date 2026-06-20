@@ -1,0 +1,116 @@
+/* Reset & Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  background-color: var(--c-bg);
+}
+
+body {
+  background-color: var(--c-bg);
+  color: var(--c-text);
+  font-family: "Google Sans", "Product Sans", "Open Sans", Roboto, Arial, sans-serif;
+  font-size: var(--font-body);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--s-surface-low);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--s-hairline);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--s-on-surface-variant);
+}
+
+/* App Shell Layout */
+.app-container {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin-left: var(--sidebar-w);
+  min-width: 0; /* Prevents flex items from overflowing */
+}
+
+.page-container {
+  padding: var(--space-6);
+  flex: 1;
+  overflow-y: auto;
+  width: 100%;
+}
+
+/* Grid helper utilities */
+.grid-cols-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-5);
+}
+
+.grid-cols-3 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--space-5);
+}
+
+.grid-cols-4 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-4);
+}
+
+/* Typography elements */
+h1 {
+  font-size: var(--font-display-lg);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--s-on-surface);
+  margin-bottom: var(--space-2);
+}
+
+h2 {
+  font-size: var(--font-headline);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--s-on-surface);
+}
+
+h3 {
+  font-size: var(--font-subhead);
+  font-weight: 600;
+  color: var(--s-on-surface);
+}
+
+p {
+  color: var(--s-on-surface-variant);
+  font-size: var(--font-body);
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none !important;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+

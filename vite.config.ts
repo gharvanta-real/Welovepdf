@@ -23,6 +23,7 @@ export default defineConfig({
           if (id.includes("node_modules")) {
             if (id.includes("@supabase")) return "vendor-supabase";
             if (id.includes("lucide-react")) return "vendor-lucide";
+            if (id.includes("@hugeicons")) return "vendor-hugeicons";
             return "vendor-core";
           }
         },

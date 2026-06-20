@@ -1,0 +1,231 @@
+/* Premium Figma-style components */
+
+.card {
+  background-color: var(--c-surface);
+  border: none;
+  border-radius: var(--radius);
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.card-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  background-color: var(--s-surface-low);
+  color: var(--s-primary);
+}
+
+.card-header-with-icon {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.card-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Figma input fields */
+.input-wrapper {
+  display: flex;
+  align-items: center;
+  position: relative;
+  width: 100%;
+}
+
+.input-field {
+  width: 100%;
+  padding: var(--space-3) var(--space-5); /* extra padding-left for rounded edges */
+  padding-right: 48px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill); /* highly rounded input field */
+  background-color: var(--s-surface-low);
+  font-family: inherit;
+  font-size: var(--font-body);
+  color: var(--c-text);
+  outline: none;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+textarea.input-field {
+  border-radius: var(--radius);
+  padding: var(--space-3) var(--space-4);
+}
+
+.input-field:focus {
+  border-color: var(--s-primary);
+  background-color: var(--c-surface);
+}
+
+.input-btn {
+  position: absolute;
+  right: var(--space-3); /* shifted inwards for pill shape */
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--space-2);
+  color: var(--s-on-surface-variant);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%; /* circular icon button */
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.input-btn:hover {
+  background-color: var(--s-hairline);
+  color: var(--s-primary);
+}
+
+/* Premium buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-6); /* slightly wider padding for pill shape */
+  font-size: var(--font-button);
+  font-weight: 500; /* unbold text */
+  border-radius: var(--radius-pill); /* highly rounded buttons */
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+}
+
+.btn-primary {
+  background-color: #a3e635; /* bright lime - vivid on dark */
+  color: #0f0f11; /* dark text on lime */
+  border: 1px solid #84cc16;
+}
+
+.btn-primary:hover {
+  background-color: #bef264;
+  border-color: #a3e635;
+}
+
+
+.btn-secondary {
+  background-color: var(--s-surface-low);
+  border-color: var(--border);
+  color: var(--c-text);
+}
+
+.btn-secondary:hover {
+  background-color: var(--s-hairline);
+}
+
+/* Dynamic badges (pill status tags) */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--font-eyebrow);
+  font-weight: 600;
+  border-radius: var(--radius-pill);
+}
+
+.badge-mint {
+  background-color: var(--s-block-mint);
+  color: var(--s-block-mint-text);
+}
+
+.badge-lime {
+  background-color: var(--s-block-lime);
+  color: var(--s-block-lime-text);
+}
+
+.badge-lilac {
+  background-color: var(--s-block-lilac);
+  color: var(--s-block-lilac-text);
+}
+
+.badge-pink {
+  background-color: var(--s-block-pink);
+  color: var(--s-block-pink-text);
+}
+
+.badge-cream {
+  background-color: var(--s-block-cream);
+  color: var(--s-block-cream-text);
+}
+
+.badge-muted {
+  background-color: var(--s-surface-low);
+  color: var(--s-on-surface-variant);
+  border: 1px solid var(--border);
+}
+
+/* Beautiful tables */
+.table-container {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background-color: var(--c-surface);
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: var(--font-body);
+}
+
+.data-table th {
+  padding: var(--space-4);
+  background-color: var(--s-surface-soft);
+  font-weight: 600;
+  border-bottom: 1px solid var(--border);
+  color: var(--s-on-surface-variant);
+}
+
+.data-table td {
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+.data-table tr:last-child td {
+  border-bottom: none;
+}
+
+.data-table tr:hover {
+  background-color: var(--s-surface-soft);
+}
+
+/* Loading & Empty states */
+.loading-spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--s-hairline);
+  border-top-color: var(--s-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-8) var(--space-6);
+  text-align: center;
+  color: var(--s-on-surface-variant);
+  gap: var(--space-3);
+}

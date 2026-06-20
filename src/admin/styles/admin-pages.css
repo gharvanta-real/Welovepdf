@@ -1,0 +1,467 @@
+/* Layer 3: Page Specific Layouts */
+
+/* Layout Shell Wrapper */
+.admin-shell {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.admin-main {
+  flex: 1;
+  margin-left: var(--admin-sidebar-expanded);
+  transition: var(--admin-transition);
+  display: flex;
+  flex-direction: column;
+  min-width: 0; /* Prevents flex children from stretching */
+}
+
+.admin-sidebar.collapsed + .admin-main {
+  margin-left: var(--admin-sidebar-collapsed);
+}
+
+.admin-content {
+  padding: 32px;
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+  flex: 1;
+}
+
+/* Page Headers */
+.admin-page-header {
+  margin-bottom: 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+/* Overview Page: Queue & System Health */
+.admin-overview-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  gap: 32px;
+  margin-top: 32px;
+}
+
+@media (max-width: 1024px) {
+  .admin-overview-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.admin-card-section {
+  background-color: var(--admin-surface);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+}
+
+.admin-system-health {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.admin-health-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.admin-progress-track {
+  height: 6px;
+  background-color: var(--admin-surface-low);
+  border-radius: 9999px;
+  overflow: hidden;
+  position: relative;
+}
+
+.admin-progress-fill {
+  height: 100%;
+  background-color: var(--admin-primary);
+  border-radius: 9999px;
+  transition: width 0.4s ease;
+}
+
+.admin-progress-fill.success {
+  background-color: var(--admin-success);
+}
+.admin-progress-fill.warning {
+  background-color: var(--admin-warning);
+}
+.admin-progress-fill.danger {
+  background-color: var(--admin-danger);
+}
+
+/* Support Page (Inbox & Detail Drawer Layout) */
+.admin-support-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 400px;
+  gap: 32px;
+  align-items: start;
+}
+
+@media (max-width: 1200px) {
+  .admin-support-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.admin-message-drawer {
+  background-color: var(--admin-surface);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: sticky;
+  top: calc(var(--admin-header-height) + 32px);
+}
+
+.admin-message-header {
+  border-bottom: 1px solid var(--admin-border-subtle);
+  padding-bottom: 16px;
+}
+
+.admin-message-body {
+  font-size: 13.5px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  color: var(--admin-text-secondary);
+}
+
+.admin-message-reply-box {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border-top: 1px solid var(--admin-border-subtle);
+  padding-top: 16px;
+}
+
+.admin-reply-textarea {
+  min-height: 120px;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--admin-border);
+  resize: vertical;
+  background-color: var(--admin-surface);
+}
+
+/* Tool performance Charts */
+.admin-charts-container {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 32px;
+  margin-top: 32px;
+}
+
+@media (max-width: 960px) {
+  .admin-charts-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+.chart-bar-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.chart-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.chart-bar-label {
+  width: 110px;
+  font-size: 12px;
+  color: var(--admin-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chart-bar-wrapper {
+  flex: 1;
+  height: 16px;
+  background-color: var(--admin-surface-low);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.chart-bar-fill {
+  height: 100%;
+  background-color: var(--admin-accent);
+  border-radius: 4px;
+}
+
+.chart-bar-value {
+  width: 50px;
+  text-align: right;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Log Terminal component */
+.admin-terminal {
+  background-color: #0c0a09;
+  color: #a8a29e;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  padding: 16px;
+  border-radius: 8px;
+  max-height: 300px;
+  overflow-y: auto;
+  line-height: 1.6;
+}
+
+.admin-terminal-line {
+  margin-bottom: 4px;
+}
+
+.admin-terminal-line.error {
+  color: #f87171;
+}
+
+.admin-terminal-line.success {
+  color: #4ade80;
+}
+
+.admin-terminal-line.info {
+  color: #60a5fa;
+}
+
+/* Access Denied Shield Page */
+.admin-auth-shield {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  width: 100%;
+  background-color: var(--admin-bg);
+  padding: 24px;
+}
+
+.admin-shield-card {
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+  background-color: var(--admin-surface);
+  padding: 40px 32px;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+}
+
+.admin-shield-icon {
+  width: 48px;
+  height: 48px;
+  color: var(--admin-danger);
+  margin: 0 auto 20px auto;
+}
+
+/* Notifications Page Layout */
+.admin-notifications-page {
+  display: flex;
+  flex-direction: column;
+  animation: adminFadeIn 0.3s ease;
+}
+
+@keyframes adminFadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Mobile & Touch Responsiveness Overrides */
+@media (max-width: 768px) {
+  /* Layout Adjustments */
+  .admin-main {
+    margin-left: 0 !important;
+    padding-bottom: 40px; /* Space for bottom scroll */
+  }
+
+  .admin-content {
+    padding: 16px;
+  }
+
+  .admin-page-header {
+    margin-bottom: 20px;
+    gap: 12px;
+  }
+
+  /* Header mobile styling */
+  .admin-header {
+    padding: 0 16px;
+    height: 56px;
+    background-color: var(--admin-surface);
+    border-bottom: 1px solid var(--admin-border);
+  }
+
+  .admin-mobile-menu-toggle {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--admin-text-secondary);
+    padding: 8px;
+    margin-right: 8px;
+    border-radius: 6px;
+    transition: var(--admin-transition);
+  }
+  
+  .admin-mobile-menu-toggle:hover {
+    background-color: var(--admin-surface-low);
+    color: var(--admin-text-primary);
+  }
+
+  .admin-header-right {
+    gap: 12px;
+  }
+
+  /* Hide description and email details on narrow views to prevent overflows */
+  .admin-header-left span.text-xs {
+    display: none !important;
+  }
+
+  .admin-header-right > div:last-child > div:last-child {
+    display: none !important;
+  }
+
+  /* Sidebar off-canvas drawer mode */
+  .admin-sidebar {
+    position: fixed;
+    left: -260px;
+    top: 0;
+    bottom: 0;
+    width: 260px !important;
+    height: 100vh;
+    z-index: 1000;
+    box-shadow: none;
+    border-right: 1px solid var(--admin-border);
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .admin-sidebar.mobile-open {
+    left: 0;
+    box-shadow: 0 10px 30px -5px rgba(0,0,0,0.16);
+  }
+
+  .admin-sidebar-nav {
+    padding: 16px 12px;
+    gap: 20px;
+  }
+
+  .admin-sidebar .admin-nav-item {
+    padding: 12px 16px !important; /* Larger touch targets for real app feel */
+    font-size: 14px;
+  }
+
+  /* Hide collapse toggler since drawer is full width */
+  .admin-sidebar-footer {
+    display: none !important;
+  }
+
+  /* Mobile Backdrop Overlay */
+  .admin-mobile-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(2px);
+    z-index: 990;
+    animation: adminFadeIn 0.2s ease;
+  }
+
+  /* Metrics Grid Optimization */
+  .admin-metrics-grid {
+    grid-template-columns: repeat(2, 1fr) !important; /* Compact 2-column layout on mobile */
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .admin-metric-card {
+    padding: 16px;
+    min-height: 100px;
+  }
+
+  .admin-metric-value {
+    font-size: 18px;
+  }
+
+  /* Typography Scales */
+  .admin-panel-root h1 {
+    font-size: 18px;
+  }
+
+  .admin-panel-root h2 {
+    font-size: 15px;
+    margin-bottom: 12px;
+  }
+
+  /* Lists and Tables */
+  .admin-card-section {
+    padding: 16px;
+  }
+
+  .admin-table th, 
+  .admin-table td {
+    padding: 12px 16px;
+    font-size: 12px;
+  }
+
+  /* Mobile buttons spacing */
+  .admin-btn {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
+  /* Filters Stacking */
+  .admin-card-section > div[style*="display: flex"] {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+  }
+
+  .admin-card-section > div[style*="display: flex"] > div {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  
+  .admin-card-section > div[style*="display: flex"] > div[style*="display: flex"] {
+    justify-content: space-between !important;
+  }
+
+  /* Support inbox details stack */
+  .admin-support-layout {
+    grid-template-columns: 1fr !important;
+    gap: 16px;
+  }
+
+  .admin-message-drawer {
+    position: relative !important;
+    top: 0 !important;
+    margin-top: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Extreme narrow width adjustments */
+  .admin-metrics-grid {
+    grid-template-columns: 1fr !important; /* Stack metrics to single column on small phones */
+  }
+
+  .admin-header-actions {
+    display: none !important; /* Hide extra header action buttons to prevent overlap */
+  }
+}
+
+

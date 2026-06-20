@@ -1,0 +1,129 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200..800&family=Product+Sans:wght@300;400;700&display=swap');
+
+/* Layer 1: Foundation (Reset & Sizing Variables) */
+:root {
+  /* Colors - Minimalist Calm Palette */
+  --admin-bg: #fafafa;
+  --admin-surface: #ffffff;
+  --admin-surface-low: #f4f4f5;
+  --admin-text-primary: #18181b;
+  --admin-text-secondary: #71717a;
+  --admin-text-muted: #a1a1aa;
+  
+  --admin-primary: #ADEFD1; /* WeLovePDF Pistol Green / Mint */
+  --admin-primary-hover: #9be0c2;
+  --admin-accent: #2563eb;
+  --admin-accent-soft: rgba(37, 99, 235, 0.08);
+  
+  --admin-success: #16a34a;
+  --admin-warning: #ea580c;
+  --admin-danger: #dc2626;
+  
+  --admin-border: #e4e4e7;
+  --admin-border-subtle: #f4f4f5;
+  
+  /* Fonts */
+  --admin-font: 'Product Sans', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  
+  /* Dimensions */
+  --admin-sidebar-expanded: 240px;
+  --admin-sidebar-collapsed: 68px;
+  --admin-header-height: 56px;
+  
+  /* Transitions */
+  --admin-transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.admin-panel-root {
+  all: unset;
+  box-sizing: border-box;
+  font-family: var(--admin-font);
+  font-size: 14px;
+  color: var(--admin-text-primary);
+  background-color: var(--admin-bg);
+  min-height: 100vh;
+  display: flex;
+  overflow-x: hidden;
+  width: 100%;
+}
+
+.admin-panel-root *,
+.admin-panel-root *::before,
+.admin-panel-root *::after {
+  box-sizing: inherit;
+}
+
+/* Typography Scale (12px - 22px) */
+.admin-panel-root h1 {
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  margin: 0 0 4px 0;
+  color: var(--admin-text-primary);
+}
+
+.admin-panel-root h2 {
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  margin: 0 0 16px 0;
+  color: var(--admin-text-primary);
+}
+
+.admin-panel-root h3 {
+  font-size: 15px;
+  font-weight: 500;
+  margin: 0 0 8px 0;
+  color: var(--admin-text-primary);
+}
+
+.admin-panel-root p,
+.admin-panel-root span,
+.admin-panel-root label,
+.admin-panel-root td,
+.admin-panel-root th {
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.admin-panel-root .text-xs {
+  font-size: 12px;
+  font-weight: 300;
+}
+
+.admin-panel-root .text-secondary {
+  color: var(--admin-text-secondary);
+}
+
+.admin-panel-root .font-semibold {
+  font-weight: 500; /* Strict weights of 300-600 only */
+}
+
+.admin-panel-root button,
+.admin-panel-root input,
+.admin-panel-root select,
+.admin-panel-root textarea {
+  font-family: inherit;
+  font-size: 13px;
+  color: inherit;
+  outline: none;
+}
+
+/* Charcoal Dark Mode Overrides */
+.admin-panel-root.dark {
+  --admin-bg: #141416;
+  --admin-surface: #1f1f23;
+  --admin-surface-low: #27272d;
+  --admin-text-primary: #f3f4f6;
+  --admin-text-secondary: #9ca3af;
+  --admin-text-muted: #6b7280;
+  
+  --admin-border: #2e2e34;
+  --admin-border-subtle: #24242a;
+  
+  --admin-primary: #ADEFD1; /* Contrasting mint green in dark mode */
+  --admin-primary-hover: #bbfde1;
+  --admin-accent: #3b82f6; /* Brighter blue for charcoal contrast */
+  --admin-accent-soft: rgba(59, 130, 246, 0.15);
+}

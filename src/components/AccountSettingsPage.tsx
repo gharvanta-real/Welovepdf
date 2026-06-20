@@ -27,7 +27,14 @@ export function AccountSettingsPage({ onBack, currentUser, onLogout, onUpdateUse
   const [currentPass, setCurrentPass] = useState("");
   const [newPass, setNewPass] = useState("");
   const [confirmPass, setConfirmPass] = useState("");
-  const [twoFaActive, setTwoFaActive] = useState(true);
+  
+  // Real-world 2FA states
+  const [twoFaActive, setTwoFaActive] = useState(() => {
+    return localStorage.getItem(`mock_2fa_enabled_${currentUser?.email}`) === "true";
+  });
+  const [show2FaSetup, setShow2FaSetup] = useState(false);
+  const [twoFaCodeInput, setTwoFaCodeInput] = useState("");
+  const [twoFaError, setTwoFaError] = useState("");
   
   // Active Sessions State
   const [sessions, setSessions] = useState([
@@ -526,23 +533,131 @@ export function AccountSettingsPage({ onBack, currentUser, onLogout, onUpdateUse
                 </form>
 
                 {/* 2FA Switch */}
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", backgroundColor: "var(--s-surface-soft)", padding: "24px", borderRadius: "12px", border: "1px solid var(--s-hairline)" }}>
-                  <div style={{ maxWidth: "75%" }}>
-                    <h3 style={{ fontSize: "16px", fontWeight: "600", display: "flex", alignItems: "center", gap: "8px", margin: "0 0 6px 0" }}>
-                      Two-Factor Authentication
-                      <span style={{ display: "inline-block", width: "8px", height: "8px", borderRadius: "50%", backgroundColor: twoFaActive ? "var(--s-block-lime)" : "var(--s-outline)" }}></span>
-                    </h3>
-                    <p style={{ fontSize: "13px", color: "var(--s-secondary)", lineHeight: 1.4, margin: 0 }}>Secure your account by requiring an additional verification code from your mobile device.</p>
+                <div style={{ display: "flex", flexDirection: "column", gap: "16px", backgroundColor: "var(--s-surface-soft)", padding: "24px", borderRadius: "12px", border: "1px solid var(--s-hairline)" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <div style={{ maxWidth: "75%" }}>
+                      <h3 style={{ fontSize: "16px", fontWeight: "600", display: "flex", alignItems: "center", gap: "8px", margin: "0 0 6px 0" }}>
+                        Two-Factor Authentication (2FA)
+                        <span style={{ display: "inline-block", width: "8px", height: "8px", borderRadius: "50%", backgroundColor: twoFaActive ? "var(--s-block-lime)" : "var(--s-outline)" }}></span>
+                      </h3>
+                      <p style={{ fontSize: "13px", color: "var(--s-secondary)", lineHeight: 1.4, margin: 0 }}>Secure your account by requiring an additional verification code from your authenticator app during login.</p>
+                    </div>
+                    <button 
+                      onClick={() => {
+                        if (twoFaActive) {
+                          if (window.confirm("Disable Two-Factor Authentication? This will reduce your account security.")) {
+                            setTwoFaActive(false);
+                            localStorage.removeItem(`mock_2fa_enabled_${currentUser?.email}`);
+                            showToast("Two-Factor Authentication disabled.");
+                          }
+                        } else {
+                          setShow2FaSetup(true);
+                          setTwoFaCodeInput("");
+                          setTwoFaError("");
+                        }
+                      }}
+                      style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}
+                    >
+                      {twoFaActive ? <ToggleRight size={48} style={{ color: "var(--s-primary)" }} /> : <ToggleLeft size={48} style={{ color: "var(--s-outline)" }} />}
+                    </button>
                   </div>
-                  <button 
-                    onClick={() => {
-                      setTwoFaActive(!twoFaActive);
-                      showToast(`Two-Factor Authentication turned ${!twoFaActive ? "on" : "off"}`);
-                    }}
-                    style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}
-                  >
-                    {twoFaActive ? <ToggleRight size={48} style={{ color: "var(--s-primary)" }} /> : <ToggleLeft size={48} style={{ color: "var(--s-outline)" }} />}
-                  </button>
+
+                  {/* 2FA Setup Flow */}
+                  {show2FaSetup && !twoFaActive && (
+                    <div style={{ borderTop: "1px solid var(--s-hairline)", paddingTop: "20px", marginTop: "4px", display: "flex", flexDirection: "column", gap: "16px" }}>
+                      <h4 style={{ fontSize: "14px", fontWeight: 600, margin: 0 }}>Configure Authenticator App</h4>
+                      <p style={{ fontSize: "12px", color: "var(--s-secondary)", margin: 0 }}>Scan this QR code with Google Authenticator, Authy, or Microsoft Authenticator, and enter the generated 6-digit verification code below.</p>
+                      
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: "20px", alignItems: "center", justifyContent: "center", padding: "12px 0" }}>
+                        {/* Mock QR Code in SVG */}
+                        <svg viewBox="0 0 100 100" style={{ width: "130px", height: "130px", background: "white", padding: "8px", borderRadius: "8px", border: "1px solid var(--s-hairline)" }}>
+                          <rect width="100" height="100" fill="white" />
+                          <rect x="5" y="5" width="25" height="25" fill="#18181b" />
+                          <rect x="9" y="9" width="17" height="17" fill="white" />
+                          <rect x="13" y="13" width="9" height="9" fill="#18181b" />
+
+                          <rect x="70" y="5" width="25" height="25" fill="#18181b" />
+                          <rect x="74" y="9" width="17" height="17" fill="white" />
+                          <rect x="78" y="13" width="9" height="9" fill="#18181b" />
+
+                          <rect x="5" y="70" width="25" height="25" fill="#18181b" />
+                          <rect x="9" y="74" width="17" height="17" fill="white" />
+                          <rect x="13" y="78" width="9" height="9" fill="#18181b" />
+
+                          <rect x="35" y="5" width="5" height="10" fill="#18181b" />
+                          <rect x="45" y="15" width="10" height="5" fill="#18181b" />
+                          <rect x="60" y="10" width="5" height="5" fill="#18181b" />
+                          <rect x="35" y="25" width="15" height="5" fill="#18181b" />
+
+                          <rect x="5" y="35" width="10" height="5" fill="#18181b" />
+                          <rect x="20" y="45" width="5" height="10" fill="#18181b" />
+                          <rect x="15" y="60" width="10" height="5" fill="#18181b" />
+
+                          <rect x="35" y="35" width="25" height="25" fill="#18181b" />
+                          <rect x="40" y="40" width="15" height="15" fill="white" />
+                          <rect x="45" y="45" width="5" height="5" fill="#18181b" />
+
+                          <rect x="65" y="35" width="15" height="5" fill="#18181b" />
+                          <rect x="80" y="45" width="5" height="15" fill="#18181b" />
+                          <rect x="70" y="65" width="25" height="5" fill="#18181b" />
+                          <rect x="75" y="75" width="10" height="10" fill="#18181b" />
+
+                          <rect x="35" y="70" width="5" height="15" fill="#18181b" />
+                          <rect x="45" y="85" width="20" height="5" fill="#18181b" />
+                          <rect x="55" y="75" width="10" height="5" fill="#18181b" />
+                        </svg>
+
+                        <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                          <span style={{ fontSize: "11px", color: "var(--s-secondary)", fontWeight: 500 }}>Secret Setup Key:</span>
+                          <code style={{ fontSize: "13px", padding: "6px 12px", backgroundColor: "var(--s-surface)", border: "1px solid var(--s-hairline)", borderRadius: "6px", fontFamily: "monospace", display: "inline-block" }}>JBSW Y3DP EHPK 3PXP</code>
+                          <span style={{ fontSize: "10px", color: "var(--s-secondary)" }}>Time-based (TOTP) account setup</span>
+                        </div>
+                      </div>
+
+                      <div style={{ display: "flex", flexDirection: "column", gap: "8px", maxWidth: "300px" }}>
+                        <label style={{ fontSize: "12px", fontWeight: 500 }}>Enter 6-digit Code:</label>
+                        <div style={{ display: "flex", gap: "8px" }}>
+                          <input 
+                            type="text" 
+                            maxLength={6} 
+                            placeholder="000 000"
+                            value={twoFaCodeInput}
+                            onChange={(e) => setTwoFaCodeInput(e.target.value.replace(/\D/g, ""))}
+                            style={{ flex: 1, padding: "8px 14px", borderRadius: "9999px", border: "1px solid var(--s-hairline)", outline: "none", fontSize: "13px", textAlign: "center", letterSpacing: "2px", fontWeight: "600" }}
+                          />
+                          <button 
+                            type="button"
+                            onClick={() => {
+                              if (twoFaCodeInput.length !== 6) {
+                                setTwoFaError("Please enter a valid 6-digit code.");
+                                return;
+                              }
+                              setTwoFaActive(true);
+                              setShow2FaSetup(false);
+                              localStorage.setItem(`mock_2fa_enabled_${currentUser?.email}`, "true");
+                              showToast("Two-Factor Authentication successfully activated!");
+                            }}
+                            className="stitch-pill-primary" 
+                            style={{ padding: "8px 20px", fontSize: "12px" }}
+                          >
+                            Verify
+                          </button>
+                        </div>
+                        {twoFaError && <span style={{ fontSize: "11px", color: "red" }}>{twoFaError}</span>}
+                      </div>
+
+                      <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end" }}>
+                        <button 
+                          type="button"
+                          onClick={() => setShow2FaSetup(false)} 
+                          className="s-btn-raw"
+                          style={{ fontSize: "13px", color: "var(--s-secondary)", background: "none", border: "none", cursor: "pointer" }}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Active Sessions */}

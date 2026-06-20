@@ -1,0 +1,140 @@
+/* ── Google Stitch / Figma-style Monochrome Design System ── */
+
+:root {
+  font-family: "Google Sans", "Product Sans", "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color-scheme: dark;
+}
+
+/* ── Stitch color tokens (Premium Charcoal Dark Theme) ── */
+:root {
+  /* Stitch core palette */
+  --s-primary:       #f4f4f5; /* Zinc-100 */
+  --s-on-primary:    #18181b; /* Zinc-900 */
+  --s-background:    #0f0f11; /* Deep charcoal background */
+  --s-surface:       #18181b; /* Charcoal surface */
+  --s-surface-low:   #202023; /* Darker charcoal */
+  --s-surface-soft:  #27272a; /* Zinc-800 */
+  --s-hairline:      #2d2d30; /* Clean dark border */
+  --s-hairline-soft: #3f3f46; /* Zinc-700 */
+  --s-on-surface:    #f4f4f5;
+  --s-on-surface-variant: #a1a1aa; /* Zinc-400 */
+  --s-secondary:     #a1a1aa;
+  --s-outline:       #71717a; /* Zinc-500 */
+
+  /* Block accent colors (translucent/dark background + high-contrast text) */
+  --s-block-mint:        #0d2818;
+  --s-block-mint-text:   #a7f3d0;
+  --s-block-lime:        #222c0e;
+  --s-block-lime-text:   #e2f99b;
+  --s-block-lilac:       #1c1435;
+  --s-block-lilac-text:  #d1c2ff;
+  --s-block-cream:       #332508;
+  --s-block-cream-text:  #ffeaa3;
+  --s-block-pink:        #38110e;
+  --s-block-pink-text:   #fca5a5;
+  --s-block-coral:       #381308;
+  --s-block-coral-text:  #ffbdae;
+  --s-block-navy:        #93c5fd; /* Soft blue ranking text */
+  --s-magenta:           #ff80ff;
+
+  /* Functional Semantic Variables */
+  --s-green:             #4ade80;
+  --s-red:               #f87171;
+  --s-blue:              #60a5fa;
+  --s-gray:              #a1a1aa;
+
+  /* functional tokens */
+  --c-bg:       var(--s-background);
+  --c-surface:  var(--s-surface);
+  --c-text:     var(--s-on-surface);
+  --c-accent:   var(--s-primary);
+  --text-muted: var(--s-on-surface-variant);
+  --border:     var(--s-hairline);
+  --surface-raised: var(--s-surface);
+  --accent-soft: var(--s-surface-low);
+  --accent-strong: var(--s-primary);
+  --shadow:     0 4px 20px rgba(0, 0, 0, 0.4);
+
+  /* Spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  /* Border radius */
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-pill: 9999px;
+
+  /* Layout */
+  --header-h: 70px;
+  --sidebar-w: 240px;
+
+  /* Typography scales */
+  --font-display-xl: 36px;
+  --font-display-lg: 28px;
+  --font-headline: 22px;
+  --font-subhead: 18px;
+  --font-body-lg: 16px;
+  --font-body: 14px;
+  --font-button: 14px;
+  --font-eyebrow: 12px;
+}
+
+/* ── Light Theme Variable Overrides ── */
+.light-theme {
+  color-scheme: light;
+  
+  /* Core palette */
+  --s-primary:       #18181b; /* Zinc-900 */
+  --s-on-primary:    #f4f4f5; /* Zinc-100 */
+  --s-background:    #f9f9fb; /* Light gray background */
+  --s-surface:       #ffffff; /* White surface */
+  --s-surface-low:   #f4f4f5; /* Zinc-100 */
+  --s-surface-soft:  #e4e4e7; /* Zinc-200 */
+  --s-hairline:      #e4e4e7; /* Zinc-200 border */
+  --s-hairline-soft: #d4d4d8; /* Zinc-300 */
+  --s-on-surface:    #18181b;
+  --s-on-surface-variant: #52525b; /* Zinc-600 */
+  --s-secondary:     #71717a;
+  --s-outline:       #a1a1aa;
+
+  /* Block accent colors (light theme matching) */
+  --s-block-mint:        #ecfdf5;
+  --s-block-mint-text:   #065f46;
+  --s-block-lime:        #f7fee7;
+  --s-block-lime-text:   #3f6212;
+  --s-block-lilac:       #faf5ff;
+  --s-block-lilac-text:  #6b21a8;
+  --s-block-cream:       #fefce8;
+  --s-block-cream-text:  #854d0e;
+  --s-block-pink:        #fef2f2;
+  --s-block-pink-text:   #991b1b;
+  --s-block-coral:       #fff7ed;
+  --s-block-coral-text:  #c2410c;
+  --s-block-navy:        #1e3a8a; /* Dark blue text */
+  --s-magenta:           #d946ef;
+
+  /* Functional Semantic Variables */
+  --s-green:             #16a34a;
+  --s-red:               #dc2626;
+  --s-blue:              #2563eb;
+  --s-gray:              #71717a;
+
+  /* Redefine functional tokens to force re-evaluation in light theme context */
+  --c-bg:            var(--s-background);
+  --c-surface:       var(--s-surface);
+  --c-text:          var(--s-on-surface);
+  --c-accent:        var(--s-primary);
+  --text-muted:      var(--s-on-surface-variant);
+  --border:          var(--s-hairline);
+  --surface-raised:  var(--s-surface);
+  --accent-soft:     var(--s-surface-low);
+  --accent-strong:   var(--s-primary);
+
+  /* Shadow adjustment for light theme */
+  --shadow:     0 4px 20px rgba(0, 0, 0, 0.05);
+}

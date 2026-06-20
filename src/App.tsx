@@ -24,8 +24,9 @@ const UserDashboardPage = lazy(() => import("./components/UserDashboardPage").th
 const SecurityPage = lazy(() => import("./components/TrustPages").then(m => ({ default: m.SecurityPage })));
 const FilePrivacyPage = lazy(() => import("./components/TrustPages").then(m => ({ default: m.FilePrivacyPage })));
 const DataDeletionPage = lazy(() => import("./components/TrustPages").then(m => ({ default: m.DataDeletionPage })));
+const AdminDashboard = lazy(() => import("./admin/AdminDashboard").then(m => ({ default: m.AdminDashboard })));
 
-const pathMap: Record<string, { view: "home" | "workspace" | "pricing" | "privacy" | "terms" | "faq" | "contact" | "tools" | "about" | "contact-sales" | "settings" | "dashboard" | "security" | "file-privacy" | "data-deletion"; tool?: string }> = {
+const pathMap: Record<string, { view: "home" | "workspace" | "pricing" | "privacy" | "terms" | "faq" | "contact" | "tools" | "about" | "contact-sales" | "settings" | "dashboard" | "security" | "file-privacy" | "data-deletion" | "admin"; tool?: string }> = {
   "/": { view: "home" },
   "/pricing": { view: "pricing" },
   "/privacy": { view: "privacy" },
@@ -40,6 +41,7 @@ const pathMap: Record<string, { view: "home" | "workspace" | "pricing" | "privac
   "/security": { view: "security" },
   "/file-privacy": { view: "file-privacy" },
   "/data-deletion": { view: "data-deletion" },
+  "/admin": { view: "admin" },
   
   // Tools
   "/merge-pdf": { view: "workspace", tool: "Merge PDF" },
@@ -111,6 +113,7 @@ function getPathForState(view: string, tool?: string): string {
     case "security": return "/security";
     case "file-privacy": return "/file-privacy";
     case "data-deletion": return "/data-deletion";
+    case "admin": return "/admin";
     default: return "/";
   }
 }
@@ -172,16 +175,23 @@ const viewMetadata: Record<string, { title: string; desc: string }> = {
     title: "Data Deletion Policy - PDFMount",
     desc: "Details on our 60-minute auto-purge lifecycle and immediate manual data wiping controls.",
   },
+  admin: {
+    title: "PDFMount Admin Panel Dashboard",
+    desc: "Administrative system console for managing user databases, Stripe transactions, tool statistics, and CLI engine status.",
+  },
 };
 
 // Derive the initial view and tool from the URL path synchronously so the
 // very first render matches the requested route (no homepage flash, no
 // "Loading interactive workspace…" flicker visible to crawlers or SSG shells).
-function getInitialState(): { view: "home" | "workspace" | "pricing" | "privacy" | "terms" | "faq" | "contact" | "tools" | "about" | "contact-sales" | "settings" | "dashboard" | "security" | "file-privacy" | "data-deletion"; tool: string } {
+function getInitialState(): { view: "home" | "workspace" | "pricing" | "privacy" | "terms" | "faq" | "contact" | "tools" | "about" | "contact-sales" | "settings" | "dashboard" | "security" | "file-privacy" | "data-deletion" | "admin"; tool: string } {
+  if (typeof window !== "undefined" && window.location.hostname === "admin.pdfmount.online") {
+    return { view: "admin", tool: "Compress PDF" };
+  }
   const path = typeof window !== "undefined" ? window.location.pathname : "/";
   const match = pathMap[path];
   if (match) {
-    return { view: match.view, tool: match.tool || "Compress PDF" };
+    return { view: match.view as any, tool: match.tool || "Compress PDF" };
   }
   return { view: "home", tool: "Compress PDF" };
 }
@@ -192,7 +202,7 @@ export function App() {
   const [selectedTool, setSelectedTool] = useState(_initial.tool);
   const [toast, setToast] = useState("");
   const [jobs, setJobs] = useState<any[]>([]);
-  const [currentView, setCurrentView] = useState<"home" | "workspace" | "pricing" | "privacy" | "terms" | "faq" | "contact" | "tools" | "about" | "contact-sales" | "settings" | "dashboard" | "security" | "file-privacy" | "data-deletion">(_initial.view);
+  const [currentView, setCurrentView] = useState<"home" | "workspace" | "pricing" | "privacy" | "terms" | "faq" | "contact" | "tools" | "about" | "contact-sales" | "settings" | "dashboard" | "security" | "file-privacy" | "data-deletion" | "admin">(_initial.view);
   const [activeJobId, setActiveJobId] = useState<string | null>(null);
   const [hasStagedFiles, setHasStagedFiles] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -203,6 +213,12 @@ export function App() {
   // Synchronize state with pathname on load and browser navigation
   useEffect(() => {
     const handlePopState = () => {
+      if (typeof window !== "undefined" && window.location.hostname === "admin.pdfmount.online") {
+        setCurrentView("admin");
+        setActiveJobId(null);
+        setHasStagedFiles(false);
+        return;
+      }
       const path = window.location.pathname;
       const match = pathMap[path] || { view: "home" };
       setCurrentView(match.view);
@@ -224,6 +240,13 @@ export function App() {
 
   // Synchronize browser URL history when state changes
   useEffect(() => {
+    if (typeof window !== "undefined" && window.location.hostname === "admin.pdfmount.online") {
+      const currentPath = window.location.pathname;
+      if (currentPath !== "/") {
+        window.history.pushState(null, "", "/");
+      }
+      return;
+    }
     const currentPath = window.location.pathname;
     const targetPath = getPathForState(currentView, currentView === "workspace" ? selectedTool : undefined);
     if (currentPath !== targetPath) {
@@ -793,6 +816,29 @@ export function App() {
       "Page Numbers",
       "Bates Numbering",
     ].includes(selectedTool);
+
+  if (currentView === "admin") {
+    return (
+      <Suspense fallback={
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "100vh", color: "#71717a", fontSize: "14px", fontFamily: "sans-serif", backgroundColor: "#fafafa" }}>
+          <span>Loading Admin Console...</span>
+        </div>
+      }>
+        <AdminDashboard 
+          onBack={() => {
+            if (typeof window !== "undefined" && window.location.hostname === "admin.pdfmount.online") {
+              window.location.href = "https://pdfmount.online";
+            } else {
+              setCurrentView("home");
+              setActiveJobId(null);
+              setHasStagedFiles(false);
+            }
+          }} 
+          currentUser={currentUser} 
+        />
+      </Suspense>
+    );
+  }
 
   return (
     <div className={`app ${isVisualEditorActive ? "visual-editor-active" : ""}`} data-theme={theme}>
