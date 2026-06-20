@@ -93,6 +93,31 @@ export function PdfEditor({ file, selectedTool, onClose, onSave }: PdfEditorProp
   const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const [toolbarPosition, setToolbarPosition] = useState({ x: 20, y: 24 });
+
+  const handleToolbarDragStart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    const startX = e.clientX;
+    const startY = e.clientY;
+    const initialX = toolbarPosition.x;
+    const initialY = toolbarPosition.y;
+
+    const handleMouseMove = (moveEvent: MouseEvent) => {
+      const dx = moveEvent.clientX - startX;
+      const dy = moveEvent.clientY - startY;
+      const newX = Math.max(10, initialX + dx);
+      const newY = Math.max(10, initialY + dy);
+      setToolbarPosition({ x: newX, y: newY });
+    };
+
+    const handleMouseUp = () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseup", handleMouseUp);
+  };
 
   const toolColor = getToolColor(selectedTool);
 
@@ -767,7 +792,7 @@ export function PdfEditor({ file, selectedTool, onClose, onSave }: PdfEditorProp
         <div style={{ flex: 1, display: "flex", flexDirection: "column", position: "relative", overflow: "hidden" }}>
           
           {/* Floating Vertical Toolbar Capsule */}
-          <div style={{ position: "absolute", left: "20px", top: "24px", zIndex: 10 }}>
+          <div style={{ position: "absolute", left: `${toolbarPosition.x}px`, top: `${toolbarPosition.y}px`, zIndex: 10 }}>
             <FloatingToolbar
               activeTool={activeTool}
               setActiveTool={setActiveTool}
@@ -776,6 +801,7 @@ export function PdfEditor({ file, selectedTool, onClose, onSave }: PdfEditorProp
               showWatermarkModal={() => setShowWatermarkModal(true)}
               showSignatureModal={() => setShowSigModal(true)}
               showLinkModal={() => setShowLinkModal(true)}
+              onDragStart={handleToolbarDragStart}
             />
           </div>
 

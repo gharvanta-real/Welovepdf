@@ -297,7 +297,13 @@ export function Header({
         </button>
 
         {/* Finish & Download */}
-        <div style={{ display: "flex", alignItems: "center" }}>
+        <div style={{
+          display: "flex",
+          alignItems: "stretch",
+          borderRadius: "8px",
+          overflow: "hidden",
+          boxShadow: "0 1px 2px rgba(37,99,235,0.1)"
+        }}>
           <button
             onClick={onDownload}
             style={{
@@ -305,15 +311,12 @@ export function Header({
               alignItems: "center",
               gap: "6px",
               padding: "7px 14px",
-              borderTopLeftRadius: "8px",
-              borderBottomLeftRadius: "8px",
               border: "none",
               background: "#2563eb",
               color: "#ffffff",
               cursor: "pointer",
               fontSize: "0.78rem",
               fontWeight: "600",
-              boxShadow: "0 1px 2px rgba(37,99,235,0.1)",
               transition: "background 0.15s"
             }}
             onMouseEnter={(e) => { e.currentTarget.style.background = "#1d4ed8"; }}
@@ -322,7 +325,7 @@ export function Header({
             <Download size={13} />
             Finish & Download
           </button>
-          <div style={{ width: "1px", height: "30px", backgroundColor: "#3b82f6" }} />
+          <div style={{ width: "1px", backgroundColor: "#3b82f6" }} />
           <button
             onClick={onDownload}
             style={{
@@ -330,8 +333,6 @@ export function Header({
               alignItems: "center",
               justifyContent: "center",
               padding: "7px 10px",
-              borderTopRightRadius: "8px",
-              borderBottomRightRadius: "8px",
               border: "none",
               background: "#2563eb",
               color: "#ffffff",

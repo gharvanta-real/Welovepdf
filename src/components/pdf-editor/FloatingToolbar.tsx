@@ -16,6 +16,7 @@ interface FloatingToolbarProps {
   showWatermarkModal: () => void;
   showSignatureModal: () => void;
   showLinkModal: () => void;
+  onDragStart?: (e: React.MouseEvent) => void;
 }
 
 export function FloatingToolbar({
@@ -25,7 +26,8 @@ export function FloatingToolbar({
   showCommentModal,
   showWatermarkModal,
   showSignatureModal,
-  showLinkModal
+  showLinkModal,
+  onDragStart
 }: FloatingToolbarProps) {
   const [showPopover, setShowPopover] = useState(false);
   const toolbarRef = useRef<HTMLDivElement>(null);
@@ -131,12 +133,51 @@ export function FloatingToolbar({
         backgroundColor: "#ffffff",
         border: "1px solid #e2e8f0",
         borderRadius: "16px",
-        padding: "10px 8px",
+        padding: "8px 8px 10px 8px",
         boxShadow: "0 10px 25px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.02)",
         alignItems: "center",
         width: "48px",
         boxSizing: "border-box"
       }}>
+        {/* Grip Handle */}
+        {onDragStart && (
+          <div 
+            onMouseDown={onDragStart}
+            style={{
+              cursor: "grab",
+              padding: "4px 0",
+              width: "100%",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: "2px",
+              color: "#94a3b8"
+            }}
+            title="Drag to reposition toolbar"
+          >
+            {/* Grip dots */}
+            <div style={{ display: "flex", gap: "2px" }}>
+              <div style={{ width: "3px", height: "3px", borderRadius: "50%", backgroundColor: "currentColor" }} />
+              <div style={{ width: "3px", height: "3px", borderRadius: "50%", backgroundColor: "currentColor" }} />
+              <div style={{ width: "3px", height: "3px", borderRadius: "50%", backgroundColor: "currentColor" }} />
+            </div>
+            <div style={{ display: "flex", gap: "2px" }}>
+              <div style={{ width: "3px", height: "3px", borderRadius: "50%", backgroundColor: "currentColor" }} />
+              <div style={{ width: "3px", height: "3px", borderRadius: "50%", backgroundColor: "currentColor" }} />
+              <div style={{ width: "3px", height: "3px", borderRadius: "50%", backgroundColor: "currentColor" }} />
+            </div>
+          </div>
+        )}
+
+        {/* Divider after Grip */}
+        {onDragStart && (
+          <div style={{
+            width: "22px",
+            height: "1px",
+            backgroundColor: "#f1f5f9",
+            marginBottom: "2px"
+          }} />
+        )}
         {coreTools.map((tool) => {
           const isActive = activeTool === tool.id;
           const isSelectTool = tool.id === "select";
