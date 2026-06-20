@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import { Plus } from "lucide-react";
 import { PdfEditor } from "./PdfEditor";
+import { SignEditor } from "./pdf-editor/SignEditor";
 import { getPdfjsLib } from "../utils/pdfjs";
 
 // Import modular subcomponents
@@ -145,7 +146,6 @@ export function UploadPanel({
   const isVisualEditorTool = [
     "Edit PDF",
     "PDF Annotator",
-    "Sign PDF",
     "Watermark PDF",
     "Crop PDF",
     "Page Numbers",
@@ -477,17 +477,26 @@ export function UploadPanel({
 
   return (
     <div className="workspace-full-bleed-container animate-fade-in">
-      {viewMode === "staged" && stagedFiles && stagedFiles.length > 0 && isVisualEditorTool ? (
-        <PdfEditor
-          file={stagedFiles[0]}
-          selectedTool={selectedTool}
-          onClose={onBack}
-          onSave={(files, options) => {
-            onUpload(files, options);
-          }}
-        />
-      ) : viewMode === "staged" && stagedFiles ? (
-        <div className="workspace-split-container">
+      {viewMode === "staged" && stagedFiles && stagedFiles.length > 0 ? (
+        selectedTool === "Sign PDF" ? (
+          <SignEditor
+            file={stagedFiles[0]}
+            onClose={onBack}
+            onSave={(files, options) => {
+              onUpload(files, options);
+            }}
+          />
+        ) : isVisualEditorTool ? (
+          <PdfEditor
+            file={stagedFiles[0]}
+            selectedTool={selectedTool}
+            onClose={onBack}
+            onSave={(files, options) => {
+              onUpload(files, options);
+            }}
+          />
+        ) : (
+          <div className="workspace-split-container">
           {/* ── LEFT-CENTER: Workspace Canvas Preview Frame ── */}
           <div className="workspace-canvas">
             <div className="document-preview-frame" style={{ display: "flex", flexDirection: "column", flex: 1, background: "var(--c-bg)", border: "1px solid var(--border)", borderRadius: "12px", boxShadow: "0 8px 30px rgba(0,0,0,0.03)", overflow: "hidden", height: "100%", width: "100%" }}>
@@ -767,7 +776,7 @@ export function UploadPanel({
             </div>
           </div>
         </div>
-      ) : (
+      ) ) : (
         activeJob && (
           <SuccessState
             selectedTool={selectedTool}

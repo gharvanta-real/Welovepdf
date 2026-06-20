@@ -810,7 +810,6 @@ export function App() {
     [
       "Edit PDF",
       "PDF Annotator",
-      "Sign PDF",
       "Watermark PDF",
       "Crop PDF",
       "Page Numbers",
