@@ -1,7 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import {
   ChevronLeft, ChevronRight, ZoomIn, ZoomOut, Maximize2,
-  FileText, Crop, Layers, Share2, Download
+  FileText, Crop, Layers, Share2, Download,
+  Undo2, Redo2, Trash2, MousePointer, Hand, Type,
+  PenTool, Highlighter, Square, CheckCircle, MessageSquare,
+  Droplets, Stamp
 } from "lucide-react";
 import { getToolColor } from "./ToolIcon";
 import { getPdfjsLib } from "../utils/pdfjs";
@@ -726,134 +729,180 @@ export function PdfEditor({ file, selectedTool, onClose, onSave }: PdfEditorProp
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100vh", backgroundColor: "var(--c-bg)", color: "var(--c-text)", overflow: "hidden", fontFamily: "'Inter', system-ui, sans-serif" }}>
 
-      {/* ══ TOP APP BAR ══════════════════════════════════════════════════════ */}
+      {/* ══ TOP APP BAR (Sleek Dark Premium Header) ══════════════════════════ */}
       <header style={{
-        display: "flex", justifyContent: "space-between", alignItems: "center",
-        padding: "0 16px", height: "44px",
-        background: `linear-gradient(135deg, ${toolColor} 0%, ${toolColor}dd 100%)`,
-        boxShadow: "0 2px 8px rgba(0,0,0,0.2)", zIndex: 30
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        padding: "0 20px",
+        height: "56px",
+        background: "#0f172a", // Sleek dark slate
+        borderBottom: "1px solid #1e293b",
+        zIndex: 30,
+        boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
+        flexShrink: 0
       }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
           <button
             onClick={onClose}
-            style={{ display: "flex", alignItems: "center", gap: "6px", padding: "6px 14px", borderRadius: "9999px", border: "1px solid rgba(255,255,255,0.3)", background: "rgba(255,255,255,0.15)", color: "#fff", cursor: "pointer", fontSize: "0.8rem", fontWeight: "500", backdropFilter: "blur(4px)" }}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              padding: "6px 14px",
+              borderRadius: "9999px",
+              border: "1px solid #334155",
+              background: "transparent",
+              color: "#94a3b8",
+              cursor: "pointer",
+              fontSize: "0.8rem",
+              fontWeight: "500",
+              transition: "all 0.2s ease"
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = "#fff";
+              e.currentTarget.style.borderColor = "#475569";
+              e.currentTarget.style.backgroundColor = "#1e293b";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = "#94a3b8";
+              e.currentTarget.style.borderColor = "#334155";
+              e.currentTarget.style.backgroundColor = "transparent";
+            }}
           >
             <ChevronLeft size={14} />
             Back
           </button>
-          <div style={{ height: "20px", width: "1px", backgroundColor: "rgba(255,255,255,0.3)" }} />
-          <div style={{ display: "flex", flexDirection: "column" }}>
-            <span style={{ color: "#fff", fontWeight: "600", fontSize: "0.85rem", maxWidth: "280px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{file.name}</span>
-            <span style={{ color: "rgba(255,255,255,0.7)", fontSize: "0.65rem" }}>{selectedTool}</span>
+          <div style={{ height: "20px", width: "1px", backgroundColor: "#334155" }} />
+          <span style={{ color: "#fff", fontWeight: "700", fontSize: "1.05rem", letterSpacing: "-0.5px" }}>
+            PDF<span style={{ color: "#2563eb" }}>Mount</span>
+          </span>
+          <div style={{ display: "flex", gap: "18px", marginLeft: "24px" }}>
+            {["Tools", "Edit", "Convert", "E-Sign"].map((tab) => {
+              const isActive = tab === "Edit"; // Edit is active in this view
+              return (
+                <span
+                  key={tab}
+                  style={{
+                    color: isActive ? "#2563eb" : "#94a3b8",
+                    fontSize: "0.85rem",
+                    fontWeight: isActive ? "650" : "500",
+                    cursor: "pointer",
+                    position: "relative",
+                    paddingBottom: "4px"
+                  }}
+                >
+                  {tab}
+                  {isActive && (
+                    <span
+                      style={{
+                        position: "absolute",
+                        bottom: "-6px",
+                        left: 0,
+                        right: 0,
+                        height: "2px",
+                        backgroundColor: "#2563eb",
+                        borderRadius: "2px"
+                      }}
+                    />
+                  )}
+                </span>
+              );
+            })}
           </div>
         </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+        {/* Center: File name badge */}
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          backgroundColor: "#1e293b",
+          padding: "6px 16px",
+          borderRadius: "9999px",
+          border: "1px solid #334155",
+          maxWidth: "320px"
+        }}>
+          <span style={{ color: "#fff", fontWeight: "600", fontSize: "0.82rem", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            {file.name}
+          </span>
+          <span style={{ color: "#64748b", fontSize: "0.68rem", fontWeight: "500", borderLeft: "1px solid #334155", paddingLeft: "8px" }}>
+            {selectedTool}
+          </span>
+        </div>
+
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <button
+            onClick={() => alert("AI Assistant is indexing your document...")}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              padding: "6px 14px",
+              borderRadius: "9999px",
+              border: "none",
+              background: "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)", // Adobe red AI Assistant
+              color: "#fff",
+              cursor: "pointer",
+              fontSize: "0.78rem",
+              fontWeight: "600",
+              boxShadow: "0 2px 8px rgba(239,68,68,0.25)"
+            }}
+          >
+            <MessageSquare size={13} />
+            Ask AI Assistant
+          </button>
           <button
             onClick={() => setShowRightPanel(p => !p)}
-            style={{ display: "flex", alignItems: "center", gap: "5px", padding: "6px 14px", borderRadius: "9999px", border: "1px solid rgba(255,255,255,0.3)", background: "rgba(255,255,255,0.15)", color: "#fff", cursor: "pointer", fontSize: "0.78rem", backdropFilter: "blur(4px)" }}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              padding: "6px 14px",
+              borderRadius: "9999px",
+              border: "1px solid #334155",
+              background: showRightPanel ? "#1e293b" : "transparent",
+              color: showRightPanel ? "#fff" : "#94a3b8",
+              cursor: "pointer",
+              fontSize: "0.78rem",
+              fontWeight: "500",
+              transition: "all 0.2s ease"
+            }}
           >
-            <Layers size={14} />
+            <Layers size={13} />
             Properties
           </button>
           <button
-            onClick={() => alert("PDF shared to clipboard!")}
-            style={{ display: "flex", alignItems: "center", gap: "5px", padding: "6px 14px", borderRadius: "9999px", border: "1px solid rgba(255,255,255,0.3)", background: "rgba(255,255,255,0.15)", color: "#fff", cursor: "pointer", fontSize: "0.78rem", backdropFilter: "blur(4px)" }}
-          >
-            <Share2 size={14} />
-            Share
-          </button>
-          <button
             onClick={handleDownload}
-            style={{ display: "flex", alignItems: "center", gap: "6px", padding: "6px 16px", borderRadius: "9999px", border: "none", background: "var(--c-bg)", color: toolColor, cursor: "pointer", fontSize: "0.82rem", fontWeight: "600", boxShadow: "0 2px 8px rgba(0,0,0,0.15)" }}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              padding: "8px 18px",
+              borderRadius: "9999px",
+              border: "none",
+              background: "#2563eb",
+              color: "#fff",
+              cursor: "pointer",
+              fontSize: "0.82rem",
+              fontWeight: "600",
+              boxShadow: "0 4px 12px rgba(37,99,235,0.3)",
+              transition: "all 0.2s ease"
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "#1d4ed8";
+              e.currentTarget.style.boxShadow = "0 6px 16px rgba(37,99,235,0.4)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "#2563eb";
+              e.currentTarget.style.boxShadow = "0 4px 12px rgba(37,99,235,0.3)";
+            }}
           >
             <Download size={14} />
             Finish & Download
           </button>
         </div>
       </header>
-
-      {/* ══ RIBBON TABS ══════════════════════════════════════════════════════ */}
-      <RibbonBar
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        activeTool={activeTool}
-        setActiveTool={setActiveTool}
-        undoHistory={undoHistory}
-        redoHistory={redoHistory}
-        handleUndo={handleUndo}
-        handleRedo={handleRedo}
-        selectedElementId={selectedElementId}
-        duplicateElement={duplicateElement}
-        deleteElement={deleteElement}
-        textFont={textFont}
-        setTextFont={setTextFont}
-        handleFontChange={handleFontChange}
-        textSize={textSize}
-        handleTextSizeChange={handleTextSizeChange}
-        isBold={isBold}
-        toggleBold={toggleBold}
-        isItalic={isItalic}
-        toggleItalic={toggleItalic}
-        isUnderline={isUnderline}
-        toggleUnderline={toggleUnderline}
-        isStrike={isStrike}
-        toggleStrike={toggleStrike}
-        textColor={textColor}
-        showTextColorPicker={showTextColorPicker}
-        setShowTextColorPicker={setShowTextColorPicker}
-        handleTextColorChange={handleTextColorChange}
-        align={align}
-        updateAlignment={updateAlignment}
-        toolColor={toolColor}
-        currentPage={currentPage}
-        elements={elements}
-        saveHistory={saveHistory}
-        setSelectedElementId={setSelectedElementId}
-        shapeType={shapeType}
-        setShapeType={setShapeType}
-        setShowWatermarkModal={setShowWatermarkModal}
-        setShowSigModal={setShowSigModal}
-        penColor={penColor}
-        setPenColor={setPenColor}
-        showPenColorPicker={showPenColorPicker}
-        setShowPenColorPicker={setShowPenColorPicker}
-        penThickness={penThickness}
-        setPenThickness={setPenThickness}
-        markerColor={markerColor}
-        setMarkerColor={setMarkerColor}
-        showMarkerColorPicker={showMarkerColorPicker}
-        setShowMarkerColorPicker={setShowMarkerColorPicker}
-        markerOpacity={markerOpacity}
-        setMarkerOpacity={setMarkerOpacity}
-        redactText={redactText}
-        setRedactText={setRedactText}
-        redactColor={redactColor}
-        setRedactColor={setRedactColor}
-        shapeColor={shapeColor}
-        setShapeColor={setShapeColor}
-        showShapeColorPicker={showShapeColorPicker}
-        setShowShapeColorPicker={setShowShapeColorPicker}
-        shapeThickness={shapeThickness}
-        setShapeThickness={setShapeThickness}
-        pageSize={pageSize}
-        setPageSize={setPageSize}
-        pageOrientation={pageOrientation}
-        setPageOrientation={setPageOrientation}
-        pageMargins={pageMargins}
-        setPageMargins={setPageMargins}
-        rotatePage={rotatePage}
-        removePage={removePage}
-        zoom={zoom}
-        setZoom={setZoom}
-        showRuler={showRuler}
-        setShowRuler={setShowRuler}
-        showGrid={showGrid}
-        setShowGrid={setShowGrid}
-        showRightPanel={showRightPanel}
-        setShowRightPanel={setShowRightPanel}
-        pageOrder={pageOrder}
-      />
 
       <div className="editor-main-frame">
 
@@ -873,6 +922,109 @@ export function PdfEditor({ file, selectedTool, onClose, onSave }: PdfEditorProp
 
         {/* ── CENTER CANVAS ─────────────────────────────────────────────── */}
         <main style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", position: "relative", backgroundColor: "color-mix(in srgb, var(--c-surface) 93%, var(--c-text))" }}>
+          
+          {/* ── SLEEK FLOATING VERTICAL TOOLBAR ── */}
+          <div className="editor-floating-toolbar">
+            <button
+              className={`floating-toolbar-btn ${activeTool === "select" ? "active" : ""}`}
+              onClick={() => { setActiveTool("select"); setSelectedElementId(null); }}
+              title="Select / Move"
+            >
+              <MousePointer size={16} />
+            </button>
+            <button
+              className={`floating-toolbar-btn ${activeTool === "pan" ? "active" : ""}`}
+              onClick={() => { setActiveTool("pan"); setSelectedElementId(null); }}
+              title="Pan View"
+            >
+              <Hand size={16} />
+            </button>
+            <button
+              className={`floating-toolbar-btn ${activeTool === "text" ? "active" : ""}`}
+              onClick={() => { setActiveTool("text"); setSelectedElementId(null); }}
+              title="Add Text"
+            >
+              <Type size={16} />
+            </button>
+            <button
+              className={`floating-toolbar-btn ${activeTool === "pen" ? "active" : ""}`}
+              onClick={() => { setActiveTool("pen"); setSelectedElementId(null); }}
+              title="Drawing Pen"
+            >
+              <PenTool size={16} />
+            </button>
+            <button
+              className={`floating-toolbar-btn ${activeTool === "highlight" ? "active" : ""}`}
+              onClick={() => { setActiveTool("highlight"); setSelectedElementId(null); }}
+              title="Highlighter"
+            >
+              <Highlighter size={16} />
+            </button>
+            <button
+              className={`floating-toolbar-btn ${activeTool === "shape" ? "active" : ""}`}
+              onClick={() => { setShapeType("rectangle"); setActiveTool("shape"); setSelectedElementId(null); }}
+              title="Draw Shape"
+            >
+              <Square size={16} />
+            </button>
+            <button
+              className={`floating-toolbar-btn ${activeTool === "signature" ? "active" : ""}`}
+              onClick={() => setShowSigModal(true)}
+              title="Add Signature"
+            >
+              <CheckCircle size={16} />
+            </button>
+            <button
+              className={`floating-toolbar-btn ${activeTool === "comment" ? "active" : ""}`}
+              onClick={() => { setActiveTool("comment"); setSelectedElementId(null); }}
+              title="Sticky Comment"
+            >
+              <MessageSquare size={16} />
+            </button>
+            <button
+              className={`floating-toolbar-btn ${activeTool === "crop" ? "active" : ""}`}
+              onClick={() => { setActiveTool("crop"); setSelectedElementId(null); }}
+              title="Crop Pages"
+            >
+              <Crop size={16} />
+            </button>
+            <button
+              className="floating-toolbar-btn"
+              onClick={() => setShowWatermarkModal(true)}
+              title="Watermark PDF"
+            >
+              <Droplets size={16} />
+            </button>
+
+            <div className="floating-toolbar-divider" />
+
+            <button
+              className="floating-toolbar-btn"
+              onClick={handleUndo}
+              disabled={undoHistory.length === 0}
+              title="Undo Action"
+            >
+              <Undo2 size={15} />
+            </button>
+            <button
+              className="floating-toolbar-btn"
+              onClick={handleRedo}
+              disabled={redoHistory.length === 0}
+              title="Redo Action"
+            >
+              <Redo2 size={15} />
+            </button>
+            <button
+              className="floating-toolbar-btn"
+              onClick={() => selectedElementId && deleteElement(selectedElementId)}
+              disabled={!selectedElementId}
+              style={{ color: selectedElementId ? "#ef4444" : "" }}
+              title="Delete Selected"
+            >
+              <Trash2 size={15} />
+            </button>
+          </div>
+
           {/* Ruler */}
           {showRuler && (
             <div style={{ height: "20px", backgroundColor: "var(--c-surface)", borderBottom: "1px solid var(--border)", display: "flex", alignItems: "center", paddingLeft: "8px", flexShrink: 0 }}>
@@ -1352,6 +1504,29 @@ export function PdfEditor({ file, selectedTool, onClose, onSave }: PdfEditorProp
             stampType={stampType}
             setStampType={setStampType}
             toolColor={toolColor}
+            
+            // New defaults props
+            handleFontChange={handleFontChange}
+            align={align}
+            updateAlignment={updateAlignment}
+            textColor={textColor}
+            handleTextColorChange={handleTextColorChange}
+            penColor={penColor}
+            setPenColor={setPenColor}
+            penThickness={penThickness}
+            setPenThickness={setPenThickness}
+            markerColor={markerColor}
+            setMarkerColor={setMarkerColor}
+            markerOpacity={markerOpacity}
+            setMarkerOpacity={setMarkerOpacity}
+            shapeType={shapeType}
+            setShapeType={setShapeType}
+            shapeColor={shapeColor}
+            setShapeColor={setShapeColor}
+            shapeFillColor={shapeFillColor}
+            setShapeFillColor={setShapeFillColor}
+            shapeThickness={shapeThickness}
+            setShapeThickness={setShapeThickness}
           />
         )}
       </div>

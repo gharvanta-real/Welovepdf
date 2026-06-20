@@ -685,3 +685,87 @@
     display: none !important;
   }
 }
+
+/* Floating Vertical Toolbar Styles (Adobe style) */
+.editor-floating-toolbar {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  background-color: #0f172a; /* Slate 900 for premium contrast */
+  border: 1px solid #1e293b;
+  border-radius: 9999px;
+  padding: 12px 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255,255,255,0.05);
+  align-items: center;
+}
+
+.floating-toolbar-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: #94a3b8; /* Cool gray */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 0;
+  position: relative;
+}
+
+.floating-toolbar-btn:hover {
+  color: #ffffff;
+  background-color: #1e293b;
+}
+
+.floating-toolbar-btn.active {
+  color: #ffffff;
+  background-color: #2563eb; /* Premium Blue active state */
+  box-shadow: 0 0 12px rgba(37,99,235,0.45);
+}
+
+.floating-toolbar-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.floating-toolbar-divider {
+  width: 18px;
+  height: 1px;
+  background-color: #1e293b;
+  margin: 4px 0;
+}
+
+/* Tooltip style for floating toolbar */
+.floating-toolbar-btn::after {
+  content: attr(title);
+  position: absolute;
+  left: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%) scale(0.95);
+  opacity: 0;
+  pointer-events: none;
+  background-color: #0f172a;
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  transition: all 0.15s ease;
+  z-index: 100;
+  border: 1px solid #1e293b;
+}
+
+.floating-toolbar-btn:hover::after {
+  opacity: 1;
+  transform: translateY(-50%) scale(1);
+}

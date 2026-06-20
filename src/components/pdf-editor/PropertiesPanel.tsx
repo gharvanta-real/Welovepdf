@@ -51,6 +51,29 @@ interface PropertiesPanelProps {
   stampType: string;
   setStampType: (s: string) => void;
   toolColor: string;
+
+  // New tool-specific states
+  handleFontChange?: (font: string) => void;
+  align?: "left" | "center" | "right" | "justify";
+  updateAlignment?: (a: "left" | "center" | "right" | "justify") => void;
+  textColor?: string;
+  handleTextColorChange?: (color: string) => void;
+  penColor?: string;
+  setPenColor?: (c: string) => void;
+  penThickness?: number;
+  setPenThickness?: (t: number) => void;
+  markerColor?: string;
+  setMarkerColor?: (c: string) => void;
+  markerOpacity?: number;
+  setMarkerOpacity?: (o: number) => void;
+  shapeType?: "rectangle" | "circle" | "line" | "arrow" | "diamond";
+  setShapeType?: (t: "rectangle" | "circle" | "line" | "arrow" | "diamond") => void;
+  shapeColor?: string;
+  setShapeColor?: (c: string) => void;
+  shapeFillColor?: string;
+  setShapeFillColor?: (c: string) => void;
+  shapeThickness?: number;
+  setShapeThickness?: (t: number) => void;
 }
 
 export function PropertiesPanel({
@@ -92,7 +115,30 @@ export function PropertiesPanel({
   elementsCount,
   stampType,
   setStampType,
-  toolColor
+  toolColor,
+
+  // Destructured new props
+  handleFontChange = () => {},
+  align = "left",
+  updateAlignment = () => {},
+  textColor = "#1e293b",
+  handleTextColorChange = () => {},
+  penColor = "#ef4444",
+  setPenColor = () => {},
+  penThickness = 3,
+  setPenThickness = () => {},
+  markerColor = "#fef08a",
+  setMarkerColor = () => {},
+  markerOpacity = 0.4,
+  setMarkerOpacity = () => {},
+  shapeType = "rectangle",
+  setShapeType = () => {},
+  shapeColor = "#3b82f6",
+  setShapeColor = () => {},
+  shapeFillColor = "transparent",
+  setShapeFillColor = () => {},
+  shapeThickness = 2,
+  setShapeThickness = () => {}
 }: PropertiesPanelProps) {
   return (
     <aside className="editor-properties-panel">
@@ -462,14 +508,156 @@ export function PropertiesPanel({
           </div>
         </div>
       ) : (
-        <div style={{ padding: "20px 14px", display: "flex", flexDirection: "column", gap: "8px" }}>
-          <div style={{ textAlign: "center", padding: "24px 16px", backgroundColor: "var(--c-bg)", borderRadius: "8px", border: "none", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
-            <MousePointer size={24} style={{ color: "var(--text-muted)", margin: "0 auto 8px" }} />
-            <p style={{ fontSize: "0.72rem", color: "var(--text-muted)", lineHeight: 1.4 }}>Select an element to view and edit its properties</p>
-          </div>
+        <div style={{ padding: "20px 14px", display: "flex", flexDirection: "column", gap: "14px" }}>
+          {/* Active Tool Settings */}
+          {activeTool !== "select" && activeTool !== "pan" && (
+            <div style={{ padding: "14px", backgroundColor: "var(--c-bg)", borderRadius: "8px", border: "1px solid var(--border)", display: "flex", flexDirection: "column", gap: "12px" }}>
+              <div style={{ fontSize: "0.72rem", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em", fontWeight: "600" }}>
+                Tool Options: <span style={{ color: "var(--c-text)" }}>{activeTool}</span>
+              </div>
+              <div style={{ height: "1px", backgroundColor: "var(--border)" }} />
+              
+              {/* Text Defaults */}
+              {activeTool === "text" && (
+                <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                  <PropLabel>Font</PropLabel>
+                  <select value={textFont} onChange={e => handleFontChange(e.target.value)}
+                    style={{ width: "100%", padding: "5px 12px", borderRadius: "9999px", border: "1px solid var(--border)", fontSize: "0.75rem", color: "var(--c-text)", backgroundColor: "var(--c-bg)", outline: "none", cursor: "pointer" }}>
+                    {FONTS.map(f => <option key={f} value={f}>{f}</option>)}
+                  </select>
+                  
+                  <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
+                    <PropLabel>Size</PropLabel>
+                    <select value={textSize} onChange={e => handleTextSizeChange(parseInt(e.target.value))}
+                      style={{ flex: 1, padding: "4px 10px", borderRadius: "9999px", border: "1px solid var(--border)", fontSize: "0.75rem", color: "var(--c-text)", backgroundColor: "var(--c-bg)", outline: "none", cursor: "pointer" }}>
+                      {FONT_SIZES.map(s => <option key={s} value={s}>{s}pt</option>)}
+                    </select>
+                  </div>
+                  
+                  <div style={{ display: "flex", gap: "4px" }}>
+                    <FormatBtn active={isBold} onClick={toggleBold} title="Bold"><Bold size={12} /></FormatBtn>
+                    <FormatBtn active={isItalic} onClick={toggleItalic} title="Italic"><Italic size={12} /></FormatBtn>
+                    <FormatBtn active={isUnderline} onClick={toggleUnderline} title="Underline"><Underline size={12} /></FormatBtn>
+                    <FormatBtn active={isStrike} onClick={toggleStrike} title="Strike"><Strikethrough size={12} /></FormatBtn>
+                  </div>
+                  
+                  <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                    <PropLabel>Color</PropLabel>
+                    <input type="color" value={textColor} onChange={e => handleTextColorChange(e.target.value)}
+                      style={{ width: "22px", height: "22px", padding: 0, border: "1px solid var(--border)", borderRadius: "50%", cursor: "pointer", backgroundColor: "transparent" }} />
+                  </div>
+                  
+                  <div style={{ display: "flex", gap: "4px" }}>
+                    {(["left", "center", "right", "justify"] as const).map(a => (
+                      <FormatBtn key={a} active={align === a} onClick={() => updateAlignment(a)} title={a}>
+                        {a === "left" ? <AlignLeft size={11} /> : a === "center" ? <AlignCenter size={11} /> : a === "right" ? <AlignRight size={11} /> : <AlignJustify size={11} />}
+                      </FormatBtn>
+                    ))}
+                  </div>
+                </div>
+              )}
 
-          {/* Quick info */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "4px", marginTop: "8px" }}>
+              {/* Pen Defaults */}
+              {activeTool === "pen" && (
+                <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                    <PropLabel>Pen Color</PropLabel>
+                    <input type="color" value={penColor} onChange={e => setPenColor(e.target.value)}
+                      style={{ width: "22px", height: "22px", padding: 0, border: "1px solid var(--border)", borderRadius: "50%", cursor: "pointer", backgroundColor: "transparent" }} />
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between" }}>
+                      <PropLabel>Thickness</PropLabel>
+                      <span style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>{penThickness}px</span>
+                    </div>
+                    <input type="range" min="1" max="15" value={penThickness} onChange={e => setPenThickness(parseInt(e.target.value))} style={{ width: "100%" }} />
+                  </div>
+                </div>
+              )}
+
+              {/* Highlighter Defaults */}
+              {activeTool === "highlight" && (
+                <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                    <PropLabel>Marker Color</PropLabel>
+                    <input type="color" value={markerColor} onChange={e => setMarkerColor(e.target.value)}
+                      style={{ width: "22px", height: "22px", padding: 0, border: "1px solid var(--border)", borderRadius: "50%", cursor: "pointer", backgroundColor: "transparent" }} />
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between" }}>
+                      <PropLabel>Opacity</PropLabel>
+                      <span style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>{Math.round(markerOpacity * 100)}%</span>
+                    </div>
+                    <input type="range" min="0.1" max="0.9" step="0.05" value={markerOpacity} onChange={e => setMarkerOpacity(parseFloat(e.target.value))} style={{ width: "100%" }} />
+                  </div>
+                </div>
+              )}
+
+              {/* Shape Defaults */}
+              {activeTool === "shape" && (
+                <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                  <PropLabel>Shape Type</PropLabel>
+                  <select value={shapeType} onChange={e => setShapeType(e.target.value as any)}
+                    style={{ width: "100%", padding: "5px 12px", borderRadius: "9999px", border: "1px solid var(--border)", fontSize: "0.75rem", color: "var(--c-text)", backgroundColor: "var(--c-bg)", outline: "none", cursor: "pointer" }}>
+                    <option value="rectangle">Rectangle</option>
+                    <option value="circle">Circle</option>
+                    <option value="line">Line</option>
+                    <option value="arrow">Arrow</option>
+                    <option value="diamond">Diamond</option>
+                  </select>
+                  <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                    <PropLabel>Border</PropLabel>
+                    <input type="color" value={shapeColor} onChange={e => setShapeColor(e.target.value)}
+                      style={{ width: "22px", height: "22px", padding: 0, border: "1px solid var(--border)", borderRadius: "50%", cursor: "pointer", backgroundColor: "transparent" }} />
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                    <PropLabel>Fill</PropLabel>
+                    <input type="color" value={shapeFillColor === "transparent" ? "#ffffff" : shapeFillColor} onChange={e => setShapeFillColor(e.target.value)}
+                      style={{ width: "22px", height: "22px", padding: 0, border: "1px solid var(--border)", borderRadius: "50%", cursor: "pointer", backgroundColor: "transparent" }} />
+                    <button onClick={() => setShapeFillColor("transparent")} style={{ fontSize: "0.65rem", padding: "2px 8px", border: "1px solid var(--border)", borderRadius: "9999px", cursor: "pointer", background: "transparent", color: "var(--text-muted)", marginLeft: "6px" }}>Transparent</button>
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between" }}>
+                      <PropLabel>Thickness</PropLabel>
+                      <span style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>{shapeThickness}px</span>
+                    </div>
+                    <input type="range" min="1" max="10" value={shapeThickness} onChange={e => setShapeThickness(parseInt(e.target.value))} style={{ width: "100%" }} />
+                  </div>
+                </div>
+              )}
+
+              {/* Stamp / Watermark Options */}
+              {activeTool === "stamp" && (
+                <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                  <PropLabel>Stamp Type</PropLabel>
+                  {STAMP_TYPES.map(s => (
+                    <button key={s} onClick={() => setStampType(s)}
+                      style={{
+                        padding: "5px 14px", borderRadius: "9999px", border: `1px solid ${stampType === s ? toolColor : "var(--border)"}`,
+                        background: stampType === s ? `${toolColor}15` : "var(--c-bg)",
+                        color: stampType === s ? toolColor : "var(--c-text)",
+                        fontWeight: stampType === s ? "600" : "500",
+                        fontSize: "0.72rem", cursor: "pointer", textAlign: "left", width: "100%"
+                      }}
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Quick info / selection alert */}
+          {(activeTool === "select" || activeTool === "pan") && (
+            <div style={{ textAlign: "center", padding: "24px 16px", backgroundColor: "var(--c-bg)", borderRadius: "8px", border: "none", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
+              <MousePointer size={24} style={{ color: "var(--text-muted)", margin: "0 auto 8px" }} />
+              <p style={{ fontSize: "0.72rem", color: "var(--text-muted)", lineHeight: 1.4 }}>Select an element on the canvas to edit its layout and formatting.</p>
+            </div>
+          )}
+
+          {/* Quick document metadata summary */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "4px", marginTop: "4px" }}>
             <PropLabel>Document Info</PropLabel>
             <InfoRow label="Pages" value={String(totalPages)} />
             <InfoRow label="Elements" value={String(elementsCount)} />
@@ -477,26 +665,6 @@ export function PropertiesPanel({
             <InfoRow label="Zoom" value={`${zoom}%`} />
             <InfoRow label="Active Tool" value={activeTool} />
           </div>
-
-          {/* Stamp selector (for insert/stamp tool) */}
-          {activeTool === "stamp" && (
-            <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginTop: "8px" }}>
-              <PropLabel>Stamp Type</PropLabel>
-              {STAMP_TYPES.map(s => (
-                <button key={s} onClick={() => setStampType(s)}
-                  style={{
-                    padding: "5px 14px", borderRadius: "9999px", border: `1px solid ${stampType === s ? toolColor : "var(--border)"}`,
-                    background: stampType === s ? `${toolColor}15` : "var(--c-bg)",
-                    color: stampType === s ? toolColor : "var(--c-text)",
-                    fontWeight: stampType === s ? "600" : "500",
-                    fontSize: "0.72rem", cursor: "pointer", textAlign: "left"
-                  }}
-                >
-                  {s}
-                </button>
-              ))}
-            </div>
-          )}
         </div>
       )}
     </aside>
