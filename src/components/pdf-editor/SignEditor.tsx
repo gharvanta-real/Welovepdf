@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { 
   ChevronLeft, ChevronRight, FileText, Plus, Check, X, 
-  Users, Edit2, Trash2, Calendar, Type, HelpCircle, PenTool
+  Users, Edit2, Trash2, Calendar, Type, HelpCircle, PenTool,
+  GripVertical, User, Award
 } from "lucide-react";
 import { getPdfjsLib } from "../../utils/pdfjs";
 import { OverlayElement, ActiveTool } from "./types";
@@ -263,6 +264,72 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
       y: 55,
       width: 20,
       height: 6,
+      dataUrl: offscreen.toDataURL()
+    };
+    setElements(prev => [...prev, newEl]);
+    setSelectedElementId(newEl.id);
+  }
+
+  function addTextToPage() {
+    const text = "Text Box";
+    const offscreen = document.createElement("canvas");
+    offscreen.width = 200;
+    offscreen.height = 60;
+    const ctx = offscreen.getContext("2d");
+    if (ctx) {
+      ctx.font = "bold 24px 'Plus Jakarta Sans', sans-serif";
+      ctx.fillStyle = signatureDetails.color;
+      ctx.fillText(text, 10, 40);
+    }
+    const newEl: OverlayElement = {
+      id: "text-" + Date.now(),
+      type: "signature",
+      page: currentPage,
+      x: 35,
+      y: 60,
+      width: 20,
+      height: 6,
+      dataUrl: offscreen.toDataURL()
+    };
+    setElements(prev => [...prev, newEl]);
+    setSelectedElementId(newEl.id);
+  }
+
+  function addStampToPage() {
+    const text1 = "COMPANY STAMP";
+    const text2 = signatureDetails.fullName ? signatureDetails.fullName.toUpperCase() : "OFFICIAL SEAL";
+    const today = new Date();
+    const formatted = `${String(today.getMonth() + 1).padStart(2, "0")}/${String(today.getDate()).padStart(2, "0")}/${today.getFullYear()}`;
+
+    const offscreen = document.createElement("canvas");
+    offscreen.width = 240;
+    offscreen.height = 100;
+    const ctx = offscreen.getContext("2d");
+    if (ctx) {
+      ctx.strokeStyle = signatureDetails.color;
+      ctx.lineWidth = 4;
+      ctx.strokeRect(10, 10, 220, 80);
+      
+      ctx.fillStyle = signatureDetails.color;
+      ctx.textAlign = "center";
+      
+      ctx.font = "bold 14px 'Plus Jakarta Sans', sans-serif";
+      ctx.fillText(text1, 120, 32);
+      
+      ctx.font = "bold 16px 'Plus Jakarta Sans', sans-serif";
+      ctx.fillText(text2, 120, 56);
+      
+      ctx.font = "12px 'Plus Jakarta Sans', sans-serif";
+      ctx.fillText(formatted, 120, 78);
+    }
+    const newEl: OverlayElement = {
+      id: "stamp-" + Date.now(),
+      type: "signature",
+      page: currentPage,
+      x: 35,
+      y: 30,
+      width: 25,
+      height: 12,
       dataUrl: offscreen.toDataURL()
     };
     setElements(prev => [...prev, newEl]);
@@ -633,14 +700,15 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
 
       {/* Right Sidebar: Signing options panel */}
       <div style={{
-        width: "260px",
-        backgroundColor: "#ADEFD1", // Mint branding color
+        width: "280px",
+        backgroundColor: "#ADEFD1", // Mint/green branding background from website & screenshot
         borderLeft: "1px solid #e6e6e6",
         display: "flex",
         flexDirection: "column",
         height: "100%",
         padding: "20px 16px",
-        boxSizing: "border-box"
+        boxSizing: "border-box",
+        overflowY: "auto"
       }}>
         {/* Back Link */}
         <button 
@@ -663,74 +731,125 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
           <ChevronLeft size={12} /> Sign PDF
         </button>
 
-        <h3 style={{ fontSize: "1.1rem", fontWeight: "800", color: "#000000", margin: "0 0 16px 0" }}>
+        <h3 style={{ fontSize: "1.15rem", fontWeight: "800", color: "#000000", margin: "0 0 16px 0" }}>
           Signing options
         </h3>
 
-        {/* Section: Type */}
-        <div style={{ marginBottom: "18px" }}>
-          <span style={{ fontSize: "0.62rem", fontWeight: "800", color: "rgba(0,0,0,0.5)", letterSpacing: "0.05em" }}>TYPE</span>
+        {/* Tabs: Simple Signature vs Digital Signature */}
+        <div style={{ marginBottom: "20px" }}>
+          <span style={{ fontSize: "0.62rem", fontWeight: "800", color: "rgba(0,0,0,0.5)", letterSpacing: "0.05em", textTransform: "uppercase" }}>TYPE</span>
           <div style={{ display: "flex", gap: "8px", marginTop: "6px" }}>
             <div style={{
               flex: 1,
               backgroundColor: "#ffffff",
-              border: "2px solid #000000",
+              border: "1.5px solid #ef4444", // red border from screenshot
               borderRadius: "8px",
-              padding: "10px 6px",
+              padding: "12px 6px",
               textAlign: "center",
-              cursor: "pointer"
+              cursor: "pointer",
+              boxShadow: "0 2px 6px rgba(239,68,68,0.08)"
             }}>
-              <span style={{ display: "block", fontSize: "0.68rem", fontWeight: "750", color: "#000000" }}>Simple</span>
-              <span style={{ display: "block", fontSize: "0.55rem", color: "rgba(0,0,0,0.5)", marginTop: "2px" }}>Signature</span>
+              <span style={{ display: "block", fontSize: "0.76rem", fontWeight: "800", color: "#ef4444" }}>Simple Signature</span>
             </div>
             <div style={{
               flex: 1,
               backgroundColor: "rgba(255,255,255,0.4)",
-              border: "1px solid rgba(0,0,0,0.15)",
+              border: "1.5px solid rgba(0,0,0,0.1)",
               borderRadius: "8px",
-              padding: "10px 6px",
+              padding: "12px 6px",
               textAlign: "center",
               opacity: 0.6,
               cursor: "not-allowed"
             }}>
-              <span style={{ display: "block", fontSize: "0.68rem", fontWeight: "700", color: "#000000" }}>Digital 👑</span>
-              <span style={{ display: "block", fontSize: "0.55rem", color: "rgba(0,0,0,0.5)", marginTop: "2px" }}>Cryptographic</span>
+              <span style={{ display: "block", fontSize: "0.76rem", fontWeight: "700", color: "rgba(0,0,0,0.4)" }}>Digital Signature</span>
             </div>
           </div>
         </div>
 
         {/* Section: Required fields */}
-        <div style={{ marginBottom: "18px" }}>
-          <span style={{ fontSize: "0.62rem", fontWeight: "800", color: "rgba(0,0,0,0.5)", letterSpacing: "0.05em" }}>REQUIRED FIELDS</span>
-          <div style={{ marginTop: "6px" }}>
+        <div style={{ marginBottom: "20px" }}>
+          <span style={{ fontSize: "0.62rem", fontWeight: "800", color: "rgba(0,0,0,0.5)", letterSpacing: "0.05em", textTransform: "uppercase" }}>REQUIRED FIELDS</span>
+          <div style={{ marginTop: "6px", display: "flex", flexDirection: "column", gap: "8px" }}>
             <div 
-              onClick={addSignatureToPage}
               style={{
                 backgroundColor: "#ffffff",
                 borderRadius: "8px",
-                border: "1px dashed rgba(0,0,0,0.2)",
-                padding: "12px 14px",
+                border: "1px solid rgba(0,0,0,0.12)",
+                padding: "8px 12px",
                 display: "flex",
-                justifyContent: "space-between",
                 alignItems: "center",
-                cursor: "pointer",
+                gap: "10px",
                 boxShadow: "0 2px 4px rgba(0,0,0,0.02)"
               }}
             >
-              <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                <div style={{ width: "24px", height: "24px", borderRadius: "4px", backgroundColor: "#e2e8f0", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <Type size={12} />
-                </div>
-                <div>
-                  <div style={{ fontSize: "0.74rem", fontWeight: "700", color: "#1b1b1b" }}>Signature</div>
-                  <div style={{ fontSize: "0.6rem", color: "rgba(0,0,0,0.5)", marginTop: "1px" }}>
-                    {signatureDetails.fullName || "Click to add details"}
-                  </div>
-                </div>
+              {/* Drag Handle */}
+              <div style={{ display: "flex", alignItems: "center", cursor: "grab" }}>
+                <GripVertical size={16} style={{ color: "rgba(0,0,0,0.3)" }} />
               </div>
+              
+              {/* Icon */}
+              <div 
+                onClick={addSignatureToPage}
+                style={{ 
+                  width: "28px", 
+                  height: "28px", 
+                  borderRadius: "6px", 
+                  backgroundColor: "#2563eb", 
+                  color: "#ffffff", 
+                  display: "flex", 
+                  alignItems: "center", 
+                  justifyContent: "center",
+                  cursor: "pointer"
+                }}
+              >
+                <PenTool size={14} />
+              </div>
+
+              {/* Dotted Value Box */}
+              <div 
+                onClick={addSignatureToPage}
+                style={{
+                  border: "1px dashed rgba(0,0,0,0.2)",
+                  borderRadius: "6px",
+                  padding: "4px 10px",
+                  backgroundColor: "rgba(248, 250, 252, 0.5)",
+                  flex: 1,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "flex-start",
+                  overflow: "hidden",
+                  cursor: "pointer"
+                }}
+              >
+                <span style={{ fontSize: "9px", fontWeight: "700", color: "#3b82f6", textTransform: "uppercase", letterSpacing: "0.03em" }}>Signature</span>
+                <span style={{ 
+                  fontSize: "18px", 
+                  fontFamily: signatureDetails.signatureFont, 
+                  color: signatureDetails.color,
+                  lineHeight: "1.2",
+                  whiteSpace: "nowrap"
+                }}>
+                  {signatureDetails.fullName || "Signature"}
+                </span>
+              </div>
+
+              {/* Edit button */}
               <button 
                 onClick={e => { e.stopPropagation(); setShowDetailsModal(true); }}
-                style={{ background: "none", border: "none", cursor: "pointer", color: "rgba(0,0,0,0.4)", padding: "4px" }}
+                style={{ 
+                  background: "none", 
+                  border: "none", 
+                  cursor: "pointer", 
+                  color: "rgba(0,0,0,0.5)", 
+                  padding: "6px",
+                  borderRadius: "50%",
+                  backgroundColor: "#f1f5f9",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: "24px",
+                  height: "24px"
+                }}
               >
                 <Edit2 size={12} />
               </button>
@@ -739,62 +858,194 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
         </div>
 
         {/* Section: Optional fields */}
-        <div style={{ flex: 1 }}>
-          <span style={{ fontSize: "0.62rem", fontWeight: "800", color: "rgba(0,0,0,0.5)", letterSpacing: "0.05em" }}>OPTIONAL FIELDS</span>
-          <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "6px" }}>
-            {[
-              { label: "Initials", desc: signatureDetails.initials || "AB", action: addInitialsToPage },
-              { label: "Full Name", desc: signatureDetails.fullName || "Name", action: addNameToPage },
-              { label: "Date Stamp", desc: "Today's Date", action: addDateToPage }
-            ].map((f, i) => (
-              <div 
-                key={i}
-                onClick={f.action}
-                style={{
-                  backgroundColor: "rgba(255,255,255,0.7)",
-                  borderRadius: "8px",
-                  padding: "10px 12px",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  cursor: "pointer",
-                  transition: "background 0.15s"
-                }}
-                onMouseEnter={e => e.currentTarget.style.backgroundColor = "#ffffff"}
-                onMouseLeave={e => e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.7)"}
-              >
-                <div>
-                  <div style={{ fontSize: "0.74rem", fontWeight: "700", color: "#1b1b1b" }}>{f.label}</div>
-                  <div style={{ fontSize: "0.58rem", color: "rgba(0,0,0,0.4)" }}>{f.desc}</div>
-                </div>
-                <span style={{ fontSize: "14px", color: "rgba(0,0,0,0.3)" }}>+</span>
-              </div>
-            ))}
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "8px" }}>
+          <span style={{ fontSize: "0.62rem", fontWeight: "800", color: "rgba(0,0,0,0.5)", letterSpacing: "0.05em", textTransform: "uppercase" }}>OPTIONAL FIELDS</span>
+          
+          {/* Initials card (Dotted box format) */}
+          <div 
+            style={{
+              backgroundColor: "#ffffff",
+              borderRadius: "8px",
+              border: "1px solid rgba(0,0,0,0.12)",
+              padding: "8px 12px",
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+              boxShadow: "0 2px 4px rgba(0,0,0,0.02)"
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", cursor: "grab" }}>
+              <GripVertical size={16} style={{ color: "rgba(0,0,0,0.3)" }} />
+            </div>
+            
+            <div 
+              onClick={addInitialsToPage}
+              style={{ 
+                width: "28px", 
+                height: "28px", 
+                borderRadius: "6px", 
+                backgroundColor: "#2563eb", 
+                color: "#ffffff", 
+                display: "flex", 
+                alignItems: "center", 
+                justifyContent: "center",
+                fontSize: "11px",
+                fontWeight: "800",
+                cursor: "pointer"
+              }}
+            >
+              AC
+            </div>
+
+            <div 
+              onClick={addInitialsToPage}
+              style={{
+                border: "1px dashed rgba(0,0,0,0.2)",
+                borderRadius: "6px",
+                padding: "4px 10px",
+                backgroundColor: "rgba(248, 250, 252, 0.5)",
+                flex: 1,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-start",
+                overflow: "hidden",
+                cursor: "pointer"
+              }}
+            >
+              <span style={{ fontSize: "9px", fontWeight: "700", color: "#3b82f6", textTransform: "uppercase", letterSpacing: "0.03em" }}>Initials</span>
+              <span style={{ 
+                fontSize: "18px", 
+                fontFamily: signatureDetails.signatureFont, 
+                color: signatureDetails.color,
+                lineHeight: "1.2",
+                whiteSpace: "nowrap"
+              }}>
+                {signatureDetails.initials || "Initials"}
+              </span>
+            </div>
+
+            <button 
+              onClick={e => { e.stopPropagation(); setShowDetailsModal(true); }}
+              style={{ 
+                background: "none", 
+                border: "none", 
+                cursor: "pointer", 
+                color: "rgba(0,0,0,0.5)", 
+                padding: "6px",
+                borderRadius: "50%",
+                backgroundColor: "#f1f5f9",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "24px",
+                height: "24px"
+              }}
+            >
+              <Edit2 size={12} />
+            </button>
           </div>
+
+          {/* Simple optional cards */}
+          {[
+            { label: "Name", icon: <User size={14} />, action: addNameToPage },
+            { label: "Date", icon: <Calendar size={14} />, action: addDateToPage },
+            { label: "Text", icon: <Type size={14} />, action: addTextToPage },
+            { label: "Company Stamp", icon: <Award size={14} />, action: addStampToPage }
+          ].map((f, i) => (
+            <div 
+              key={i}
+              onClick={f.action}
+              style={{
+                backgroundColor: "#ffffff",
+                borderRadius: "8px",
+                border: "1px solid rgba(0,0,0,0.12)",
+                padding: "10px 12px",
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+                cursor: "pointer",
+                transition: "all 0.15s ease",
+                boxShadow: "0 1px 3px rgba(0,0,0,0.01)"
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.borderColor = "rgba(0,0,0,0.25)";
+                e.currentTarget.style.boxShadow = "0 2px 6px rgba(0,0,0,0.04)";
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.borderColor = "rgba(0,0,0,0.12)";
+                e.currentTarget.style.boxShadow = "0 1px 3px rgba(0,0,0,0.01)";
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", cursor: "grab" }}>
+                <GripVertical size={16} style={{ color: "rgba(0,0,0,0.3)" }} />
+              </div>
+              
+              <div style={{ 
+                width: "28px", 
+                height: "28px", 
+                borderRadius: "6px", 
+                backgroundColor: "#475569", // slate background
+                color: "#ffffff", 
+                display: "flex", 
+                alignItems: "center", 
+                justifyContent: "center"
+              }}>
+                {f.icon}
+              </div>
+
+              <div style={{ fontSize: "0.8rem", fontWeight: "600", color: "#1b1b1b" }}>
+                {f.label}
+              </div>
+            </div>
+          ))}
         </div>
 
-        {/* Sign Bottom Button */}
+        {/* Large Rounded Coral/Red CTA Button */}
         <button 
           onClick={handleSignComplete}
           style={{
-            backgroundColor: "#000000",
+            backgroundColor: "#f87171", // Coral/salmon background from screenshot
             color: "#ffffff",
             border: "none",
-            borderRadius: "8px",
+            borderRadius: "12px",
             padding: "14px",
-            fontSize: "0.9rem",
-            fontWeight: "750",
+            fontSize: "0.95rem",
+            fontWeight: "800",
             cursor: "pointer",
             width: "100%",
-            marginTop: "16px",
-            boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+            marginTop: "20px",
+            boxShadow: "0 4px 14px rgba(248,113,113,0.25)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            gap: "6px"
+            gap: "10px",
+            transition: "all 0.15s ease"
+          }}
+          onMouseEnter={e => {
+            e.currentTarget.style.backgroundColor = "#ef4444";
+            e.currentTarget.style.boxShadow = "0 6px 18px rgba(239,68,68,0.3)";
+          }}
+          onMouseLeave={e => {
+            e.currentTarget.style.backgroundColor = "#f87171";
+            e.currentTarget.style.boxShadow = "0 4px 14px rgba(248,113,113,0.25)";
           }}
         >
-          Sign PDF &rarr;
+          <span>Sign</span>
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            width: "20px",
+            height: "20px",
+            borderRadius: "50%",
+            backgroundColor: "#ffffff",
+            color: "#f87171",
+            fontSize: "14px",
+            fontWeight: "bold",
+            lineHeight: 1
+          }}>
+            &rarr;
+          </div>
         </button>
       </div>
 
