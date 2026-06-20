@@ -1,5 +1,5 @@
 use axum::{
-    extract::{ConnectInfo, Multipart, Path, State},
+    extract::{ConnectInfo, Multipart, Path, State, DefaultBodyLimit},
     http::{StatusCode, HeaderValue, header},
     response::{IntoResponse, Response},
     routing::{get, post},
@@ -348,7 +348,8 @@ async fn main() {
         .route("/api/admin/billing", get(admin_billing))
         .route("/api/admin/tool-stats", get(admin_tool_stats))
         .with_state(state)
-        .layer(middleware::from_fn(add_security_headers));
+        .layer(middleware::from_fn(add_security_headers))
+        .layer(DefaultBodyLimit::max(524_288_000));
 
     let port = env::var("PDFMOUNT_PORT")
         .ok()
