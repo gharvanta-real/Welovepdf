@@ -2,6 +2,10 @@ import React, { useRef, useState, useEffect } from "react";
 import { Plus } from "lucide-react";
 import { PdfEditor } from "./PdfEditor";
 import { SignEditor } from "./pdf-editor/SignEditor";
+import { WatermarkEditor } from "./pdf-editor/WatermarkEditor";
+import { CropEditor } from "./pdf-editor/CropEditor";
+import { PageNumberEditor } from "./pdf-editor/PageNumberEditor";
+import { BatesNumberEditor } from "./pdf-editor/BatesNumberEditor";
 import { getPdfjsLib } from "../utils/pdfjs";
 
 // Import modular subcomponents
@@ -146,10 +150,7 @@ export function UploadPanel({
   const isVisualEditorTool = [
     "Edit PDF",
     "PDF Annotator",
-    "Watermark PDF",
-    "Crop PDF",
-    "Page Numbers",
-    "Bates Numbering"
+    "Crop PDF"
   ].includes(selectedTool);
 
   const blockColor = getToolBlockColor(selectedTool);
@@ -480,6 +481,14 @@ export function UploadPanel({
       {viewMode === "staged" && stagedFiles && stagedFiles.length > 0 ? (
         selectedTool === "Sign PDF" ? (
           <SignEditor
+            file={stagedFiles[0]}
+            onClose={onBack}
+            onSave={(files, options) => {
+              onUpload(files, options);
+            }}
+          />
+        ) : selectedTool === "Crop PDF" ? (
+          <CropEditor
             file={stagedFiles[0]}
             onClose={onBack}
             onSave={(files, options) => {

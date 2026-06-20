@@ -726,8 +726,9 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        minHeight: "75vh",
-        backgroundColor: "#f9f9f9",
+        height: "100%",
+        minHeight: "calc(100vh - 80px)",
+        backgroundColor: "#f3f3f3",
         padding: "20px",
         fontFamily: "'Plus Jakarta Sans', sans-serif"
       }}>
@@ -773,20 +774,11 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
               </div>
               <button 
                 onClick={() => setStep("editor")}
+                className="primary-button"
                 style={{
-                  backgroundColor: "#000000",
-                  color: "#ffffff",
-                  border: "none",
-                  borderRadius: "8px",
-                  padding: "10px 24px",
-                  fontSize: "0.85rem",
-                  fontWeight: "700",
-                  cursor: "pointer",
                   width: "100%",
-                  transition: "background 0.15s"
+                  boxSizing: "border-box"
                 }}
-                onMouseEnter={e => e.currentTarget.style.backgroundColor = "#262626"}
-                onMouseLeave={e => e.currentTarget.style.backgroundColor = "#000000"}
               >
                 Only me
               </button>
@@ -826,23 +818,10 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                     setStep("invite-sent");
                   }
                 }}
+                className="quiet-button"
                 style={{
-                  backgroundColor: "transparent",
-                  color: "#000000",
-                  border: "1px solid #000000",
-                  borderRadius: "8px",
-                  padding: "9px 24px",
-                  fontSize: "0.85rem",
-                  fontWeight: "700",
-                  cursor: "pointer",
                   width: "100%",
-                  transition: "all 0.15s"
-                }}
-                onMouseEnter={e => {
-                  e.currentTarget.style.backgroundColor = "#f5f5f5";
-                }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.backgroundColor = "transparent";
+                  boxSizing: "border-box"
                 }}
               >
                 Several people
@@ -862,7 +841,16 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
   // ── Step 1.5: Invite Sent Success view ──
   if (step === "invite-sent") {
     return (
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "75vh", backgroundColor: "#f9f9f9" }}>
+      <div style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        height: "100%",
+        minHeight: "calc(100vh - 80px)",
+        backgroundColor: "#f3f3f3",
+        padding: "20px",
+        fontFamily: "'Plus Jakarta Sans', sans-serif"
+      }}>
         <div style={{ backgroundColor: "#ffffff", borderRadius: "16px", padding: "36px", boxShadow: "0 10px 30px rgba(0,0,0,0.06)", maxWidth: "500px", width: "100%", textAlign: "center", border: "1px solid #e6e6e6" }}>
           <div style={{ width: "64px", height: "64px", borderRadius: "50%", backgroundColor: "#d1fae5", color: "#059669", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px" }}>
             <Check size={32} />
@@ -871,7 +859,8 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
           <p style={{ fontSize: "0.82rem", color: "#5d5f5f", marginBottom: "24px" }}>We have sent a signing request email to <strong>{emailInvites[0]}</strong> to review and electronically sign this document.</p>
           <button 
             onClick={onClose}
-            style={{ backgroundColor: "#000000", color: "#ffffff", border: "none", borderRadius: "8px", padding: "10px 24px", fontSize: "0.85rem", fontWeight: "700", cursor: "pointer", width: "100%" }}
+            className="primary-button"
+            style={{ width: "100%", boxSizing: "border-box" }}
           >
             Back to Dashboard
           </button>
@@ -1495,22 +1484,11 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
         {/* Sign Bottom Button */}
         <button 
           onClick={handleSignComplete}
+          className="primary-button"
           style={{
-            backgroundColor: "#000000",
-            color: "#ffffff",
-            border: "none",
-            borderRadius: "8px",
-            padding: "14px",
-            fontSize: "0.9rem",
-            fontWeight: "750",
-            cursor: "pointer",
             width: "100%",
             marginTop: "16px",
-            boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "6px"
+            boxSizing: "border-box"
           }}
         >
           Sign PDF &rarr;
@@ -2212,11 +2190,11 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                     type="button"
                     onClick={() => setShowDetailsModal(false)}
                     style={{
-                      padding: "6px 12px",
-                      borderRadius: "6px",
-                      border: "1px solid #cbd5e1",
+                      padding: "6px 16px",
+                      borderRadius: "9999px",
+                      border: "1px solid var(--s-hairline)",
                       background: "transparent",
-                      color: "#475569",
+                      color: "var(--s-on-surface-variant)",
                       fontSize: "0.78rem",
                       fontWeight: "600",
                       cursor: "pointer"
@@ -2228,11 +2206,11 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                     type="button"
                     onClick={handleApplyDetails}
                     style={{
-                      padding: "6px 16px",
-                      borderRadius: "6px",
+                      padding: "6px 18px",
+                      borderRadius: "9999px",
                       border: "none",
-                      background: "#000000",
-                      color: "#ffffff",
+                      background: "var(--s-primary)",
+                      color: "var(--s-on-primary)",
                       fontSize: "0.78rem",
                       fontWeight: "700",
                       cursor: "pointer"

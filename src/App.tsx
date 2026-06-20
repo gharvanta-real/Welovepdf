@@ -810,10 +810,7 @@ export function App() {
     [
       "Edit PDF",
       "PDF Annotator",
-      "Watermark PDF",
       "Crop PDF",
-      "Page Numbers",
-      "Bates Numbering",
     ].includes(selectedTool);
 
   if (currentView === "admin") {

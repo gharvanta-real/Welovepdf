@@ -32,6 +32,10 @@ export function getAcceptAttribute(tool: string): string {
 // Get block color per tool for Stitch design hero
 export function getToolBlockColor(tool: string): string {
   const t = tool.toLowerCase();
+  if (t === "watermark pdf") return "#D6C4FF"; // lilac
+  if (t === "crop pdf") return "#FFC7C2"; // pink
+  if (t === "page numbers") return "#A9DEF9"; // sky blue
+  if (t === "bates numbering") return "#ADEFD1"; // mint
   if (t.includes("merge")) return "#D6C4FF"; // lilac
   if (t.includes("split")) return "#FFBDAE"; // coral
   if (t.includes("compress")) return "#FFC7C2"; // pink

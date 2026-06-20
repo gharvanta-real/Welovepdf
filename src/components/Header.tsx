@@ -24,14 +24,31 @@ const dropdownColumns: DropdownGroup[][] = [
     { title: "Optimize", items: [{ name: "Compress PDF" }, { name: "Flatten PDF" }, { name: "Repair PDF" }] }
   ],
   [
-    { title: "Page Operations", items: [{ name: "Merge PDF" }, { name: "Split PDF" }, { name: "Rotate PDF" }, { name: "Remove Pages" }, { name: "Extract Pages" }, { name: "Organize PDF" }] }
+    { title: "Page Operations", items: [
+      { name: "Merge PDF" }, 
+      { name: "Split PDF" }, 
+      { name: "Rotate PDF" }, 
+      { name: "Remove Pages" }, 
+      { name: "Extract Pages" }, 
+      { name: "Organize PDF" },
+      { name: "Crop PDF" },
+      { name: "Page Numbers" },
+      { name: "PDF Annotator" }
+    ] }
   ],
   [
     { title: "Convert to PDF", items: [{ name: "Word to PDF" }, { name: "Excel to PDF" }, { name: "PPT to PDF" }, { name: "JPG to PDF" }, { name: "HTML to PDF" }, { name: "TXT to PDF" }] }
   ],
   [
     { title: "Convert from PDF", items: [{ name: "PDF to Word" }, { name: "PDF to Excel" }, { name: "PDF to PPT" }, { name: "PDF to JPG" }] },
-    { title: "Sign & Protect", items: [{ name: "Sign PDF" }, { name: "Unlock PDF" }, { name: "Protect PDF" }, { name: "PDF OCR" }] }
+    { title: "Sign & Protect", items: [
+      { name: "Sign PDF" }, 
+      { name: "Unlock PDF" }, 
+      { name: "Protect PDF" }, 
+      { name: "PDF OCR" },
+      { name: "Watermark PDF" },
+      { name: "Bates Numbering" }
+    ] }
   ]
 ];
 
