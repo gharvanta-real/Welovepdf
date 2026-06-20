@@ -978,7 +978,7 @@ function main() {
   const staticPageBuilders: Record<string, { title: string; desc: string; content: string }> = {
     "/": {
       title: "PDFMount - Free Online PDF Tools & Editor",
-      desc: "Free PDF tools online — merge, split, compress, convert, sign and secure PDFs in seconds. No software install. No sign-up needed. 100% secure.",
+      desc: "Merge, split, compress, convert, sign, and secure PDF files online. Free, secure, and fast PDF tools inside your browser.",
       content: homepageContent,
     },
     "/pricing": {

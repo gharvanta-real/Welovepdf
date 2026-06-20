@@ -125,23 +125,23 @@ const viewMetadata: Record<string, { title: string; desc: string }> = {
   },
   pricing: {
     title: "Simple Pricing Plans - PDFMount Pro & Enterprise",
-    desc: "Check out our affordable plans. Get larger file limits, batch processing, and priority support for PDFMount.",
+    desc: "Check out our affordable plans. Get larger file limits, batch processing, and priority support for PDFMount. Start free, upgrade anytime.",
   },
   privacy: {
     title: "Privacy Policy - PDFMount",
-    desc: "Learn how PDFMount secures and handles your documents. We do not store files permanently.",
+    desc: "Learn how PDFMount secures and handles your documents. We do not store files permanently. Files are auto-deleted after 60 minutes.",
   },
   terms: {
     title: "Terms of Service - PDFMount",
-    desc: "Review the terms and conditions for using PDFMount's online tools.",
+    desc: "Review the terms and conditions for using PDFMount's online PDF tools. No hidden clauses — transparent usage policies.",
   },
   faq: {
     title: "Frequently Asked Questions - PDFMount Help",
-    desc: "Find answers to common questions about PDFMount, file limits, security, and billing.",
+    desc: "Find answers to common questions about PDFMount, file limits, security, billing, and our free PDF tools.",
   },
   contact: {
     title: "Contact Us - PDFMount Support",
-    desc: "Get in touch with the PDFMount team for support, feedback, or enterprise inquiries.",
+    desc: "Get in touch with the PDFMount team for support, feedback, or enterprise inquiries. We respond within 24 hours.",
   },
   "contact-sales": {
     title: "Contact Sales - PDFMount Enterprise Solutions",
@@ -149,11 +149,11 @@ const viewMetadata: Record<string, { title: string; desc: string }> = {
   },
   about: {
     title: "About Us - PDFMount",
-    desc: "Learn about PDFMount, our mission to build fast and secure PDF tools for everyone.",
+    desc: "Learn about PDFMount, our mission to build fast and secure PDF tools for everyone. Trusted by thousands of users worldwide.",
   },
   tools: {
     title: "All PDF Tools - PDFMount",
-    desc: "Explore all our free online PDF tools. Merge, split, compress, convert, rotate, and secure your files in seconds.",
+    desc: "Explore all 23+ free online PDF tools. Merge, split, compress, convert, rotate, and secure your files in seconds. No registration required.",
   },
   dashboard: {
     title: "User Dashboard - PDFMount",
@@ -165,15 +165,15 @@ const viewMetadata: Record<string, { title: string; desc: string }> = {
   },
   security: {
     title: "Security Policy - PDFMount",
-    desc: "Learn about PDFMount's volatile in-memory sandboxing, HTTPS encryption, and document safety standards.",
+    desc: "Learn about PDFMount's volatile in-memory sandboxing, TLS 1.3 encryption, and zero third-party data handover security standards.",
   },
   "file-privacy": {
     title: "File Privacy Policy - PDFMount",
-    desc: "We prioritize your privacy. Learn how your files are processed client-side or in volatile server workspaces without human intervention.",
+    desc: "We prioritize your privacy. Learn how your files are processed with zero human surveillance and auto-deleted after 60 minutes.",
   },
   "data-deletion": {
     title: "Data Deletion Policy - PDFMount",
-    desc: "Details on our 60-minute auto-purge lifecycle and immediate manual data wiping controls.",
+    desc: "Details on our 60-minute auto-purge lifecycle and immediate manual data wiping controls. Complete data deletion policy.",
   },
   admin: {
     title: "PDFMount Admin Panel Dashboard",
