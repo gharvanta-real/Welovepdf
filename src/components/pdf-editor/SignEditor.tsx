@@ -59,7 +59,39 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
   const overlayContainerRef = useRef<HTMLDivElement>(null);
 
   // Upgrade features states & refs
-  const [modalTab, setModalTab] = useState<"type" | "draw" | "stamp">("type");
+  const [modalSection, setModalSection] = useState<"signature" | "initials" | "stamp">("signature");
+  
+  // Methods inside each section
+  const [sigMethod, setSigMethod] = useState<"type" | "draw" | "upload">("type");
+  const [initMethod, setInitMethod] = useState<"type" | "upload">("type");
+  const [stampMethod, setStampMethod] = useState<"generate" | "upload">("generate");
+  
+  // Raw uploaded images (original scans)
+  const [uploadedSigRaw, setUploadedSigRaw] = useState<string>("");
+  const [uploadedInitRaw, setUploadedInitRaw] = useState<string>("");
+  const [uploadedStampRaw, setUploadedStampRaw] = useState<string>("");
+  
+  // Sensitivity/Threshold levels for removing white background
+  const [sigThreshold, setSigThreshold] = useState<number>(230);
+  const [initThreshold, setInitThreshold] = useState<number>(230);
+  const [stampThreshold, setStampThreshold] = useState<number>(230);
+  
+  // Keep original colors toggles
+  const [sigKeepColor, setSigKeepColor] = useState<boolean>(true);
+  const [initKeepColor, setInitKeepColor] = useState<boolean>(true);
+  const [stampKeepColor, setStampKeepColor] = useState<boolean>(true);
+  
+  // Output URLs for the active states
+  const [typedSignatureUrl, setTypedSignatureUrl] = useState<string>("");
+  const [drawnSignatureUrl, setDrawnSignatureUrl] = useState<string>("");
+  const [uploadedSignatureUrl, setUploadedSignatureUrl] = useState<string>("");
+  
+  const [typedInitialsUrl, setTypedInitialsUrl] = useState<string>("");
+  const [uploadedInitialsUrl, setUploadedInitialsUrl] = useState<string>("");
+  
+  const [generatedStampUrl, setGeneratedStampUrl] = useState<string>("");
+  const [uploadedStampUrl, setUploadedStampUrl] = useState<string>("");
+
   const drawingCanvasRef = useRef<HTMLCanvasElement>(null);
   const drawingCanvasContextRef = useRef<CanvasRenderingContext2D | null>(null);
   const [isDrawingFreehand, setIsDrawingFreehand] = useState(false);
@@ -68,6 +100,74 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
     text2: "APPROVED",
     type: "rectangle" as "rectangle" | "round" | "none"
   });
+
+  // Background Transparency & Tinting Filter
+  function processUploadedImage(
+    rawUrl: string, 
+    threshold: number, 
+    keepColor: boolean, 
+    color: string
+  ): Promise<string> {
+    return new Promise((resolve) => {
+      if (!rawUrl) {
+        resolve("");
+        return;
+      }
+      const img = new window.Image();
+      img.src = rawUrl;
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+          resolve(rawUrl);
+          return;
+        }
+        ctx.drawImage(img, 0, 0);
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
+        
+        let targetR = 30, targetG = 41, targetB = 59; // default blackish
+        if (color.startsWith("#")) {
+          const hex = color.replace("#", "");
+          if (hex.length === 6) {
+            targetR = parseInt(hex.substring(0, 2), 16);
+            targetG = parseInt(hex.substring(2, 4), 16);
+            targetB = parseInt(hex.substring(4, 6), 16);
+          } else if (hex.length === 3) {
+            targetR = parseInt(hex[0] + hex[0], 16);
+            targetG = parseInt(hex[1] + hex[1], 16);
+            targetB = parseInt(hex[2] + hex[2], 16);
+          }
+        }
+        
+        // Loop through pixels and remove white background
+        for (let i = 0; i < data.length; i += 4) {
+          const r = data[i];
+          const g = data[i+1];
+          const b = data[i+2];
+          const a = data[i+3];
+          
+          if (r > threshold && g > threshold && b > threshold) {
+            data[i+3] = 0; // alpha = 0 (transparent)
+          } else if (!keepColor && a > 10) {
+            // Tint dark/colored pixels with selected ink color
+            const brightness = (r + g + b) / 3;
+            const ratio = brightness / 255;
+            data[i] = targetR + (255 - targetR) * ratio;
+            data[i+1] = targetG + (255 - targetG) * ratio;
+            data[i+2] = targetB + (255 - targetB) * ratio;
+          }
+        }
+        ctx.putImageData(imageData, 0, 0);
+        resolve(canvas.toDataURL("image/png"));
+      };
+      img.onerror = () => {
+        resolve(rawUrl);
+      };
+    });
+  }
 
   // Helper: dynamic stamp generator
   function generateStamp(text1: string, text2: string, color: string, type: "rectangle" | "round" | "none") {
@@ -184,10 +284,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
     const canvas = drawingCanvasRef.current;
     if (canvas) {
       const dataUrl = canvas.toDataURL();
-      setSignatureDetails(prev => ({
-        ...prev,
-        signatureDataUrl: dataUrl
-      }));
+      setDrawnSignatureUrl(dataUrl);
     }
   }
 
@@ -198,24 +295,42 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
       if (ctx) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
       }
-      setSignatureDetails(prev => ({
-        ...prev,
-        signatureDataUrl: ""
-      }));
+      setDrawnSignatureUrl("");
     }
   }
 
-  function handleStampUpload(e: React.ChangeEvent<HTMLInputElement>) {
+  // File Upload Handlers
+  function handleSigFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = function(evt) {
         const dataUrl = evt.target?.result as string;
-        setStampText(prev => ({ ...prev, type: "none" }));
-        setSignatureDetails(prev => ({
-          ...prev,
-          stampDataUrl: dataUrl
-        }));
+        setUploadedSigRaw(dataUrl);
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  function handleInitFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        const dataUrl = evt.target?.result as string;
+        setUploadedInitRaw(dataUrl);
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  function handleStampFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        const dataUrl = evt.target?.result as string;
+        setUploadedStampRaw(dataUrl);
       };
       reader.readAsDataURL(file);
     }
@@ -223,10 +338,10 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
 
   // Initialize context for drawing pad
   useEffect(() => {
-    if (modalTab === "draw" && drawingCanvasRef.current) {
+    if (modalSection === "signature" && sigMethod === "draw" && drawingCanvasRef.current) {
       const canvas = drawingCanvasRef.current;
-      canvas.width = 460;
-      canvas.height = 160;
+      canvas.width = 430;
+      canvas.height = 150;
       const ctx = canvas.getContext("2d");
       if (ctx) {
         ctx.lineCap = "round";
@@ -236,18 +351,73 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
         drawingCanvasContextRef.current = ctx;
       }
     }
-  }, [modalTab, signatureDetails.color]);
+  }, [modalSection, sigMethod, signatureDetails.color]);
 
-  // Update stamp DataUrl when fields or colors change
+  // Synchronize typed signature image preview when name or font or color changes
+  useEffect(() => {
+    const canvas = document.createElement("canvas");
+    canvas.width = 300;
+    canvas.height = 80;
+    const ctx = canvas.getContext("2d");
+    if (ctx) {
+      ctx.font = `italic 36px ${signatureDetails.signatureFont}`;
+      ctx.fillStyle = signatureDetails.color;
+      ctx.fillText(signatureDetails.fullName || "Signature", 20, 50);
+    }
+    setTypedSignatureUrl(canvas.toDataURL());
+  }, [signatureDetails.fullName, signatureDetails.signatureFont, signatureDetails.color]);
+
+  // Synchronize typed initials image preview
+  useEffect(() => {
+    const canvas = document.createElement("canvas");
+    canvas.width = 150;
+    canvas.height = 80;
+    const ctx = canvas.getContext("2d");
+    if (ctx) {
+      ctx.font = `italic 36px ${signatureDetails.initialsFont}`;
+      ctx.fillStyle = signatureDetails.color;
+      ctx.fillText(signatureDetails.initials || "AB", 20, 50);
+    }
+    setTypedInitialsUrl(canvas.toDataURL());
+  }, [signatureDetails.initials, signatureDetails.initialsFont, signatureDetails.color]);
+
+  // Update generated digital stamp DataUrl
   useEffect(() => {
     if (stampText.type !== "none") {
       const dataUrl = generateStamp(stampText.text1, stampText.text2, signatureDetails.color, stampText.type);
-      setSignatureDetails(prev => ({
-        ...prev,
-        stampDataUrl: dataUrl
-      }));
+      setGeneratedStampUrl(dataUrl);
     }
   }, [stampText.text1, stampText.text2, stampText.type, signatureDetails.color]);
+
+  // Process uploaded signature raw file
+  useEffect(() => {
+    if (uploadedSigRaw) {
+      processUploadedImage(uploadedSigRaw, sigThreshold, sigKeepColor, signatureDetails.color)
+        .then(res => setUploadedSignatureUrl(res));
+    } else {
+      setUploadedSignatureUrl("");
+    }
+  }, [uploadedSigRaw, sigThreshold, sigKeepColor, signatureDetails.color]);
+
+  // Process uploaded initials raw file
+  useEffect(() => {
+    if (uploadedInitRaw) {
+      processUploadedImage(uploadedInitRaw, initThreshold, initKeepColor, signatureDetails.color)
+        .then(res => setUploadedInitialsUrl(res));
+    } else {
+      setUploadedInitialsUrl("");
+    }
+  }, [uploadedInitRaw, initThreshold, initKeepColor, signatureDetails.color]);
+
+  // Process uploaded stamp raw file
+  useEffect(() => {
+    if (uploadedStampRaw) {
+      processUploadedImage(uploadedStampRaw, stampThreshold, stampKeepColor, signatureDetails.color)
+        .then(res => setUploadedStampUrl(res));
+    } else {
+      setUploadedStampUrl("");
+    }
+  }, [uploadedStampRaw, stampThreshold, stampKeepColor, signatureDetails.color]);
 
   // Load PDF document and generate page order + thumbnails
   useEffect(() => {
@@ -372,7 +542,8 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
   // Add items directly to page
   function addSignatureToPage() {
     if (!signatureDetails.signatureDataUrl) {
-      setModalTab("type");
+      setModalSection("signature");
+      setSigMethod("type");
       setShowDetailsModal(true);
       return;
     }
@@ -392,7 +563,8 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
 
   function addInitialsToPage() {
     if (!signatureDetails.initialsDataUrl) {
-      setModalTab("type");
+      setModalSection("initials");
+      setInitMethod("type");
       setShowDetailsModal(true);
       return;
     }
@@ -482,7 +654,8 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
 
   function addStampToPage() {
     if (!signatureDetails.stampDataUrl) {
-      setModalTab("stamp");
+      setModalSection("stamp");
+      setStampMethod("generate");
       setShowDetailsModal(true);
       return;
     }
@@ -498,6 +671,39 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
     };
     setElements(prev => [...prev, newEl]);
     setSelectedElementId(newEl.id);
+  }
+
+  function handleApplyDetails() {
+    if (modalSection === "signature") {
+      let finalUrl = "";
+      if (sigMethod === "type") finalUrl = typedSignatureUrl;
+      else if (sigMethod === "draw") finalUrl = drawnSignatureUrl;
+      else if (sigMethod === "upload") finalUrl = uploadedSignatureUrl;
+      
+      setSignatureDetails(prev => ({
+        ...prev,
+        signatureDataUrl: finalUrl
+      }));
+    } else if (modalSection === "initials") {
+      let finalUrl = "";
+      if (initMethod === "type") finalUrl = typedInitialsUrl;
+      else if (initMethod === "upload") finalUrl = uploadedInitialsUrl;
+      
+      setSignatureDetails(prev => ({
+        ...prev,
+        initialsDataUrl: finalUrl
+      }));
+    } else if (modalSection === "stamp") {
+      let finalUrl = "";
+      if (stampMethod === "generate") finalUrl = generatedStampUrl;
+      else if (stampMethod === "upload") finalUrl = uploadedStampUrl;
+      
+      setSignatureDetails(prev => ({
+        ...prev,
+        stampDataUrl: finalUrl
+      }));
+    }
+    setShowDetailsModal(false);
   }
 
   // Complete signature process
@@ -854,7 +1060,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                     onClick={e => e.stopPropagation()}
                   />
                 ) : el.dataUrl ? (
-                  <img src={el.dataUrl} style={{ width: "100%", height: "100%", objectFit: "contain", pointerEvents: "none" }} alt="sig" />
+                  <img src={el.dataUrl} style={{ width: "100%", height: "100%", objectFit: "contain", pointerEvents: "none", mixBlendMode: "multiply" }} alt="sig" />
                 ) : (
                   <span style={{ fontSize: "12px", color: "#777777" }}>Signature</span>
                 )}
@@ -1011,7 +1217,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
 
               {/* Edit button */}
               <button 
-                onClick={e => { e.stopPropagation(); setModalTab("type"); setShowDetailsModal(true); }}
+                onClick={e => { e.stopPropagation(); setModalSection("signature"); setSigMethod("type"); setShowDetailsModal(true); }}
                 style={{
                   background: "none",
                   border: "none",
@@ -1088,7 +1294,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                 )}
               </div>
               <button 
-                onClick={e => { e.stopPropagation(); setModalTab("type"); setShowDetailsModal(true); }}
+                onClick={e => { e.stopPropagation(); setModalSection("initials"); setInitMethod("type"); setShowDetailsModal(true); }}
                 style={{
                   background: "none",
                   border: "none",
@@ -1264,7 +1470,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                 )}
               </div>
               <button 
-                onClick={e => { e.stopPropagation(); setModalTab("stamp"); setShowDetailsModal(true); }}
+                onClick={e => { e.stopPropagation(); setModalSection("stamp"); setStampMethod("generate"); setShowDetailsModal(true); }}
                 style={{
                   background: "none",
                   border: "none",
@@ -1327,413 +1533,715 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
           <div style={{
             backgroundColor: "#ffffff",
             borderRadius: "16px",
-            maxWidth: "520px",
+            maxWidth: "680px",
             width: "100%",
-            padding: "28px",
             boxShadow: "0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04)",
             border: "1px solid #e6e6e6",
-            position: "relative"
+            position: "relative",
+            display: "flex",
+            flexDirection: "row",
+            overflow: "hidden",
+            height: "480px"
           }}>
-            <button 
-              onClick={() => setShowDetailsModal(false)}
-              style={{ position: "absolute", top: "20px", right: "20px", background: "none", border: "none", cursor: "pointer", color: "#64748b" }}
-            >
-              <X size={18} />
-            </button>
-
-            <h3 style={{ fontSize: "1.15rem", fontWeight: "800", color: "#1b1b1b", marginBottom: "16px" }}>
-              Set your signature details
-            </h3>
-
-            {/* Modal Tabs Header */}
-            <div style={{ display: "flex", borderBottom: "1px solid #e2e8f0", marginBottom: "20px", gap: "16px" }}>
+            {/* Left Sidebar Sections */}
+            <div style={{
+              width: "170px",
+              backgroundColor: "#f8fafc",
+              borderRight: "1px solid #e2e8f0",
+              padding: "24px 12px",
+              display: "flex",
+              flexDirection: "column",
+              gap: "8px",
+              boxSizing: "border-box"
+            }}>
               {[
-                { id: "type", label: "Keyboard" },
-                { id: "draw", label: "Drawing Pad" },
-                { id: "stamp", label: "Stamp & Image" }
-              ].map(t => (
-                <button
-                  key={t.id}
-                  type="button"
-                  onClick={() => setModalTab(t.id as any)}
-                  style={{
-                    padding: "8px 12px 12px",
-                    border: "none",
-                    background: "none",
-                    borderBottom: modalTab === t.id ? "2.5px solid #000" : "2.5px solid transparent",
-                    fontWeight: modalTab === t.id ? "750" : "550",
-                    color: modalTab === t.id ? "#000" : "#64748b",
-                    fontSize: "0.82rem",
-                    cursor: "pointer",
-                    transition: "all 0.15s"
-                  }}
-                >
-                  {t.label}
-                </button>
-              ))}
+                { id: "signature", label: "Signature", icon: <PenTool size={15} /> },
+                { id: "initials", label: "Initials", icon: <User size={15} /> },
+                { id: "stamp", label: "Company Stamp", icon: <Stamp size={15} /> }
+              ].map(sec => {
+                const isSelected = modalSection === sec.id;
+                return (
+                  <button
+                    key={sec.id}
+                    type="button"
+                    onClick={() => setModalSection(sec.id as any)}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "10px",
+                      padding: "10px 12px",
+                      borderRadius: "8px",
+                      border: "none",
+                      background: isSelected ? "#000000" : "transparent",
+                      color: isSelected ? "#ffffff" : "#475569",
+                      fontWeight: isSelected ? "700" : "550",
+                      fontSize: "0.82rem",
+                      textAlign: "left",
+                      cursor: "pointer",
+                      transition: "all 0.15s ease"
+                    }}
+                  >
+                    {sec.icon}
+                    <span>{sec.label}</span>
+                  </button>
+                );
+              })}
             </div>
 
-            {/* Tab 1: Keyboard Type */}
-            {modalTab === "type" && (
-              <div>
-                <div style={{ display: "flex", gap: "14px", marginBottom: "20px" }}>
-                  <div style={{ flex: 2 }}>
-                    <label style={{ fontSize: "0.72rem", fontWeight: "700", color: "#475569" }}>Full name:</label>
-                    <input 
-                      type="text"
-                      placeholder="Your name"
-                      value={signatureDetails.fullName}
-                      onChange={e => {
-                        const val = e.target.value;
-                        setSignatureDetails(prev => {
-                          const canvas = document.createElement("canvas");
-                          canvas.width = 300;
-                          canvas.height = 80;
-                          const ctx = canvas.getContext("2d");
-                          if (ctx) {
-                            ctx.font = `italic 36px ${prev.signatureFont}`;
-                            ctx.fillStyle = prev.color;
-                            ctx.fillText(val || "Signature", 20, 50);
-                          }
-                          return { ...prev, fullName: val, signatureDataUrl: canvas.toDataURL() };
-                        });
-                      }}
-                      style={{
-                        width: "100%",
-                        padding: "10px",
-                        borderRadius: "6px",
-                        border: "1px solid #cbd5e1",
-                        fontSize: "0.82rem",
-                        outline: "none",
-                        marginTop: "4px",
-                        boxSizing: "border-box"
-                      }}
-                    />
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <label style={{ fontSize: "0.72rem", fontWeight: "700", color: "#475569" }}>Initials:</label>
-                    <input 
-                      type="text"
-                      placeholder="Initials"
-                      value={signatureDetails.initials}
-                      onChange={e => {
-                        const val = e.target.value;
-                        setSignatureDetails(prev => {
-                          const canvas = document.createElement("canvas");
-                          canvas.width = 150;
-                          canvas.height = 80;
-                          const ctx = canvas.getContext("2d");
-                          if (ctx) {
-                            ctx.font = `italic 36px ${prev.initialsFont}`;
-                            ctx.fillStyle = prev.color;
-                            ctx.fillText(val || "AB", 10, 50);
-                          }
-                          return { ...prev, initials: val, initialsDataUrl: canvas.toDataURL() };
-                        });
-                      }}
-                      style={{
-                        width: "100%",
-                        padding: "10px",
-                        borderRadius: "6px",
-                        border: "1px solid #cbd5e1",
-                        fontSize: "0.82rem",
-                        outline: "none",
-                        marginTop: "4px",
-                        boxSizing: "border-box"
-                      }}
-                    />
-                  </div>
-                </div>
+            {/* Right Pane Content */}
+            <div style={{
+              flex: 1,
+              padding: "24px 24px 20px 24px",
+              display: "flex",
+              flexDirection: "column",
+              height: "100%",
+              boxSizing: "border-box",
+              position: "relative"
+            }}>
+              {/* Close Button */}
+              <button 
+                onClick={() => setShowDetailsModal(false)}
+                style={{ position: "absolute", top: "20px", right: "20px", background: "none", border: "none", cursor: "pointer", color: "#64748b" }}
+              >
+                <X size={18} />
+              </button>
 
-                <div style={{ marginBottom: "20px" }}>
-                  <span style={{ fontSize: "0.72rem", fontWeight: "700", color: "#475569" }}>Cursive style previews:</span>
-                  <div style={{
-                    border: "1px solid #e6e6e6",
-                    borderRadius: "8px",
-                    padding: "8px",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "8px",
-                    marginTop: "6px",
-                    maxHeight: "180px",
-                    overflowY: "auto"
-                  }}>
+              <h3 style={{ fontSize: "1.05rem", fontWeight: "800", color: "#1b1b1b", margin: "0 0 16px 0", paddingRight: "24px" }}>
+                Set your {modalSection === "signature" ? "Signature" : modalSection === "initials" ? "Initials" : "Company Stamp"}
+              </h3>
+
+              {/* ── Section A: Signature Content ── */}
+              {modalSection === "signature" && (
+                <div style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0 }}>
+                  {/* Signature Sub-tabs */}
+                  <div style={{ display: "flex", borderBottom: "1px solid #e2e8f0", marginBottom: "16px", gap: "12px" }}>
                     {[
-                      "'Dancing Script', cursive",
-                      "'Great Vibes', cursive",
-                      "'Sacramento', cursive",
-                      "'Caveat', cursive"
-                    ].map((font, idx) => (
-                      <div 
-                        key={idx}
-                        onClick={() => setSignatureDetails(prev => {
-                          const canvasSig = document.createElement("canvas");
-                          canvasSig.width = 300;
-                          canvasSig.height = 80;
-                          const ctxSig = canvasSig.getContext("2d");
-                          if (ctxSig) {
-                            ctxSig.font = `italic 36px ${font}`;
-                            ctxSig.fillStyle = prev.color;
-                            ctxSig.fillText(prev.fullName || "Signature", 20, 50);
-                          }
-                          const canvasInit = document.createElement("canvas");
-                          canvasInit.width = 150;
-                          canvasInit.height = 80;
-                          const ctxInit = canvasInit.getContext("2d");
-                          if (ctxInit) {
-                            ctxInit.font = `italic 36px ${font}`;
-                            ctxInit.fillStyle = prev.color;
-                            ctxInit.fillText(prev.initials || "AB", 10, 50);
-                          }
-                          return { 
-                            ...prev, 
-                            signatureFont: font, 
-                            initialsFont: font,
-                            signatureDataUrl: canvasSig.toDataURL(),
-                            initialsDataUrl: canvasInit.toDataURL()
-                          };
-                        })}
+                      { id: "type", label: "Keyboard" },
+                      { id: "draw", label: "Drawing Pad" },
+                      { id: "upload", label: "Upload Image" }
+                    ].map(t => (
+                      <button
+                        key={t.id}
+                        type="button"
+                        onClick={() => setSigMethod(t.id as any)}
                         style={{
-                          padding: "12px",
-                          borderRadius: "6px",
-                          border: `1px solid ${signatureDetails.signatureFont === font ? "#000" : "#e6e6e6"}`,
-                          background: signatureDetails.signatureFont === font ? "#fcfcfc" : "transparent",
-                          cursor: "pointer",
-                          fontSize: "1.2rem",
-                          fontFamily: font,
-                          color: signatureDetails.color,
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "center"
+                          padding: "8px 8px 10px 8px",
+                          border: "none",
+                          background: "none",
+                          borderBottom: sigMethod === t.id ? "2px solid #000" : "2px solid transparent",
+                          fontWeight: sigMethod === t.id ? "700" : "500",
+                          color: sigMethod === t.id ? "#000" : "#64748b",
+                          fontSize: "0.78rem",
+                          cursor: "pointer"
                         }}
                       >
-                        <span>{signatureDetails.fullName || "Signature"}</span>
-                        {signatureDetails.signatureFont === font && <Check size={14} style={{ color: "#000" }} />}
+                        {t.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  <div style={{ flex: 1, overflowY: "auto", minHeight: 0 }}>
+                    {/* Method 1: Keyboard cursive */}
+                    {sigMethod === "type" && (
+                      <div>
+                        <div style={{ marginBottom: "12px" }}>
+                          <label style={{ fontSize: "0.7rem", fontWeight: "700", color: "#475569", display: "block", marginBottom: "4px" }}>Full name:</label>
+                          <input 
+                            type="text"
+                            placeholder="Your name"
+                            value={signatureDetails.fullName}
+                            onChange={e => setSignatureDetails(prev => ({ ...prev, fullName: e.target.value }))}
+                            style={{
+                              width: "100%",
+                              padding: "8px 10px",
+                              borderRadius: "6px",
+                              border: "1px solid #cbd5e1",
+                              fontSize: "0.8rem",
+                              outline: "none",
+                              boxSizing: "border-box"
+                            }}
+                          />
+                        </div>
+
+                        <div>
+                          <span style={{ fontSize: "0.7rem", fontWeight: "700", color: "#475569", display: "block", marginBottom: "4px" }}>Select font style:</span>
+                          <div style={{
+                            border: "1px solid #e6e6e6",
+                            borderRadius: "8px",
+                            padding: "6px",
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: "6px",
+                            maxHeight: "130px",
+                            overflowY: "auto"
+                          }}>
+                            {[
+                              "'Dancing Script', cursive",
+                              "'Great Vibes', cursive",
+                              "'Sacramento', cursive",
+                              "'Caveat', cursive"
+                            ].map((font, idx) => (
+                              <div 
+                                key={idx}
+                                onClick={() => setSignatureDetails(prev => ({ ...prev, signatureFont: font }))}
+                                style={{
+                                  padding: "8px 12px",
+                                  borderRadius: "6px",
+                                  border: `1px solid ${signatureDetails.signatureFont === font ? "#000" : "#e6e6e6"}`,
+                                  background: signatureDetails.signatureFont === font ? "#fcfcfc" : "transparent",
+                                  cursor: "pointer",
+                                  fontSize: "1.1rem",
+                                  fontFamily: font,
+                                  color: signatureDetails.color,
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                  alignItems: "center"
+                                }}
+                              >
+                                <span>{signatureDetails.fullName || "Signature"}</span>
+                                {signatureDetails.signatureFont === font && <Check size={12} style={{ color: "#000" }} />}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
                       </div>
+                    )}
+
+                    {/* Method 2: Drawing Pad */}
+                    {sigMethod === "draw" && (
+                      <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                        <div style={{ position: "relative", width: "100%", height: "150px", background: "#f8fafc", borderRadius: "8px", border: "1px dashed #cbd5e1", overflow: "hidden" }}>
+                          <canvas 
+                            ref={drawingCanvasRef}
+                            onMouseDown={handleDrawStart}
+                            onMouseMove={handleDrawMove}
+                            onMouseUp={handleDrawEnd}
+                            onMouseLeave={handleDrawEnd}
+                            onTouchStart={handleDrawStart}
+                            onTouchMove={handleDrawMove}
+                            onTouchEnd={handleDrawEnd}
+                            style={{ display: "block", width: "100%", height: "100%", cursor: "crosshair" }}
+                          />
+                          <button
+                            type="button"
+                            onClick={clearDrawingCanvas}
+                            style={{
+                              position: "absolute",
+                              right: "10px",
+                              bottom: "10px",
+                              padding: "4px 8px",
+                              fontSize: "0.65rem",
+                              fontWeight: "700",
+                              background: "#ffffff",
+                              border: "1px solid #cbd5e1",
+                              borderRadius: "4px",
+                              cursor: "pointer"
+                            }}
+                          >
+                            Clear
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Method 3: Upload Image */}
+                    {sigMethod === "upload" && (
+                      <div style={{ display: "flex", gap: "16px", alignItems: "flex-start" }}>
+                        <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "10px" }}>
+                          <div>
+                            <label style={{ fontSize: "0.7rem", fontWeight: "700", color: "#475569", display: "block", marginBottom: "4px" }}>Select signature file:</label>
+                            <input 
+                              type="file" 
+                              accept="image/*"
+                              onChange={handleSigFileUpload}
+                              style={{ fontSize: "0.72rem", width: "100%" }}
+                            />
+                          </div>
+
+                          {uploadedSigRaw && (
+                            <>
+                              <div>
+                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px" }}>
+                                  <label style={{ fontSize: "0.68rem", fontWeight: "700", color: "#475569" }}>Transparency threshold:</label>
+                                  <span style={{ fontSize: "0.68rem", color: "#64748b" }}>{sigThreshold}</span>
+                                </div>
+                                <input 
+                                  type="range"
+                                  min="0"
+                                  max="255"
+                                  value={sigThreshold}
+                                  onChange={e => setSigThreshold(parseInt(e.target.value))}
+                                  style={{ width: "100%", cursor: "pointer" }}
+                                />
+                              </div>
+
+                              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                                <input 
+                                  type="checkbox"
+                                  id="sigKeepColor"
+                                  checked={sigKeepColor}
+                                  onChange={e => setSigKeepColor(e.target.checked)}
+                                  style={{ cursor: "pointer" }}
+                                />
+                                <label htmlFor="sigKeepColor" style={{ fontSize: "0.68rem", fontWeight: "600", color: "#475569", cursor: "pointer" }}>
+                                  Keep original colors
+                                </label>
+                              </div>
+                            </>
+                          )}
+                        </div>
+
+                        {/* Preview Box with Checkered background */}
+                        <div style={{
+                          width: "140px",
+                          height: "140px",
+                          borderRadius: "8px",
+                          border: "1px solid #cbd5e1",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          overflow: "hidden",
+                          padding: "6px",
+                          backgroundImage: "linear-gradient(45deg, #f1f5f9 25%, transparent 25%), linear-gradient(-45deg, #f1f5f9 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f1f5f9 75%), linear-gradient(-45deg, transparent 75%, #f1f5f9 75%)",
+                          backgroundSize: "10px 10px",
+                          backgroundPosition: "0 0, 0 5px, 5px -5px, -5px 0",
+                          backgroundColor: "#ffffff"
+                        }}>
+                          {uploadedSignatureUrl ? (
+                            <img src={uploadedSignatureUrl} style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain" }} alt="Signature Preview" />
+                          ) : (
+                            <span style={{ fontSize: "0.65rem", color: "#94a3b8", textAlign: "center" }}>No image uploaded</span>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* ── Section B: Initials Content ── */}
+              {modalSection === "initials" && (
+                <div style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0 }}>
+                  {/* Initials Sub-tabs */}
+                  <div style={{ display: "flex", borderBottom: "1px solid #e2e8f0", marginBottom: "16px", gap: "12px" }}>
+                    {[
+                      { id: "type", label: "Keyboard" },
+                      { id: "upload", label: "Upload Image" }
+                    ].map(t => (
+                      <button
+                        key={t.id}
+                        type="button"
+                        onClick={() => setInitMethod(t.id as any)}
+                        style={{
+                          padding: "8px 8px 10px 8px",
+                          border: "none",
+                          background: "none",
+                          borderBottom: initMethod === t.id ? "2px solid #000" : "2px solid transparent",
+                          fontWeight: initMethod === t.id ? "700" : "500",
+                          color: initMethod === t.id ? "#000" : "#64748b",
+                          fontSize: "0.78rem",
+                          cursor: "pointer"
+                        }}
+                      >
+                        {t.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  <div style={{ flex: 1, overflowY: "auto", minHeight: 0 }}>
+                    {/* Method 1: Keyboard type initials */}
+                    {initMethod === "type" && (
+                      <div>
+                        <div style={{ marginBottom: "12px" }}>
+                          <label style={{ fontSize: "0.7rem", fontWeight: "700", color: "#475569", display: "block", marginBottom: "4px" }}>Initials:</label>
+                          <input 
+                            type="text"
+                            placeholder="Initials"
+                            value={signatureDetails.initials}
+                            onChange={e => setSignatureDetails(prev => ({ ...prev, initials: e.target.value }))}
+                            style={{
+                              width: "100%",
+                              padding: "8px 10px",
+                              borderRadius: "6px",
+                              border: "1px solid #cbd5e1",
+                              fontSize: "0.8rem",
+                              outline: "none",
+                              boxSizing: "border-box"
+                            }}
+                          />
+                        </div>
+
+                        <div>
+                          <span style={{ fontSize: "0.7rem", fontWeight: "700", color: "#475569", display: "block", marginBottom: "4px" }}>Select font style:</span>
+                          <div style={{
+                            border: "1px solid #e6e6e6",
+                            borderRadius: "8px",
+                            padding: "6px",
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: "6px",
+                            maxHeight: "130px",
+                            overflowY: "auto"
+                          }}>
+                            {[
+                              "'Dancing Script', cursive",
+                              "'Great Vibes', cursive",
+                              "'Sacramento', cursive",
+                              "'Caveat', cursive"
+                            ].map((font, idx) => (
+                              <div 
+                                key={idx}
+                                onClick={() => setSignatureDetails(prev => ({ ...prev, initialsFont: font }))}
+                                style={{
+                                  padding: "8px 12px",
+                                  borderRadius: "6px",
+                                  border: `1px solid ${signatureDetails.initialsFont === font ? "#000" : "#e6e6e6"}`,
+                                  background: signatureDetails.initialsFont === font ? "#fcfcfc" : "transparent",
+                                  cursor: "pointer",
+                                  fontSize: "1.1rem",
+                                  fontFamily: font,
+                                  color: signatureDetails.color,
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                  alignItems: "center"
+                                }}
+                              >
+                                <span>{signatureDetails.initials || "AB"}</span>
+                                {signatureDetails.initialsFont === font && <Check size={12} style={{ color: "#000" }} />}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Method 2: Upload Initials */}
+                    {initMethod === "upload" && (
+                      <div style={{ display: "flex", gap: "16px", alignItems: "flex-start" }}>
+                        <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "10px" }}>
+                          <div>
+                            <label style={{ fontSize: "0.7rem", fontWeight: "700", color: "#475569", display: "block", marginBottom: "4px" }}>Select initials file:</label>
+                            <input 
+                              type="file" 
+                              accept="image/*"
+                              onChange={handleInitFileUpload}
+                              style={{ fontSize: "0.72rem", width: "100%" }}
+                            />
+                          </div>
+
+                          {uploadedInitRaw && (
+                            <>
+                              <div>
+                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px" }}>
+                                  <label style={{ fontSize: "0.68rem", fontWeight: "700", color: "#475569" }}>Transparency threshold:</label>
+                                  <span style={{ fontSize: "0.68rem", color: "#64748b" }}>{initThreshold}</span>
+                                </div>
+                                <input 
+                                  type="range"
+                                  min="0"
+                                  max="255"
+                                  value={initThreshold}
+                                  onChange={e => setInitThreshold(parseInt(e.target.value))}
+                                  style={{ width: "100%", cursor: "pointer" }}
+                                />
+                              </div>
+
+                              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                                <input 
+                                  type="checkbox"
+                                  id="initKeepColor"
+                                  checked={initKeepColor}
+                                  onChange={e => setInitKeepColor(e.target.checked)}
+                                  style={{ cursor: "pointer" }}
+                                />
+                                <label htmlFor="initKeepColor" style={{ fontSize: "0.68rem", fontWeight: "600", color: "#475569", cursor: "pointer" }}>
+                                  Keep original colors
+                                </label>
+                              </div>
+                            </>
+                          )}
+                        </div>
+
+                        {/* Preview Box with Checkered background */}
+                        <div style={{
+                          width: "140px",
+                          height: "140px",
+                          borderRadius: "8px",
+                          border: "1px solid #cbd5e1",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          overflow: "hidden",
+                          padding: "6px",
+                          backgroundImage: "linear-gradient(45deg, #f1f5f9 25%, transparent 25%), linear-gradient(-45deg, #f1f5f9 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f1f5f9 75%), linear-gradient(-45deg, transparent 75%, #f1f5f9 75%)",
+                          backgroundSize: "10px 10px",
+                          backgroundPosition: "0 0, 0 5px, 5px -5px, -5px 0",
+                          backgroundColor: "#ffffff"
+                        }}>
+                          {uploadedInitialsUrl ? (
+                            <img src={uploadedInitialsUrl} style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain" }} alt="Initials Preview" />
+                          ) : (
+                            <span style={{ fontSize: "0.65rem", color: "#94a3b8", textAlign: "center" }}>No image uploaded</span>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* ── Section C: Company Stamp Content ── */}
+              {modalSection === "stamp" && (
+                <div style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0 }}>
+                  {/* Stamp Sub-tabs */}
+                  <div style={{ display: "flex", borderBottom: "1px solid #e2e8f0", marginBottom: "16px", gap: "12px" }}>
+                    {[
+                      { id: "generate", label: "Digital Stamp" },
+                      { id: "upload", label: "Upload Stamp" }
+                    ].map(t => (
+                      <button
+                        key={t.id}
+                        type="button"
+                        onClick={() => setStampMethod(t.id as any)}
+                        style={{
+                          padding: "8px 8px 10px 8px",
+                          border: "none",
+                          background: "none",
+                          borderBottom: stampMethod === t.id ? "2px solid #000" : "2px solid transparent",
+                          fontWeight: stampMethod === t.id ? "700" : "500",
+                          color: stampMethod === t.id ? "#000" : "#64748b",
+                          fontSize: "0.78rem",
+                          cursor: "pointer"
+                        }}
+                      >
+                        {t.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  <div style={{ flex: 1, overflowY: "auto", minHeight: 0 }}>
+                    {/* Method 1: Digital Stamp Generator */}
+                    {stampMethod === "generate" && (
+                      <div style={{ display: "flex", gap: "16px", alignItems: "flex-start" }}>
+                        <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "10px" }}>
+                          <div>
+                            <label style={{ fontSize: "0.68rem", fontWeight: "700", color: "#475569" }}>Stamp shape:</label>
+                            <div style={{ display: "flex", gap: "6px", marginTop: "4px" }}>
+                              {[
+                                { id: "rectangle", label: "Rectangular" },
+                                { id: "round", label: "Circular" }
+                              ].map(st => (
+                                <button
+                                  key={st.id}
+                                  type="button"
+                                  onClick={() => setStampText(prev => ({ ...prev, type: st.id as any }))}
+                                  style={{
+                                    flex: 1,
+                                    padding: "6px 4px",
+                                    fontSize: "0.7rem",
+                                    fontWeight: "750",
+                                    backgroundColor: stampText.type === st.id ? "#000" : "#f1f5f9",
+                                    color: stampText.type === st.id ? "#fff" : "#475569",
+                                    border: "none",
+                                    borderRadius: "4px",
+                                    cursor: "pointer"
+                                  }}
+                                >
+                                  {st.label}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+
+                          <div>
+                            <label style={{ fontSize: "0.68rem", fontWeight: "700", color: "#475569" }}>Company name:</label>
+                            <input 
+                              type="text"
+                              value={stampText.text1}
+                              onChange={e => setStampText(prev => ({ ...prev, text1: e.target.value }))}
+                              style={{ width: "100%", padding: "6px 8px", borderRadius: "4px", border: "1px solid #cbd5e1", fontSize: "0.75rem", marginTop: "4px", boxSizing: "border-box" }}
+                            />
+                          </div>
+
+                          <div>
+                            <label style={{ fontSize: "0.68rem", fontWeight: "700", color: "#475569" }}>Status text:</label>
+                            <input 
+                              type="text"
+                              value={stampText.text2}
+                              onChange={e => setStampText(prev => ({ ...prev, text2: e.target.value }))}
+                              style={{ width: "100%", padding: "6px 8px", borderRadius: "4px", border: "1px solid #cbd5e1", fontSize: "0.75rem", marginTop: "4px", boxSizing: "border-box" }}
+                            />
+                          </div>
+                        </div>
+
+                        {/* Stamp Preview */}
+                        <div style={{
+                          width: "140px",
+                          height: "140px",
+                          borderRadius: "8px",
+                          border: "1px solid #cbd5e1",
+                          backgroundColor: "#f8fafc",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          overflow: "hidden",
+                          padding: "6px"
+                        }}>
+                          {generatedStampUrl ? (
+                            <img src={generatedStampUrl} style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain" }} alt="Stamp preview" />
+                          ) : (
+                            <span style={{ fontSize: "0.65rem", color: "#94a3b8" }}>No stamp text</span>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Method 2: Scanned stamp file upload */}
+                    {stampMethod === "upload" && (
+                      <div style={{ display: "flex", gap: "16px", alignItems: "flex-start" }}>
+                        <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "10px" }}>
+                          <div>
+                            <label style={{ fontSize: "0.7rem", fontWeight: "700", color: "#475569", display: "block", marginBottom: "4px" }}>Select company stamp image:</label>
+                            <input 
+                              type="file" 
+                              accept="image/*"
+                              onChange={handleStampFileUpload}
+                              style={{ fontSize: "0.72rem", width: "100%" }}
+                            />
+                          </div>
+
+                          {uploadedStampRaw && (
+                            <>
+                              <div>
+                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px" }}>
+                                  <label style={{ fontSize: "0.68rem", fontWeight: "700", color: "#475569" }}>Transparency threshold:</label>
+                                  <span style={{ fontSize: "0.68rem", color: "#64748b" }}>{stampThreshold}</span>
+                                </div>
+                                <input 
+                                  type="range"
+                                  min="0"
+                                  max="255"
+                                  value={stampThreshold}
+                                  onChange={e => setStampThreshold(parseInt(e.target.value))}
+                                  style={{ width: "100%", cursor: "pointer" }}
+                                />
+                              </div>
+
+                              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                                <input 
+                                  type="checkbox"
+                                  id="stampKeepColor"
+                                  checked={stampKeepColor}
+                                  onChange={e => setStampKeepColor(e.target.checked)}
+                                  style={{ cursor: "pointer" }}
+                                />
+                                <label htmlFor="stampKeepColor" style={{ fontSize: "0.68rem", fontWeight: "600", color: "#475569", cursor: "pointer" }}>
+                                  Keep original colors
+                                </label>
+                              </div>
+                            </>
+                          )}
+                        </div>
+
+                        {/* Preview Box with Checkered background */}
+                        <div style={{
+                          width: "140px",
+                          height: "140px",
+                          borderRadius: "8px",
+                          border: "1px solid #cbd5e1",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          overflow: "hidden",
+                          padding: "6px",
+                          backgroundImage: "linear-gradient(45deg, #f1f5f9 25%, transparent 25%), linear-gradient(-45deg, #f1f5f9 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f1f5f9 75%), linear-gradient(-45deg, transparent 75%, #f1f5f9 75%)",
+                          backgroundSize: "10px 10px",
+                          backgroundPosition: "0 0, 0 5px, 5px -5px, -5px 0",
+                          backgroundColor: "#ffffff"
+                        }}>
+                          {uploadedStampUrl ? (
+                            <img src={uploadedStampUrl} style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain" }} alt="Stamp preview" />
+                          ) : (
+                            <span style={{ fontSize: "0.65rem", color: "#94a3b8", textAlign: "center" }}>No image uploaded</span>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Bottom control row */}
+              <div style={{
+                marginTop: "auto",
+                borderTop: "1px solid #f1f5f9",
+                paddingTop: "12px",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center"
+              }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  <span style={{ fontSize: "0.7rem", fontWeight: "700", color: "#475569" }}>Ink color:</span>
+                  <div style={{ display: "flex", gap: "6px" }}>
+                    {[
+                      { key: "black", hex: "#1e293b" },
+                      { key: "red", hex: "#dc2626" },
+                      { key: "blue", hex: "#2563eb" },
+                      { key: "green", hex: "#16a34a" }
+                    ].map(c => (
+                      <button
+                        key={c.key}
+                        type="button"
+                        onClick={() => setSignatureDetails(prev => ({ ...prev, color: c.hex }))}
+                        style={{
+                          width: "18px",
+                          height: "18px",
+                          borderRadius: "50%",
+                          backgroundColor: c.hex,
+                          border: signatureDetails.color === c.hex ? "2px solid #000" : "1px solid transparent",
+                          cursor: "pointer",
+                          padding: 0
+                        }}
+                      />
                     ))}
                   </div>
                 </div>
-              </div>
-            )}
 
-            {/* Tab 2: Freehand Drawing Pad */}
-            {modalTab === "draw" && (
-              <div style={{ marginBottom: "20px" }}>
-                <span style={{ display: "block", fontSize: "0.72rem", fontWeight: "700", color: "#475569", marginBottom: "6px" }}>
-                  Draw signature below using mouse/touch:
-                </span>
-                <div style={{ position: "relative", width: "100%", height: "160px", background: "#f8fafc", borderRadius: "8px", border: "1px dashed #cbd5e1", overflow: "hidden" }}>
-                  <canvas 
-                    ref={drawingCanvasRef}
-                    onMouseDown={handleDrawStart}
-                    onMouseMove={handleDrawMove}
-                    onMouseUp={handleDrawEnd}
-                    onMouseLeave={handleDrawEnd}
-                    onTouchStart={handleDrawStart}
-                    onTouchMove={handleDrawMove}
-                    onTouchEnd={handleDrawEnd}
-                    style={{ display: "block", width: "100%", height: "100%", cursor: "crosshair" }}
-                  />
-                  <button
+                <div style={{ display: "flex", gap: "8px" }}>
+                  <button 
                     type="button"
-                    onClick={clearDrawingCanvas}
+                    onClick={() => setShowDetailsModal(false)}
                     style={{
-                      position: "absolute",
-                      right: "12px",
-                      bottom: "12px",
-                      padding: "4px 10px",
-                      fontSize: "0.68rem",
-                      fontWeight: "700",
-                      background: "#ffffff",
+                      padding: "6px 12px",
+                      borderRadius: "6px",
                       border: "1px solid #cbd5e1",
-                      borderRadius: "4px",
+                      background: "transparent",
+                      color: "#475569",
+                      fontSize: "0.78rem",
+                      fontWeight: "600",
                       cursor: "pointer"
                     }}
                   >
-                    Clear Drawing
+                    Cancel
+                  </button>
+                  <button 
+                    type="button"
+                    onClick={handleApplyDetails}
+                    style={{
+                      padding: "6px 16px",
+                      borderRadius: "6px",
+                      border: "none",
+                      background: "#000000",
+                      color: "#ffffff",
+                      fontSize: "0.78rem",
+                      fontWeight: "700",
+                      cursor: "pointer"
+                    }}
+                  >
+                    Apply
                   </button>
                 </div>
               </div>
-            )}
-
-            {/* Tab 3: Rubber Stamp & Image Upload */}
-            {modalTab === "stamp" && (
-              <div style={{ display: "flex", gap: "20px", marginBottom: "20px" }}>
-                {/* Left controls */}
-                <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "10px" }}>
-                  <div>
-                    <label style={{ fontSize: "0.68rem", fontWeight: "700", color: "#475569" }}>Stamp Type:</label>
-                    <div style={{ display: "flex", gap: "6px", marginTop: "4px" }}>
-                      {[
-                        { id: "rectangle", label: "Rect" },
-                        { id: "round", label: "Round" },
-                        { id: "none", label: "Image" }
-                      ].map(st => (
-                        <button
-                          key={st.id}
-                          type="button"
-                          onClick={() => setStampText(prev => ({ ...prev, type: st.id as any }))}
-                          style={{
-                            flex: 1,
-                            padding: "6px 4px",
-                            fontSize: "0.7rem",
-                            fontWeight: "750",
-                            backgroundColor: stampText.type === st.id ? "#000" : "#f1f5f9",
-                            color: stampText.type === st.id ? "#fff" : "#475569",
-                            border: "none",
-                            borderRadius: "4px",
-                            cursor: "pointer"
-                          }}
-                        >
-                          {st.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {stampText.type !== "none" ? (
-                    <>
-                      <div>
-                        <label style={{ fontSize: "0.68rem", fontWeight: "700", color: "#475569" }}>Company Name:</label>
-                        <input 
-                          type="text"
-                          value={stampText.text1}
-                          onChange={e => setStampText(prev => ({ ...prev, text1: e.target.value }))}
-                          style={{ width: "100%", padding: "8px", borderRadius: "4px", border: "1px solid #cbd5e1", fontSize: "0.78rem", boxSizing: "border-box" }}
-                        />
-                      </div>
-                      <div>
-                        <label style={{ fontSize: "0.68rem", fontWeight: "700", color: "#475569" }}>Status Text:</label>
-                        <input 
-                          type="text"
-                          value={stampText.text2}
-                          onChange={e => setStampText(prev => ({ ...prev, text2: e.target.value }))}
-                          style={{ width: "100%", padding: "8px", borderRadius: "4px", border: "1px solid #cbd5e1", fontSize: "0.78rem", boxSizing: "border-box" }}
-                        />
-                      </div>
-                    </>
-                  ) : (
-                    <div>
-                      <label style={{ fontSize: "0.68rem", fontWeight: "700", color: "#475569", display: "block", marginBottom: "6px" }}>Upload stamp/sig image:</label>
-                      <input 
-                        type="file" 
-                        accept="image/*"
-                        onChange={handleStampUpload}
-                        style={{ fontSize: "0.72rem", width: "100%" }}
-                      />
-                    </div>
-                  )}
-                </div>
-
-                {/* Right preview box */}
-                <div style={{
-                  width: "160px",
-                  height: "160px",
-                  borderRadius: "8px",
-                  border: "1px solid #e2e8f0",
-                  backgroundColor: "#f8fafc",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  overflow: "hidden",
-                  padding: "8px"
-                }}>
-                  {signatureDetails.stampDataUrl ? (
-                    <img src={signatureDetails.stampDataUrl} style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain" }} alt="Stamp preview" />
-                  ) : (
-                    <span style={{ fontSize: "0.7rem", color: "#94a3b8" }}>No image uploaded</span>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* Colors picker */}
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px", paddingTop: "12px", borderTop: "1px solid #f1f5f9" }}>
-              <span style={{ fontSize: "0.72rem", fontWeight: "700", color: "#475569" }}>Ink color:</span>
-              <div style={{ display: "flex", gap: "8px" }}>
-                {[
-                  { key: "black", hex: "#1e293b" },
-                  { key: "red", hex: "#dc2626" },
-                  { key: "blue", hex: "#2563eb" },
-                  { key: "green", hex: "#16a34a" }
-                ].map(c => (
-                  <button
-                    key={c.key}
-                    type="button"
-                    onClick={() => setSignatureDetails(prev => {
-                      const canvasSig = document.createElement("canvas");
-                      canvasSig.width = 300;
-                      canvasSig.height = 80;
-                      const ctxSig = canvasSig.getContext("2d");
-                      if (ctxSig) {
-                        ctxSig.font = `italic 36px ${prev.signatureFont}`;
-                        ctxSig.fillStyle = c.hex;
-                        ctxSig.fillText(prev.fullName || "Signature", 20, 50);
-                      }
-                      const canvasInit = document.createElement("canvas");
-                      canvasInit.width = 150;
-                      canvasInit.height = 80;
-                      const ctxInit = canvasInit.getContext("2d");
-                      if (ctxInit) {
-                        ctxInit.font = `italic 36px ${prev.initialsFont}`;
-                        ctxInit.fillStyle = c.hex;
-                        ctxInit.fillText(prev.initials || "AB", 10, 50);
-                      }
-                      return { 
-                        ...prev, 
-                        color: c.hex, 
-                        signatureDataUrl: canvasSig.toDataURL(), 
-                        initialsDataUrl: canvasInit.toDataURL() 
-                      };
-                    })}
-                    style={{
-                      width: "20px",
-                      height: "20px",
-                      borderRadius: "50%",
-                      backgroundColor: c.hex,
-                      border: signatureDetails.color === c.hex ? "2.5px solid #000" : "1.5px solid transparent",
-                      cursor: "pointer",
-                      padding: 0
-                    }}
-                  />
-                ))}
-              </div>
-            </div>
-
-            {/* Actions */}
-            <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end" }}>
-              <button 
-                type="button"
-                onClick={() => setShowDetailsModal(false)}
-                style={{
-                  padding: "8px 16px",
-                  borderRadius: "6px",
-                  border: "1px solid #cbd5e1",
-                  background: "transparent",
-                  color: "#475569",
-                  fontSize: "0.8rem",
-                  fontWeight: "600",
-                  cursor: "pointer"
-                }}
-              >
-                Cancel
-              </button>
-              <button 
-                type="button"
-                onClick={() => setShowDetailsModal(false)}
-                style={{
-                  padding: "8px 20px",
-                  borderRadius: "6px",
-                  border: "none",
-                  background: "#000000",
-                  color: "#ffffff",
-                  fontSize: "0.8rem",
-                  fontWeight: "700",
-                  cursor: "pointer"
-                }}
-              >
-                Apply
-              </button>
             </div>
           </div>
         </div>
