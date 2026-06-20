@@ -117,7 +117,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
       renderPage();
       return () => { active = false; };
     }
-  }, [pdfDoc, currentPage, zoom, pageOrder]);
+  }, [pdfDoc, currentPage, zoom, pageOrder, step]);
 
   // Coordinate math
   function getCanvasCoords(e: React.MouseEvent) {
