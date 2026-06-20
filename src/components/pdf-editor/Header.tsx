@@ -174,64 +174,59 @@ export function Header({
         </div>
       </div>
 
-      {/* Center: Undo/Redo capsule */}
-      <div style={{
-        display: "flex",
-        alignItems: "center",
-        backgroundColor: "#f1f5f9",
-        border: "1px solid #e2e8f0",
-        borderRadius: "9999px",
-        padding: "4px 8px",
-        gap: "4px"
-      }}>
-        <button
-          onClick={onUndo}
-          disabled={!canUndo}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            width: "24px",
-            height: "24px",
-            borderRadius: "50%",
-            border: "none",
-            background: "transparent",
-            color: canUndo ? "#475569" : "#cbd5e1",
-            cursor: canUndo ? "pointer" : "not-allowed",
-            transition: "background 0.15s"
-          }}
-          onMouseEnter={(e) => { if (canUndo) e.currentTarget.style.backgroundColor = "#e2e8f0"; }}
-          onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; }}
-          title="Undo (Ctrl+Z)"
-        >
-          <Undo2 size={13} />
-        </button>
-        <button
-          onClick={onRedo}
-          disabled={!canRedo}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            width: "24px",
-            height: "24px",
-            borderRadius: "50%",
-            border: "none",
-            background: "transparent",
-            color: canRedo ? "#475569" : "#cbd5e1",
-            cursor: canRedo ? "pointer" : "not-allowed",
-            transition: "background 0.15s"
-          }}
-          onMouseEnter={(e) => { if (canRedo) e.currentTarget.style.backgroundColor = "#e2e8f0"; }}
-          onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; }}
-          title="Redo (Ctrl+Y)"
-        >
-          <Redo2 size={13} />
-        </button>
-      </div>
-
       {/* Right: Actions */}
       <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+        {/* Undo/Redo Group */}
+        <div style={{ display: "flex", alignItems: "center", gap: "2px" }}>
+          <button
+            onClick={onUndo}
+            disabled={!canUndo}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: "28px",
+              height: "28px",
+              borderRadius: "6px",
+              border: "none",
+              background: "transparent",
+              color: canUndo ? "#475569" : "#cbd5e1",
+              cursor: canUndo ? "pointer" : "not-allowed",
+              transition: "all 0.15s ease"
+            }}
+            onMouseEnter={(e) => { if (canUndo) e.currentTarget.style.backgroundColor = "#f1f5f9"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; }}
+            title="Undo (Ctrl+Z)"
+          >
+            <Undo2 size={14} />
+          </button>
+          <button
+            onClick={onRedo}
+            disabled={!canRedo}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: "28px",
+              height: "28px",
+              borderRadius: "6px",
+              border: "none",
+              background: "transparent",
+              color: canRedo ? "#475569" : "#cbd5e1",
+              cursor: canRedo ? "pointer" : "not-allowed",
+              transition: "all 0.15s ease"
+            }}
+            onMouseEnter={(e) => { if (canRedo) e.currentTarget.style.backgroundColor = "#f1f5f9"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; }}
+            title="Redo (Ctrl+Y)"
+          >
+            <Redo2 size={14} />
+          </button>
+        </div>
+
+        {/* Separator */}
+        <div style={{ height: "20px", width: "1px", backgroundColor: "#e2e8f0", margin: "0 4px" }} />
+
         {/* AI Assistant */}
         <button
           onClick={() => alert("AI Assistant is indexing your document...")}
