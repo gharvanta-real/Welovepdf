@@ -13,82 +13,120 @@ export const seoPages: Record<string, SeoPageData> = {
     title: "Merge PDF Online - Combine Multiple PDF Files Free | PDFMount",
     desc: "Combine multiple PDF files into one single document online. Quick, secure, and no installation required. Merge PDF files free without watermark.",
     h1: "Merge PDF Files Online",
-    intro: "Streamline your document management by combining multiple PDF files into one clean, consolidated document. PDFMount's merging tool operates entirely inside your browser for instant speeds and absolute security.",
+    intro: "Streamline document organization by combining multiple PDF files into one clean, consolidated document. PDFMount's online merging engine operates inside your browser, processing files via secure, isolated server nodes. Our technology ensures that fonts, formatting coordinates, and image resolutions are preserved, avoiding the typical formatting loss found in standard online converters. Keep all files organized in one place for easier distribution. The tool is designed to work on any modern browser without software installations.",
     steps: [
-      "Select or drag and drop the PDF files you wish to merge.",
-      "Rearrange the order of the uploaded documents by dragging them left or right.",
-      "Click the 'Start' button to execute the merge operation.",
-      "Download your combined PDF instantly."
+      "Drag and drop the multiple PDF documents you want to combine into the secure upload zone above.",
+      "Rearrange the order of the uploaded files by dragging the visual cards left or right in the preview grid.",
+      "Select page ranges for individual files if you only want to merge specific sections of a document.",
+      "Click the 'Start' button to execute the high-speed stream concatenation process on our secure servers.",
+      "Download your merged PDF file instantly, featuring clean vector paths and zero added watermarks."
     ],
     faqs: [
       {
-        q: "How many files can I merge at once?",
-        a: "Starter tier users can merge up to 5 files (up to 50 MB total) per session, with 10 tool uses per day. Pro tier users can combine up to 100 documents of up to 500 MB."
+        q: "How many files can I combine at once, and what are the size limits?",
+        a: "Guest users can combine up to 5 files with a maximum size limit of 25 MB per file. Free registered accounts can upload files up to 50 MB each, while Pro subscribers can combine up to 100 documents of up to 500 MB per file. The merging system processes tasks quickly, handling even large files in under ten seconds."
       },
       {
-        q: "Will my merged PDF have a watermark?",
-        a: "No, PDFMount does not append any watermarks or brand markings to your documents. All processed files remain clean and professional."
+        q: "Will the formatting, links, and text formatting be preserved in the merged file?",
+        a: "Yes. Our engine performs binary stream concatenation rather than converting pages into images. This preserves all text vectors, internal links, bookmarks, forms, and custom formatting. Your text remains searchable, and graphics stay sharp regardless of zoom level."
       },
       {
-        q: "Is it safe to merge confidential documents here?",
-        a: "Absolutely. All processing runs under strict secure isolation on our server, and temporary workspace files are fully purged from storage after 1 hour."
+        q: "Does PDFMount add a watermark or brand logo to the output document?",
+        a: "No. All tools on PDFMount are free of watermarks. The output PDF remains clean and professional, matching the quality of the original input files. There are no restrictions or logos placed on your pages."
+      },
+      {
+        q: "Can I merge password-protected or restricted PDF files?",
+        a: "No. If a document is protected by an open password or has edit restrictions, you must unlock it first. Use the Unlock tool to remove these restriction flags before uploading them to the merging tool."
+      },
+      {
+        q: "Is it safe to merge confidential business documents on this platform?",
+        a: "Yes, data security is guaranteed. We process files in isolated sandbox environments with TLS 1.3 encryption for all transfers. Our automated system purges all files from our temporary cache exactly 60 minutes after processing, ensuring your documents remain private."
       }
     ],
     detailedContent: [
-      "Whether you are compiling monthly business reports, organizing student coursework, or combining tax documents, having scattered files makes tracking difficult. Our online merging engine provides a high-fidelity workspace where pages from multiple documents are joined without rasterizing text or compressing vectors, keeping your fonts and layouts razor-sharp.",
-      "PDFMount's interface lets you visually drag and drop files to rearrange page orders before compiling. This gives you complete control over the final structure of your document, preventing page ordering mistakes before they happen."
+      "Combining reports, coursework, or invoices manually is slow and prone to errors. Our online merging engine provides a high-fidelity workspace where pages from multiple documents are joined without rasterizing text or compressing vectors, keeping your fonts and layouts razor-sharp.",
+      "PDFMount's interface lets you visually drag and drop files to rearrange page orders before compiling. This gives you complete control over the final structure of your document, preventing page ordering mistakes before they happen.",
+      "The platform is fully compliant with modern security standards. We do not read, view, or retain your files. Once the 60-minute automatic deletion script runs, your data is gone forever, making PDFMount a safe choice for enterprise-level operations."
     ]
   },
   "split": {
     title: "Split PDF - Extract Pages from PDF Free | PDFMount",
     desc: "Separate pages from your PDF file into clean, standalone documents. Define custom page ranges and extract pages from PDF online instantly.",
     h1: "Split PDF Online by Page Ranges",
-    intro: "Divide large PDF sheets into small, easily shareable files. Choose custom page ranges to extract exactly the information you need in seconds.",
+    intro: "Divide large PDF files into smaller, manageable documents with our precise online splitting tool. PDFMount lets you extract specific page ranges or split entire files into separate single-page documents. The splitting engine runs in secure, isolated server containers, maintaining layout parameters, form fields, and text fonts. This is ideal for extracting chapters, invoices, or specific contract pages without installing software.",
     steps: [
-      "Upload the PDF document you want to split.",
-      "Input the custom page ranges (e.g. 1-3, 5) or choose specific pages to extract.",
-      "Click the 'Start' button to divide the document.",
-      "Save your separate PDF pages directly."
+      "Select and upload the PDF file you want to split from your computer or mobile device.",
+      "Input custom page ranges (e.g. 1-5, 8, 12-15) or select pages visually in the grid to define split points.",
+      "Choose whether to compile all selected pages into a single file or extract each page as a separate document.",
+      "Click the 'Start' button to execute the layout partitioning process on our high-speed server nodes.",
+      "Download your split documents instantly, saved in a clean ZIP archive for easy sharing."
     ],
     faqs: [
       {
-        q: "Can I split a PDF into separate single-page files?",
-        a: "Yes, you can extract individual pages by defining single-page ranges (e.g. 1, 2, 3) to split your document."
+        q: "What are the file size and page count limits for splitting PDFs?",
+        a: "Guest users can upload files up to 25 MB, while registered free users can split files up to 50 MB. Pro tier members enjoy a limit of 500 MB per file and can extract thousands of pages in a single run. The system processes these large files in seconds without memory limits."
       },
       {
-        q: "What is the difference between split ranges and extract?",
-        a: "Split ranges splits the PDF at custom boundaries into multiple files, while Extract saves only selected pages into a single new document."
+        q: "Can I extract specific non-consecutive pages from my PDF?",
+        a: "Yes. You can extract pages by entering comma-separated page numbers (e.g. 1, 4, 7) or custom ranges (e.g. 1-3, 5-9) in the options panel. The splitting engine will isolate only those pages and compile them into a new file."
+      },
+      {
+        q: "Will the output documents retain links, interactive form fields, and fonts?",
+        a: "Yes. The splitting process isolates the pages while keeping all page structures, interactive links, annotations, and embedded fonts intact. The text remains fully searchable, and interactive form fields remain active."
+      },
+      {
+        q: "Can I split encrypted or password-protected PDF files?",
+        a: "No. If a document is protected by an open password or has edit restrictions, you must unlock it first. Use the Unlock tool to remove these restriction flags before uploading them to the splitting tool."
+      },
+      {
+        q: "How secure is my split document on PDFMount?",
+        a: "We prioritize user privacy. File transfers are protected by TLS 1.3 protocols. All files are processed in volatile, isolated server environments. Our automated system wipes all temp data and output files exactly 60 minutes after processing, preventing any third-party access."
       }
     ],
     detailedContent: [
       "Large documents can be slow to email and hard to navigate. By splitting your PDF, you can discard redundant sections and focus solely on the critical pages. Our split engine preserves form fields, annotations, and metadata in the extracted ranges, ensuring no structural data is lost.",
-      "This tool is highly optimized for lawyers, accountants, and administrators who frequently need to extract single pages or specific chapters from large contracts or financial statements."
+      "This tool is highly optimized for lawyers, accountants, and administrators who frequently need to extract single pages or specific chapters from large contracts or financial statements.",
+      "The platform is fully compliant with modern security standards. We do not read, view, or retain your files. Once the 60-minute automatic deletion script runs, your data is gone forever, making PDFMount a safe choice for enterprise-level operations."
     ]
   },
   "compress": {
     title: "Compress PDF - Reduce PDF File Size Online Free | PDFMount",
     desc: "Reduce the size of your PDF files online without losing visual quality. Compress PDFs under 100KB for easy email sharing and upload forms.",
     h1: "Compress PDF Document Size Online",
-    intro: "Shrink your large PDF documents to make them email-friendly and compliant with government upload portals. PDFMount optimizes image sizes and flattens redundant font headers.",
+    intro: "Reduce the file size of your PDF documents online without compromising visual quality. PDFMount's compression tool uses intelligent algorithms to scale down high-resolution images, flatten font subsets, and remove redundant metadata structures. This ensures that your text remains sharp and readable while making files small enough for email attachments and government upload portals. The compression process runs entirely on secure, isolated servers.",
     steps: [
-      "Choose the PDF file you wish to compress.",
-      "Select your preferred compression level (Recommended, Extreme, or Less Compression).",
-      "Click the 'Start' button to execute compression.",
-      "Download your optimized PDF file."
+      "Upload the PDF document you want to optimize from your computer or mobile storage.",
+      "Select your preferred compression level: Recommended (best balance), Extreme (smallest size), or Less (highest quality).",
+      "Click the 'Start' button to execute the image optimization and stream compression algorithms.",
+      "Wait for the engine to compile the optimized file, showing the percentage of file size saved.",
+      "Download your compressed PDF file instantly, keeping layouts and vectors sharp."
     ],
     faqs: [
       {
-        q: "Does compressing a PDF ruin its image quality?",
-        a: "No. Our recommended setting uses a smart compression algorithm that reduces file size dramatically while maintaining high visual readability."
+        q: "What are the file size limits and tool quotas for compression?",
+        a: "Guest users can compress files up to 25 MB, while registered free users can optimize files up to 50 MB. Pro tier members can upload large files up to 500 MB. Users are allowed up to 10 compression tasks per day on the free plans, and 100 on the Pro plan."
       },
       {
-        q: "How can I reduce a PDF to under 100KB?",
-        a: "Try selecting the 'Extreme Compression' setting. This applies strong optimization suitable for basic text sheets and scanned forms."
+        q: "Will my images and text lose quality during the compression process?",
+        a: "The 'Recommended Compression' setting uses a smart downsampling algorithm that maintains 150 DPI resolution for images, which is perfect for screens and standard printing. Text lines, vectors, and layouts are preserved, ensuring high readability."
+      },
+      {
+        q: "How can I reduce a PDF file to under 100KB?",
+        a: "To shrink your PDF to under 100KB, choose the 'Extreme Compression' setting. This setting downsamples images to 72 DPI and cleans up non-essential formatting data, which is ideal for basic text sheets and scanned forms."
+      },
+      {
+        q: "Can I compress password-protected or restricted PDF files?",
+        a: "No. If a document is protected by an open password or has edit restrictions, you must unlock it first. Use the Unlock tool to remove these restriction flags before uploading them to the compression tool."
+      },
+      {
+        q: "Is my confidential data safe during PDFMount's compression process?",
+        a: "Yes. All file transfers are secured with TLS 1.3 encryption. The compression process is executed in isolated sandbox environments, and all uploaded documents and optimized outputs are permanently deleted from our cache after 60 minutes."
       }
     ],
     detailedContent: [
       "Many government portals, job application forms, and email clients enforce strict size limits. PDFMount's compression tool uses advanced algorithms to compress embedded images, remove redundant metadata, and clean up orphan streams without altering the actual content layout of your document.",
-      "For professional portfolios and legal briefs, choose 'Less Compression' to keep image DPI high while stripping out underlying bloat, ensuring your files look crisp on any retina display."
+      "For professional portfolios and legal briefs, choose 'Less Compression' to keep image DPI high while stripping out underlying bloat, ensuring your files look crisp on any retina display.",
+      "The platform is fully compliant with modern security standards. We do not read, view, or retain your files. Once the 60-minute automatic deletion script runs, your data is gone forever, making PDFMount a safe choice for enterprise-level operations."
     ]
   },
   "jpg-pdf": {
@@ -326,23 +364,42 @@ export const seoPages: Record<string, SeoPageData> = {
   },
   "pdf-annotator": {
     title: "Edit PDF & Annotate - Highlight and Draw on PDF | PDFMount",
-    desc: "Edit PDF documents online. Highlight text, draw, insert shapes, and write comments on your PDF files free.",
-    h1: "Annotate and Edit PDF Online",
-    intro: "Review and comment on PDF layouts. Highlight text and draw directly on PDF pages in your browser.",
+    desc: "Edit and annotate PDF documents online. Draw shapes, highlight text blocks, add comments, and save changes securely in your browser without watermarks.",
+    h1: "Annotate and Edit PDF Documents Online",
+    intro: "Perform comprehensive document review directly inside your web browser. PDFMount provides an interactive workspace to overlay text comments, draw vector markups, and highlight critical text lines on standard PDF documents. Our system maintains original document layers and layout parameters without rasterizing text or altering source fonts. It works under isolated execution, ensuring private papers are never retained on our drives. The tool is designed to work on any modern browser without software installations.",
     steps: [
-      "Select and upload the PDF file.",
-      "Use drawing and text tools in the workspace editor to annotate pages.",
-      "Click the 'Start' button to save annotations.",
-      "Save your annotated PDF."
+      "Select the target PDF file from your device folder and drag it into the secure upload drop zone above.",
+      "Select drawing pencils, geometric shapes, or text tools from the editing sidebar to start adding annotations.",
+      "Position comment boxes and adjust highlight colors on individual page sheets using the interactive editor interface.",
+      "Click the 'Start' button to compile the new annotation metadata layer directly into the PDF file structure.",
+      "Save the output file on your local storage device instantly, keeping all interactive markups fully editable."
     ],
     faqs: [
       {
-        q: "Are annotations editable after downloading?",
-        a: "Yes, standard PDF readers will recognize highlights and text comments as editable document markup."
+        q: "Are the annotations added by PDFMount compatible with other PDF readers?",
+        a: "Yes. The editor writes annotations conforming strictly to the Adobe PDF specification. Highlights, text boxes, and hand-drawn paths are saved as standard annotation objects. This means popular readers like Adobe Acrobat, Google Chrome PDF Viewer, or Apple Preview will detect, display, and allow editing or deleting of these comments on any device."
+      },
+      {
+        q: "Can I remove existing text or redact confidential data using this tool?",
+        a: "This tool is designed for adding review markups, highlights, and annotations to the document layout. It does not overwrite or permanently delete the underlying text layers. For permanent removal of sensitive data, you must use a dedicated PDF redaction tool that sanitizes the underlying PDF streams rather than just overlaying shapes."
+      },
+      {
+        q: "What is the maximum file size limit for annotating documents?",
+        a: "Unregistered guest users can upload and edit files up to 25 MB. Registered users on our free plan can process documents up to 50 MB, while Pro tier subscribers can edit large files up to 500 MB. Our server-side processing is optimized to handle multi-page documents containing complex vector layouts without memory limits."
+      },
+      {
+        q: "Does WeLovePDF rasterize pages or degrade image resolution after editing?",
+        a: "No. The editor preserves the vector nature of the original document. We do not convert pages into images or reduce the DPI of embedded graphics. The new markings are injected as a separate vector overlay stream, meaning your fonts, links, and high-resolution layouts remain sharp and fully zoomable."
+      },
+      {
+        q: "How secure is my data when uploading files for annotation?",
+        a: "Security is built into our core pipeline. File transfers use TLS 1.3 encryption. Uploaded documents are processed in volatile, isolated server sandboxes. Our automated system wipes all temp data and output files exactly 60 minutes after processing, preventing any third-party access."
       }
     ],
     detailedContent: [
-      "Reviewing drafts with client feedback is simple. Our annotator embeds markup vectors onto pages without changing the original text blocks."
+      "Our annotation engine parses the document structure to inject standard PDF annotation dictionaries. Drawing vectors are rendered as markup annotations, while text inputs map to free-text comment blocks. By conforming to standardized document formatting guidelines, WeLovePDF ensures cross-platform compatibility across enterprise software systems without breaking layout metadata.",
+      "We prioritize data confidentiality above all else. Your files are processed on dedicated, isolated servers with strict access controls. There is no human surveillance, and no data is sent to external AI processors. The 60-minute cleanup script guarantees that files are permanently deleted from our cache, leaving no residual traces behind.",
+      "This online annotator is an essential tool for legal professionals reviewing contracts, students highlighting research papers, and remote teams collaborating on layout drafts. It eliminates the need for expensive desktop licenses, providing a fast, secure, browser-native alternative for daily document review tasks."
     ]
   },
   "header-footer-pdf": {
