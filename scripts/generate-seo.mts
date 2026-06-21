@@ -167,94 +167,404 @@ const seoPages: Record<string, SeoPage> = {
     ]
   },
   "jpg-pdf": {
-    title: "JPG to PDF Converter - Convert Images to PDF Online | PDFMount",
-    desc: "Convert JPG, PNG, and image files to PDF documents online. Create clean, high-resolution PDF portfolios from your scanned documents.",
-    h1: "Convert JPG Images to PDF online",
-    intro: "Convert camera snapshots, scans, and graphic designs into a unified PDF document. PDFMount aligns margins and sizes for high-fidelity layouts.",
-    steps: ["Select one or more JPG, PNG, or GIF image files.", "Adjust page orientation (portrait/landscape) and margins if needed.", "Click the 'Start' button to generate the PDF document.", "Download your compiled image portfolio."],
-    faqs: [{ q: "Can I convert multiple JPGs into a single PDF?", a: "Yes. You can upload multiple images at once, rearrange them, and PDFMount will compile them into one multi-page PDF." }, { q: "Will my images be compressed during conversion?", a: "No. PDFMount embeds your images at their original resolutions, wrapping them securely in standard PDF vectors to preserve details." }],
-    detailedContent: ["Converting scans of PAN cards, Aadhars, receipts, or contracts into a single PDF makes them easy to print and store.", "This tool supports PNG, BMP, GIF, and WebP, rendering them in standard PDF pages suitable for official application portals."],
+    title: "Convert JPG to PDF Online - Free Image to PDF | PDFMount",
+    desc: "Convert JPG, PNG, and TIFF images to PDF documents online. Group multiple images into a single PDF. Free, secure, and preserves high image resolution.",
+    h1: "Convert JPG Images to PDF Online",
+    intro: "Convert camera snapshots, paper scans, and digital designs into a unified, professional PDF document. PDFMount parses your uploaded image files—including JPG, JPEG, PNG, WEBP, and BMP formats—to compile them into standard PDF page objects. The conversion process preserves your source resolution, avoids destructive compression artifacts, and maintains accurate layout dimensions. By processing tasks on secure server containers, we ensure that your original images remain private and clean. You can customize margins, select vertical or horizontal orientations, and rearrange the sequence of your pages directly within your browser. There is no software installation or registration required to start.",
+    steps: [
+      "Upload your JPG, PNG, or BMP image files from your local storage using our secure drag-and-drop window above.",
+      "Rearrange the sequence of your image pages in the layout grid to organize your PDF document correctly before compilation.",
+      "Set your layout preferences by selecting vertical or horizontal orientation, custom page margins, and standard page sizes like A4 or Letter.",
+      "Click the conversion button to trigger our image processing engine, which wraps each image file in a vector PDF container.",
+      "Save the generated PDF document directly to your device storage, featuring original image quality and zero watermarks."
+    ],
+    faqs: [
+      {
+        q: "What is the maximum number of images and file size limit for conversion?",
+        a: "Guest users can upload up to 20 images with a maximum size limit of 25MB per file. Free registered accounts can upload files up to 50MB each, while Pro subscribers can convert up to 100 images of up to 500MB per file in a single processing batch. The processing engine handles large image volumes within ten seconds."
+      },
+      {
+        q: "Will the converter compress my high-resolution images or reduce DPI quality?",
+        a: "No, PDFMount does not downsample or compress your source files during this standard conversion. The engine reads the original pixel matrix and embeds each image into the PDF structure at its native resolution, maintaining DPI scaling and vector coordinates. Your output document remains sharp for professional printing and digital viewing."
+      },
+      {
+        q: "Can I combine different image file formats like JPG and PNG together?",
+        a: "Yes, you can upload a mix of JPG, JPEG, PNG, BMP, and WEBP files simultaneously. The rendering script processes each format, standardizing them into uniform page sizes based on your selected page settings. This is useful for compiling receipts, identification cards, and scanned pages of various formats into one document."
+      },
+      {
+        q: "Does PDFMount add any branding watermarks or logos to the generated PDF?",
+        a: "No, PDFMount does not add any watermarks or promotional logos to your output files. We respect your document ownership, and all generated files remain entirely clean and professional. The output document is ready for official submissions, academic applications, or corporate presentations without restriction."
+      },
+      {
+        q: "How does PDFMount ensure the security of my uploaded files?",
+        a: "We implement strict security protocols to safeguard your personal data. All files are transferred using TLS 1.3 encryption protocols and processed in isolated, volatile server environments. Our automated cleanup script purges all uploaded images and converted PDFs from our temporary cache exactly 60 minutes after execution, leaving zero copies behind."
+      }
+    ],
+    detailedContent: [
+      "Our JPG to PDF converter employs an advanced image processing engine that directly wraps image streams into standard PDF containers. Instead of performing destructive rasterization or file compression, the system extracts the image payload and writes it directly to the page stream metadata, preserving every original pixel. The rendering engine computes the optimal bounding box for each image, adjusting page coordinates to prevent clipping or layout distortion. You can configure precise margins and scale images to match paper sizes like A4 or US Letter, ensuring standard layouts for print.",
+      "Security is a core component of the PDFMount architecture. Every document conversion task runs within a secure, isolated sandbox environment that has no access to external networks. We do not read, extract, or share your document contents, ensuring absolute confidentiality for sensitive forms, identity scans, and invoices. The system enforces a strict zero retention policy. All uploaded image files and the resulting PDF documents are permanently deleted from our temporary storage drives exactly 60 minutes after processing, leaving no residual traces.",
+      "This converter serves a wide range of professional and academic needs. Students can combine multiple homework snapshots or handwritten notes into a single document for online submissions. Legal professionals can compile photo evidence, receipt scans, and signed paper contracts into organized document archives. Corporate teams can convert design mockups and marketing drafts into polished PDF portfolios for client reviews. By offering a fast, web-native utility, PDFMount eliminates the need for expensive desktop licenses."
+    ]
   },
   "pdf-jpg": {
-    title: "PDF to JPG Converter - Export PDF Pages as Images | PDFMount",
-    desc: "Convert PDF pages to high-quality JPG or PNG images online. Extract pictures from PDFs or turn whole pages into sharp image files free.",
-    h1: "Convert PDF Pages to JPG Images",
-    intro: "Turn PDF pages into sharp, independent image files. Perfect for extracting slides, embedding document previews on websites, or reviewing artwork.",
-    steps: ["Upload your PDF document.", "Click the 'Start' button to render page sheets as images.", "Download the generated JPG files (saved inside a consolidated ZIP archive)."],
-    faqs: [{ q: "Can I convert only specific pages?", a: "Yes, you can extract target sheets by selecting pages in the interactive preview workspace before executing conversion." }, { q: "What image formats are supported?", a: "We support exporting pages as high-quality JPGs by default. PDF to PNG conversion is also supported." }],
-    detailedContent: ["Sharing document mockups as JPGs is faster and safer than sending complete vector PDFs. Our rendering engine rasterizes fonts and layouts at high resolution (150-300 DPI).", "This is perfect for creative designers who need to export layout drafts, presentation slides, or portfolio sheets as standard web-friendly images."],
+    title: "Convert PDF to JPG Online - Export PDF Pages Free | PDFMount",
+    desc: "Convert PDF pages to high-quality JPG or PNG images online. Extract images from PDF or rasterize pages to sharp images. Secure and no watermark.",
+    h1: "Convert PDF Pages to JPG Images Online",
+    intro: "Transform complex PDF pages into standard, high-resolution JPG or PNG image files. PDFMount uses a fast rendering engine that reads vector shapes, embedded text strings, and layout structures to convert each page into a separate image. The conversion process preserves the visual fidelity of your layout, rendering fine typography and vector graphics at standard DPI settings. This tool operates entirely inside secure, isolated sandbox containers on our servers, ensuring your files are never exposed. You can select specific pages to convert or batch-extract all pages into a consolidated ZIP archive. No account creation or installation is required.",
+    steps: [
+      "Select and upload the PDF document you wish to convert from your computer or mobile device into the secure upload box.",
+      "Choose your preferred output format, selecting either JPG format for standard images or PNG format for lossless graphic files.",
+      "Adjust the rendering quality setting, choosing between standard resolution for web use or high-DPI options for detailed print mockups.",
+      "Click the processing button to trigger our rendering engine, which parses the PDF streams and rasterizes each page to image format.",
+      "Download your converted image files immediately as a single compressed ZIP folder, keeping your original page sequences intact."
+    ],
+    faqs: [
+      {
+        q: "What are the file size and page limits for PDF to JPG conversion?",
+        a: "Unregistered guest users can convert files up to 25MB, while registered free accounts can upload files up to 50MB. Pro tier subscribers can convert documents up to 500MB. The conversion system has no strict page limits and can process multi-page PDFs containing hundreds of pages into ZIP archives quickly."
+      },
+      {
+        q: "Will the text and drawings remain sharp after conversion to images?",
+        a: "Yes, our converter uses a high-fidelity rasterization engine that renders PDF vector paths, text objects, and margins at high resolution. You can select up to 300 DPI to ensure small fonts and technical diagrams remain legible. The resulting JPG files display clearly on all screens."
+      },
+      {
+        q: "Can I choose to convert only a few specific pages from my PDF?",
+        a: "Yes, you can specify individual pages or ranges in the settings panel prior to conversion. The interface displays a visual grid of your document, allowing you to select target sheets for rasterization. This prevents you from downloading unwanted images and saves local storage."
+      },
+      {
+        q: "Are there any watermarks added to the exported JPG images?",
+        a: "No, PDFMount has a strict policy against adding watermarks or branding text to your files. The exported images will contain only the exact content of your original PDF. They are suitable for commercial projects, website integration, or presentation slides."
+      },
+      {
+        q: "How long does PDFMount keep my uploaded PDFs and converted JPG files?",
+        a: "We enforce a strict security policy to protect client data. All uploaded documents and generated JPG files are stored in volatile server caches and are completely purged after 60 minutes. We do not inspect your document content, and no copies are stored on our servers."
+      }
+    ],
+    detailedContent: [
+      "Our PDF to JPG converter relies on a sophisticated rendering engine that parses PDF stream metadata to recreate vector lines, shapes, and font glyphs before rasterization. This ensures layout fidelity across all output images. The conversion pipeline dynamically handles embedded color spaces like CMYK and RGB, ensuring that color matching remains precise. You can select custom DPI scaling factors—ranging from 72 DPI for lightweight web displays to 300 DPI for high-quality printing—to achieve the perfect balance between file size and image clarity.",
+      "Privacy is built directly into our document processing architecture. Every conversion task runs in an isolated virtual sandbox that has no persistent storage access. This prevents unauthorized processes from reading your documents. The platform operates under a strict zero retention policy, meaning we do not copy, share, or log your files. All source PDFs and resulting JPG images are permanently purged from our drives exactly 60 minutes after processing, ensuring compliance with strict data protection regulations.",
+      "This converter is highly useful for professionals across various industries. Digital marketers can convert PDF design mockups into JPG images for easy social media sharing. Legal specialists can extract single pages of contracts as image files to insert into presentation decks or reports. Students can convert PDF slides and handouts into image files to view offline on mobile devices. By providing a secure, browser-based tool, PDFMount simplifies document management and eliminates the need for desktop installations."
+    ]
   },
   "word-pdf": {
     title: "Word to PDF Converter - Convert DOCX to PDF Online | PDFMount",
-    desc: "Convert Microsoft Word documents (DOCX and DOC) to PDF online free. Maintains original styles, fonts, margins, and formatting.",
+    desc: "Convert Microsoft Word documents (DOCX and DOC) to PDF online free. Keep original formatting, styles, tables, and fonts. Secure, fast, and no watermark.",
     h1: "Convert Word (DOCX) to PDF Online",
-    intro: "Convert editable Microsoft Word files into secure, non-editable PDFs. Our layout engine parses styles, list structures, and tables accurately.",
-    steps: ["Upload your DOCX or DOC file.", "Customize optional margins and page layout configurations if desired.", "Click the 'Start' button to convert Word to PDF.", "Save your stable, print-ready PDF."],
-    faqs: [{ q: "Will my margins and lists be preserved?", a: "Yes. Our engine is mapped to translate DOCX font styles, heading weights, bullet lists, and borders to PDF vectors." }],
-    detailedContent: ["Sending resumes or business agreements as Word files can lead to layout distortions on different screen sizes. Converting to PDF locks in your formatting.", "Our lightweight python-docx converter operates instantly, returning clean, standard PDF documents ready for signatures and archiving."],
+    intro: "Convert your editable Microsoft Word documents into secure, non-editable PDF files online. PDFMount's conversion engine parses DOCX and DOC file structures, translating paragraph styles, font hierarchies, tables, and margins into standard PDF vector commands. This layout preservation ensures that your document looks exactly as intended on all devices, preventing the layout shifts that often occur when sharing raw editable documents. The conversion runs on secure, isolated server nodes, keeping your private documents confidential. You can upload large DOCX files and generate print-ready PDFs in seconds, without downloading desktop applications or creating an account.",
+    steps: [
+      "Upload your Word document in DOCX or DOC format from your computer or mobile storage using the secure upload tool.",
+      "Configure optional page settings, such as page size standardizations, margin widths, and orientation configurations if required.",
+      "Click the conversion button to initialize our layout parser, which maps Word paragraph styling directly to PDF vector paths.",
+      "Wait a few seconds for the document processing engine to compile your new, stable PDF document on our secure servers.",
+      "Save the converted PDF file directly to your device storage, ready for official submission and clean printing without watermarks."
+    ],
+    faqs: [
+      {
+        q: "What are the document size limits for converting Word to PDF?",
+        a: "Guest users can upload Word documents up to 25MB in size. Registered free accounts can process files up to 50MB, and Pro tier members can upload documents up to 500MB. Our processing engine is optimized to handle complex, text-heavy reports containing hundreds of pages in under ten seconds."
+      },
+      {
+        q: "Will the converter preserve my tables, custom fonts, and lists?",
+        a: "Yes. The layout engine parses DOCX XML structures to reconstruct font weights, paragraph styles, numbered lists, and cell margins. Custom formatting is converted into vector coordinates inside the PDF document, ensuring that your output file maintains layout fidelity and remains readable."
+      },
+      {
+        q: "Can I convert old Microsoft Word DOC formats as well?",
+        a: "Yes, our converter supports both the newer DOCX format and the legacy binary DOC format. The conversion engine translates the older binary layouts into standard PDF structures, allowing you to modernize and preserve old business documents for digital archiving."
+      },
+      {
+        q: "Does PDFMount place any watermarks on my converted PDF document?",
+        a: "No, PDFMount does not add watermarks, branding elements, or promotional covers to your converted files. The output PDF remains clean and matches your original formatting exactly. This ensures that your documents look highly professional for business or academic submissions."
+      },
+      {
+        q: "Is my document data secure when using the Word to PDF converter?",
+        a: "Yes, document security is guaranteed on our platform. All file transfers are secured with TLS 1.3 encryption protocols, and documents are processed in isolated virtual sandboxes. Our automated deletion script removes all uploaded files and converted PDFs after 60 minutes."
+      }
+    ],
+    detailedContent: [
+      "Our Word to PDF converter uses a proprietary layout engine that parses DOCX XML document structures rather than using basic HTML conversions. The parser maps paragraph properties, indentations, table grids, and embedded images directly to PDF vector coordinates, ensuring high layout fidelity. Fonts are embedded as subset vectors within the output file, preserving the original appearance of text without relying on system fonts. Embedded image files are kept at their native resolution, avoiding pixelation and keeping your graphics sharp.",
+      "Security is integrated into every step of our file processing pipeline. Files are uploaded via encrypted channels using TLS 1.3 and executed inside isolated sandbox containers that are wiped after each task. We enforce a strict zero retention policy, meaning we do not inspect, index, or store your documents permanently. All uploaded Word files and converted PDF outputs are permanently deleted from our temporary storage systems exactly 60 minutes after the conversion, guaranteeing absolute confidentiality.",
+      "This converter is ideal for professionals and students who require reliable document sharing. Business teams can convert contracts, invoices, and proposals to PDF to ensure formatting is locked prior to client signature. Legal professionals can convert briefs and letters, ensuring the text remains searchable and readable across different operating systems. Students can compile essays and research papers, ensuring that margins and references do not shift during grading. PDFMount provides a fast, browser-based solution that replaces expensive desktop software."
+    ]
   },
   "pdf-word": {
-    title: "PDF to Word Converter - Edit PDF in Microsoft Word | PDFMount",
-    desc: "Convert PDF documents to editable Microsoft Word files (DOCX) online. Uses layout reconstruction to turn PDF sheets into editable paragraphs.",
+    title: "PDF to Word Converter - Convert PDF to DOCX Online | PDFMount",
+    desc: "Convert PDF documents to editable Microsoft Word files (DOCX) online. Reconstructs layouts, paragraphs, and tables. Secure and no watermark.",
     h1: "Convert PDF to Word Online Free",
-    intro: "Make locked PDF documents editable. PDFMount parses PDF text blocks, headers, and bullet lists, mapping them into standard DOCX paragraph elements.",
-    steps: ["Upload the PDF you wish to edit in Word.", "Select conversion preferences (e.g. flowing text or framed templates).", "Click the 'Start' button to convert.", "Download the editable DOCX file."],
-    faqs: [{ q: "Can I convert scanned PDFs to Word?", a: "Yes. PDFMount uses OCR to extract text from images and scanned PDF pages before converting them to DOCX format." }, { q: "Will the layout of my PDF be ruined?", a: "No. Our layout reconstruction algorithm attempts to map text blocks logically, sorting headings, lists, and normal lines." }],
-    detailedContent: ["Editing PDFs directly is notoriously difficult. By converting them back to Word, you can use standard office processors to adjust copy, rewrite tables, and re-arrange paragraphs easily.", "PDFMount's PDF-to-Word engine operates with layout preservation, making it much more than a simple text extractor."],
+    intro: "Convert non-editable PDF documents back into fully editable Microsoft Word DOCX files. PDFMount's reconstruction engine parses your PDF page by page, analyzing text placements, font weights, and table grids to build a dynamic Word document. Instead of just exporting raw text block streams, our converter attempts to reconstruct flowing paragraph blocks, bulleted lists, and structured tables, making manual editing simple. The entire conversion process occurs on secure, isolated server containers, protecting your private document contents from third-party access. You can upload large PDFs, extract tables, and start editing in Word immediately without installing external software or creating an account.",
+    steps: [
+      "Select and upload the PDF file you wish to convert from your computer or mobile storage using our secure upload panel.",
+      "Choose your layout preference, opting for flowing text paragraphs for easy editing or structured frames to preserve exact layout boundaries.",
+      "Click the conversion button to trigger the reconstruction engine, which translates PDF text streams into standard editable DOCX elements.",
+      "Allow our document processing engine to parse the text nodes, identify tables, and compile the Word file in seconds.",
+      "Save the generated DOCX file to your device storage, ready for editing in Microsoft Word with zero added watermarks."
+    ],
+    faqs: [
+      {
+        q: "What are the document size limits for converting PDF to Word?",
+        a: "Guest users can upload PDF files up to 25MB for conversion. Registered users on the free plan can process files up to 50MB, and Pro tier members can upload large documents up to 500MB. The conversion engine is optimized to process text-heavy books or reports in under fifteen seconds."
+      },
+      {
+        q: "Will the Word document layout match my original PDF formatting?",
+        a: "Our reconstruction engine uses advanced text grouping algorithms to identify paragraphs, headers, and lists. Complex designs with overlapping vectors might require minor adjustments, standard text documents, invoices, and resumes are reconstructed with high layout fidelity. This ensures your text remains editable and your font structures are preserved. The output file is fully compatible with Microsoft Word."
+      },
+      {
+        q: "Can the tool convert scanned PDF documents using OCR?",
+        a: "Yes, PDFMount integrates Optical Character Recognition (OCR) technology. If you upload a scanned PDF or a document containing pages saved as images, our OCR system extracts the text characters and compiles them into editable paragraph text within the resulting Word document. This allows you to edit scanned paper files easily."
+      },
+      {
+        q: "Will my converted DOCX file contain any PDFMount watermarks?",
+        a: "No, PDFMount does not inject branding overlays or watermark stamps into your converted files. The output Word document will contain only your original text and layout, keeping it ready for professional office edits, academic updates, or official submissions. You do not need to manually delete any advertisements."
+      },
+      {
+        q: "How does PDFMount protect the privacy of my sensitive PDF files?",
+        a: "Document privacy is our core priority. All transfers are secured using TLS 1.3 protocols, and files are processed inside isolated virtual sandboxes. All uploaded PDFs and converted Word files are permanently deleted from our servers after 60 minutes, ensuring your files remain private."
+      }
+    ],
+    detailedContent: [
+      "Our PDF to Word converter uses a structural layout reconstruction algorithm that goes beyond standard text extraction. The engine analyzes the visual flow of the PDF, grouping characters into words, words into lines, and lines into paragraph blocks. It automatically identifies font properties like weights, sizes, and colors, matching them to standard typography in Microsoft Word. Tables are reconstructed by detecting intersecting vector lines, allowing you to edit cell contents and adjust column widths directly within DOCX tables without breaking formatting.",
+      "We prioritize data confidentiality in all operations. Our servers use TLS 1.3 encryption for secure file uploads and downloads. The conversion process is executed in isolated containers, which isolates your data from other users and prevents unauthorized access. The system is governed by a strict zero retention policy, meaning we do not inspect, share, or log your document contents. All uploaded documents and processed Word files are permanently deleted from our cache after exactly 60 minutes.",
+      "This tool is highly valuable for users who need to modify read-only files. Business professionals can convert PDF contracts to DOCX to make revisions or copy sections into new proposals. Legal assistants can convert PDF briefs to Word to extract case facts or edit boilerplate language. Students can convert reference guides and textbooks to copy quotes and format notes for study materials. PDFMount provides a free, fast, and secure alternative that eliminates the need for expensive software licenses."
+    ]
   },
   rotate: {
-    title: "Rotate PDF Pages - Rotate PDF Files Online Free | PDFMount",
-    desc: "Rotate sideways PDF pages permanently online. Choose individual pages or rotate the entire document to standard portrait layout.",
-    h1: "Rotate PDF Pages Permanently",
-    intro: "Fix scanned documents that loaded upside down or sideways. PDFMount lets you visually rotate specific pages and saves them permanently.",
-    steps: ["Upload the PDF document.", "Hover over individual pages in the grid and click the rotate icon to turn them 90 degrees.", "Click the 'Start' button to write rotations permanently to the file.", "Download your corrected PDF."],
-    faqs: [{ q: "Can I rotate only a single page in a 100-page PDF?", a: "Yes. Our layout grid lets you select and rotate individual sheets without affecting the rest of the document." }, { q: "Is the rotation temporary?", a: "No. Unlike browser viewer rotations, PDFMount rewrites the page geometry tags permanently into the PDF structures." }],
-    detailedContent: ["Scanned forms and contracts are often oriented sideways due to document feeder issues. Sending them like this looks unprofessional and makes them hard to read. Our rotation tool corrects these pages in seconds."],
+    title: "Rotate PDF Pages Online - Rotate PDF Files Free | PDFMount",
+    desc: "Rotate sideways PDF pages permanently online. Choose individual pages or rotate the entire document to vertical layout. Secure and no watermark.",
+    h1: "Rotate PDF Pages Permanently Online",
+    intro: "Correct the orientation of upside down or sideways PDF documents instantly in your browser. PDFMount's rotation tool provides a visual editing interface where you can rotate individual pages or the entire document to vertical or horizontal orientation. The rotation engine modifies the page geometry dictionary tags within the underlying PDF file structure permanently rather than just applying a temporary visual markup overlay. This ensures compatibility across all standard PDF viewers and print utilities without altering the text layers, vector assets, or font configurations. The tool is executed on secure, isolated servers, protecting your private files and business reports from external access.",
+    steps: [
+      "Select and upload the PDF file you wish to rotate from your computer, cloud storage, or mobile storage using our secure upload panel above.",
+      "Hover over individual page previews in the grid and click the rotation arrows to turn them 90, 180, or 270 degrees.",
+      "Select whether to apply the rotation to specific individual pages, even or odd pages, or the entire set of pages.",
+      "Click the start button to execute the layout geometry adjustments permanently on our high-speed, secure server-side container nodes.",
+      "Save the rotated PDF document directly to your device storage, keeping all internal formatting, vector files, and metadata intact."
+    ],
+    faqs: [
+      {
+        q: "What are the file size and page limitations for rotating PDFs?",
+        a: "Guest users can upload PDF files up to 25MB for rotation tasks. Registered users on the free plan can process files up to 50MB, and Pro tier members can upload documents up to 500MB. Our system has no page count limitations and rotates large files within ten seconds."
+      },
+      {
+        q: "Is the page orientation permanent when I open it in other programs?",
+        a: "Yes, our tool modifies the internal MediaBox and Rotate geometry tags within the PDF stream itself. This makes the rotation permanent, ensuring that the pages render in the corrected orientation on all standard web browsers, desktop readers, and office printers."
+      },
+      {
+        q: "Can I rotate only a single page inside a large document?",
+        a: "Yes, our interactive grid interface displays visual page previews, letting you select and rotate specific individual sheets without affecting the rest of the document. You can customize the layout of each page individually to correct scanning errors."
+      },
+      {
+        q: "Does PDFMount add any watermark stamp to my rotated PDF file?",
+        a: "No, PDFMount does not inject watermarks, branding elements, or promotional advertisements into your files. The output PDF remains clean and matches your original file formatting. It is ready for official B2B submissions, client contracts, and academic applications."
+      },
+      {
+        q: "How does PDFMount protect the privacy of my uploaded documents?",
+        a: "We prioritize document security. All file uploads are secured with TLS 1.3 encryption, and rotation tasks are executed in isolated sandboxes. All uploaded files and rotated output files are permanently deleted from our cache after 60 minutes."
+      }
+    ],
+    detailedContent: [
+      "Our PDF page rotation tool modifies the underlying PDF page dictionary, specifically updating the Rotate key which dictates visual rendering coordinates. Unlike tools that rasterize pages to images and rotate them—which degrades text readability and reduces DPI quality—our tool performs metadata geometry adjustments. This ensures layout fidelity, keeps text selectable, and preserves high-resolution vector assets and font definitions. Your document remains fully zoomable on all devices.",
+      "We implement advanced security protocols to protect your documents. File transfers use TLS 1.3 encryption, and operations are run within isolated virtual sandboxes that prevent cross-user data access. We enforce a strict zero retention policy: we do not read, store, or log your document contents. All uploaded files and processed PDFs are permanently deleted from our temporary drives exactly 60 minutes after execution, leaving no residual traces.",
+      "This tool is highly valuable for scanning workflows. Lawyers and administrators often deal with contract pages that are scanned sideways or upside down in document feeders. Students can orient scanned homework sheets or book pages to readable formats before online submissions. Business teams can correct page orientations in reports, invoices, and portfolios to present clean, professional layouts. PDFMount offers a fast, browser-native rotation utility that replaces expensive PDF editors."
+    ]
   },
   remove: {
-    title: "Remove Pages from PDF - Delete PDF Pages Online | PDFMount",
-    desc: "Delete unnecessary pages from your PDF online free. View pages in an interactive grid and discard sheets before sharing.",
-    h1: "Delete Pages from PDF Online",
-    intro: "Discard confidential sections or layout blanks before sending documents. Select and delete PDF pages visually.",
-    steps: ["Select and upload the PDF file.", "Select the pages you want to delete from the visual grid.", "Click the 'Start' button to save the updated PDF.", "Download your cleaned document."],
-    faqs: [{ q: "Can I restore deleted pages?", a: "No, once the file is processed and downloaded, the deleted pages are removed permanently. Keep a backup copy of your original file if needed." }],
-    detailedContent: ["Discarding private appendix pages, placeholder sheets, or template drafts secures your documents and reduces file size."],
+    title: "Delete PDF Pages Online - Remove Pages from PDF | PDFMount",
+    desc: "Delete unnecessary pages from your PDF online free. View pages in an interactive grid and discard sheets before sharing. Secure, fast, and no watermark.",
+    h1: "Delete Pages from PDF Online Free",
+    intro: "Remove unwanted or confidential pages from your PDF documents online with ease. PDFMount's page removal tool displays your document pages in an interactive layout grid, allowing you to select and discard individual sheets, blank pages, or outdated sections. The processing engine rebuilds the PDF structure, updating the page tree index and removing associated object streams without affecting the quality of the remaining pages. The tool runs on secure, isolated servers, protecting your private files and business agreements. You can streamline your files, reduce their size, and share only the necessary pages with clients and team members instantly.",
+    steps: [
+      "Select and upload the PDF document containing pages you wish to delete into the secure upload drop zone above.",
+      "View the visual page previews in the interactive grid interface to identify pages you want to remove.",
+      "Click the delete icon on individual page previews or select a custom range of page numbers to discard.",
+      "Click the start compilation button to execute the page stream removal process on our secure server-side container nodes in seconds.",
+      "Save the updated PDF document directly to your local storage device, featuring a clean layout and zero watermark stamps."
+    ],
+    faqs: [
+      {
+        q: "What are the file size and page limitations for deleting PDF pages?",
+        a: "Guest users can upload PDF files up to 25MB for page deletion tasks. Registered users on the free plan can process files up to 50MB, and Pro tier members can upload documents up to 500MB. Our system has no page count limits and processes files in seconds."
+      },
+      {
+        q: "Can I restore pages after deleting them and saving the file?",
+        a: "No, once the page stream is removed and the new PDF is compiled, the discarded pages are permanently deleted from the document. We recommend keeping a backup copy of your original document in case you need to access those pages again."
+      },
+      {
+        q: "Will deleting pages affect interactive form fields or links in the remaining pages?",
+        a: "No, our engine updates the parent page tree references and object coordinates while keeping the remaining interactive elements intact. Active form fields, bookmarks, and internal link targets in the remaining pages continue to function as intended without formatting loss."
+      },
+      {
+        q: "Does PDFMount add any branding watermarks to the output document?",
+        a: "No, PDFMount does not add watermarks, promotional logos, or cover sheets to your files. The output PDF remains clean and matches the visual layout of your original pages. It is ready for official submissions, client contracts, and academic applications."
+      },
+      {
+        q: "How long are my documents stored on PDFMount servers?",
+        a: "We enforce a strict security policy to protect your personal data. All uploaded documents and processed PDFs are stored in volatile server caches and are completely purged after 60 minutes. We do not inspect your document content, and no copies are stored."
+      }
+    ],
+    detailedContent: [
+      "Our page removal tool operates by parsing the PDF cross-reference table and updating the page tree array. Instead of converting pages into rasterized images and re-saving them—which degrades image DPI and text sharpness—the engine performs clean object extraction. It strips the byte offsets of the deleted pages and rebuilds the file header, maintaining layout fidelity, keeping all remaining text selectable, and keeping internal links active.",
+      "Data security is built into our document processing pipeline. All data transfers are encrypted using TLS 1.3 protocols, and files are processed inside isolated virtual sandboxes. We enforce a strict zero retention policy, meaning we do not read, share, or log your document contents. All uploaded files and output PDFs are permanently deleted from our servers exactly 60 minutes after processing, leaving no backup copies.",
+      "Discarding private appendix pages, blank sheets, or outdated draft sections secures your documents and reduces file size. Lawyers can strip irrelevant case sheets before filing court documents, ensuring confidentiality. Business teams can remove outdated pricing charts or redundant slides from company presentations before sharing them with clients. Students can remove outdated page formats from homework assignments. PDFMount offers a fast, browser-native solution that replaces expensive desktop software."
+    ]
   },
   extract: {
-    title: "Extract PDF Pages - Save Specific PDF Pages Free | PDFMount",
-    desc: "Extract specific pages from your PDF online. Select pages visually or input page ranges to create a new PDF containing only those pages.",
-    h1: "Extract Pages from PDF Online",
-    intro: "Extract single pages, ranges, or non-consecutive sheets into a new, independent PDF file.",
-    steps: ["Upload the PDF document.", "Select pages visually in the grid or define target page ranges.", "Click the 'Start' button to extract.", "Download your new PDF."],
-    faqs: [{ q: "Are the links and bookmarks preserved?", a: "Yes, our page extraction tool keeps all interactive elements active inside the selected ranges." }],
-    detailedContent: ["This is perfect for exporting chapters from ebooks, saving specific receipts from a bulk statement, or sending single contract sheets to clients."],
+    title: "Extract PDF Pages Online - Save Specific PDF Pages | PDFMount",
+    desc: "Extract specific pages from your PDF online. Select pages visually or input page ranges to create a new PDF containing only those pages free.",
+    h1: "Extract Pages from PDF Online Free",
+    intro: "Isolate and save specific pages from large PDF documents using our online extraction tool. PDFMount provides an interactive workspace where you can click individual pages to select them or input custom page ranges to compile a new, standalone PDF document. The extraction engine copies the target page streams and metadata objects, creating a lightweight file while maintaining the layout quality, text searchability, and graphic resolution of the original pages. The tool runs on secure, isolated servers, protecting your confidential files. You can extract essential pages from eBooks, reports, or invoices without downloading software.",
+    steps: [
+      "Upload the PDF document containing pages you wish to extract using our secure drag-and-drop zone above.",
+      "View the visual page previews in the interactive layout grid and click the pages you want to select for extraction.",
+      "Alternatively, input specific page numbers or custom page ranges like 1-5, 8, 12 in the manual options panel to define your target sheets.",
+      "Click the start extraction button to trigger our engine, which copies the selected page streams on secure server containers.",
+      "Save the generated PDF document directly to your device storage, featuring only your selected pages and zero watermark stamps."
+    ],
+    faqs: [
+      {
+        q: "What are the file size and page limitations for page extraction?",
+        a: "Guest users can upload PDF files up to 25MB for page extraction tasks. Registered users on the free plan can process files up to 50MB, and Pro tier members can upload documents up to 500MB. Our system has no page limits and processes files in seconds."
+      },
+      {
+        q: "Will the extracted pages contain active links and searchability?",
+        a: "Yes, our engine performs stream copy extraction rather than page rasterization. This preserves all text vectors, internal links, bookmarks, forms, and custom formatting, meaning your text remains searchable and all links stay active in the new document."
+      },
+      {
+        q: "Can I extract non-consecutive pages into a single PDF?",
+        a: "Yes, you can select any combination of non-consecutive pages using our visual grid or enter them as comma-separated values in the input box. The extraction tool will gather the selected pages and compile them into a unified PDF file."
+      },
+      {
+        q: "Does PDFMount add any branding watermarks to the extracted PDF?",
+        a: "No, PDFMount does not add watermarks, branding text, or covers to your extracted files. The output PDF remains clean and matches your original page layouts exactly, making it suitable for official submissions, client contracts, and academic applications."
+      },
+      {
+        q: "Is my document data secure during the extraction process?",
+        a: "Yes, document security is guaranteed on our platform. All file transfers are secured with TLS 1.3 encryption protocols, and documents are processed in isolated virtual sandboxes. Our automated deletion script removes all files and extracted PDFs after 60 minutes."
+      }
+    ],
+    detailedContent: [
+      "Our page extraction tool uses a stream-level copying process that preserves the exact byte payload of your pages. By copying page dictionaries and cross-reference records rather than re-rendering pages, the engine avoids compressing images or reducing DPI quality. This layout preservation keeps your vector paths sharp, fonts embedded, and interactive link elements functioning, delivering a high-quality standalone file that is smaller and easier to share.",
+      "Security is integrated into every step of our file processing pipeline. Files are uploaded via encrypted channels using TLS 1.3 and executed inside isolated sandbox containers that are wiped after each task. We enforce a strict zero retention policy, meaning we do not inspect, index, or store your documents permanently. All uploaded files and extracted outputs are permanently deleted from our temporary storage systems exactly 60 minutes after the conversion, guaranteeing absolute confidentiality.",
+      "This tool is perfect for exporting chapters from ebooks, saving specific receipts from a bulk statement, or sending single contract sheets to clients. Lawyers can extract relevant evidentiary pages to share with courts. Business professionals can save project summaries from large corporate reports. Students can extract specific research paper articles for study materials. PDFMount provides a free, fast, browser-native page extraction utility that replaces expensive desktop software."
+    ]
   },
   organize: {
-    title: "Organize PDF Pages - Rearrange PDF Files Online | PDFMount",
-    desc: "Reorder, delete, and rearrange pages in your PDF document online. Use a drag-and-drop page editor to structure PDFs free.",
-    h1: "Organize and Reorder PDF Pages",
-    intro: "Sort your document page hierarchy visually. Drag pages to new positions, insert sections, or remove blanks in real-time.",
-    steps: ["Upload the PDF file.", "Drag and drop pages in the visual grid to reorder them.", "Click the 'Start' button to compile the new structure.", "Save your organized PDF."],
-    faqs: [{ q: "Can I organize pages from multiple PDFs?", a: "Yes, you can merge multiple files first and then use the organize tool to arrange their combined sheets." }],
-    detailedContent: ["Having pages out of order makes documents look messy. Our interactive canvas lets you restructure PDFs instantly in your browser before downloading a clean copy."],
+    title: "Organize PDF Pages Online - Rearrange PDF Files | PDFMount",
+    desc: "Reorder, delete, and rearrange pages in your PDF document online. Use a drag-and-drop page editor to structure PDFs free. Secure and no watermark.",
+    h1: "Organize and Rearrange PDF Pages Online",
+    intro: "Rearrange and restructure your PDF documents online with our visual organization tool. PDFMount provides a drag-and-drop canvas where you can reorder pages, rotate sideways sheets, or delete unwanted pages in real-time. The processing engine rebuilds the file structure, updating the page dictionary index and keeping the underlying text streams, vector graphics, and image assets intact. The tool runs on secure, isolated servers, protecting your confidential business reports and personal files. You can organize page layouts and clean up document structures inside your browser without installing desktop software.",
+    steps: [
+      "Select and upload the PDF file you wish to organize from your local device folder into the secure upload drop zone above.",
+      "Drag and drop the page previews in the interactive grid to rearrange the page sequence according to your specific needs.",
+      "Use the page options to rotate sideways pages or click the delete icon to remove unwanted sheets from the document.",
+      "Click the start organization button to execute the layout reorganization process on our secure server-side container nodes.",
+      "Save the organized PDF document directly to your local storage device, featuring a clean layout and zero watermark stamps."
+    ],
+    faqs: [
+      {
+        q: "What are the file size and page limits for organizing PDF pages?",
+        a: "Guest users can upload PDF files up to 25MB for page organization tasks. Registered users on the free plan can process files up to 50MB, and Pro tier members can upload documents up to 500MB. Our system has no page count limits and reorganizes files in seconds."
+      },
+      {
+        q: "Will the organized pages retain interactive form fields and links?",
+        a: "Yes, our engine performs file index reorganization rather than page rasterization. This preserves all text vectors, internal links, bookmarks, forms, and custom formatting, meaning your text remains searchable and all links stay active in the new document."
+      },
+      {
+        q: "Can I combine and organize pages from multiple PDFs at once?",
+        a: "Yes, you can upload multiple PDF documents simultaneously. The tool allows you to merge the files and then use the interactive canvas to arrange, delete, and reorder their combined sheets before compiling the final PDF document."
+      },
+      {
+        q: "Does PDFMount add any branding watermarks to the organized document?",
+        a: "No, PDFMount does not add watermarks, branding text, or cover sheets to your files. The output PDF remains clean and matches your original page layouts exactly, making it suitable for official submissions, client contracts, and academic applications."
+      },
+      {
+        q: "Is my document data secure when organizing pages on this platform?",
+        a: "Yes, document security is guaranteed on our platform. All file transfers are secured with TLS 1.3 encryption protocols, and documents are processed in isolated virtual sandboxes. Our automated deletion script removes all files and organized PDFs after 60 minutes."
+      }
+    ],
+    detailedContent: [
+      "Our page organization tool operates by parsing the PDF cross-reference table and updating the page tree array. Instead of converting pages into rasterized images and re-saving them—which degrades image DPI and text sharpness—the engine performs clean object index relocation. It updates the byte offsets of the pages and rebuilds the file header, maintaining layout fidelity and keeping all remaining text selectable.",
+      "We prioritize data confidentiality in all operations. Our servers use TLS 1.3 encryption for secure file uploads and downloads. The reorganization process is executed in isolated containers, which isolates your data from other users and prevents unauthorized access. The system is governed by a strict zero retention policy, meaning we do not inspect, share, or log your document contents. All uploaded documents and organized files are permanently deleted from our cache after exactly 60 minutes.",
+      "Having pages out of order makes documents look messy. Business managers can organize vendor contracts, reports, and presentations to present clean structures. Legal professionals can organize evidence sheets in preparation for filings, ensuring correct sequences. Students can reorder research articles and scanned homework sheets before online submissions. PDFMount provides a free, fast, and secure alternative that eliminates the need for expensive software licenses."
+    ]
   },
   "crop-pdf": {
-    title: "Crop PDF Online - Crop Page Margins and Borders | PDFMount",
-    desc: "Crop PDF pages online. Define custom margins and page boundaries to trim white spaces and crop PDF sheets free.",
-    h1: "Crop PDF Page Boundaries",
-    intro: "Crop empty white margins from documents. Define page crop dimensions to adjust layout boundaries.",
-    steps: ["Upload the PDF file.", "Set preferred crop margins in the workspace panel.", "Click the 'Start' button to crop the file.", "Save your cropped PDF."],
-    faqs: [{ q: "Does cropping delete underlying content?", a: "It clips the visual margins. Highly confidential data hidden by cropping should be redacted using an editing tool." }],
-    detailedContent: ["Trimming scanned margins makes PDFs look clean on e-readers and mobile screens. PDFMount adjusts the MediaBox layout tags to trim page boundaries."],
+    title: "Crop PDF Online - Crop PDF Margins and Borders | PDFMount",
+    desc: "Crop PDF pages online. Define custom margins and page boundaries to trim white spaces and crop PDF sheets free. Secure, fast, and no watermark.",
+    h1: "Crop PDF Page Boundaries Online Free",
+    intro: "Trim empty white margins and adjust page boundaries of your PDF files online with precision. PDFMount's crop tool provides an interactive interface where you can define crop margins for individual pages or standard paper dimensions for the entire document. The cropping engine modifies the page layout metadata tags, specifically updating the CropBox and MediaBox parameters within the PDF structure rather than rasterizing pages. This preserves the original visual quality of your text layers, embedded images, and vector assets. The tool runs on secure, isolated servers, protecting your files from third-party access.",
+    steps: [
+      "Upload the PDF document you wish to crop from your computer or mobile storage using the secure upload zone above.",
+      "Use the interactive bounding box handles to visually define the target crop area on the page preview canvas.",
+      "Alternatively, input precise margin dimensions in pixels or inches in the settings panel to define crop boundaries manually.",
+      "Click the start crop button to execute the page boundary adjustments on our secure server-side container nodes instantly.",
+      "Save the cropped PDF document directly to your device storage, featuring trimmed margins, sharp layouts, and zero watermark stamps."
+    ],
+    faqs: [
+      {
+        q: "What are the file size and page limits for cropping PDFs?",
+        a: "Guest users can upload PDF files up to 25MB for page cropping tasks. Registered users on the free plan can process files up to 50MB, and Pro tier members can upload documents up to 500MB. Our system has no page limits and crops files in seconds."
+      },
+      {
+        q: "Does cropping permanently delete the content outside the cropped area?",
+        a: "It clips the visual page boundaries by updating the MediaBox and CropBox layout tags. While the hidden content is not visible to PDF readers, it is not completely redacted. For highly confidential details, you should use a dedicated PDF redaction tool."
+      },
+      {
+        q: "Can I apply different crop margins to different pages in the same PDF?",
+        a: "Yes, our settings panel allows you to crop either the entire document, specific page ranges, or customize margins for individual pages. This is useful for trimming scanned pages that have uneven alignments."
+      },
+      {
+        q: "Does PDFMount add any branding watermarks to the cropped PDF?",
+        a: "No, PDFMount does not add watermarks, branding text, or cover sheets to your files. The output PDF remains clean and matches your cropped layouts, making it suitable for official submissions, client contracts, and academic applications."
+      },
+      {
+        q: "Is my document data secure when cropping files on PDFMount?",
+        a: "Yes, document security is guaranteed on our platform. All file transfers are secured with TLS 1.3 encryption protocols, and documents are processed in isolated virtual sandboxes. Our automated deletion script removes all files and cropped PDFs after 60 minutes."
+      }
+    ],
+    detailedContent: [
+      "Our cropping tool operates by updating the CropBox and MediaBox parameters in the PDF page dictionary. Instead of converting pages into rasterized images and re-saving them—which degrades image DPI and text sharpness—the engine performs metadata adjustments. This layout preservation ensures that your vector paths remain sharp, fonts stay embedded, text remains selectable, and existing hyperlinks continue working, delivering a high-quality standalone file that displays cleanly.",
+      "Security is a core priority for all document processing operations. All data transfers are encrypted using TLS 1.3 protocols, and file execution runs within isolated server container sandboxes. We enforce a strict zero retention policy, meaning we do not inspect, share, or log your document contents. All uploaded files and cropped PDFs are permanently deleted from our cache after exactly 60 minutes, leaving no backup copies.",
+      "Trimming scanned margins makes PDFs look clean on e-readers and mobile screens. Business managers can crop page margins to standardize presentation slides. Legal professionals can trim white spaces from scanned case files to fit standard print layouts. Students can crop excess margins from textbook pages to make reading on tablet screens more comfortable. PDFMount provides a free, fast, and secure alternative that eliminates the need for expensive desktop licenses."
+    ]
   },
   "page-numbers": {
-    title: "Add Page Numbers to PDF - Number PDF Pages | PDFMount",
-    desc: "Add page numbers to your PDF document online. Choose positions, fonts, and numbering formats (e.g. Page X of Y) easily.",
-    h1: "Add Page Numbers to PDF Online",
-    intro: "Index your documents with clean page numbering. Select custom positions and styles to stamp pages automatically.",
-    steps: ["Upload the PDF file.", "Select numbers position (e.g. bottom-center, top-right) and formatting style.", "Click the 'Start' button to apply numbering.", "Download your numbered PDF."],
-    faqs: [{ q: "Can I exclude the first page from numbering?", a: "Yes. Our advanced options let you skip stamping the cover page." }],
-    detailedContent: ["Adding page numbers makes business reports and academic documents easy to navigate. PDFMount embeds vector page stamps onto your sheets cleanly."],
+    title: "Add Page Numbers to PDF Online - Number PDF Pages | PDFMount",
+    desc: "Add page numbers to your PDF document online. Choose custom positions, fonts, colors, and numbering formats (e.g. Page X of Y) free.",
+    h1: "Add Page Numbers to PDF Online Free",
+    intro: "Index your documents with clean, professional page numbering stamps automatically. PDFMount's page numbering tool provides an interactive interface where you can configure numbering formats, select specific font styles, adjust size coordinates, and choose text alignment. The stamping engine writes vector text layers directly into the PDF page dictionary structures rather than applying flat overlays, ensuring that your text remains searchable and fully zoomable. The tool operates on secure, isolated server nodes, keeping your confidential files protected from unauthorized access. You can number contracts, reports, or textbooks within seconds inside your browser without installing desktop software.",
+    steps: [
+      "Upload the PDF document you wish to index from your computer or mobile storage using our secure upload panel above.",
+      "Choose your preferred layout position for the page numbers, selecting from options like bottom-center, top-right, or top-center.",
+      "Select your text formatting preferences, choosing custom font sizes, text alignments, starting page numbers, and numbering styles like X of Y.",
+      "Click the start numbering button to execute the vector stamping process on our secure, high-speed server-side container nodes instantly.",
+      "Save the numbered PDF document directly to your device storage, featuring clean vector page stamps and zero branding watermarks."
+    ],
+    faqs: [
+      {
+        q: "What are the file size and page limitations for page numbering?",
+        a: "Guest users can upload PDF files up to 25MB for page numbering tasks. Registered users on the free plan can process files up to 50MB, and Pro tier members can upload documents up to 500MB. Our system has no page count limitations and numbers files in seconds."
+      },
+      {
+        q: "Can I exclude the first page or cover sheet from numbering?",
+        a: "Yes, our settings panel includes options to skip numbering on the first page. This allows you to maintain a clean cover sheet for formal reports, student assignments, and business presentations while keeping the remaining pages consecutively numbered."
+      },
+      {
+        q: "Will adding page numbers flatten my document pages or lose layout quality?",
+        a: "No, our tool stamps page numbers as an independent vector text layer inside the PDF structure. Your original fonts, embedded graphics, and text alignment coordinates are preserved at high resolution. The pages remain fully selectable and search-friendly."
+      },
+      {
+        q: "Does PDFMount add any branding logos or watermarks to my document?",
+        a: "No, PDFMount does not inject watermarks, cover pages, or branding headers into your files. The output PDF remains clean and matches your original page layouts exactly. The stamped page numbers are formatted in a highly professional styling of your choice."
+      },
+      {
+        q: "How does PDFMount ensure the confidentiality of my uploaded documents?",
+        a: "We take data privacy seriously. All file uploads are secured with TLS 1.3 encryption, and numbering tasks are executed in isolated sandboxes. All uploaded files and numbered output files are permanently deleted from our cache after exactly 60 minutes."
+      }
+    ],
+    detailedContent: [
+      "Our page numbering tool uses a vector canvas overlay engine that inserts text elements directly into the page content stream coordinates. The system calculates the page height and width, placing number characters at precise offsets based on your settings. By adding numbers as native vector text streams rather than rasterizing pages, the utility preserves layout fidelity, keeps text readable, and maintains high-resolution image details without changing the original file DPI.",
+      "Security is integrated into every step of our file processing pipeline. Files are uploaded via encrypted channels using TLS 1.3 and executed inside isolated sandbox containers that are wiped after each task. We enforce a strict zero retention policy, meaning we do not inspect, index, or store your documents permanently. All uploaded files and numbered outputs are permanently deleted from our temporary storage systems exactly 60 minutes after execution, guaranteeing absolute confidentiality.",
+      "Adding page numbers makes business reports, academic thesis papers, and legal case sheets easy to navigate. Lawyers can index multiple pages of discovery evidence to ensure structured reviews. Corporate teams can number draft presentations, handouts, and invoices before distributing them to clients. Students can format research assignments to meet submission guidelines. PDFMount provides a free, fast, browser-native page numbering utility that replaces expensive desktop software licenses."
+    ]
   },
   "pdf-annotator": {
     title: "Edit PDF & Annotate - Highlight and Draw on PDF | PDFMount",
@@ -297,76 +607,324 @@ const seoPages: Record<string, SeoPage> = {
     ]
   },
   "header-footer-pdf": {
-    title: "Add Header and Footer to PDF - Custom Layouts | PDFMount",
-    desc: "Add custom headers and footers to PDF files online. Stamp titles, dates, or company names on page headers and footers free.",
-    h1: "Add Header and Footer to PDF",
-    intro: "Professionalize your PDFs by overlaying custom header and footer lines onto your documents.",
-    steps: ["Upload the PDF file.", "Input header/footer text and select page positions.", "Click the 'Start' button to stamp headers/footers.", "Download your stamped PDF."],
-    faqs: [{ q: "Can I format the text size and font?", a: "Yes. PDFMount supports customizable font sizes and alignments in the options panel." }],
-    detailedContent: ["Stamping copyright text, date metadata, or branding titles on document headers makes them secure and structured."],
+    title: "Add Header and Footer to PDF Online | PDFMount",
+    desc: "Add custom headers and footers to PDF files online free. Stamp titles, page numbers, dates, or company names on page headers and footers.",
+    h1: "Add Header and Footer to PDF Online Free",
+    intro: "Professionalize your documents by adding customized header and footer lines onto your PDF files online. PDFMount's stamping utility provides a flexible workspace where you can input custom text fields—such as document titles, company names, dates, or copyrights—and align them on page header or footer coordinates. The engine writes vector text layers directly into the PDF content stream, ensuring that your text remains searchable and prints cleanly. The tool operates on secure, isolated servers, protecting your B2B agreements and personal papers. You can standardise layouts and add branding coordinates without installing desktop software.",
+    steps: [
+      "Upload the PDF file you wish to modify from your computer or mobile storage using the secure upload tool above.",
+      "Input your custom text fields for the header and footer margins inside the visual configuration panel.",
+      "Select your text formatting options, including font sizes, custom colors, margin offsets, and the specific pages to be stamped.",
+      "Click the start stamping button to execute the header and footer stamping process on our secure server-side container nodes.",
+      "Save the stamped PDF document directly to your device storage, featuring professional margins, clean vector text, and zero watermarks."
+    ],
+    faqs: [
+      {
+        q: "What are the file size limits and tool quotas for adding headers and footers?",
+        a: "Guest users can upload PDF files up to 25MB for header and footer tasks. Registered users on the free plan can process files up to 50MB, and Pro tier members can upload documents up to 500MB. Our system has no page count limits and processes files in seconds."
+      },
+      {
+        q: "Can I apply headers and footers to specific pages only?",
+        a: "Yes, our settings panel allows you to customize the target page range. You can choose to skip the cover sheet, apply stamps to even or odd pages only, or select a custom range of page numbers to ensure proper document formatting."
+      },
+      {
+        q: "Will adding headers and footers affect my original PDF content or formatting?",
+        a: "No, our engine overlays headers and footers as independent vector layers inside the PDF structure. The underlying text, fonts, margins, and high-resolution images are preserved without formatting loss or page rasterization, keeping your document sharp on all screens."
+      },
+      {
+        q: "Does PDFMount add any promotional branding to my stamped files?",
+        a: "No, PDFMount does not add watermarks, promotional logos, or cover sheets to your files. The output PDF remains clean and matches your original layouts exactly. The stamped headers and footers are formatted in a highly professional styling of your choice."
+      },
+      {
+        q: "Is my document data secure when stamping files on this platform?",
+        a: "Yes, document security is guaranteed on our platform. All file transfers are secured with TLS 1.3 encryption protocols, and documents are processed in isolated virtual sandboxes. Our automated deletion script removes all files and stamped PDFs after 60 minutes."
+      }
+    ],
+    detailedContent: [
+      "Our header and footer tool operates by injecting text objects directly into the PDF content stream coordinates. The system calculates the page height and width, placing text characters at precise offsets based on your settings. By adding metadata headers as native vector text streams rather than rasterizing pages, the utility preserves layout fidelity, keeps text readable, and maintains high-resolution image details without changing the original file DPI.",
+      "Security is integrated into every step of our file processing pipeline. Files are uploaded via encrypted channels using TLS 1.3 and executed inside isolated sandbox containers that are wiped after each task. We enforce a strict zero retention policy, meaning we do not inspect, index, or store your documents permanently. All uploaded files and stamped outputs are permanently deleted from our temporary storage systems exactly 60 minutes after execution, guaranteeing absolute confidentiality.",
+      "Stamping copyright text, date metadata, or branding titles on document headers makes them secure and structured. Lawyers can index multiple pages of discovery evidence with custom titles to ensure structured reviews. Corporate teams can number draft presentations, handouts, and invoices before distributing them to clients. Students can format research assignments to meet submission guidelines. PDFMount provides a free, fast, browser-native header and footer stamping utility that replaces expensive desktop software licenses."
+    ]
   },
   "resize-pdf": {
-    title: "Resize PDF Pages - Change PDF Page Size Online | PDFMount",
-    desc: "Resize PDF pages online. Change page size dimensions to standard A4, Letter, or Legal boundaries free.",
-    h1: "Resize PDF Page Dimensions",
-    intro: "Align document dimensions by resizing pages to standard paper sizes.",
-    steps: ["Upload the PDF document.", "Select target page dimensions (A4, Letter, or Legal).", "Click the 'Start' button to resize.", "Download your resized PDF."],
-    faqs: [{ q: "Will resizing stretch my text?", a: "No. The layout scaling is adjusted proportionally so text lines do not distort." }],
-    detailedContent: ["Standardizing paper layout sizes is crucial for clean office printouts. PDFMount scales page boundaries to match target specifications."],
+    title: "Resize PDF Pages Online - Change PDF Page Size | PDFMount",
+    desc: "Resize PDF pages online free. Change page size dimensions to standard A4, Letter, Legal, or custom sizes. Secure, fast, and no watermark.",
+    h1: "Resize PDF Page Dimensions Online Free",
+    intro: "Align your document page sizes and adjust layouts to standard paper dimensions with our online resizing tool. PDFMount's page resizer provides a simple interface where you can scale your pages to A4, Letter, Legal, or custom page boundaries. The scaling engine modifies the internal page boundary metrics—specifically updating the MediaBox, CropBox, and BleedBox parameters—proportionally without rasterizing the document contents. This layout preservation ensures that your text lines do not distort, fonts stay embedded, and image assets remain sharp. The tool runs on secure, isolated servers, protecting your files from unauthorized access.",
+    steps: [
+      "Select and upload the PDF file you wish to scale from your computer, cloud storage, or mobile storage using our secure upload panel above.",
+      "Choose your target page size standard from the options, selecting standard formats like A4, US Letter, or Legal boundaries.",
+      "Set your scaling preferences, choosing to scale page contents proportionally or add empty margins to fit target page dimensions.",
+      "Click the start resize button to execute the layout boundary adjustments on our secure server-side container nodes instantly.",
+      "Save the resized PDF document directly to your device storage, featuring standard layouts and zero branding watermarks."
+    ],
+    faqs: [
+      {
+        q: "What are the file size and page limits for resizing PDFs?",
+        a: "Guest users can upload PDF files up to 25MB for page resizing tasks. Registered users on the free plan can process files up to 50MB, and Pro tier members can upload documents up to 500MB. Our system has no page count limits and resizes files in seconds."
+      },
+      {
+        q: "Will resizing stretch my text or distort my images?",
+        a: "No, our layout resizer scales document contents proportionally based on the target aspect ratio. This prevents text distortion, font stretching, or image pixelation. Your vector graphics remain sharp, and text elements stay fully selectable and search-friendly."
+      },
+      {
+        q: "Can I resize individual pages inside a multi-page PDF?",
+        a: "Yes, our settings panel allows you to resize either the entire document, specific page ranges, or customize size metrics for individual pages. This is useful for standardizing layouts of documents compiled from different scanner sources."
+      },
+      {
+        q: "Does PDFMount add any branding watermarks to my resized PDF file?",
+        a: "No, PDFMount does not add watermarks, branding text, or cover sheets to your files. The output PDF remains clean and matches your resized layouts exactly, making it suitable for official submissions, client contracts, and academic applications."
+      },
+      {
+        q: "Is my document data secure during the page resizing process?",
+        a: "Yes, document security is guaranteed on our platform. All file transfers are secured with TLS 1.3 encryption protocols, and documents are processed in isolated virtual sandboxes. Our automated deletion script removes all files and resized PDFs after 60 minutes."
+      }
+    ],
+    detailedContent: [
+      "Our page resizing tool operates by updating the MediaBox and CropBox parameters in the PDF page dictionary. Instead of converting pages into rasterized images and re-saving them—which degrades image DPI and text sharpness—the engine performs metadata adjustments. This layout preservation ensures that your vector paths remain sharp, fonts stay embedded, text remains selectable, and existing hyperlinks continue working, delivering a high-quality standalone file that displays cleanly.",
+      "Security is a core priority for all document processing operations. All data transfers are encrypted using TLS 1.3 protocols, and file execution runs within isolated server container sandboxes. We enforce a strict zero retention policy, meaning we do not inspect, share, or log your document contents. All uploaded files and resized PDFs are permanently deleted from our cache after exactly 60 minutes, leaving no backup copies.",
+      "Standardizing paper layout sizes is crucial for clean office printouts and submissions. Business managers can resize page layouts to match standard slide formats. Legal professionals can adjust page dimensions of scanned court records to fit legal paper sizes. Students can resize textbook pages to make reading on tablet screens more comfortable. PDFMount provides a free, fast, and secure alternative that eliminates the need for expensive desktop licenses."
+    ]
   },
   esign: {
     title: "Sign PDF Online - Free Electronic Signatures | PDFMount",
-    desc: "Draw or type electronic signatures onto your PDF files online. Sign PDFs securely in seconds without printing.",
-    h1: "Sign PDF Documents Online",
-    intro: "Place electronic signatures onto contracts. Draw, type, or upload signature stamps securely.",
-    steps: ["Upload the PDF document.", "Draw or type your signature inside the e-sign editor.", "Place and scale the signature stamp on target pages.", "Download your signed PDF."],
-    faqs: [{ q: "Are the signatures legally binding?", a: "Yes, PDFMount signatures are standard electronic signatures suitable for general contracts and agreements." }],
-    detailedContent: ["E-signing avoids printing, signing manually, and scanning. PDFMount embeds vector signature stamps onto pages securely."],
+    desc: "Draw, type, or upload electronic signatures to sign PDF documents online. Free, secure, legally binding, and no watermarks.",
+    h1: "Sign PDF Documents Online Free",
+    intro: "Apply secure electronic signatures to your contracts, agreements, and official forms online. PDFMount's e-sign tool provides a secure workspace where you can draw your signature with a mouse or touchscreen, type your name using elegant cursive fonts, or upload an image stamp of your handwritten sign. The system embeds your signature as a clean vector object directly onto the target pages of your PDF document. The tool runs on secure, isolated servers, protecting your legal agreements and personal data from unauthorized access. You can sign documents in seconds, avoiding the slow process of printing and scanning.",
+    steps: [
+      "Upload the PDF contract or agreement you need to sign from your computer or mobile storage using the secure upload zone.",
+      "Select your signing method, choosing to draw with a mouse or touchscreen, type your name, or upload an image stamp.",
+      "Drag and position your signature stamp onto the target pages of the document, adjusting the scale to fit signature boxes.",
+      "Click the compilation button to trigger our signing engine, which embeds the signature data directly into the PDF layout streams.",
+      "Save the signed PDF document to your device, featuring a clean layout and zero added watermarks or brand logos."
+    ],
+    faqs: [
+      {
+        q: "Are the signatures legally binding?",
+        a: "Yes, the electronic signatures generated on our platform are standard electronic signatures. They comply with electronic transaction laws such as the eIDAS regulation in Europe and the ESIGN Act in the United States, making them suitable for business agreements, school forms, and vendor contracts. They carry legal validity for most general agreements."
+      },
+      {
+        q: "Can I add multiple signatures or text blocks to the same PDF?",
+        a: "Yes, you can add multiple signatures, initials, dates, and custom text inputs to any page of your document. This is useful for filling out forms, adding witness signatures, or signing complex agreements that require verification on multiple sections. You can place stamps on as many pages as needed."
+      },
+      {
+        q: "What is the maximum file size limit for signing documents online?",
+        a: "Guest users can upload documents up to 25MB for signing. Registered free accounts can process files up to 50MB, and Pro tier subscribers can upload documents up to 500MB. Our tool processes files of all sizes in under ten seconds. There are no page count restrictions on these uploads."
+      },
+      {
+        q: "Will the layout or formatting of my contract be changed after signing?",
+        a: "No, our signing tool preserves the original layout of your document. The system adds the signature as a separate vector overlay stream rather than rasterizing or compressing the document pages. This means your text remains searchable and all links stay active. The visual quality of your graphics is preserved."
+      },
+      {
+        q: "How does PDFMount ensure the confidentiality of my signed contracts?",
+        a: "We take contract security seriously. All documents are encrypted during transfer using TLS 1.3 and processed in isolated virtual sandboxes. Our automated deletion script removes all uploaded files, signatures, and signed outputs from our servers after exactly 60 minutes. No copy is kept on our systems."
+      }
+    ],
+    detailedContent: [
+      "Our electronic signature tool integrates signatures directly into the PDF page dictionary structure. Instead of flattening pages into images, the engine writes the signature as a vector graphic overlay object, preserving the layout fidelity of the underlying text. Any images uploaded as signatures are scaled proportionally to maintain resolution without blurring. The tool preserves existing interactive form fields and document structure metadata, ensuring that the PDF remains fully compliant with standard ISO PDF specifications for viewing on any PDF reader.",
+      "Security is a core priority for all electronic agreements processed on our platform. All data exchanges are protected by TLS 1.3 encryption protocols, preventing interception. The e-sign editor runs within isolated server container sandboxes, separating your session from other users. We maintain a strict zero retention policy: we do not read, store, or share your contracts. All uploaded files, created signatures, and signed documents are permanently purged from our volatile memory systems exactly 60 minutes after execution, leaving no backup copies.",
+      "This online signing utility supports many professional workflows. Business managers can sign vendor contracts, purchase orders, and employee agreements without printing. Legal teams can sign documents and client letters, ensuring they are saved securely in PDF format. Students and parents can sign permission slips and enrollment forms quickly from mobile devices. By providing a secure, browser-native signing workspace, PDFMount improves document processing times and helps businesses transition to paperless operations."
+    ]
   },
   unlock: {
     title: "Unlock PDF - Remove PDF Password & Restrictions | PDFMount",
-    desc: "Unlock password protected PDFs online. Remove print, copy, and edit restriction passwords from PDF files free.",
+    desc: "Unlock password protected PDFs online. Remove print, copy, and edit restriction passwords from PDF files free. Secure, fast, and no watermark.",
     h1: "Unlock PDF Online Free",
-    intro: "Remove restrict passwords from PDFs so you can edit, print, or copy text content freely.",
-    steps: ["Upload the locked PDF file.", "Provide the password if the file requires an open password.", "Click the 'Start' button to unlock.", "Download your unrestricted PDF."],
-    faqs: [{ q: "Can I unlock a file if I don't know the owner password?", a: "Yes, PDFMount can strip owner-restriction passwords instantly. You must know the open password if the file is encrypted." }],
-    detailedContent: ["Unlocking files lets you compile pages or copy text layouts. We strip PDF encryption headers cleanly, returning fully editable versions."],
+    intro: "Remove restriction passwords and decryption locks from your PDF files online instantly. PDFMount's unlock tool decrypts locked documents, stripping away printing limits, copying restrictions, and editing blocks from the underlying file structure. The processing engine decrypts the document payload using standard crypto libraries, rebuilding the PDF header and restoring full accessibility without altering page content or layout properties. The tool operates inside secure, isolated sandbox containers on our servers, ensuring your files are never exposed to external threats. You can access, print, and edit your documents within seconds using any modern browser.",
+    steps: [
+      "Select and upload the locked PDF file from your computer, cloud storage, or local storage using our secure drag-and-drop panel above to begin.",
+      "Enter the correct open password if the document requires user authorization to view the target contents.",
+      "Click the unlock button to trigger our decryption engine, which strips owner permission restrictions and access controls.",
+      "Wait a few seconds for the document processing engine to verify password credentials, decrypt files, and compile the unlocked file.",
+      "Download your unrestricted PDF document directly to your device storage, ready for copying, printing, and editing without watermarks."
+    ],
+    faqs: [
+      {
+        q: "What are the file size limits and tool quotas for unlocking PDFs?",
+        a: "Guest users can upload PDF files up to 25MB for unlocking tasks. Registered users on the free plan can process files up to 50MB, and Pro tier members can upload documents up to 500MB. Our system has no page count limits and unlocks files in seconds."
+      },
+      {
+        q: "Can I unlock a file if I do not know the open password?",
+        a: "If the document is protected by an open user password, you must enter the password to allow decryption. However, if the file is locked with an owner password that restricts copying, printing, or editing, PDFMount can strip these restrictions without requiring a password."
+      },
+      {
+        q: "Will unlocking my PDF file affect its layout, fonts, or searchability?",
+        a: "No, our decryption engine decrypts the document wrapper headers while keeping the actual page content streams intact. Your original fonts, page structures, vector shapes, high-resolution graphics, and text alignments are preserved without formatting loss, maintaining layout fidelity."
+      },
+      {
+        q: "Does PDFMount place any branding watermarks on the unlocked PDF?",
+        a: "No, PDFMount does not add watermarks, branding elements, or promotional covers to your files. The output PDF remains clean and matches your original formatting exactly. This ensures that your documents look highly professional for business or academic submissions."
+      },
+      {
+        q: "How secure is my data when uploading files for unlocking?",
+        a: "Security is integrated into every step of our file processing pipeline. Files are uploaded via encrypted channels using TLS 1.3 and executed inside isolated sandbox containers that are wiped after each task. All files are permanently deleted from our cache after 60 minutes."
+      }
+    ],
+    detailedContent: [
+      "Our unlocking tool decrypts PDF wrappers by rewriting the encryption dictionary structure. It identifies the security handler tags, strips permission flags, and updates the cross-reference tables. By targeting metadata headers rather than rasterizing pages, the engine preserves layout fidelity, keeps text readable, and maintains high-resolution image details without changing the original file DPI. Your document remains fully zoomable on all devices.",
+      "Security is a core priority for all decryption operations. All data transfers are encrypted using TLS 1.3 protocols, and file execution runs within isolated server container sandboxes. We enforce a strict zero retention policy, meaning we do not inspect, share, or log your document contents. All uploaded files and unlocked PDFs are permanently deleted from our cache after exactly 60 minutes, leaving no backup copies.",
+      "Unlocking files lets you compile pages or copy text layouts. Business professionals can unlock contracts to copy clauses or print agreements. Legal assistants can remove restriction flags from discovery files to compile case files. Students can unlock textbook PDFs to highlight text and format study notes. PDFMount provides a free, fast, and secure alternative that eliminates the need for expensive desktop licenses."
+    ]
   },
   protect: {
     title: "Protect PDF - Encrypt PDF with Password | PDFMount",
-    desc: "Encrypt your PDF documents with secure passwords. Protect PDF files online from unauthorized viewing and copying.",
-    h1: "Protect PDF with Password Online",
-    intro: "Secure confidential records by encrypting PDF files with strong user and owner passwords.",
-    steps: ["Upload the PDF document.", "Input a secure password.", "Click the 'Start' button to encrypt.", "Save your protected PDF."],
-    faqs: [{ q: "What encryption strength is used?", a: "PDFMount uses industry-standard encryption, preventing unauthorized access." }],
-    detailedContent: ["Encrypting tax records, salary slips, or contract drafts secures them from unauthorized viewing when sent over email."],
+    desc: "Encrypt your PDF documents with secure passwords. Protect PDF files online from unauthorized viewing and copying free. Secure, fast, and no watermark.",
+    h1: "Protect PDF with Password Online Free",
+    intro: "Secure confidential records by encrypting PDF files with strong user and owner passwords online. PDFMount's protection tool applies industry-standard encryption protocols to your document structure, preventing unauthorized viewing, text copying, editing, and printing. The engine wraps the page content streams and metadata objects in a secure cryptographic envelope that requires decryption keys for access. The tool operates inside secure, isolated sandbox environments on our servers, ensuring that your raw passwords and documents are never exposed. You can safeguard tax forms, contracts, and financial reports in seconds without downloading external security applications.",
+    steps: [
+      "Upload the PDF document you wish to secure from your computer, cloud storage, or mobile storage using the secure upload zone above to begin.",
+      "Enter a strong, customized password in the input field to encrypt the document and prevent unauthorized file access.",
+      "Select optional permission settings, such as restricting page printing, text copying, or document editing separately if required.",
+      "Click the start protection button to execute the cryptographic encryption algorithm on our secure, isolated server-side container nodes.",
+      "Save the encrypted, password-protected PDF file directly to your device storage, ready for secure sharing, archiving, and email distribution."
+    ],
+    faqs: [
+      {
+        q: "What are the file size limits and tool quotas for protecting PDFs?",
+        a: "Guest users can upload PDF files up to 25MB for protection tasks. Registered users on the free plan can process files up to 50MB, and Pro tier members can upload documents up to 500MB. Our system has no page count limits and encrypts files in seconds."
+      },
+      {
+        q: "What level of encryption is used to protect my PDF document?",
+        a: "PDFMount uses industry-standard encryption algorithms to secure your documents. This ensures high-level security that prevents password cracking attempts and keeps your confidential business files, student records, and legal agreements safe from unauthorized viewers."
+      },
+      {
+        q: "Will encrypting my PDF document change its visual quality or formatting?",
+        a: "No, our encryption process wraps the file in a secure data envelope without modifying the page layouts, text vectors, or embedded images. Your original fonts, page structures, margins, and graphics are preserved, maintaining layout fidelity when opened with the correct password."
+      },
+      {
+        q: "Does PDFMount add any branding watermarks to the protected PDF?",
+        a: "No, PDFMount does not add watermarks, branding elements, or cover pages to your secured files. The output PDF remains clean and matches your original layouts exactly, making it suitable for official submissions, client contracts, and academic applications."
+      },
+      {
+        q: "How does PDFMount protect the security of my passwords and uploads?",
+        a: "All document transfers are secured with TLS 1.3 encryption protocols, and encryption tasks are processed in isolated virtual sandboxes. We enforce a strict zero retention policy, and all uploaded files, passwords, and protected PDFs are completely purged after 60 minutes."
+      }
+    ],
+    detailedContent: [
+      "Our protection tool secures PDF documents by rewriting the encryption dictionary, establishing handler tags, and encrypting stream objects using standard algorithms. By wrapping content streams in a cryptographic container rather than rasterizing pages, the engine preserves layout fidelity, keeps text readable, and maintains high-resolution image details without changing the original file DPI. Your document remains fully zoomable on all devices.",
+      "Security is a core priority for all encryption operations. All data transfers are encrypted using TLS 1.3 protocols, and file execution runs within isolated server container sandboxes. We enforce a strict zero retention policy, meaning we do not inspect, share, or log your document contents. All uploaded files, passwords, and protected PDFs are permanently deleted from our cache after exactly 60 minutes, leaving no backup copies.",
+      "Encrypting tax records, salary slips, or contract drafts secures them from unauthorized viewing when sent over email. Business managers can protect pricing sheets, customer data, and legal agreements. Legal teams can secure sensitive case sheets before filing or sending them to clients. Students can protect portfolios and thesis drafts from plagiarism. PDFMount provides a free, fast, and secure alternative that eliminates the need for expensive security software."
+    ]
   },
   "watermark-pdf": {
-    title: "Watermark PDF Online - Add Text or Image Overlays | PDFMount",
-    desc: "Add text or image watermarks to your PDF online free. Choose positions, fonts, colors, and opacity for custom document stamps.",
-    h1: "Add Watermark to PDF Online",
-    intro: "Protect copyright by stamping customized text or image watermarks across PDF pages.",
-    steps: ["Upload the PDF document.", "Input watermark text or upload an image stamp.", "Configure text color, position, rotation, and opacity.", "Click the 'Start' button to apply.", "Download your watermarked PDF."],
-    faqs: [{ q: "Can watermarks be easily removed?", a: "PDFMount embeds watermarks as flattened elements, making them secure against basic editing tools." }],
-    detailedContent: ["Watermarking drafts or copy sheets prevents content theft and establishes clear ownership before legal publications."],
+    title: "Watermark PDF Online - Add Text or Image Stamps | PDFMount",
+    desc: "Add custom text or image watermarks to your PDF documents online. Adjust position, rotation, opacity, and font settings free.",
+    h1: "Add Watermark to PDF Online Free",
+    intro: "Protect document ownership and prevent unauthorized copying by stamping custom text or image watermarks onto your PDF pages online using PDFMount. Our secure engine writes watermark elements directly into the page content stream coordinates, maintaining layout fidelity and font structures. You can configure text strings, select custom colors, adjust rotation angles, and set opacity levels to ensure readability while protecting your intellectual property. The system processes your files inside isolated server environments, preventing third-party access to your private contracts. You can stamp your logo or copyright headers across multiple pages instantly. This browser-based tool requires no installation, providing a fast, secure solution for business and personal workflows. Let our utility stamp files now.",
+    steps: [
+      "Select and upload the PDF document you wish to watermark from your computer or mobile storage using our secure upload box.",
+      "Input your desired watermark text or upload an image stamp such as a company logo from your local files.",
+      "Configure your styling preferences, adjusting position coordinates, rotation angles, opacity percentages, and font families using the interactive options panel.",
+      "Click the start button to execute our vector stamping engine, which embeds the watermark data into the PDF stream.",
+      "Download the watermarked PDF document directly to your device storage, featuring clean vector overlays and zero platform branding logos."
+    ],
+    faqs: [
+      {
+        q: "What are the file size and page limit restrictions for watermarking PDFs?",
+        a: "Guest users can upload and watermark PDF documents up to a maximum file size limit of 25MB per file. Free registered accounts are granted uploads of up to 50MB per file, while Pro subscribers can upload documents up to 500MB. Our system has no page count limitations and processes files of all sizes in under ten seconds. The stamping engine applies watermarks across all pages in a single run."
+      },
+      {
+        q: "Can watermarks added by PDFMount be easily removed by viewers?",
+        a: "No, PDFMount embeds watermarks as native vector content elements directly into the page stream dictionary. This makes them secure against basic copy-paste actions and standard PDF viewing editors. To remove or alter the watermark, a user would need professional vector editing software. This ensures high-level protection for your drafts and confidential business contracts."
+      },
+      {
+        q: "Can I choose which pages receive the watermark stamp?",
+        a: "Yes, you can customize the target page range using the visual settings panel. The tool allows you to exclude the first cover page, stamp only even or odd pages, or define a specific comma-separated range of pages. This is useful for keeping cover sheets clean while securing the internal content pages. You can preview the placement before initiating the process."
+      },
+      {
+        q: "Will adding a watermark flatten my PDF or reduce layout quality?",
+        a: "No, our utility does not rasterize your document pages during the watermarking process. The system writes the watermark as a separate vector overlay stream, meaning your text remains searchable and links stay active. The visual quality of your graphics and fonts is preserved. The output file remains compatible with all standard PDF readers."
+      },
+      {
+        q: "How does PDFMount protect the security of my uploaded files?",
+        a: "We implement advanced encryption protocols using TLS 1.3 to safeguard all data transfers. The watermarking process is executed on isolated sandbox containers to prevent access by unauthorized third parties. All files are purged from our secure, volatile cache exactly 60 minutes after processing finishes. We do not keep logs or backup files of your sensitive files."
+      }
+    ],
+    detailedContent: [
+      "Our watermarking engine uses a precise vector injection technique that overlays text or graphic assets directly onto the PDF content stream coordinates. The system calculates page dimensions, applying rotation and scaling factors proportionally to ensure the watermark fits perfectly without clipping. By inserting watermarks as native PDF vector elements rather than rasterizing pages, our tool preserves the original typography, layout structures, and high-resolution image details. The file size remains optimized, and the document is ready for professional archiving or distribution.",
+      "Security is a core component of the PDFMount architecture. Every document processing task is executed inside isolated virtual sandbox containers running in volatile memory without persistent disk access. We enforce a strict zero retention policy, meaning we do not inspect, log, or share your document content. All uploaded files and watermarked PDF outputs are permanently deleted from our servers exactly 60 minutes after processing. This automated cleanup routine ensures absolute confidentiality for your contracts, draft copies, and private records.",
+      "This online utility supports a variety of professional and creative workflows. Businesses use the tool to stamp draft or confidential labels across proposals and contracts before client sharing. Legal professionals can apply watermark stamps to trial exhibits and depositions to ensure proper identification. Creators and designers can stamp low-resolution previews of their portfolios to protect intellectual property online. PDFMount provides a free, fast, browser-native watermarking workspace that replaces expensive desktop licenses."
+    ]
   },
   "bates-numbering": {
     title: "Bates Numbering PDF - Index Legal PDF Pages | PDFMount",
-    desc: "Index legal documents with Bates numbering. Stamp custom prefixes, suffixes, and page counts onto PDF sheets online.",
-    h1: "Bates Numbering for PDF Files",
-    intro: "Index and organize legal case sheets. Stamp consecutive Bates numbers on PDF files automatically.",
-    steps: ["Upload the PDF document.", "Input bates prefix (e.g. CASE-), start number, and page positions.", "Click the 'Start' button to stamp.", "Save your indexed PDF."],
-    faqs: [{ q: "Can I stamp multiple documents consecutively?", a: "Yes. Our Bates numbering supports starting sequence numbers from any specified count." }],
-    detailedContent: ["Consecutive numbering is a mandatory requirement in legal discovery and litigation workflows. PDFMount automates this stamping in seconds."],
+    desc: "Index legal documents with Bates numbering online. Stamp custom prefixes, suffixes, and page sequences onto PDF sheets free.",
+    h1: "Bates Numbering for PDF Files Online",
+    intro: "Index and organize your legal documents and case files online with PDFMount's Bates numbering tool. The stamping utility provides a secure workspace where you can define custom prefixes, suffixes, and consecutive page sequences to stamp onto your PDF pages. The engine writes vector text layers directly into the PDF content stream coordinates, maintaining layout fidelity and font structures. This is essential for legal discovery processes where consecutive numbering is required. All processing runs on secure, isolated server nodes, keeping your confidential papers protected. You can configure margin offsets and select page positions to ensure standard formatting without downloading desktop software. Let our utility index files for discovery workflows now.",
+    steps: [
+      "Select and upload the PDF document containing pages you wish to index from your local computer or mobile storage using our secure upload panel.",
+      "Input your Bates numbering options, defining custom prefixes, suffixes, starting page sequences, and number formatting details in the settings panel.",
+      "Configure the visual layout position for your stamps, adjusting margin offsets to prevent overlapping with any existing page text elements.",
+      "Click the start button to execute the consecutive vector stamping process on our secure, high-speed server-side container nodes instantly.",
+      "Download the newly indexed PDF document directly to your local device storage, ready for official legal submission with zero watermarks."
+    ],
+    faqs: [
+      {
+        q: "What are the file size and page limit restrictions for Bates numbering?",
+        a: "Guest users can upload and index PDF documents up to a maximum file size limit of 25MB per file. Free registered accounts are granted uploads of up to 50MB per file, while Pro subscribers can upload files up to 500MB. Our system does not restrict the number of pages processed in a single run. The stamping engine handles large multi-page legal briefs in under ten seconds."
+      },
+      {
+        q: "Can I number multiple documents consecutively?",
+        a: "Yes, you can stamp multiple documents consecutively using our advanced configuration panel. The tool allows you to specify any starting page number for the current sequence. This ensures that when you upload subsequent files, you can resume numbering from the next consecutive integer. This is highly useful for organizing multi-volume discovery sets."
+      },
+      {
+        q: "Will adding Bates numbers flatten my PDF or reduce visual quality?",
+        a: "No, our tool does not rasterize your pages or downsample any embedded graphics during the indexing process. The engine stamps Bates numbers as independent vector text objects directly inside the PDF structure. Your original fonts, page boundaries, and image details are preserved without formatting loss. The output document remains fully searchable, readable, and zoom-friendly for digital viewing."
+      },
+      {
+        q: "Does PDFMount add any branding watermarks to my legal documents?",
+        a: "No, PDFMount maintains a strict policy against injecting watermarks or promotional logos onto client files. The output PDF remains clean and matches your original layouts exactly. The stamped Bates numbers are formatted according to your selected style. This ensures that the document remains fully ready for official B2B transactions and court filings."
+      },
+      {
+        q: "How does PDFMount secure my confidential legal documents?",
+        a: "We implement advanced encryption protocols using TLS 1.3 to safeguard all data transfers. The indexing process is executed on isolated sandbox containers to prevent access by unauthorized third parties. All files are purged from our secure, volatile cache exactly 60 minutes after processing finishes. We do not keep logs or backup files of your sensitive records."
+      }
+    ],
+    detailedContent: [
+      "Our Bates numbering utility operates by injecting consecutive serial numbers directly into the PDF page dictionary structures as vector elements. The placement algorithm calculates page heights and widths, ensuring that prefix, number, and suffix strings are placed outside main content boundaries to avoid overlapping. Because the numbers are stamped as native vector text stream overlays, they remain readable at any zoom factor and do not alter underlying image DPI or page scaling. This layout preservation guarantees that documents are fully prepared for litigation workflows.",
+      "Confidentiality is built directly into our document processing pipelines. All file uploads and downloads are encrypted using TLS 1.3 protocols, protecting your case files from external surveillance. The Bates numbering service executes within isolated sandbox environments that process data in memory without disk logging. Our strict zero retention policy means we do not read, store, or share your legal agreements. All files are permanently destroyed exactly 60 minutes after execution, leaving no residual records on our servers.",
+      "This stamping utility is designed primarily for legal teams, corporate departments, and administrative professionals. Law firms use the tool to index trial records, discovery packages, and transaction folders consecutively. Corporate administrators use Bates stamping to organize multi-page financial audits, customer directories, and invoice portfolios for audit compliance. Students and researchers can index massive reference archives for systematic reviews. PDFMount provides a free, fast, browser-native alternative to complex, expensive legal software."
+    ]
   },
   "metadata-pdf": {
     title: "Edit PDF Metadata - Change PDF Title & Author | PDFMount",
     desc: "Edit PDF metadata online free. Change the document title, author, subject, and keywords fields inside your PDF files.",
-    h1: "Edit PDF Metadata online",
-    intro: "Adjust document metadata properties. Clean or set title, author, subject, and keyword fields easily.",
-    steps: ["Upload the PDF document.", "Input new metadata values (Title, Author, Subject, Keywords) in the panel.", "Click the 'Start' button to save properties.", "Download your updated PDF."],
-    faqs: [{ q: "Will editing metadata change the PDF contents?", a: "No. Only the document's header metadata dictionary is updated; the page pages remain untouched." }],
-    detailedContent: ["Cleaning internal metadata attributes protects private details (like creator names or software versions) before public sharing."],
+    h1: "Edit PDF Metadata Online Free",
+    intro: "Update and sanitize your document information online using PDFMount's metadata editor. The processing engine parses the underlying PDF file structure, targeting the document information dictionary and metadata streams to update key attributes like title, author, subject, and keywords. Unlike tools that modify the layout pages, our utility writes directly to the file header metadata, ensuring that visual elements, vector assets, and original fonts remain untouched. The entire process runs on secure, isolated server nodes, keeping your private papers confidential. You can clean tracking metadata and personalize your files in seconds from any modern browser without installing software. Let our utility clean document properties today. Let it update your data now.",
+    steps: [
+      "Select and upload the PDF document whose metadata properties you wish to modify using our secure file transfer container.",
+      "Input your desired metadata values including document title, creator author, file subject, and target keywords inside the configuration fields.",
+      "Choose whether to purge any additional tracking indicators or software signature details from the document headers permanently for security.",
+      "Click the start button to execute our metadata processing engine, which rewrites the document information dictionary on secure server nodes.",
+      "Download the updated PDF file directly to your local device storage, featuring corrected document details and zero branding watermarks."
+    ],
+    faqs: [
+      {
+        q: "What are the file size limits and tool quotas for editing metadata?",
+        a: "Guest users can upload and edit PDF metadata up to a maximum file size limit of 25MB per file. Free registered accounts are granted uploads of up to 50MB per file, while Pro subscribers can upload files up to 500MB. Our system has no page count limitations and processes files of all sizes in under ten seconds. The editing engine processes tasks quickly."
+      },
+      {
+        q: "Will editing metadata change the visual content or formatting of my PDF?",
+        a: "No, our editor only targets the document information dictionary and metadata stream headers inside the file. The actual visual pages, text coordinates, vector graphics, and embedded fonts remain completely untouched. This ensures layout fidelity across all devices without any changes. Your document remains fully searchable, readable, and zoomable."
+      },
+      {
+        q: "Why should I clean or modify my PDF metadata before sharing?",
+        a: "PDF files often contain hidden tracking data such as original author names, creation software types, local username details, and directory paths. Cleaning this metadata prevents the accidental exposure of private directories or internal business software details before public distribution. This is crucial for maintaining corporate security and protecting individual privacy. The editor allows you to sanitize these properties in seconds."
+      },
+      {
+        q: "Does PDFMount add any watermarks or promotional logos to my files?",
+        a: "No, PDFMount maintains a strict policy against injecting watermarks or promotional logos onto client files. The output PDF remains clean and matches your original formatting exactly. Only the metadata properties you configured will be updated in the file header. The document remains fully ready for professional presentations, academic submissions, or business contracts."
+      },
+      {
+        q: "How does PDFMount secure my documents during metadata editing?",
+        a: "We implement advanced encryption protocols using TLS 1.3 to safeguard all data transfers. The metadata editing process is executed on isolated sandbox containers to prevent access by unauthorized third parties. All files are purged from our secure, volatile cache exactly 60 minutes after processing finishes. We do not keep logs or backup files of your sensitive records."
+      }
+    ],
+    detailedContent: [
+      "Our metadata editor operates by modifying the Document Information Dictionary and the Extensible Metadata Platform (XMP) streams in the PDF file structure. By targeting the metadata dictionary directly, the engine changes document fields without re-saving page content objects, preserving layout fidelity and preventing font subset corruption. Embedded graphics and text arrays are not compressed or rasterized, ensuring that original file DPI and image scaling remain intact. This technical approach guarantees that the document continues to conform to PDF specifications.",
+      "Data privacy is a core component of the PDFMount architecture. Every metadata modification task is processed inside an isolated virtual sandbox container that has no persistent storage access. We enforce a strict zero retention policy, meaning we do not inspect, copy, or log your files. All source PDFs and updated outputs are permanently purged from our volatile server caches exactly 60 minutes after processing. This automatic deletion routine ensures complete confidentiality for your corporate papers and private files.",
+      "This metadata editor supports a wide range of professional, administrative, and academic needs. Businesses use the tool to sanitize corporate reports, removing local directory paths and username metadata before external distribution. Legal professionals can clear author details from trial briefs to ensure compliance with court filing rules. Academic researchers can update keyword lists and author fields before submitting papers to online journals. PDFMount provides a free, fast, browser-native utility that replaces expensive desktop software."
+    ]
   },
   "ocr-pdf": {
     title: "PDF OCR - Make Scanned PDFs Searchable | PDFMount",
