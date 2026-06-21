@@ -7,7 +7,7 @@ use std::{fs, path::Path};
 #[test]
 fn compress_job_rejects_missing_input() {
     let config = EngineConfig::default();
-    let result = run_compress_job(&config, Path::new("missing.pdf").to_path_buf());
+    let result = run_compress_job(&config, Path::new("missing.pdf").to_path_buf(), "recommended");
 
     assert!(result.is_err());
 }
