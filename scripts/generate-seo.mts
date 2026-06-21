@@ -967,38 +967,10 @@ const toolRoutes: Record<string, string> = {
 };
 
 // Homepage JSON-LD schemas (WebSite + Organization)
+// Since index.html now has the master Brand/Organization JSON-LD statically in the head,
+// this function returns an empty string to avoid duplication.
 const homepageJsonLd = (): string => {
-  const schemas = [
-    {
-      "@context": "https://schema.org",
-      "@type": "WebSite",
-      name: "PDFMount",
-      url: DOMAIN,
-      description: "Free online PDF tools — merge, split, compress, convert, sign, and secure PDF files in seconds.",
-      potentialAction: {
-        "@type": "SearchAction",
-        target: `${DOMAIN}/tools?q={search_term_string}`,
-        "query-input": "required name=search_term_string",
-      },
-    },
-    {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      name: "PDFMount",
-      url: DOMAIN,
-      logo: `${DOMAIN}/logo.png`,
-      sameAs: [],
-      contactPoint: {
-        "@type": "ContactPoint",
-        contactType: "customer support",
-        url: `${DOMAIN}/contact`,
-        availableLanguage: ["English", "Hindi"],
-      },
-    },
-  ];
-  return schemas
-    .map((s) => `<script type="application/ld+json">${JSON.stringify(s)}</script>`)
-    .join("\n  ");
+  return "";
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
