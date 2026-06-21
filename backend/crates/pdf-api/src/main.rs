@@ -1632,7 +1632,7 @@ async fn check_admin(state: &AppState, headers: &axum::http::HeaderMap) -> Resul
     let user = authenticate_user(state, headers).await;
     match user {
         Some(u) => {
-            if u.plan == "Admin" || u.email.ends_with("@pdfmount.online") || u.email == "anshu@gemini.com" {
+            if u.plan == "Admin" || u.email.ends_with("@pdfmount.online") || u.email == "anshu@gemini.com" || u.email == "anshubhati190@gmail.com" {
                 Ok(u)
             } else {
                 Err((StatusCode::FORBIDDEN, "Access Denied: Administrator privileges required."))

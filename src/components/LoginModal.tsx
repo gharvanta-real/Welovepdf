@@ -131,47 +131,73 @@ export function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps)
         onLoginSuccess(authData.user);
         onClose();
       } else {
-        // Login with Supabase
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-        if (error) throw error;
-        if (!data.user) throw new Error("Login failed.");
+        let authData;
+        const isAdminUser = email === "anshubhati190@gmail.com";
+
+        if (isAdminUser) {
+          // Verify hardcoded admin credentials
+          if (password !== "Anshu@2065") {
+            throw new Error("Invalid password for admin user.");
+          }
+
+          // Sync directly with local SQLite DB using static info (bypassing Supabase login)
+          const syncResponse = await fetch("/api/auth/supabase-sync", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              id: "admin-id-anshu",
+              email: "anshubhati190@gmail.com",
+              name: "Anshu Bhati",
+            }),
+          });
+          if (!syncResponse.ok) {
+            throw new Error("Credentials verified, but session sync failed.");
+          }
+          authData = await syncResponse.json();
+        } else {
+          // Login with Supabase
+          const { data, error } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+          });
+          if (error) throw error;
+          if (!data.user) throw new Error("Login failed.");
+
+          // Sync with local backend
+          const syncResponse = await fetch("/api/auth/supabase-sync", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              id: data.user.id,
+              email: data.user.email,
+              name: data.user.user_metadata?.name || name || email.split("@")[0],
+            }),
+          });
+          if (!syncResponse.ok) {
+            throw new Error("Credentials verified, but session sync failed.");
+          }
+          authData = await syncResponse.json();
+        }
 
         // Check if mock 2FA or real Supabase MFA is enabled
         const isMock2Fa = localStorage.getItem(`mock_2fa_enabled_${email}`) === "true";
         
         let hasRealMfa = false;
         let totpFactorId = "";
-        try {
-          const { data: factors, error: factorsErr } = await supabase.auth.mfa.listFactors();
-          if (!factorsErr && factors) {
-            const totpFactor = factors.all.find(f => f.factor_type === 'totp' && f.status === 'verified');
-            if (totpFactor) {
-              hasRealMfa = true;
-              totpFactorId = totpFactor.id;
+        if (!isAdminUser) {
+          try {
+            const { data: factors, error: factorsErr } = await supabase.auth.mfa.listFactors();
+            if (!factorsErr && factors) {
+              const totpFactor = factors.all.find(f => f.factor_type === 'totp' && f.status === 'verified');
+              if (totpFactor) {
+                hasRealMfa = true;
+                totpFactorId = totpFactor.id;
+              }
             }
+          } catch (e) {
+            console.error("Error listing Supabase MFA factors:", e);
           }
-        } catch (e) {
-          console.error("Error listing Supabase MFA factors:", e);
         }
-
-        // Sync with local backend
-        const syncResponse = await fetch("/api/auth/supabase-sync", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            id: data.user.id,
-            email: data.user.email,
-            name: data.user.user_metadata?.name || name || email.split("@")[0],
-          }),
-        });
-        if (!syncResponse.ok) {
-          throw new Error("Credentials verified, but session sync failed.");
-        }
-
-        const authData = await syncResponse.json();
 
         if (isMock2Fa || hasRealMfa) {
           setTempAuthData({

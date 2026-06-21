@@ -201,11 +201,6 @@ export function AdminDashboard({ onBack, currentUser, onLoginClick }: AdminDashb
     setHasChecked(true);
   }, [currentUser]);
 
-  // Handle local developer bypass so the dashboard can be tested without complex database edits
-  const handleBypass = () => {
-    setIsAdmin(true);
-  };
-
   if (!hasChecked) {
     return (
       <div className="admin-auth-shield">
@@ -240,13 +235,6 @@ export function AdminDashboard({ onBack, currentUser, onLoginClick }: AdminDashb
               style={{ width: "100%" }}
             >
               Return to PDFMount
-            </button>
-            <button 
-              onClick={handleBypass} 
-              className="admin-btn admin-btn-secondary" 
-              style={{ width: "100%", fontSize: "11px" }}
-            >
-              Developer Bypass (Simulate Admin)
             </button>
           </div>
         </div>
