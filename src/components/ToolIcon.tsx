@@ -44,7 +44,7 @@ export function getToolColor(identifier: string): string {
   if (key.includes("ocr")) return "#06b6d4"; // Bright Cyan
 
   // Default fallback
-  return "#0074f0"; // Pdfmount.com Brand Blue
+  return "#0074f0"; // Pdfmount.online Brand Blue
 }
 
 export function getToolIconSVG(identifier: string, size = 20): React.ReactElement {

@@ -1,4 +1,4 @@
-// LandingPage component for Pdfmount.com application
+// LandingPage component for Pdfmount.online application
 import { tools, sitemapGroups } from "../data/tools";
 import { FileUp, ShieldCheck, Check, ArrowRight, ChevronRight, Award, Users, Star, Headset, FolderPlus, Download, Type, PenTool, Trash2, MessageSquare, Image, FileText, Square, Circle, Minimize2, Edit2 } from "lucide-react";
 import React from "react";
@@ -448,7 +448,7 @@ export function BrowserMockup() {
             color: "#64748b",
             border: "1px solid #e2e8f0"
           }}>
-            pdfmount.com/edit
+            pdfmount.online/edit
           </div>
         </div>
 
@@ -780,7 +780,7 @@ export function LandingPage({ onToolSelect, onViewChange }: LandingPageProps) {
             <div className="stitch-hero-glow" />
             <img
               src="/hero-illustration.png"
-              alt="Pdfmount.com — All PDF tools illustrated"
+              alt="Pdfmount.online — All PDF tools illustrated"
               className="stitch-hero-img"
               draggable={false}
             />
@@ -924,7 +924,7 @@ export function LandingPage({ onToolSelect, onViewChange }: LandingPageProps) {
       <section className="stitch-block-section stitch-block-lilac">
         <div className="stitch-container">
           <div style={{ marginBottom: "48px" }}>
-            <span className="eyebrow" style={{ color: "rgba(0,0,0,0.5)" }}>Why Pdfmount.com</span>
+            <span className="eyebrow" style={{ color: "rgba(0,0,0,0.5)" }}>Why Pdfmount.online</span>
             <h2 style={{ fontSize: "clamp(32px, 5vw, 56px)", fontWeight: 340, letterSpacing: "-0.8px" }}>
               Built for real workflows.
             </h2>
@@ -954,7 +954,7 @@ export function LandingPage({ onToolSelect, onViewChange }: LandingPageProps) {
             Ready to streamline<br/>your workflow?
           </h2>
           <p style={{ fontSize: "20px", fontWeight: 330, color: "rgba(0,0,0,0.55)", maxWidth: "560px", margin: "0 auto 40px" }}>
-            Join professionals, students, and creators who trust Pdfmount.com for their daily document tasks.
+            Join professionals, students, and creators who trust Pdfmount.online for their daily document tasks.
           </p>
           <div className="stitch-cta-actions">
             <button className="stitch-pill-primary stitch-pill-lg" onClick={scrollToTools}>

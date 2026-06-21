@@ -139,11 +139,11 @@ export function Header({
           <a
             className="stitch-brand"
             href="#home"
-            aria-label="Pdfmount.com home"
+            aria-label="Pdfmount.online home"
             onClick={(e) => { e.preventDefault(); setIsDropdownOpen(false); setIsMobileMenuOpen(false); onLogoClick(); }}
             style={{ display: "flex", alignItems: "center" }}
           >
-            <img src="/logo.png" alt="Pdfmount.com" style={{ height: "30px", width: "auto", objectFit: "contain" }} />
+            <img src="/logo.png" alt="Pdfmount.online" style={{ height: "30px", width: "auto", objectFit: "contain" }} />
           </a>
 
           {/* Desktop Center nav */}
@@ -314,7 +314,7 @@ export function Header({
       )}
       <div className={`mobile-menu-drawer ${isMobileMenuOpen ? "is-open" : ""}`}>
         <div className="mobile-menu-header">
-          <span className="stitch-brand" style={{ fontSize: "16px" }}>Pdfmount.com</span>
+          <span className="stitch-brand" style={{ fontSize: "16px" }}>Pdfmount.online</span>
           <button className="mobile-menu-close" onClick={() => setIsMobileMenuOpen(false)}>
             <X size={20} />
           </button>

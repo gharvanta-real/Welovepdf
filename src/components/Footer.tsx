@@ -22,7 +22,7 @@ export function Footer({ onToolSelect, onViewChange }: FooterProps) {
               }}
               style={{ display: "inline-flex", alignItems: "center", marginBottom: "20px" }}
             >
-              <img src="/logo.png" alt="Pdfmount.com" style={{ height: "32px", width: "auto", objectFit: "contain", filter: "brightness(0) invert(1)" }} />
+              <img src="/logo.png" alt="Pdfmount.online" style={{ height: "32px", width: "auto", objectFit: "contain", filter: "brightness(0) invert(1)" }} />
             </a>
             <p className="stitch-footer-tagline" style={{ fontSize: "14px", lineHeight: "1.6", color: "rgba(255,255,255,0.5)", marginBottom: "20px" }}>
               Fast, secure tools for all your PDF needs. Files are processed on isolated servers and auto-deleted within 60 minutes. Your documents are never shared or sold.
@@ -81,7 +81,7 @@ export function Footer({ onToolSelect, onViewChange }: FooterProps) {
 
         <div className="stitch-footer-bottom" style={{ borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: "32px", display: "flex", justifySelf: "stretch", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "20px", width: "100%" }}>
           <p style={{ margin: 0, color: "rgba(255,255,255,0.4)" }}>
-            © {new Date().getFullYear()} Pdfmount.com. Made with ❤️ for a faster, secure web.
+            © {new Date().getFullYear()} Pdfmount.online. Made with ❤️ for a faster, secure web.
           </p>
           <div style={{ display: "flex", alignItems: "center", gap: "24px", color: "rgba(255,255,255,0.4)", fontSize: "13px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>

@@ -20,9 +20,10 @@ import "./styles/admin-pages.css";
 interface AdminDashboardProps {
   onBack: () => void;
   currentUser: { name: string; email: string; plan?: string } | null;
+  onLoginClick?: () => void;
 }
 
-export function AdminDashboard({ onBack, currentUser }: AdminDashboardProps) {
+export function AdminDashboard({ onBack, currentUser, onLoginClick }: AdminDashboardProps) {
   const [activePage, setActivePage] = useState("overview");
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -185,11 +186,11 @@ export function AdminDashboard({ onBack, currentUser }: AdminDashboardProps) {
   }, []);
 
   useEffect(() => {
-    // Check permission: Is user signed in and is their plan 'Admin' or does their email end with @pdfmount.com?
+    // Check permission: Is user signed in and is their plan 'Admin' or does their email end with @pdfmount.online?
     if (currentUser) {
       const isUserAdmin = 
         currentUser.plan === "Admin" || 
-        currentUser.email.endsWith("@pdfmount.com") || 
+        currentUser.email.endsWith("@pdfmount.online") || 
         currentUser.email === "anshu@gemini.com" || // local developer fallback
         currentUser.email === "anshubhati190@gmail.com";
       
@@ -224,9 +225,18 @@ export function AdminDashboard({ onBack, currentUser }: AdminDashboardProps) {
             You do not have administrative permissions to access this area. If you believe this is an error, please contact systems support.
           </p>
           <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+            {!currentUser && onLoginClick ? (
+              <button 
+                onClick={onLoginClick} 
+                className="admin-btn admin-btn-primary" 
+                style={{ width: "100%" }}
+              >
+                Log In to System
+              </button>
+            ) : null}
             <button 
               onClick={onBack} 
-              className="admin-btn admin-btn-primary" 
+              className={!currentUser && onLoginClick ? "admin-btn admin-btn-secondary" : "admin-btn admin-btn-primary"} 
               style={{ width: "100%" }}
             >
               Return to PDFMount
@@ -383,7 +393,7 @@ export function AdminDashboard({ onBack, currentUser }: AdminDashboardProps) {
           <AdminHeader
             title={meta.title}
             description={meta.desc}
-            userEmail={currentUser?.email || "dev@pdfmount.com"}
+            userEmail={currentUser?.email || "dev@pdfmount.online"}
             themeMode={themeMode}
             onToggleTheme={handleToggleTheme}
             notifications={notifications}

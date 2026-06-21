@@ -51,7 +51,7 @@ export function TermsPage({ onBack }: TermsPageProps) {
           <div>
             <h2 style={{ fontSize: "20px", fontWeight: 540, marginBottom: "12px", letterSpacing: "-0.2px" }}>1. Acceptance of Terms</h2>
             <p style={{ fontSize: "16px", fontWeight: 320, color: "rgba(0,0,0,0.6)", lineHeight: 1.6, margin: 0 }}>
-              By accessing and using Pdfmount.com, you agree to comply with and be bound by these Terms of Service. If you do not agree to these terms, please do not use our services.
+              By accessing and using Pdfmount.online, you agree to comply with and be bound by these Terms of Service. If you do not agree to these terms, please do not use our services.
             </p>
           </div>
 
@@ -69,7 +69,7 @@ export function TermsPage({ onBack }: TermsPageProps) {
           <div>
             <h2 style={{ fontSize: "20px", fontWeight: 540, marginBottom: "12px", letterSpacing: "-0.2px" }}>3. Usage Restrictions &amp; Quotas</h2>
             <p style={{ fontSize: "16px", fontWeight: 320, color: "rgba(0,0,0,0.6)", lineHeight: 1.6, margin: 0 }}>
-              You agree to use Pdfmount.com only for lawful purposes. You must not attempt to scrape our web tools, automate uploads via external scripts, upload malicious files containing viruses, or intentionally overload our servers. We enforce a client-side and server-side rate limit per IP address to ensure fair server availability for all users.
+              You agree to use Pdfmount.online only for lawful purposes. You must not attempt to scrape our web tools, automate uploads via external scripts, upload malicious files containing viruses, or intentionally overload our servers. We enforce a client-side and server-side rate limit per IP address to ensure fair server availability for all users.
             </p>
           </div>
 
@@ -78,7 +78,7 @@ export function TermsPage({ onBack }: TermsPageProps) {
           <div>
             <h2 style={{ fontSize: "20px", fontWeight: 540, marginBottom: "12px", letterSpacing: "-0.2px" }}>4. Intellectual Property</h2>
             <p style={{ fontSize: "16px", fontWeight: 320, color: "rgba(0,0,0,0.6)", lineHeight: 1.6, margin: 0 }}>
-              You retain full ownership of all PDF documents, images, and texts you upload. Pdfmount.com does not claim any rights, copyright, or ownership over your files.
+              You retain full ownership of all PDF documents, images, and texts you upload. Pdfmount.online does not claim any rights, copyright, or ownership over your files.
             </p>
           </div>
 
@@ -87,7 +87,7 @@ export function TermsPage({ onBack }: TermsPageProps) {
           <div>
             <h2 style={{ fontSize: "20px", fontWeight: 540, marginBottom: "12px", letterSpacing: "-0.2px" }}>5. Disclaimer of Warranties</h2>
             <p style={{ fontSize: "16px", fontWeight: 320, color: "rgba(0,0,0,0.6)", lineHeight: 1.6, margin: 0 }}>
-              Our tools are provided "as is" and "as available". While we strive for high conversion fidelity, Pdfmount.com makes no warranties regarding the accuracy, completeness, or reliability of converted outputs.
+              Our tools are provided "as is" and "as available". While we strive for high conversion fidelity, Pdfmount.online makes no warranties regarding the accuracy, completeness, or reliability of converted outputs.
             </p>
           </div>
         </div>

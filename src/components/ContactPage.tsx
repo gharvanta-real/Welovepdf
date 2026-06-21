@@ -212,7 +212,7 @@ export function ContactPage({ onBack }: ContactPageProps) {
               </h2>
             </div>
             <p style={{ color: "rgba(0,0,0,0.6)", fontSize: "16px", fontWeight: 320, lineHeight: 1.5, margin: 0 }}>
-              Pdfmount.com is a completely free utility running on self-funded servers. If you appreciate the speed and ad-supported nature, scan the code to support our chai fund!
+              Pdfmount.online is a completely free utility running on self-funded servers. If you appreciate the speed and ad-supported nature, scan the code to support our chai fund!
             </p>
 
             <div 

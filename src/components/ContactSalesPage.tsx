@@ -348,7 +348,7 @@ export function ContactSalesPage({ onBack }: ContactSalesPageProps) {
               <h2 style={{ fontSize: "24px", fontWeight: "600", margin: 0 }}>Buy the Dev a Chai ☕</h2>
             </div>
             <p style={{ color: "var(--s-on-surface-variant)", fontSize: "15px", lineHeight: 1.5, margin: 0 }}>
-              Pdfmount.com is a completely free utility running on self-funded servers. If you appreciate the speed and ad-supported nature, scan the code to support our chai fund!
+              Pdfmount.online is a completely free utility running on self-funded servers. If you appreciate the speed and ad-supported nature, scan the code to support our chai fund!
             </p>
           </div>
 

@@ -461,7 +461,7 @@ export function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps)
                 <p style={{ fontSize: "14px", fontWeight: 320, color: "var(--s-on-surface-variant)", margin: 0 }}>
                   {authMode === "login" && (
                     <>
-                      New to Pdfmount.com?{" "}
+                      New to Pdfmount.online?{" "}
                       <button 
                         onClick={() => { setErrorMsg(null); setAuthMode("signup"); }}
                         style={{ background: "none", border: "none", padding: 0, fontWeight: "600", textDecoration: "underline", color: "var(--s-primary)", cursor: "pointer" }}

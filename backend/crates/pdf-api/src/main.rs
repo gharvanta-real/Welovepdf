@@ -227,7 +227,7 @@ pub async fn init_db(pool: &sqlx::SqlitePool) -> Result<(), sqlx::Error> {
 
     sqlx::query(
         "INSERT OR IGNORE INTO promo_codes (code, plan, max_uses, uses_so_far, expires_at)
-         VALUES ('PDFMOUNT.COM', 'Pro', 500, 0, '2027-12-31T23:59:59Z');"
+         VALUES ('PDFMOUNT.ONLINE', 'Pro', 500, 0, '2027-12-31T23:59:59Z');"
     )
     .execute(pool)
     .await?;
@@ -1632,7 +1632,7 @@ async fn check_admin(state: &AppState, headers: &axum::http::HeaderMap) -> Resul
     let user = authenticate_user(state, headers).await;
     match user {
         Some(u) => {
-            if u.plan == "Admin" || u.email.ends_with("@pdfmount.com") || u.email == "anshu@gemini.com" {
+            if u.plan == "Admin" || u.email.ends_with("@pdfmount.online") || u.email == "anshu@gemini.com" {
                 Ok(u)
             } else {
                 Err((StatusCode::FORBIDDEN, "Access Denied: Administrator privileges required."))

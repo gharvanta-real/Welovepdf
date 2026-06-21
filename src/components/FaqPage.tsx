@@ -15,7 +15,7 @@ export function FaqPage({ onBack }: FaqPageProps) {
 
   const faqs: FaqItem[] = [
     {
-      q: "Is Pdfmount.com really free to use?",
+      q: "Is Pdfmount.online really free to use?",
       a: "Yes, 100% free! You can use all conversions, page organization, AI summaries, and security tools without paying anything. We support server expenses by showing clean, non-intrusive advertisements and accepting optional UPI tips."
     },
     {
@@ -35,8 +35,8 @@ export function FaqPage({ onBack }: FaqPageProps) {
       a: "Yes. You can clear your session history or delete files instantly by clicking the 'Reset' button in the dashboard, which purges your staged file cache immediately."
     },
     {
-      q: "How can I support Pdfmount.com?",
-      a: "If our free tools saved you time, you can scan our UPI QR code in the feedback section or donate panel to buy the developers a cup of hot chai! Sharing Pdfmount.com with your colleagues and friends is also a huge help."
+      q: "How can I support Pdfmount.online?",
+      a: "If our free tools saved you time, you can scan our UPI QR code in the feedback section or donate panel to buy the developers a cup of hot chai! Sharing Pdfmount.online with your colleagues and friends is also a huge help."
     }
   ];
 

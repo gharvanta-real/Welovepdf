@@ -831,6 +831,15 @@ export function App() {
             }
           }} 
           currentUser={currentUser} 
+          onLoginClick={() => setIsLoginModalOpen(true)}
+        />
+        <LoginModal
+          isOpen={isLoginModalOpen}
+          onClose={() => setIsLoginModalOpen(false)}
+          onLoginSuccess={(user) => {
+            setCurrentUser(user);
+            setIsLoginModalOpen(false);
+          }}
         />
       </Suspense>
     );

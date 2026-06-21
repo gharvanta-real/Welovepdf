@@ -293,7 +293,7 @@ export function AllToolsPage({ onToolSelect, onPricingClick, onContactSalesClick
             Ready to streamline your workflow?
           </h2>
           <p style={{ opacity: 0.7, fontSize: "18px", fontWeight: 320, maxWidth: "600px", margin: "0 auto 40px", lineHeight: 1.5 }}>
-            Join professionals, students, and creators who trust Pdfmount.com for their daily document tasks.
+            Join professionals, students, and creators who trust Pdfmount.online for their daily document tasks.
           </p>
           <div style={{ display: "flex", gap: "16px", justifyContent: "center", flexWrap: "wrap" }}>
             <button 

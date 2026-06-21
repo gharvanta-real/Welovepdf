@@ -91,7 +91,7 @@ export function UserDashboardPage({ onBack, onToolSelect, onBrowseTools, jobs, c
 
   const handleCopyLink = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    navigator.clipboard.writeText(`https://pdfmount.com/shared/${id}`);
+    navigator.clipboard.writeText(`https://pdfmount.online/shared/${id}`);
     showToast("Share link copied to clipboard!");
     setActiveJobId(null);
   };

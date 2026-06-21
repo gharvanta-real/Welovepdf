@@ -412,7 +412,7 @@ function buildPrivacyContent(): string {
       <div style="background:#fff;padding:40px;border-radius:16px;border:1px solid #e5e7eb;display:flex;flex-direction:column;gap:28px">
         <div>
           <h2 style="font-size:1.2rem;font-weight:600;margin-bottom:10px">1. Information We Collect</h2>
-          <p style="font-size:16px;color:#4b5563;line-height:1.7;margin:0">Pdfmount.com is a zero-registration document helper. We do not ask for personal details unless you contact support or submit feedback. We collect basic server logging information (such as anonymized IP addresses and browser configurations) solely to run rate limits and optimize server performance. We do not collect any personally identifiable information from guest users.</p>
+          <p style="font-size:16px;color:#4b5563;line-height:1.7;margin:0">Pdfmount.online is a zero-registration document helper. We do not ask for personal details unless you contact support or submit feedback. We collect basic server logging information (such as anonymized IP addresses and browser configurations) solely to run rate limits and optimize server performance. We do not collect any personally identifiable information from guest users.</p>
         </div>
         <div>
           <h2 style="font-size:1.2rem;font-weight:600;margin-bottom:10px">2. Document File Safety</h2>
@@ -449,7 +449,7 @@ function buildTermsContent(): string {
       <div style="background:#fff;padding:40px;border-radius:16px;border:1px solid #e5e7eb;display:flex;flex-direction:column;gap:28px">
         <div>
           <h2 style="font-size:1.2rem;font-weight:600;margin-bottom:10px">1. Acceptance of Terms</h2>
-          <p style="font-size:16px;color:#4b5563;line-height:1.7;margin:0">By accessing and using Pdfmount.com, you agree to comply with and be bound by these Terms of Service. If you do not agree to these terms, please do not use our services. These terms apply to all visitors, users, and others who access or use the Service.</p>
+          <p style="font-size:16px;color:#4b5563;line-height:1.7;margin:0">By accessing and using Pdfmount.online, you agree to comply with and be bound by these Terms of Service. If you do not agree to these terms, please do not use our services. These terms apply to all visitors, users, and others who access or use the Service.</p>
         </div>
         <div>
           <h2 style="font-size:1.2rem;font-weight:600;margin-bottom:10px">2. Free Starter Plan &amp; Premium Subscriptions</h2>
@@ -457,11 +457,11 @@ function buildTermsContent(): string {
         </div>
         <div>
           <h2 style="font-size:1.2rem;font-weight:600;margin-bottom:10px">3. Usage Restrictions &amp; Quotas</h2>
-          <p style="font-size:16px;color:#4b5563;line-height:1.7;margin:0">You agree to use Pdfmount.com only for lawful purposes. You must not attempt to scrape our web tools, automate uploads via external scripts, upload malicious files containing viruses, or intentionally overload our servers. We enforce a client-side and server-side rate limit per IP address to ensure fair server availability for all users.</p>
+          <p style="font-size:16px;color:#4b5563;line-height:1.7;margin:0">You agree to use Pdfmount.online only for lawful purposes. You must not attempt to scrape our web tools, automate uploads via external scripts, upload malicious files containing viruses, or intentionally overload our servers. We enforce a client-side and server-side rate limit per IP address to ensure fair server availability for all users.</p>
         </div>
         <div>
           <h2 style="font-size:1.2rem;font-weight:600;margin-bottom:10px">4. Intellectual Property</h2>
-          <p style="font-size:16px;color:#4b5563;line-height:1.7;margin:0">You retain full ownership of all PDF documents, images, and texts you upload. Pdfmount.com does not claim any rights, copyright, or ownership over your files. The PDFMount platform, design, code, and trademarks are owned exclusively by PDFMount and its developers.</p>
+          <p style="font-size:16px;color:#4b5563;line-height:1.7;margin:0">You retain full ownership of all PDF documents, images, and texts you upload. Pdfmount.online does not claim any rights, copyright, or ownership over your files. The PDFMount platform, design, code, and trademarks are owned exclusively by PDFMount and its developers.</p>
         </div>
         <div>
           <h2 style="font-size:1.2rem;font-weight:600;margin-bottom:10px">5. File Storage &amp; Privacy</h2>
@@ -469,7 +469,7 @@ function buildTermsContent(): string {
         </div>
         <div>
           <h2 style="font-size:1.2rem;font-weight:600;margin-bottom:10px">6. Disclaimer of Warranties</h2>
-          <p style="font-size:16px;color:#4b5563;line-height:1.7;margin:0">Our tools are provided "as is" and "as available". While we strive for high conversion fidelity, Pdfmount.com makes no warranties regarding the accuracy, completeness, or reliability of converted outputs. Always keep a backup of your original documents before processing.</p>
+          <p style="font-size:16px;color:#4b5563;line-height:1.7;margin:0">Our tools are provided "as is" and "as available". While we strive for high conversion fidelity, Pdfmount.online makes no warranties regarding the accuracy, completeness, or reliability of converted outputs. Always keep a backup of your original documents before processing.</p>
         </div>
         <div>
           <h2 style="font-size:1.2rem;font-weight:600;margin-bottom:10px">7. Contact</h2>
@@ -482,13 +482,13 @@ function buildTermsContent(): string {
 
 function buildFaqContent(): string {
   const faqs = [
-    { q: "Is Pdfmount.com really free to use?", a: "Yes, 100% free! You can use all conversions, page organization, and security tools without paying anything. We support server expenses by showing clean, non-intrusive advertisements and accepting optional subscriptions." },
+    { q: "Is Pdfmount.online really free to use?", a: "Yes, 100% free! You can use all conversions, page organization, and security tools without paying anything. We support server expenses by showing clean, non-intrusive advertisements and accepting optional subscriptions." },
     { q: "Is my personal document secure on your servers?", a: "Absolutely. We employ an automated server cleanup task that deletes all uploaded documents and processed outputs exactly 1 hour after conversion. We do not read, scan, store, or share your document contents with any third party." },
     { q: "Are there size limits for uploading files?", a: "Free users can upload up to 50 MB per session. Pro users get up to 500 MB per file. Most normal documents, presentations, and images fall well within the free limit." },
     { q: "Can I cancel or delete my files before the 1-hour auto-delete timer?", a: "Yes. You can clear your session history or delete files instantly by clicking the 'Reset' button in the dashboard, which purges your staged file cache immediately." },
     { q: "What PDF tools does PDFMount offer?", a: "PDFMount offers 23+ PDF tools including Merge PDF, Split PDF, Compress PDF, PDF to Word, Word to PDF, JPG to PDF, PDF to JPG, Sign PDF, Watermark PDF, Protect PDF, Unlock PDF, Rotate PDF, Organize PDF, Add Page Numbers, PDF OCR, and many more." },
     { q: "Does PDFMount work on mobile devices?", a: "Yes. PDFMount is fully responsive and works on any modern browser on smartphones, tablets, and desktop computers without any app installation." },
-    { q: "How can I support Pdfmount.com?", a: "If our free tools saved you time, you can upgrade to a Pro plan or share Pdfmount.com with your colleagues and friends — that is a huge help!" },
+    { q: "How can I support Pdfmount.online?", a: "If our free tools saved you time, you can upgrade to a Pro plan or share Pdfmount.online with your colleagues and friends — that is a huge help!" },
     { q: "What file formats does PDFMount support?", a: "PDFMount supports PDF, DOCX, DOC, JPG, PNG, GIF, BMP, WebP, and more as input formats across different tools. All outputs are high-quality PDF or image files." },
   ];
 
@@ -527,7 +527,7 @@ function buildAboutContent(): string {
 
       <div style="background:#10162f;color:#fff;padding:40px;border-radius:16px;margin-bottom:32px">
         <h2 style="font-size:1.5rem;font-weight:600;margin-bottom:16px">Our Mission</h2>
-        <p style="font-size:1rem;line-height:1.7;opacity:0.85;margin:0">We believe that static documents shouldn't hold back dynamic ideas. Pdfmount.com was founded to bridge the gap between fixed-format reliability and fluid creative potential — making every PDF tool free, fast, and secure for individuals, students, and professionals around the world.</p>
+        <p style="font-size:1rem;line-height:1.7;opacity:0.85;margin:0">We believe that static documents shouldn't hold back dynamic ideas. Pdfmount.online was founded to bridge the gap between fixed-format reliability and fluid creative potential — making every PDF tool free, fast, and secure for individuals, students, and professionals around the world.</p>
       </div>
 
       <h2 style="font-size:1.3rem;font-weight:600;margin-bottom:16px">What We Stand For</h2>
