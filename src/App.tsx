@@ -813,40 +813,30 @@ export function App() {
       "Crop PDF",
     ].includes(selectedTool);
 
-  if (currentView === "admin") {
-    return (
-      <Suspense fallback={
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "100vh", color: "#71717a", fontSize: "14px", fontFamily: "sans-serif", backgroundColor: "#fafafa" }}>
-          <span>Loading Admin Console...</span>
-        </div>
-      }>
-        <AdminDashboard 
-          onBack={() => {
-            if (typeof window !== "undefined" && window.location.hostname === "admin.pdfmount.online") {
-              window.location.href = "https://pdfmount.online";
-            } else {
-              setCurrentView("home");
-              setActiveJobId(null);
-              setHasStagedFiles(false);
-            }
-          }} 
-          currentUser={currentUser} 
-          onLoginClick={() => setIsLoginModalOpen(true)}
-        />
-        <LoginModal
-          isOpen={isLoginModalOpen}
-          onClose={() => setIsLoginModalOpen(false)}
-          onLoginSuccess={(user) => {
-            setCurrentUser(user);
-            setIsLoginModalOpen(false);
-          }}
-        />
-      </Suspense>
-    );
-  }
-
   return (
     <div className={`app ${isVisualEditorActive ? "visual-editor-active" : ""}`} data-theme={theme}>
+      {currentView === "admin" ? (
+        <Suspense fallback={
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "100vh", color: "#71717a", fontSize: "14px", fontFamily: "sans-serif", backgroundColor: "#fafafa" }}>
+            <span>Loading Admin Console...</span>
+          </div>
+        }>
+          <AdminDashboard 
+            onBack={() => {
+              if (typeof window !== "undefined" && window.location.hostname === "admin.pdfmount.online") {
+                window.location.href = "https://pdfmount.online";
+              } else {
+                setCurrentView("home");
+                setActiveJobId(null);
+                setHasStagedFiles(false);
+              }
+            }} 
+            currentUser={currentUser} 
+            onLoginClick={() => setIsLoginModalOpen(true)}
+          />
+        </Suspense>
+      ) : (
+        <>
       {!isVisualEditorActive && (
         <Header
           onLogoClick={() => {
@@ -1006,14 +996,19 @@ export function App() {
           </main>
         )}
       </Suspense>
+      </>
+      )}
       {toast && <div className="toast">{toast}</div>}
       <LoginModal
         isOpen={isLoginModalOpen}
         onClose={() => setIsLoginModalOpen(false)}
         onLoginSuccess={(user) => {
           setCurrentUser(user);
-          setToast(`Logged in as ${user.name || user.email}!`);
-          window.setTimeout(() => setToast(""), 2500);
+          setIsLoginModalOpen(false);
+          if (currentView !== "admin") {
+            setToast(`Logged in as ${user.name || user.email}!`);
+            window.setTimeout(() => setToast(""), 2500);
+          }
         }}
       />
       <AccountDrawer
