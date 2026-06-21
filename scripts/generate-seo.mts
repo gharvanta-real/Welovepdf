@@ -926,15 +926,6 @@ const seoPages: Record<string, SeoPage> = {
       "This metadata editor supports a wide range of professional, administrative, and academic needs. Businesses use the tool to sanitize corporate reports, removing local directory paths and username metadata before external distribution. Legal professionals can clear author details from trial briefs to ensure compliance with court filing rules. Academic researchers can update keyword lists and author fields before submitting papers to online journals. PDFMount provides a free, fast, browser-native utility that replaces expensive desktop software."
     ]
   },
-  "ocr-pdf": {
-    title: "PDF OCR - Make Scanned PDFs Searchable | PDFMount",
-    desc: "Convert scanned PDF documents into searchable and editable text using OCR technology online free.",
-    h1: "PDF OCR - Make Scanned PDFs Searchable",
-    intro: "Use Optical Character Recognition to make scanned PDFs fully text-searchable and copy-paste ready.",
-    steps: ["Upload your scanned PDF document.", "Click the 'Start' button to run OCR processing.", "Download your searchable PDF."],
-    faqs: [{ q: "What languages does OCR support?", a: "PDFMount's OCR supports multiple languages including English, Hindi, and many European languages." }],
-    detailedContent: ["Scanned documents are images without text layers. Our OCR engine adds a transparent text layer so you can select, copy, and search within the content."],
-  },
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -963,7 +954,6 @@ const toolRoutes: Record<string, string> = {
   "/watermark-pdf": "watermark-pdf",
   "/bates-numbering": "bates-numbering",
   "/edit-pdf-metadata": "metadata-pdf",
-  "/ocr-pdf": "ocr-pdf",
 };
 
 // Homepage JSON-LD schemas (WebSite + Organization)
@@ -992,7 +982,6 @@ const NAV_LINKS = `
       <nav style="margin-top:40px;padding-top:24px;border-top:1px solid #e5e7eb;display:flex;flex-wrap:wrap;gap:16px;font-size:14px">
         <a href="/" style="color:#2563eb">Home</a>
         <a href="/tools" style="color:#2563eb">All PDF Tools</a>
-        <a href="/pricing" style="color:#2563eb">Pricing</a>
         <a href="/faq" style="color:#2563eb">FAQ</a>
         <a href="/privacy" style="color:#2563eb">Privacy Policy</a>
         <a href="/terms" style="color:#2563eb">Terms of Service</a>
@@ -1023,7 +1012,6 @@ const homepageContent = `
         <li><a href="/remove-pages" style="color:#2563eb">Remove Pages</a> — Delete unwanted pages</li>
         <li><a href="/extract-pages" style="color:#2563eb">Extract Pages</a> — Save specific pages</li>
         <li><a href="/organize-pdf" style="color:#2563eb">Organize PDF</a> — Reorder pages freely</li>
-        <li><a href="/ocr-pdf" style="color:#2563eb">OCR PDF</a> — Make scanned PDFs searchable</li>
         <li><a href="/crop-pdf" style="color:#2563eb">Crop PDF</a> — Trim page margins</li>
         <li><a href="/page-numbers" style="color:#2563eb">Page Numbers</a> — Add numbering stamps</li>
         <li><a href="/header-footer-pdf" style="color:#2563eb">Header &amp; Footer</a> — Custom headers/footers</li>
@@ -1374,7 +1362,6 @@ function buildToolsContent(): string {
     { href: "/pdf-annotator", name: "PDF Annotator", desc: "Highlight and draw on PDF pages" },
     { href: "/bates-numbering", name: "Bates Numbering", desc: "Legal document indexing stamps" },
     { href: "/edit-pdf-metadata", name: "Edit Metadata", desc: "Change PDF title, author, keywords" },
-    { href: "/ocr-pdf", name: "PDF OCR", desc: "Make scanned PDFs searchable" },
   ];
 
   const items = tools.map(t =>
@@ -1634,11 +1621,6 @@ function main() {
       title: "PDFMount - Free Online PDF Tools & Editor",
       desc: "Merge, split, compress, convert, sign, and secure PDF files online. Free, secure, and fast PDF tools inside your browser.",
       content: homepageContent,
-    },
-    "/pricing": {
-      title: "Simple Pricing Plans - PDFMount Pro & Enterprise",
-      desc: "Check out our affordable plans. Get larger file limits, batch processing, and priority support for PDFMount. Start free, upgrade anytime.",
-      content: buildPricingContent(),
     },
     "/tools": {
       title: "All PDF Tools - PDFMount",

@@ -45,7 +45,6 @@ const dropdownColumns: DropdownGroup[][] = [
       { name: "Sign PDF" }, 
       { name: "Unlock PDF" }, 
       { name: "Protect PDF" }, 
-      { name: "PDF OCR" },
       { name: "Watermark PDF" },
       { name: "Bates Numbering" }
     ] }
@@ -239,28 +238,17 @@ export function Header({
 
         {/* Right actions */}
         <div className="stitch-header-actions">
-          {/* Pricing & Workspace Links (Desktop Only) */}
+          {/* Workspace Links (Desktop Only) */}
           <div className="stitch-desktop-only" style={{ display: "flex", alignItems: "center", gap: "16px", marginRight: "12px" }}>
-            <a 
-              className="stitch-nav-link" 
-              href="#pricing" 
-              onClick={(e) => { e.preventDefault(); onPricingClick?.(); }}
-              style={{ padding: 0 }}
-            >
-              Pricing
-            </a>
             {currentUser && (
-              <>
-                <span style={{ width: "1px", height: "16px", backgroundColor: "var(--s-hairline)" }} />
-                <a 
-                  className="stitch-nav-link" 
-                  href="#workspace" 
-                  style={{ fontWeight: "600", padding: 0 }} 
-                  onClick={(e) => { e.preventDefault(); setIsDropdownOpen(false); onWorkspaceClick?.(); }}
-                >
-                  My Workspace
-                </a>
-              </>
+              <a 
+                className="stitch-nav-link" 
+                href="#workspace" 
+                style={{ fontWeight: "600", padding: 0 }} 
+                onClick={(e) => { e.preventDefault(); setIsDropdownOpen(false); onWorkspaceClick?.(); }}
+              >
+                My Workspace
+              </a>
             )}
           </div>
 
@@ -335,9 +323,6 @@ export function Header({
                   My Workspace
                 </button>
               )}
-              <button className="mobile-nav-link" style={{ fontWeight: 500 }} onClick={() => { setIsMobileMenuOpen(false); onPricingClick?.(); }}>
-                Pricing Plans
-              </button>
             </div>
           </div>
 

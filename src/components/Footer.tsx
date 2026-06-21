@@ -67,7 +67,6 @@ export function Footer({ onToolSelect, onViewChange }: FooterProps) {
             <span className="eyebrow" style={{ color: "rgba(255,255,255,0.4)", fontSize: "11px", fontWeight: "600", textTransform: "uppercase", letterSpacing: "1px", display: "block", marginBottom: "18px" }}>Legal & Trust</span>
             <ul>
               <li><a href="#about" onClick={(e) => { e.preventDefault(); onViewChange("about"); }}>About Us</a></li>
-              <li><a href="#pricing" onClick={(e) => { e.preventDefault(); onViewChange("pricing"); }}>Pricing Plans</a></li>
               <li><a href="#security" onClick={(e) => { e.preventDefault(); onViewChange("security"); }}>Security Policy</a></li>
               <li><a href="#file-privacy" onClick={(e) => { e.preventDefault(); onViewChange("file-privacy"); }}>File Privacy</a></li>
               <li><a href="#data-deletion" onClick={(e) => { e.preventDefault(); onViewChange("data-deletion"); }}>Data Deletion</a></li>

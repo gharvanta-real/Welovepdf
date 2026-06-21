@@ -28,7 +28,7 @@ const AdminDashboard = lazy(() => import("./admin/AdminDashboard").then(m => ({ 
 
 const pathMap: Record<string, { view: "home" | "workspace" | "pricing" | "privacy" | "terms" | "faq" | "contact" | "tools" | "about" | "contact-sales" | "settings" | "dashboard" | "security" | "file-privacy" | "data-deletion" | "admin"; tool?: string }> = {
   "/": { view: "home" },
-  "/pricing": { view: "pricing" },
+  "/pricing": { view: "home" },
   "/privacy": { view: "privacy" },
   "/terms": { view: "terms" },
   "/faq": { view: "faq" },
@@ -605,10 +605,9 @@ export function App() {
         setToast("Free limit is 25 MB. Log in to get 50 MB upload limit!");
         setIsLoginModalOpen(true);
       } else if (currentUser.plan !== "Pro") {
-        setToast("Free plan has a 50 MB file limit. Upgrade to Pro for 500 MB!");
-        setCurrentView("pricing");
+        setToast("Upload size exceeds the 50 MB limit. Please reduce your file size.");
       } else {
-        setToast("Pro plan allows up to 500 MB per upload.");
+        setToast("Maximum allowed file size is 500 MB.");
       }
       window.setTimeout(() => setToast(""), 5000);
       return;
@@ -737,9 +736,6 @@ export function App() {
       );
       setActiveJobId(null);
 
-      // Handle daily rate limit responses — parse structured backend error
-      // Format: DAILY_LIMIT_REACHED:LOGIN_REQUIRED:message
-      //      or DAILY_LIMIT_REACHED:UPGRADE_REQUIRED:message
       if (rawMsg.includes("DAILY_LIMIT_REACHED")) {
         if (rawMsg.includes("LOGIN_REQUIRED")) {
           // Anonymous user hit 10 job limit → show login wall
@@ -747,17 +743,17 @@ export function App() {
           window.setTimeout(() => setToast(""), 4000);
           setIsLoginModalOpen(true);
         } else if (rawMsg.includes("UPGRADE_REQUIRED")) {
-          // Logged-in free user hit 10 job limit → show pricing
-          setToast("Daily limit reached. Upgrade to Pro for 100 jobs/day!");
-          window.setTimeout(() => setToast(""), 4000);
-          setCurrentView("pricing");
+          // Logged-in free user hit limit
+          setToast("Daily free usage limit reached. Please check back tomorrow!");
+          window.setTimeout(() => setToast(""), 5000);
         }
       } else if (rawMsg.toLowerCase().includes("limit")) {
         // Legacy fallback
         if (!currentUser) {
           setIsLoginModalOpen(true);
         } else if (currentUser.plan !== "Pro") {
-          setCurrentView("pricing");
+          setToast("Daily free usage limit reached. Please check back tomorrow!");
+          window.setTimeout(() => setToast(""), 5000);
         }
       }
     }
