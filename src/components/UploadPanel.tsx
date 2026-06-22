@@ -7,6 +7,7 @@ import { CropEditor } from "./pdf-editor/CropEditor";
 import { PageNumberEditor } from "./pdf-editor/PageNumberEditor";
 import { BatesNumberEditor } from "./pdf-editor/BatesNumberEditor";
 import { getPdfjsLib } from "../utils/pdfjs";
+import { getToolColor } from "./ToolIcon";
 
 // Import modular subcomponents
 import { 
@@ -155,7 +156,7 @@ export function UploadPanel({
   ].includes(selectedTool);
 
   const blockColor = getToolBlockColor(selectedTool);
-  const toolColor = getToolBlockColor(selectedTool); // Visual compatibility
+  const toolColor = getToolColor(selectedTool);
   const heroDesc = getToolHeroDescription(selectedTool);
   const eyebrow = getToolEyebrow(selectedTool);
   const features = getToolFeatures(selectedTool);
