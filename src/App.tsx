@@ -281,6 +281,26 @@ export function App() {
       document.head.appendChild(metaDesc);
     }
     metaDesc.setAttribute("content", desc);
+
+    // Update robots meta tag for private/admin pages to prevent search indexing
+    let metaRobots = document.querySelector('meta[name="robots"]');
+    if (currentView === "admin" || currentView === "dashboard" || currentView === "settings") {
+      if (!metaRobots) {
+        metaRobots = document.createElement("meta");
+        metaRobots.setAttribute("name", "robots");
+        document.head.appendChild(metaRobots);
+      }
+      metaRobots.setAttribute("content", "noindex, nofollow");
+    } else if (metaRobots) {
+      metaRobots.remove();
+    }
+
+    // Programmatically disable GA4 tracking on the admin panel to keep admin data private
+    if (currentView === "admin") {
+      (window as any)['ga-disable-G-D12M3PBGXH'] = true;
+    } else {
+      (window as any)['ga-disable-G-D12M3PBGXH'] = false;
+    }
     
     // Update canonical link
     const canonicalUrl = `https://pdfmount.online${getPathForState(currentView, currentView === "workspace" ? selectedTool : undefined)}`;

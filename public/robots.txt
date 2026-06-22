@@ -4,5 +4,6 @@ Allow: /
 # Block private/account pages from being indexed
 Disallow: /dashboard
 Disallow: /settings
+Disallow: /admin
 
 Sitemap: https://pdfmount.online/sitemap.xml
