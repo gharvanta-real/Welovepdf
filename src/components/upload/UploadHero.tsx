@@ -3,7 +3,7 @@ import { ChevronDown } from "lucide-react";
 import { Footer } from "../Footer";
 import { RecentJobs } from "../RecentJobs";
 import { tools } from "../../data/tools";
-import { seoPages } from "../../data/seoPages";
+import { seoPages, indianSeoRoutes } from "../../data/seoPages";
 
 
 interface UploadHeroProps {
@@ -307,7 +307,22 @@ export function UploadHero({
       {(() => {
         const toolObj = tools.find(t => t.name === selectedTool);
         const toolId = toolObj?.id;
-        const seoData = toolId ? seoPages[toolId] : null;
+        
+        let seoData = toolId ? seoPages[toolId] : null;
+        if (typeof window !== "undefined" && toolId === "compress") {
+          const currentPath = window.location.pathname;
+          const isProgrammaticCompress = currentPath.match(/^\/compress-pdf-to-(\d+)(kb|mb)$/i);
+          const indianMatch = indianSeoRoutes.find(r => r.route === currentPath);
+          if (indianMatch) {
+            seoData = seoPages[indianMatch.key];
+          } else if (isProgrammaticCompress) {
+            const sizeStr = isProgrammaticCompress[1] + isProgrammaticCompress[2].toLowerCase(); // e.g. "50kb"
+            const seoKey = `compress-pdf-to-${sizeStr}`;
+            if (seoPages[seoKey]) {
+              seoData = seoPages[seoKey];
+            }
+          }
+        }
         const [openFaq, setOpenFaq] = React.useState<number | null>(null);
 
         if (!seoData) return null;

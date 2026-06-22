@@ -8,7 +8,7 @@ import { AccountDrawer } from "./components/AccountDrawer";
 import { CookieBanner } from "./components/CookieBanner";
 import { supabase } from "./utils/supabase";
 import { tools } from "./data/tools";
-import { seoPages } from "./data/seoPages";
+import { seoPages, indianSeoRoutes } from "./data/seoPages";
 
 // Lazy-loaded auxiliary pages to decrease initial bundle size and boost page load times
 const PricingPage = lazy(() => import("./components/PricingPage").then(m => ({ default: m.PricingPage })));
@@ -68,6 +68,14 @@ const pathMap: Record<string, { view: "home" | "workspace" | "pricing" | "privac
   "/edit-pdf-metadata": { view: "workspace", tool: "Edit PDF Metadata" },
   "/ocr-pdf": { view: "workspace", tool: "PDF OCR" },
 };
+
+const programmaticSizes = ["50kb", "100kb", "150kb", "200kb", "300kb", "500kb", "1mb", "2mb", "5mb"];
+programmaticSizes.forEach(size => {
+  pathMap[`/compress-pdf-to-${size}`] = { view: "workspace", tool: "Compress PDF" };
+});
+indianSeoRoutes.forEach(item => {
+  pathMap[item.route] = { view: "workspace", tool: "Compress PDF" };
+});
 
 function getPathForState(view: string, tool?: string): string {
   if (view === "workspace" && tool) {
@@ -248,6 +256,14 @@ export function App() {
       return;
     }
     const currentPath = window.location.pathname;
+    
+    // Prevent overriding programmatic SEO URLs back to the generic tool URL
+    const isProgrammaticCompress = currentPath.match(/^\/compress-pdf-to-(\d+)(kb|mb)$/i);
+    const isIndianProgrammatic = indianSeoRoutes.some(r => r.route === currentPath);
+    if ((isProgrammaticCompress || isIndianProgrammatic) && currentView === "workspace" && selectedTool === "Compress PDF") {
+      return;
+    }
+
     const targetPath = getPathForState(currentView, currentView === "workspace" ? selectedTool : undefined);
     if (currentPath !== targetPath) {
       window.history.pushState(null, "", targetPath);
@@ -262,9 +278,26 @@ export function App() {
     if (currentView === "workspace") {
       const matchedTool = tools.find(t => t.name === selectedTool);
       const toolId = matchedTool?.id;
-      if (toolId && seoPages[toolId]) {
-        title = seoPages[toolId].title;
-        desc = seoPages[toolId].desc;
+      
+      let seoKey: string | undefined = toolId;
+      if (typeof window !== "undefined" && toolId === "compress") {
+        const currentPath = window.location.pathname;
+        const isProgrammaticCompress = currentPath.match(/^\/compress-pdf-to-(\d+)(kb|mb)$/i);
+        const indianMatch = indianSeoRoutes.find(r => r.route === currentPath);
+        if (indianMatch) {
+          seoKey = indianMatch.key;
+        } else if (isProgrammaticCompress) {
+          const sizeStr = isProgrammaticCompress[1] + isProgrammaticCompress[2].toLowerCase(); // e.g. "50kb"
+          const pKey = `compress-pdf-to-${sizeStr}`;
+          if (seoPages[pKey]) {
+            seoKey = pKey;
+          }
+        }
+      }
+
+      if (seoKey && seoPages[seoKey]) {
+        title = seoPages[seoKey].title;
+        desc = seoPages[seoKey].desc;
       }
     } else if (viewMetadata[currentView]) {
       title = viewMetadata[currentView].title;
@@ -303,7 +336,13 @@ export function App() {
     }
     
     // Update canonical link
-    const canonicalUrl = `https://pdfmount.online${getPathForState(currentView, currentView === "workspace" ? selectedTool : undefined)}`;
+    const currentPath = typeof window !== "undefined" ? window.location.pathname : "/";
+    const isProgrammaticCompress = currentPath.match(/^\/compress-pdf-to-(\d+)(kb|mb)$/i);
+    const isIndianProgrammatic = indianSeoRoutes.some(r => r.route === currentPath);
+    const pathForCanonical = ((isProgrammaticCompress || isIndianProgrammatic) && currentView === "workspace" && selectedTool === "Compress PDF")
+      ? currentPath
+      : getPathForState(currentView, currentView === "workspace" ? selectedTool : undefined);
+    const canonicalUrl = `https://pdfmount.online${pathForCanonical}`;
     let canonicalLink = document.querySelector('link[rel="canonical"]');
     if (!canonicalLink) {
       canonicalLink = document.createElement("link");
@@ -320,7 +359,12 @@ export function App() {
     
     // BreadcrumbList Schema (if not home)
     if (currentView !== "home") {
-      const path = getPathForState(currentView, currentView === "workspace" ? selectedTool : undefined);
+      const currentPath = typeof window !== "undefined" ? window.location.pathname : "/";
+      const isProgrammaticCompress = currentPath.match(/^\/compress-pdf-to-(\d+)(kb|mb)$/i);
+      const isIndianProgrammatic = indianSeoRoutes.some(r => r.route === currentPath);
+      const path = ((isProgrammaticCompress || isIndianProgrammatic) && currentView === "workspace" && selectedTool === "Compress PDF")
+        ? currentPath
+        : getPathForState(currentView, currentView === "workspace" ? selectedTool : undefined);
       const pageName = currentView === "workspace" ? selectedTool : (currentView.charAt(0).toUpperCase() + currentView.slice(1));
       schemas.push({
         "@context": "https://schema.org",
@@ -346,8 +390,25 @@ export function App() {
     if (currentView === "workspace") {
       const matchedTool = tools.find(t => t.name === selectedTool);
       const toolId = matchedTool?.id;
-      if (toolId && seoPages[toolId]) {
-        const pageData = seoPages[toolId];
+      
+      let seoKey: string | undefined = toolId;
+      if (typeof window !== "undefined" && toolId === "compress") {
+        const currentPath = window.location.pathname;
+        const isProgrammaticCompress = currentPath.match(/^\/compress-pdf-to-(\d+)(kb|mb)$/i);
+        const indianMatch = indianSeoRoutes.find(r => r.route === currentPath);
+        if (indianMatch) {
+          seoKey = indianMatch.key;
+        } else if (isProgrammaticCompress) {
+          const sizeStr = isProgrammaticCompress[1] + isProgrammaticCompress[2].toLowerCase(); // e.g. "50kb"
+          const pKey = `compress-pdf-to-${sizeStr}`;
+          if (seoPages[pKey]) {
+            seoKey = pKey;
+          }
+        }
+      }
+
+      if (seoKey && seoPages[seoKey]) {
+        const pageData = seoPages[seoKey];
         
         // SoftwareApplication
         schemas.push({

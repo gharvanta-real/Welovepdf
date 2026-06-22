@@ -890,3 +890,164 @@ export const seoPages: Record<string, SeoPageData> = {
     ]
   }
 };
+
+// Programmatic SEO for target file sizes
+export const programmaticSizes = ["50kb", "100kb", "150kb", "200kb", "300kb", "500kb", "1mb", "2mb", "5mb"];
+
+export function generateCompressProgrammaticSeo(sizeStr: string): SeoPageData {
+  const sizeUpper = sizeStr.toUpperCase(); // e.g., "50KB" or "1MB"
+
+  return {
+    title: `Compress PDF to ${sizeUpper} Online - Reduce PDF File Size | PDFMount`,
+    desc: `Compress PDF files online to reduce file size to ${sizeUpper} or less. Optimize images and font subsets securely without losing layout quality on PDFMount.`,
+    h1: `Compress PDF to ${sizeUpper} Online`,
+    intro: `Shrink your PDF documents to under ${sizeUpper} while maintaining formatting and text clarity using our advanced compression tool on PDFMount. Our optimization engine downsamples high-resolution images, flattens font subsets, and removes redundant metadata to fit files within the ${sizeUpper} target size. The entire operation runs in secure, isolated sandbox environments, making size optimization fast and secure.`,
+    steps: [
+      `Upload the document you want to shrink by dragging and dropping your PDF file into the secure workspace or selecting it from your folders.`,
+      `The tool will automatically target size reduction to fit within ${sizeUpper} by optimizing layouts and compressing images.`,
+      `Click the compress button to initiate our fast server-side compression script and run our scaling algorithms.`,
+      `Monitor the optimization progress in real-time, showing the exact percentage of data savings and byte reduction.`,
+      `Download the optimized PDF file directly to your workstation, featuring clean text lines, crisp vector shapes, and zero watermarks.`
+    ],
+    faqs: [
+      {
+        q: `How can I compress a PDF to less than ${sizeUpper} for free?`,
+        a: `You can compress any PDF to ${sizeUpper} or less using PDFMount. Simply upload your document, select the appropriate compression setting, and let our cloud-based engine optimize the file. Unregistered guest profiles can process files up to 25MB, while free registered users can upload up to 50MB, and Pro members can compress documents up to 500MB.`
+      },
+      {
+        q: `Will my PDF lose readability or image quality when compressed to ${sizeUpper}?`,
+        a: `No, our optimization engine uses smart compression to downsample images and flatten typography without ruining readability. Text vectors, line paths, and standard fonts remain sharp and vector-based. If your file is very large or contains ultra-high-resolution images, we apply optimized image scaling to fit the target ${sizeUpper} limit while preserving visual fidelity.`
+      },
+      {
+        q: `What is the maximum file size I can upload to compress to ${sizeUpper}?`,
+        a: `Guests can upload files up to 25MB for compression. Registered users on the free plan can process files up to 50MB, and Pro tier members can upload documents up to 500MB. Our system enforces a strict 60 minutes file deletion policy that automatically purges all files from our secure caches.`
+      },
+      {
+        q: `Is it secure to compress my private documents to ${sizeUpper} on PDFMount?`,
+        a: `Yes, PDFMount secures all file transfers using TLS 1.3 encryption protocols. All calculations are executed inside isolated, volatile memory container nodes that prevent data from being written to hard drives. All uploaded documents and processed outputs are permanently deleted after exactly 60 minutes.`
+      }
+    ],
+    detailedContent: [
+      `Our size optimization tool analyzes the internal tree structures and streams of your PDF document to fit files within the target ${sizeUpper} limit. The compression engine applies color-space conversion, downsamples image assets to optimized DPI resolutions (72 DPI for extreme compression or 150 DPI for standard eBook quality), and flattens embedded typography subsets to only the character glyphs used in the document. This direct manipulation of the file data stream ensures that text paths and hyperlinks stay active and layout styling remains intact.`,
+      `Privacy and data security are built into the core design of pdfmount.online. Files are transferred through secure TLS 1.3 channels and processed inside temporary, volatile sandbox containers. We run a zero-retention service, meaning we do not inspect, read, or backup client documents. Both original uploaded files and optimized PDF outputs are permanently deleted under our 60 minutes file deletion policy to prevent unauthorized retrieval or storage.`,
+      `This targeted compression service is ideal for students, government applications, job seekers, and corporate offices facing strict size limits on web forms. Job application portals, legal systems, and academic archives often restrict uploads to under 100KB or 200KB, making our tool the perfect solution. By running directly in the browser, PDFMount eliminates the need for expensive desktop software licenses, allowing you to optimize documents quickly and safely across all devices.`
+    ]
+  };
+}
+
+programmaticSizes.forEach(size => {
+  seoPages[`compress-pdf-to-${size}`] = generateCompressProgrammaticSeo(size);
+});
+
+// Indian Government & Exam Specific Programmatic SEO Routes
+export const indianSeoRoutes = [
+  {
+    size: "100kb",
+    key: "compress-pdf-to-100kb-for-ssc",
+    route: "/compress-pdf-to-100kb-for-ssc",
+    exam: "SSC (Staff Selection Commission)",
+    title: "Compress PDF to 100KB for SSC Online - PDFMount",
+    h1: "Compress PDF to 100KB for SSC Online",
+    desc: "Compress your PDF documents to less than 100KB for SSC (Staff Selection Commission) applications online. Safely resize Aadhaar, certificates, and marks sheets for SSC forms."
+  },
+  {
+    size: "50kb",
+    key: "compress-pdf-to-50kb-for-ssc",
+    route: "/compress-pdf-to-50kb-for-ssc",
+    exam: "SSC (Staff Selection Commission)",
+    title: "Compress PDF to 50KB for SSC Online - PDFMount",
+    h1: "Compress PDF to 50KB for SSC Online",
+    desc: "Compress PDF to under 50KB online for SSC form submissions. Shrink certificate and document PDFs while keeping signatures and details visible."
+  },
+  {
+    size: "100kb",
+    key: "compress-pdf-to-100kb-for-upsc",
+    route: "/compress-pdf-to-100kb-for-upsc",
+    exam: "UPSC Exam Portal",
+    title: "Compress PDF to 100KB for UPSC Online - PDFMount",
+    h1: "Compress PDF to 100KB for UPSC Online",
+    desc: "Reduce PDF file size to 100KB for UPSC online applications. Optimize identity proofs, signatures, and university degree certificates safely on PDFMount."
+  },
+  {
+    size: "100kb",
+    key: "compress-pdf-to-100kb-for-gate",
+    route: "/compress-pdf-to-100kb-for-gate",
+    exam: "GATE Exam Registration",
+    title: "Compress PDF to 100KB for GATE Exam Online - PDFMount",
+    h1: "Compress PDF to 100KB for GATE Exam Online",
+    desc: "Shrink PDF files to 100KB for GATE exam registration online. Downsample certificates and identity PDFs to GATE requirements without losing text clarity."
+  },
+  {
+    size: "200kb",
+    key: "compress-pdf-to-200kb-for-passport",
+    route: "/compress-pdf-to-200kb-for-passport",
+    exam: "Passport Seva Kendra Portal",
+    title: "Compress PDF to 200KB for Passport Seva Online - PDFMount",
+    h1: "Compress PDF to 200KB for Passport Seva Online",
+    desc: "Compress your PDF documents to under 200KB for Passport Seva portal online. Safely resize birth certificates, address proofs, and utility bills."
+  },
+  {
+    size: "200kb",
+    key: "compress-pdf-for-aadhaar-card",
+    route: "/compress-pdf-for-aadhaar-card",
+    exam: "Aadhaar Card Portal (UIDAI)",
+    title: "Compress Aadhaar Card PDF Online - PDFMount",
+    h1: "Compress Aadhaar Card PDF Online",
+    desc: "Compress Aadhaar card PDF files online free. Reduce Aadhaar PDF file size to 200KB or 300KB for UIDAI and other online application portal submissions."
+  },
+  {
+    size: "100kb",
+    key: "compress-pdf-for-pan-card",
+    route: "/compress-pdf-for-pan-card",
+    exam: "NSDL / UTITSL PAN Card Portal",
+    title: "Compress PAN Card PDF Online - PDFMount",
+    h1: "Compress PAN Card PDF Online",
+    desc: "Compress PAN card PDF files online for free. Fit your PAN card scans within 100KB or less for online PAN correction and NSDL portal applications."
+  }
+];
+
+export function generateIndianProgrammaticSeo(item: typeof indianSeoRoutes[0]): SeoPageData {
+  const sizeUpper = item.size.toUpperCase();
+
+  return {
+    title: item.title,
+    desc: item.desc,
+    h1: item.h1,
+    intro: `Compress and resize your scanned documents to under ${sizeUpper} specifically formatted for the ${item.exam} portal. In India, government recruitment boards, university admission forms, and document verification portals (like SSC, UPSC, GATE, Passport Seva, and UIDAI) have very strict file size constraints, often requiring uploads to be less than 100KB, 200KB, or 50KB. Our high-efficiency tool downsamples your Aadhaar scans, PAN card copies, mark sheets, and category certificates to fit these exact limits without losing readability of fine print, seals, or signatures.`,
+    steps: [
+      `Select and upload your scanned PDF document (Aadhaar, PAN card, marks sheet, or degree certificate) into our workspace.`,
+      `Our engine automatically applies settings targeted for the ${item.exam} portal to compress the file under ${sizeUpper}.`,
+      `Click the compress button to initiate our fast server-side processing algorithms which run on secure nodes.`,
+      `Verify the optimized PDF output file size to ensure it matches the ${sizeUpper} requirement of your form.`,
+      `Download your compressed document instantly, clean of watermarks, and ready for official government upload.`
+    ],
+    faqs: [
+      {
+        q: `How can I compress my scanned PDF to less than ${sizeUpper} for ${item.exam}?`,
+        a: `You can do it for free using PDFMount! Simply upload your PDF to our tool, and it will optimize the images and font subsets to ensure the final output stays under the ${sizeUpper} limit required by the ${item.exam} portal.`
+      },
+      {
+        q: `Will the signature and seal on my certificate remain readable if I compress it?`,
+        a: `Yes. PDFMount uses advanced vector preservation and smart downsampling. Text, official stamps, seals, and signatures will remain sharp and legible, ensuring your application doesn't get rejected for blurry uploads.`
+      },
+      {
+        q: `What is the maximum upload limit on PDFMount for Indian exam documents?`,
+        a: `Unregistered guest users can upload documents up to 25MB. Free registered accounts have a limit of 50MB, which is more than enough for government exam documents, marksheets, or identity proofs.`
+      },
+      {
+        q: `Is it safe to upload my Aadhaar card or PAN card to PDFMount?`,
+        a: `Absolutely. PDFMount uses end-to-end TLS 1.3 encryption for transfers, and all processing is run on isolated, memory-only servers. In accordance with our privacy policy, all files are permanently deleted from our cache exactly 60 minutes after processing.`
+      }
+    ],
+    detailedContent: [
+      `Indian online application portals (such as UPSC ORA, SSC CGL/CHSL, NSDL PAN, and UIDAI Aadhaar Self Service) enforce strict size limits to optimize their server storage. Uploading documents that exceed these limits (e.g. 50KB or 100KB) results in validation errors. PDFMount resolves this by using specialized compression algorithms to scale down high-resolution image scans, clean up embedded font sets, and wipe tracking metadata while retaining the visual clarity of stamps, seals, and signatures.`,
+      `To ensure total privacy when handling sensitive Indian identity documents like Aadhaar cards, PAN cards, birth certificates, and university degrees, PDFMount runs in isolated volatile virtual environments. No file is persistently written to disk or shared with third-party networks. All files are permanently wiped after 60 minutes.`,
+      `Our document optimization tool is designed for applicants across India preparing for competitive exams, passport verification, or state government job portals. By offering a fast, browser-native compression solution, we help students and job seekers submit their application forms on time without needing paid software licenses or visiting cyber cafes.`
+    ]
+  };
+}
+
+indianSeoRoutes.forEach(item => {
+  seoPages[item.key] = generateIndianProgrammaticSeo(item);
+});
+

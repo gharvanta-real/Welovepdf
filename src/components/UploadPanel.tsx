@@ -25,6 +25,7 @@ import { PreviewModal } from "./upload/PreviewModal";
 import { UploadHero } from "./upload/UploadHero";
 import { SuccessState } from "./upload/SuccessState";
 import { OptionsSidebar } from "./upload/OptionsSidebar";
+import { indianSeoRoutes } from "../data/seoPages";
 
 type UploadPanelProps = {
   selectedTool: string;
@@ -159,6 +160,31 @@ export function UploadPanel({
   const eyebrow = getToolEyebrow(selectedTool);
   const features = getToolFeatures(selectedTool);
   const heroIllustration = getToolIllustration(selectedTool, blockColor);
+
+  // Automatically select extreme compression if target size is <= 200kb
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const path = window.location.pathname;
+      const match = path.match(/^\/compress-pdf-to-(\d+)(kb|mb)$/i);
+      const indianMatch = indianSeoRoutes.find(r => r.route === path);
+      if (indianMatch) {
+        const sizeVal = parseInt(indianMatch.size, 10);
+        if (sizeVal <= 200) {
+          setCompressionLevel("extreme");
+        } else {
+          setCompressionLevel("recommended");
+        }
+      } else if (match) {
+        const val = parseInt(match[1], 10);
+        const unit = match[2].toLowerCase();
+        if (unit === "kb" && val <= 200) {
+          setCompressionLevel("extreme");
+        } else {
+          setCompressionLevel("recommended");
+        }
+      }
+    }
+  }, []);
 
   useEffect(() => {
     if (stagedFiles && stagedFiles.length > 0) {
