@@ -235,6 +235,10 @@ export function UploadPanel({
   }, [stagedFiles, selectedTool]);
 
   useEffect(() => {
+    onStagedChange?.(stagedFiles !== null && stagedFiles.length > 0);
+  }, [stagedFiles, selectedTool, onStagedChange]);
+
+  useEffect(() => {
     if (activeJob?.status === "Processing") {
       setStepIdx(0);
       const interval = setInterval(() => {
