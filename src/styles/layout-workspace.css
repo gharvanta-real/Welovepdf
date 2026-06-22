@@ -284,10 +284,16 @@
   height: calc(100vh - var(--header-h));
   min-height: calc(100vh - var(--header-h));
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
 }
 
 .workspace-page-wrapper.staged-view-active .workspace-full-bleed-container {
-  height: 100%;
+  flex: 1;
+  min-height: 0;
   width: 100%;
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
 }
