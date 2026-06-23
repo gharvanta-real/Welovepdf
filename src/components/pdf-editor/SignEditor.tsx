@@ -1082,89 +1082,96 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
       </div>
 
       {/* Right Sidebar: Signing options panel */}
-      <div style={{
-        width: "260px",
-        backgroundColor: "#ADEFD1", // Mint branding color
-        borderLeft: "1px solid #e6e6e6",
-        display: "flex",
-        flexDirection: "column",
-        height: "100%",
-        padding: "20px 16px",
-        boxSizing: "border-box"
-      }}>
-        {/* Back Link */}
-        <button 
-          onClick={onClose}
-          style={{
-            background: "none",
-            border: "none",
-            color: "rgba(0,0,0,0.6)",
-            fontSize: "0.74rem",
-            fontWeight: "600",
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            gap: "4px",
-            padding: "0",
-            marginBottom: "14px",
-            textAlign: "left"
-          }}
-        >
-          <ChevronLeft size={12} /> Sign PDF
-        </button>
-
-        <h3 style={{ fontSize: "1.1rem", fontWeight: "800", color: "#000000", margin: "0 0 16px 0" }}>
-          Signing options
-        </h3>
+      <div 
+        className="workspace-sidebar"
+        style={{
+          width: "320px",
+          background: "var(--c-surface, #f5f5f5)",
+          borderLeft: "1px solid var(--border)",
+          display: "flex",
+          flexDirection: "column",
+          height: "100%",
+          boxSizing: "border-box"
+        }}
+      >
+        {/* Header section with back button */}
+        <div style={{ padding: "24px 24px 12px" }}>
+          <button 
+            onClick={onClose}
+            style={{
+              background: "none",
+              border: "none",
+              color: "var(--text-muted)",
+              fontSize: "12px",
+              fontWeight: "600",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: "4px",
+              padding: "0",
+              marginBottom: "8px",
+              textAlign: "left",
+              fontFamily: "inherit"
+            }}
+          >
+            <ChevronLeft size={12} /> Sign PDF
+          </button>
+          <h3 className="sidebar-heading" style={{ padding: 0, margin: 0 }}>
+            Signing options
+          </h3>
+        </div>
 
         {/* Section: Type */}
-        <div style={{ marginBottom: "18px" }}>
-          <span style={{ fontSize: "0.62rem", fontWeight: "800", color: "rgba(0,0,0,0.5)", letterSpacing: "0.05em" }}>TYPE</span>
-          <div style={{ display: "flex", gap: "8px", marginTop: "6px" }}>
+        <div className="options-group" style={{ marginBottom: "20px" }}>
+          <label className="options-label">Type</label>
+          <div style={{ display: "flex", gap: "8px", marginTop: "4px" }}>
             <div style={{
               flex: 1,
-              backgroundColor: "#ffffff",
-              border: "2px solid #000000",
+              backgroundColor: "var(--c-bg, #ffffff)",
+              border: "2px solid var(--c-accent, #000000)",
               borderRadius: "8px",
               padding: "10px 6px",
               textAlign: "center",
               cursor: "pointer"
             }}>
-              <span style={{ display: "block", fontSize: "0.68rem", fontWeight: "750", color: "#000000" }}>Simple</span>
-              <span style={{ display: "block", fontSize: "0.55rem", color: "rgba(0,0,0,0.5)", marginTop: "2px" }}>Signature</span>
+              <span style={{ display: "block", fontSize: "0.78rem", fontWeight: "600", color: "var(--c-text)" }}>Simple</span>
+              <span style={{ display: "block", fontSize: "0.6rem", color: "var(--text-muted)", marginTop: "2px" }}>Signature</span>
             </div>
             <div style={{
               flex: 1,
-              backgroundColor: "rgba(255,255,255,0.4)",
-              border: "1px solid rgba(0,0,0,0.15)",
+              backgroundColor: "rgba(255, 255, 255, 0.4)",
+              border: "1px solid var(--border)",
               borderRadius: "8px",
               padding: "10px 6px",
               textAlign: "center",
               opacity: 0.6,
               cursor: "not-allowed"
             }}>
-              <span style={{ display: "block", fontSize: "0.68rem", fontWeight: "700", color: "#000000" }}>Digital 👑</span>
-              <span style={{ display: "block", fontSize: "0.55rem", color: "rgba(0,0,0,0.5)", marginTop: "2px" }}>Cryptographic</span>
+              <span style={{ display: "block", fontSize: "0.78rem", fontWeight: "600", color: "var(--c-text)" }}>Digital 👑</span>
+              <span style={{ display: "block", fontSize: "0.6rem", color: "var(--text-muted)", marginTop: "2px" }}>Cryptographic</span>
             </div>
           </div>
         </div>
 
         {/* Section: Required fields */}
-        <div style={{ marginBottom: "18px" }}>
-          <span style={{ fontSize: "0.62rem", fontWeight: "800", color: "rgba(0,0,0,0.5)", letterSpacing: "0.05em" }}>REQUIRED FIELDS</span>
-          <div style={{ marginTop: "6px" }}>
+        <div className="options-group" style={{ marginBottom: "20px" }}>
+          <label className="options-label">Required Fields</label>
+          <div className="options-vertical-list" style={{ marginTop: "4px" }}>
             <div 
               onClick={addSignatureToPage}
+              className="option-card"
               style={{
-                backgroundColor: "#ffffff",
-                borderRadius: "8px",
-                border: "1px solid #cbd5e1",
                 padding: "10px 12px",
                 display: "flex",
+                flexDirection: "row",
                 alignItems: "center",
                 gap: "8px",
+                backgroundColor: "var(--c-bg, #ffffff)",
+                border: "1px solid var(--border, #cbd5e1)",
+                borderRadius: "8px",
                 cursor: "pointer",
-                boxShadow: "0 2px 4px rgba(0,0,0,0.02)"
+                width: "100%",
+                boxSizing: "border-box"
               }}
             >
               {/* Drag handles */}
@@ -1179,7 +1186,8 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                 color: "#ffffff",
                 display: "flex",
                 alignItems: "center",
-                justifyContent: "center"
+                justifyContent: "center",
+                flexShrink: 0
               }}>
                 <PenTool size={14} />
               </div>
@@ -1187,20 +1195,20 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
               {/* Preview Box */}
               <div style={{
                 flex: 1,
-                border: "1px dashed #cbd5e1",
+                border: "1px dashed var(--border, #cbd5e1)",
                 borderRadius: "4px",
-                height: "38px",
+                height: "36px",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                backgroundColor: "#f8fafc",
+                backgroundColor: "var(--c-surface, #f8fafc)",
                 overflow: "hidden",
                 padding: "2px"
               }}>
                 {signatureDetails.signatureDataUrl ? (
                   <img src={signatureDetails.signatureDataUrl} style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain" }} alt="Signature" />
                 ) : (
-                  <span style={{ fontSize: "0.68rem", color: "#94a3b8" }}>Set signature</span>
+                  <span style={{ fontSize: "0.72rem", color: "var(--text-muted)" }}>Set signature</span>
                 )}
               </div>
 
@@ -1211,14 +1219,14 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                   background: "none",
                   border: "none",
                   cursor: "pointer",
-                  color: "#64748b",
+                  color: "var(--text-muted)",
                   padding: "6px",
                   borderRadius: "4px",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center"
                 }}
-                onMouseEnter={e => e.currentTarget.style.backgroundColor = "rgba(0,0,0,0.05)"}
+                onMouseEnter={e => e.currentTarget.style.backgroundColor = "var(--accent-soft, rgba(0,0,0,0.05))"}
                 onMouseLeave={e => e.currentTarget.style.backgroundColor = "transparent"}
               >
                 <Edit2 size={13} />
@@ -1228,26 +1236,27 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
         </div>
 
         {/* Section: Optional fields */}
-        <div style={{ flex: 1, overflowY: "auto", marginBottom: "12px" }}>
-          <span style={{ fontSize: "0.62rem", fontWeight: "800", color: "rgba(0,0,0,0.5)", letterSpacing: "0.05em" }}>OPTIONAL FIELDS</span>
-          <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "6px" }}>
+        <div className="options-group" style={{ flex: 1, overflowY: "auto", marginBottom: "20px" }}>
+          <label className="options-label">Optional Fields</label>
+          <div className="options-vertical-list" style={{ marginTop: "4px" }}>
             
             {/* 1. Initials Card */}
             <div 
               onClick={addInitialsToPage}
+              className="option-card"
               style={{
-                backgroundColor: "rgba(255,255,255,0.7)",
-                borderRadius: "8px",
-                border: "1px solid #cbd5e1",
                 padding: "10px 12px",
                 display: "flex",
+                flexDirection: "row",
                 alignItems: "center",
                 gap: "8px",
+                backgroundColor: "var(--c-bg, #ffffff)",
+                border: "1px solid var(--border, #cbd5e1)",
+                borderRadius: "8px",
                 cursor: "pointer",
-                transition: "background 0.15s"
+                width: "100%",
+                boxSizing: "border-box"
               }}
-              onMouseEnter={e => e.currentTarget.style.backgroundColor = "#ffffff"}
-              onMouseLeave={e => e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.7)"}
             >
               <GripVertical size={14} style={{ color: "#94a3b8", cursor: "grab" }} />
               <div style={{
@@ -1260,26 +1269,27 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                 alignItems: "center",
                 justifyContent: "center",
                 fontWeight: "bold",
-                fontSize: "0.74rem"
+                fontSize: "0.74rem",
+                flexShrink: 0
               }}>
                 AC
               </div>
               <div style={{
                 flex: 1,
-                border: "1px dashed #cbd5e1",
+                border: "1px dashed var(--border, #cbd5e1)",
                 borderRadius: "4px",
-                height: "38px",
+                height: "36px",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                backgroundColor: "#f8fafc",
+                backgroundColor: "var(--c-surface, #f8fafc)",
                 overflow: "hidden",
                 padding: "2px"
               }}>
                 {signatureDetails.initialsDataUrl ? (
                   <img src={signatureDetails.initialsDataUrl} style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain" }} alt="Initials" />
                 ) : (
-                  <span style={{ fontSize: "0.68rem", color: "#94a3b8" }}>Set initials</span>
+                  <span style={{ fontSize: "0.72rem", color: "var(--text-muted)" }}>Set initials</span>
                 )}
               </div>
               <button 
@@ -1288,14 +1298,14 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                   background: "none",
                   border: "none",
                   cursor: "pointer",
-                  color: "#64748b",
+                  color: "var(--text-muted)",
                   padding: "6px",
                   borderRadius: "4px",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center"
                 }}
-                onMouseEnter={e => e.currentTarget.style.backgroundColor = "rgba(0,0,0,0.05)"}
+                onMouseEnter={e => e.currentTarget.style.backgroundColor = "var(--accent-soft, rgba(0,0,0,0.05))"}
                 onMouseLeave={e => e.currentTarget.style.backgroundColor = "transparent"}
               >
                 <Edit2 size={13} />
@@ -1305,18 +1315,20 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
             {/* 2. Full Name Card */}
             <div 
               onClick={addNameToPage}
+              className="option-card"
               style={{
-                backgroundColor: "rgba(255,255,255,0.7)",
-                borderRadius: "8px",
-                border: "1px solid #cbd5e1",
                 padding: "10px 12px",
                 display: "flex",
+                flexDirection: "row",
                 alignItems: "center",
                 gap: "8px",
-                cursor: "pointer"
+                backgroundColor: "var(--c-bg, #ffffff)",
+                border: "1px solid var(--border, #cbd5e1)",
+                borderRadius: "8px",
+                cursor: "pointer",
+                width: "100%",
+                boxSizing: "border-box"
               }}
-              onMouseEnter={e => e.currentTarget.style.backgroundColor = "#ffffff"}
-              onMouseLeave={e => e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.7)"}
             >
               <GripVertical size={14} style={{ color: "#94a3b8", cursor: "grab" }} />
               <div style={{
@@ -1327,31 +1339,34 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                 color: "#ffffff",
                 display: "flex",
                 alignItems: "center",
-                justifyContent: "center"
+                justifyContent: "center",
+                flexShrink: 0
               }}>
                 <User size={14} />
               </div>
-              <div style={{ flex: 1, fontSize: "0.78rem", fontWeight: "700", color: "#1e293b" }}>
+              <div style={{ flex: 1, fontSize: "0.82rem", fontWeight: "600", color: "var(--c-text)" }}>
                 Full Name
               </div>
-              <span style={{ fontSize: "14px", color: "rgba(0,0,0,0.3)", paddingRight: "4px" }}>+</span>
+              <span style={{ fontSize: "14px", color: "var(--text-muted)", paddingRight: "4px" }}>+</span>
             </div>
 
             {/* 3. Date Stamp Card */}
             <div 
               onClick={addDateToPage}
+              className="option-card"
               style={{
-                backgroundColor: "rgba(255,255,255,0.7)",
-                borderRadius: "8px",
-                border: "1px solid #cbd5e1",
                 padding: "10px 12px",
                 display: "flex",
+                flexDirection: "row",
                 alignItems: "center",
                 gap: "8px",
-                cursor: "pointer"
+                backgroundColor: "var(--c-bg, #ffffff)",
+                border: "1px solid var(--border, #cbd5e1)",
+                borderRadius: "8px",
+                cursor: "pointer",
+                width: "100%",
+                boxSizing: "border-box"
               }}
-              onMouseEnter={e => e.currentTarget.style.backgroundColor = "#ffffff"}
-              onMouseLeave={e => e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.7)"}
             >
               <GripVertical size={14} style={{ color: "#94a3b8", cursor: "grab" }} />
               <div style={{
@@ -1362,31 +1377,34 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                 color: "#ffffff",
                 display: "flex",
                 alignItems: "center",
-                justifyContent: "center"
+                justifyContent: "center",
+                flexShrink: 0
               }}>
                 <Calendar size={14} />
               </div>
-              <div style={{ flex: 1, fontSize: "0.78rem", fontWeight: "700", color: "#1e293b" }}>
+              <div style={{ flex: 1, fontSize: "0.82rem", fontWeight: "600", color: "var(--c-text)" }}>
                 Date Stamp
               </div>
-              <span style={{ fontSize: "14px", color: "rgba(0,0,0,0.3)", paddingRight: "4px" }}>+</span>
+              <span style={{ fontSize: "14px", color: "var(--text-muted)", paddingRight: "4px" }}>+</span>
             </div>
 
             {/* 4. Text Card */}
             <div 
               onClick={addTextToPage}
+              className="option-card"
               style={{
-                backgroundColor: "rgba(255,255,255,0.7)",
-                borderRadius: "8px",
-                border: "1px solid #cbd5e1",
                 padding: "10px 12px",
                 display: "flex",
+                flexDirection: "row",
                 alignItems: "center",
                 gap: "8px",
-                cursor: "pointer"
+                backgroundColor: "var(--c-bg, #ffffff)",
+                border: "1px solid var(--border, #cbd5e1)",
+                borderRadius: "8px",
+                cursor: "pointer",
+                width: "100%",
+                boxSizing: "border-box"
               }}
-              onMouseEnter={e => e.currentTarget.style.backgroundColor = "#ffffff"}
-              onMouseLeave={e => e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.7)"}
             >
               <GripVertical size={14} style={{ color: "#94a3b8", cursor: "grab" }} />
               <div style={{
@@ -1397,31 +1415,34 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                 color: "#ffffff",
                 display: "flex",
                 alignItems: "center",
-                justifyContent: "center"
+                justifyContent: "center",
+                flexShrink: 0
               }}>
                 <Type size={14} />
               </div>
-              <div style={{ flex: 1, fontSize: "0.78rem", fontWeight: "700", color: "#1e293b" }}>
+              <div style={{ flex: 1, fontSize: "0.82rem", fontWeight: "600", color: "var(--c-text)" }}>
                 Text
               </div>
-              <span style={{ fontSize: "14px", color: "rgba(0,0,0,0.3)", paddingRight: "4px" }}>+</span>
+              <span style={{ fontSize: "14px", color: "var(--text-muted)", paddingRight: "4px" }}>+</span>
             </div>
 
             {/* 5. Company Stamp Card */}
             <div 
               onClick={addStampToPage}
+              className="option-card"
               style={{
-                backgroundColor: "rgba(255,255,255,0.7)",
-                borderRadius: "8px",
-                border: "1px solid #cbd5e1",
                 padding: "10px 12px",
                 display: "flex",
+                flexDirection: "row",
                 alignItems: "center",
                 gap: "8px",
-                cursor: "pointer"
+                backgroundColor: "var(--c-bg, #ffffff)",
+                border: "1px solid var(--border, #cbd5e1)",
+                borderRadius: "8px",
+                cursor: "pointer",
+                width: "100%",
+                boxSizing: "border-box"
               }}
-              onMouseEnter={e => e.currentTarget.style.backgroundColor = "#ffffff"}
-              onMouseLeave={e => e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.7)"}
             >
               <GripVertical size={14} style={{ color: "#94a3b8", cursor: "grab" }} />
               <div style={{
@@ -1432,24 +1453,25 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                 color: "#ffffff",
                 display: "flex",
                 alignItems: "center",
-                justifyContent: "center"
+                justifyContent: "center",
+                flexShrink: 0
               }}>
                 <Stamp size={14} />
               </div>
               <div style={{
                 flex: 1,
-                border: signatureDetails.stampDataUrl ? "1px dashed #cbd5e1" : "none",
+                border: signatureDetails.stampDataUrl ? "1px dashed var(--border, #cbd5e1)" : "none",
                 borderRadius: "4px",
-                height: signatureDetails.stampDataUrl ? "38px" : "auto",
+                height: signatureDetails.stampDataUrl ? "36px" : "auto",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                backgroundColor: signatureDetails.stampDataUrl ? "#f8fafc" : "transparent",
+                backgroundColor: signatureDetails.stampDataUrl ? "var(--c-surface, #f8fafc)" : "transparent",
                 overflow: "hidden",
                 padding: signatureDetails.stampDataUrl ? "2px" : "0",
-                fontSize: "0.78rem",
-                fontWeight: "700",
-                color: "#1e293b",
+                fontSize: "0.82rem",
+                fontWeight: "600",
+                color: "var(--c-text)",
                 textAlign: "left"
               }}>
                 {signatureDetails.stampDataUrl ? (
@@ -1464,14 +1486,14 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                   background: "none",
                   border: "none",
                   cursor: "pointer",
-                  color: "#64748b",
+                  color: "var(--text-muted)",
                   padding: "6px",
                   borderRadius: "4px",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center"
                 }}
-                onMouseEnter={e => e.currentTarget.style.backgroundColor = "rgba(0,0,0,0.05)"}
+                onMouseEnter={e => e.currentTarget.style.backgroundColor = "var(--accent-soft, rgba(0,0,0,0.05))"}
                 onMouseLeave={e => e.currentTarget.style.backgroundColor = "transparent"}
               >
                 <Edit2 size={13} />
@@ -1482,17 +1504,18 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
         </div>
 
         {/* Sign Bottom Button */}
-        <button 
-          onClick={handleSignComplete}
-          className="primary-button"
-          style={{
-            width: "100%",
-            marginTop: "16px",
-            boxSizing: "border-box"
-          }}
-        >
-          Sign PDF &rarr;
-        </button>
+        <div style={{ padding: "16px 24px 24px", flexShrink: 0 }}>
+          <button 
+            onClick={handleSignComplete}
+            className="primary-button"
+            style={{
+              width: "100%",
+              boxSizing: "border-box"
+            }}
+          >
+            Sign PDF &rarr;
+          </button>
+        </div>
       </div>
 
       {/* ── Signature Details popup modal ── */}
