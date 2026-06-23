@@ -104,7 +104,7 @@
   margin: 0 auto;
   padding: 0 40px;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 0.9fr 1.1fr;
   gap: 60px;
   align-items: center;
   width: 100%;

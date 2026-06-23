@@ -219,18 +219,38 @@
 /* ── Toast notifications ── */
 .toast {
   position: fixed;
-  bottom: 28px;
+  top: 24px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 9999;
-  border-radius: 9999px;
-  background: var(--s-primary);
-  color: var(--s-on-primary);
+  z-index: 99999;
+  border-radius: 12px;
+  background: rgba(244, 244, 245, 0.85);
+  color: #000000;
   font-weight: 600;
-  font-size: 14px;
-  padding: 10px 24px;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.15);
-  white-space: nowrap;
+  font-size: 13.5px;
+  padding: 10px 20px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  max-width: 90vw;
+  animation: toast-slide-down 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  box-sizing: border-box;
+}
+
+@keyframes toast-slide-down {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -16px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
 }
 
 /* ── Side link ── */

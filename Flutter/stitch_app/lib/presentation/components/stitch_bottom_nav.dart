@@ -18,20 +18,16 @@ class StitchBottomNav extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     final bgColor = isDark ? const Color(0xFF161616) : Colors.white;
-    final borderColor = isDark ? const Color(0xFF2C2C2C) : const Color(0xFFC1C8C9).withOpacity(0.5);
 
     return Container(
       height: 70,
       decoration: BoxDecoration(
         color: bgColor,
-        border: Border(
-          top: BorderSide(color: borderColor, width: 1.0),
-        ),
         boxShadow: const [
           BoxShadow(
-            color: Color(0x0A000000), // rgba(0,0,0,0.04)
-            blurRadius: 20,
-            offset: Offset(0, -4),
+            color: Color(0x0E000000),
+            blurRadius: 18,
+            offset: Offset(0, -3),
           )
         ],
       ),

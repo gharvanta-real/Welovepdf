@@ -77,7 +77,7 @@ export function Header({
             width: "28px",
             height: "28px",
             borderRadius: "6px",
-            backgroundColor: "#2563eb",
+            backgroundColor: "#1f2937",
             display: "none",
             alignItems: "center",
             justifyContent: "center",
@@ -129,7 +129,7 @@ export function Header({
                   style={{
                     border: "none",
                     background: "none",
-                    color: "#2563eb",
+                    color: "#1f2937",
                     cursor: "pointer",
                     padding: "2px"
                   }}
@@ -254,7 +254,7 @@ export function Header({
             e.currentTarget.style.backgroundColor = "#ffffff";
           }}
         >
-          <Sparkles size={13} style={{ color: "#3b82f6" }} />
+          <Sparkles size={13} style={{ color: "#7c3aed" }} />
           AI Assistant
         </button>
 
@@ -297,7 +297,7 @@ export function Header({
           alignItems: "stretch",
           borderRadius: "8px",
           overflow: "hidden",
-          boxShadow: "0 1px 2px rgba(37,99,235,0.1)"
+          boxShadow: "0 1px 2px rgba(31,41,55,0.1)"
         }}>
           <button
             onClick={onDownload}
@@ -307,20 +307,20 @@ export function Header({
               gap: "6px",
               padding: "7px 14px",
               border: "none",
-              background: "#2563eb",
+              background: "#1f2937",
               color: "#ffffff",
               cursor: "pointer",
               fontSize: "0.78rem",
               fontWeight: "600",
               transition: "background 0.15s"
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = "#1d4ed8"; }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = "#2563eb"; }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = "#111827"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = "#1f2937"; }}
           >
             <Download size={13} />
             Finish & Download
           </button>
-          <div style={{ width: "1px", backgroundColor: "#3b82f6" }} />
+          <div style={{ width: "1px", backgroundColor: "#374151" }} />
           <button
             onClick={onDownload}
             style={{
@@ -329,13 +329,13 @@ export function Header({
               justifyContent: "center",
               padding: "7px 10px",
               border: "none",
-              background: "#2563eb",
+              background: "#1f2937",
               color: "#ffffff",
               cursor: "pointer",
               transition: "background 0.15s"
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = "#1d4ed8"; }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = "#2563eb"; }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = "#111827"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = "#1f2937"; }}
           >
             <ChevronDown size={13} />
           </button>

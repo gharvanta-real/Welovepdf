@@ -41,6 +41,12 @@ class ToolsTab extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // ── Utilities & Scanners ─────────────────────────────────
+                  _buildSectionHeader(context, 'Utilities & Scanners'),
+                  const SizedBox(height: AppTokens.stackMd),
+                  _buildUtilitiesGrid(context),
+                  const SizedBox(height: AppTokens.stackLg),
+
                   // ── Convert To ──────────────────────────────────────────
                   _buildSectionHeader(context, 'Convert To'),
                   const SizedBox(height: AppTokens.stackMd),
@@ -64,15 +70,6 @@ class ToolsTab extends StatelessWidget {
                   const SizedBox(height: AppTokens.stackMd),
                   _buildViewSecurityGrid(context),
                   const SizedBox(height: AppTokens.stackLg),
-
-                  // ── Utilities & Scanners ─────────────────────────────────
-                  _buildSectionHeader(context, 'Utilities & Scanners'),
-                  const SizedBox(height: AppTokens.stackMd),
-                  _buildUtilitiesGrid(context),
-                  const SizedBox(height: AppTokens.stackLg),
-
-                  // ── Go Premium Banner ───────────────────────────────────
-                  _buildPremiumBanner(context),
                 ],
               ),
             ),
@@ -411,94 +408,7 @@ class ToolsTab extends StatelessWidget {
     );
   }
 
-  // ── Go Premium Banner ──────────────────────────────────────────────────────
-  Widget _buildPremiumBanner(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final Color bannerBgColor = isDark ? Colors.white : theme.colorScheme.error;
-    final Color bannerFgColor = isDark ? Colors.black : Colors.white;
-    final Color bannerSubColor = isDark ? Colors.black54 : Colors.white70;
-    final Color shieldBgColor = isDark ? Colors.black.withOpacity(0.08) : Colors.white.withOpacity(0.15);
-    final Color buttonBgColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
-    final Color buttonFgColor = isDark ? Colors.white : theme.colorScheme.error;
 
-    return Container(
-      padding: const EdgeInsets.symmetric(
-          horizontal: AppTokens.gutter, vertical: 14),
-      decoration: BoxDecoration(
-        color: bannerBgColor,
-        borderRadius: BorderRadius.circular(AppTokens.radiusXl),
-      ),
-      child: Row(
-        children: [
-          // Shield icon
-          Container(
-            width: 36,
-            height: 36,
-            decoration: BoxDecoration(
-              color: shieldBgColor,
-              shape: BoxShape.circle,
-            ),
-            child: Icon(Icons.workspace_premium,
-                color: bannerFgColor, size: 20),
-          ),
-          const SizedBox(width: AppTokens.stackMd),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Go Premium',
-                  style: TextStyle(
-                    color: bannerFgColor,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                  ),
-                ),
-                Text(
-                  'Unlock all premium tools and features.',
-                  style: TextStyle(
-                    color: bannerSubColor,
-                    fontSize: 11,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-            decoration: BoxDecoration(
-              color: buttonBgColor,
-              borderRadius:
-                  BorderRadius.circular(AppTokens.radiusFull),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'Upgrade Now',
-                  style: TextStyle(
-                    color: buttonFgColor,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12,
-                  ),
-                ),
-                Icon(Icons.chevron_right,
-                    color: buttonFgColor, size: 16),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _comingSoon(BuildContext context, String toolName) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('$toolName – coming soon!')),
-    );
-  }
 }
 
 // ── Data class for tool items ──────────────────────────────────────────────

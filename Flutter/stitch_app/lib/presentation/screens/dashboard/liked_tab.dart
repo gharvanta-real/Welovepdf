@@ -202,7 +202,7 @@ class _LikedTabState extends State<LikedTab> {
                       ? theme.colorScheme.error
                       : (isDark
                           ? const Color(0xFF282828)
-                          : const Color(0xFFF0F0F0)),
+                          : const Color(0xFFE2EDF5)),
                   borderRadius: BorderRadius.circular(AppTokens.radiusFull),
                   border: Border.all(
                     color: isSelected

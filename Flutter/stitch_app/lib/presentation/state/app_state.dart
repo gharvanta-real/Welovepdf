@@ -19,6 +19,22 @@ import '../../data/services/document_service.dart';
 import 'package:file_picker/file_picker.dart';
 import '../../data/services/api_service.dart';
 
+class ActiveJob {
+  final String id;
+  final String toolId;
+  final String status; // 'processing', 'completed', 'failed'
+  final DateTime timestamp;
+  final String details;
+
+  ActiveJob({
+    required this.id,
+    required this.toolId,
+    required this.status,
+    required this.timestamp,
+    required this.details,
+  });
+}
+
 enum AppScreen {
   onboarding,
   dashboard,
@@ -31,6 +47,13 @@ enum AppScreen {
 
 class AppState extends ChangeNotifier {
   final DocumentService _service = DocumentService();
+  final List<ActiveJob> _activeJobs = [];
+  List<ActiveJob> get activeJobs => _activeJobs;
+
+  void clearActiveJobs() {
+    _activeJobs.removeWhere((job) => job.status != 'processing');
+    notifyListeners();
+  }
 
   String? _token;
   String? _userName;
@@ -665,12 +688,56 @@ class AppState extends ChangeNotifier {
   /// Calls the Rust backend engine via ApiService to process the specified PDF tool
   /// and automatically adds the resulting document to the active folder workspace.
   Future<Document?> processTool(String toolId, List<PlatformFile> files, Map<String, dynamic> options) async {
+    final timestamp = DateTime.now();
+    final jobId = 'job_${timestamp.millisecondsSinceEpoch}';
+    final placeholderId = 'proc_${timestamp.millisecondsSinceEpoch}';
+    final toolDisplay = toolId.replaceAll('-', ' ').replaceAll('_', ' ').toUpperCase();
+
+    // 1. Add active job tracking item
+    final activeJob = ActiveJob(
+      id: jobId,
+      toolId: toolId,
+      status: 'processing',
+      timestamp: timestamp,
+      details: 'Processing ${files.length} file(s) on backend...',
+    );
+    _activeJobs.insert(0, activeJob);
+
+    // 2. Add placeholder in-progress document to recent files list
+    final placeholderDoc = Document(
+      id: placeholderId,
+      title: 'Generating $toolDisplay output...',
+      fileType: 'pdf',
+      size: 'Processing...',
+      addedDate: 'Just now',
+      isFavorite: false,
+      isProcessing: true,
+      author: 'PDFmount Engine',
+      description: 'Running $toolDisplay...',
+      parentFolderId: _currentFolderId,
+    );
+    _service.addDocument(placeholderDoc);
+    notifyListeners();
+
     try {
       final result = await ApiService.runPdfTool(
         toolId: toolId,
         files: files,
         options: options,
       );
+
+      // 3. Remove placeholder and active job
+      _service.removeDocument(placeholderId);
+      final jobIndex = _activeJobs.indexWhere((j) => j.id == jobId);
+      if (jobIndex != -1) {
+        _activeJobs[jobIndex] = ActiveJob(
+          id: jobId,
+          toolId: toolId,
+          status: 'completed',
+          timestamp: DateTime.now(),
+          details: 'Successfully generated ${result['fileName']}',
+        );
+      }
 
       final newDoc = Document(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -691,6 +758,20 @@ class AppState extends ChangeNotifier {
       return newDoc;
     } catch (e) {
       debugPrint('Error running PDF tool: $e');
+      
+      // 4. Update status to failed
+      _service.removeDocument(placeholderId);
+      final jobIndex = _activeJobs.indexWhere((j) => j.id == jobId);
+      if (jobIndex != -1) {
+        _activeJobs[jobIndex] = ActiveJob(
+          id: jobId,
+          toolId: toolId,
+          status: 'failed',
+          timestamp: DateTime.now(),
+          details: e.toString().replaceAll('Exception: ', ''),
+        );
+      }
+      notifyListeners();
       rethrow;
     }
   }

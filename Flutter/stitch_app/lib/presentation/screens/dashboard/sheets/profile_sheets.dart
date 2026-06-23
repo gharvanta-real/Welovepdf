@@ -655,6 +655,7 @@ void _showAccountDeletionConfirmation(BuildContext context, dynamic state) {
             onPressed: () async {
               Navigator.pop(context);
               await state.logoutUser();
+              if (!context.mounted) return;
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Your account and metadata sync records have been deleted permanently.')),
               );

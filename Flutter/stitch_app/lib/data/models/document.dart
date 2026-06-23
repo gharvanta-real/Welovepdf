@@ -10,6 +10,7 @@ class Document {
   final String description;
   final String? filePath;
   final String? parentFolderId;
+  final bool isProcessing;
 
   Document({
     required this.id,
@@ -23,6 +24,7 @@ class Document {
     this.description = '',
     this.filePath,
     this.parentFolderId,
+    this.isProcessing = false,
   });
 
   Document copyWith({
@@ -38,6 +40,7 @@ class Document {
     String? filePath,
     String? parentFolderId,
     bool clearParentFolder = false,
+    bool? isProcessing,
   }) {
     return Document(
       id: id ?? this.id,
@@ -51,6 +54,7 @@ class Document {
       description: description ?? this.description,
       filePath: filePath ?? this.filePath,
       parentFolderId: clearParentFolder ? null : (parentFolderId ?? this.parentFolderId),
+      isProcessing: isProcessing ?? this.isProcessing,
     );
   }
 
@@ -67,6 +71,7 @@ class Document {
       'description': description,
       'filePath': filePath,
       'parentFolderId': parentFolderId,
+      'isProcessing': isProcessing,
     };
   }
 
@@ -83,6 +88,7 @@ class Document {
       description: json['description'] as String? ?? '',
       filePath: json['filePath'] as String?,
       parentFolderId: json['parentFolderId'] as String?,
+      isProcessing: json['isProcessing'] as bool? ?? false,
     );
   }
 }

@@ -137,7 +137,7 @@ class HomeTab extends StatelessWidget {
 
     final Color topSectionFgColor = theme.colorScheme.onSurface;
     final Color topSectionSeeAllColor = theme.colorScheme.error;
-    final Color quickToolCircleBgColor = isDark ? const Color(0xFF282828) : const Color(0xFFF0F0F0);
+    final Color quickToolCircleBgColor = isDark ? const Color(0xFF282828) : const Color(0xFFE2EDF5);
     final Color quickToolIconColor = isDark ? Colors.white : theme.colorScheme.error;
 
     return Column(
@@ -341,7 +341,7 @@ class HomeTab extends StatelessWidget {
                       ? theme.colorScheme.error
                       : (isDark
                           ? const Color(0xFF282828)
-                          : const Color(0xFFF0F0F0)),
+                          : const Color(0xFFE2EDF5)),
                   borderRadius:
                       BorderRadius.circular(AppTokens.radiusFull),
                   border: Border.all(
@@ -586,7 +586,9 @@ class HomeTab extends StatelessWidget {
         fileType: file.fileType,
         isFavorite: file.isFavorite,
         filePath: file.filePath,
+        isProcessing: file.isProcessing,
         onTap: () {
+          if (file.isProcessing) return;
           state.selectDocument(file);
           if (file.fileType.toLowerCase() == 'pdf') {
             state.setScreen(AppScreen.pdfViewer);
@@ -594,9 +596,12 @@ class HomeTab extends StatelessWidget {
             state.setScreen(AppScreen.fileDetails);
           }
         },
-        onFavoriteToggle: (fav) => state.toggleFavorite(file.id),
-        onMoreTap: () =>
-            showDocumentOptionsBottomSheet(context, file, state),
+        onFavoriteToggle: file.isProcessing
+            ? null
+            : (fav) => state.toggleFavorite(file.id),
+        onMoreTap: file.isProcessing
+            ? () {}
+            : () => showDocumentOptionsBottomSheet(context, file, state),
       ),
     );
   }

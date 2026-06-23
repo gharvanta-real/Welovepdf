@@ -146,7 +146,9 @@ class _RecentTabState extends State<RecentTab> {
                                       fileType: doc.fileType,
                                       isFavorite: doc.isFavorite,
                                       filePath: doc.filePath,
+                                      isProcessing: doc.isProcessing,
                                       onTap: () {
+                                        if (doc.isProcessing) return;
                                         state.selectDocument(doc);
                                         if (doc.fileType.toLowerCase() ==
                                             'pdf') {
@@ -157,13 +159,17 @@ class _RecentTabState extends State<RecentTab> {
                                               AppScreen.fileDetails);
                                         }
                                       },
-                                      onFavoriteToggle: (fav) {
-                                        state.toggleFavorite(doc.id);
-                                      },
-                                      onMoreTap: () {
-                                        showDocumentOptionsBottomSheet(
-                                            context, doc, state);
-                                      },
+                                      onFavoriteToggle: doc.isProcessing
+                                          ? null
+                                          : (fav) {
+                                              state.toggleFavorite(doc.id);
+                                            },
+                                      onMoreTap: doc.isProcessing
+                                          ? () {}
+                                          : () {
+                                              showDocumentOptionsBottomSheet(
+                                                  context, doc, state);
+                                            },
                                     );
                                   },
                                 ),

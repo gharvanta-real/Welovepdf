@@ -210,14 +210,7 @@
   font-size: 0.75rem;
 }
 
-.toast {
-  position: fixed;
-  right: var(--space-6);
-  bottom: var(--space-6);
-  z-index: 30;
-  padding: var(--space-3) var(--space-4);
-  box-shadow: var(--shadow);
-}
+
 
 .scrim {
   display: none;

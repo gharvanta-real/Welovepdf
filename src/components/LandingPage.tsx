@@ -41,285 +41,290 @@ const featuresData = [
 
 // ── Feature Mockup Components ──────────────────────────────────────────────
 
-function EditorMockup() {
+// ── Premium Browser & Canvas Mockup Components (Built from Scratch) ─────────────────────────
+
+interface PremiumBrowserMockupProps {
+  url?: string;
+  toolbar?: React.ReactNode;
+  children: React.ReactNode;
+  floatingBadges?: React.ReactNode;
+}
+
+export function PremiumBrowserMockup({ url = "pdfmount.online/edit", toolbar, children, floatingBadges }: PremiumBrowserMockupProps) {
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%", width: "100%", fontSize: "0.58rem", overflow: "hidden", color: "var(--c-text)", background: "var(--c-bg, #f8fafc)" }}>
-      {/* Top ribbon bar */}
-      <div style={{ display: "flex", gap: "6px", alignItems: "center", borderBottom: "1px solid var(--border)", padding: "4px 8px", backgroundColor: "var(--c-surface, #ffffff)" }}>
-        <span style={{ fontWeight: "700", color: "var(--c-accent, #4f46e5)", marginRight: "4px" }}>Pdfmount Editor</span>
-        <div style={{ display: "flex", gap: "2px" }}>
-          {["Text", "Highlight", "Pen", "Shape"].map((tool, i) => (
-            <span key={tool} style={{ padding: "2px 6px", borderRadius: "4px", backgroundColor: i === 1 ? "var(--accent-soft, #e0e7ff)" : "transparent", color: i === 1 ? "var(--c-accent, #4f46e5)" : "var(--text-muted, #64748b)", fontWeight: "600" }}>{tool}</span>
-          ))}
+    <div style={{ position: "relative", width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      {/* Decorative Background Shapes */}
+      <span className="deco-shape deco-plus-1" style={{ position: "absolute", zIndex: 1, top: "25%", left: "6%", color: "rgba(148, 163, 184, 0.5)", fontSize: "1.4rem", pointerEvents: "none" }}>+</span>
+      <span className="deco-shape deco-plus-2" style={{ position: "absolute", zIndex: 1, top: "15%", right: "6%", color: "rgba(148, 163, 184, 0.4)", fontSize: "1.4rem", pointerEvents: "none" }}>+</span>
+      <span className="deco-shape deco-circle-1" style={{ position: "absolute", zIndex: 1, top: "28%", left: "12%", width: "8px", height: "8px", border: "1.5px solid rgba(148, 163, 184, 0.5)", borderRadius: "50%", pointerEvents: "none" }}></span>
+      <span className="deco-shape deco-circle-2" style={{ position: "absolute", zIndex: 1, bottom: "14%", left: "18%", width: "10px", height: "10px", border: "1.5px solid rgba(148, 163, 184, 0.4)", borderRadius: "50%", pointerEvents: "none" }}></span>
+      <span className="deco-shape deco-circle-3" style={{ position: "absolute", zIndex: 1, top: "22%", right: "8%", width: "7px", height: "7px", border: "1.5px solid rgba(148, 163, 184, 0.5)", borderRadius: "50%", pointerEvents: "none" }}></span>
+
+      {/* Skewed decorative background card */}
+      <div style={{
+        position: "absolute",
+        width: "100%",
+        height: "94%",
+        left: "0%",
+        top: "3%",
+        background: "linear-gradient(135deg, rgba(235, 244, 255, 0.95) 0%, rgba(243, 247, 254, 0.95) 100%)",
+        transform: "rotate(-5.5deg)",
+        borderRadius: "28px",
+        boxShadow: "0 20px 50px rgba(37, 99, 235, 0.05)",
+        opacity: 0.98,
+        pointerEvents: "none",
+        zIndex: 0
+      }} />
+
+      {/* Browser Frame */}
+      <div style={{
+        position: "relative",
+        width: "92%",
+        height: "88%",
+        background: "#ffffff",
+        border: "1px solid #e2e8f0",
+        borderRadius: "12px",
+        boxShadow: "0 25px 60px -15px rgba(15, 23, 42, 0.1)",
+        display: "flex",
+        flexDirection: "column",
+        overflow: "hidden",
+        zIndex: 2
+      }}>
+        {/* Browser Header */}
+        <div style={{
+          height: "38px",
+          background: "#f8fafc",
+          borderBottom: "1px solid #e2e8f0",
+          display: "flex",
+          alignItems: "center",
+          padding: "0 12px",
+          gap: "12px"
+        }}>
+          <div style={{ display: "flex", gap: "6px" }}>
+            <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#ff5f56", boxShadow: "inset 0 1px 1px rgba(0,0,0,0.1)" }}></span>
+            <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#ffbd2e", boxShadow: "inset 0 1px 1px rgba(0,0,0,0.1)" }}></span>
+            <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#27c93f", boxShadow: "inset 0 1px 1px rgba(0,0,0,0.1)" }}></span>
+          </div>
+
+          {/* Browser Tab */}
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+            background: "#ffffff",
+            height: "30px",
+            padding: "0 12px",
+            borderRadius: "6px 6px 0 0",
+            border: "1px solid #e2e8f0",
+            borderBottom: "none",
+            fontSize: "0.72rem",
+            fontWeight: "700",
+            color: "#1e293b",
+            marginTop: "8px"
+          }}>
+             <img src="/favicon-16x16.png" alt="" style={{ width: "12px", height: "12px", borderRadius: "2px", objectFit: "contain" }} />
+             <span>Pdfmount</span>
+          </div>
+
+          <div style={{
+            flex: 1,
+            maxWidth: "180px",
+            height: "22px",
+            background: "#f1f5f9",
+            borderRadius: "4px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: "0.62rem",
+            color: "#64748b",
+            border: "1px solid #e2e8f0"
+          }}>
+            {url}
+          </div>
+        </div>
+
+        {/* Mock Toolbar */}
+        {toolbar}
+
+        {/* Document Canvas */}
+        <div style={{
+          flex: 1,
+          backgroundColor: "#f1f5f9",
+          padding: "12px",
+          display: "flex",
+          justifyContent: "center",
+          overflow: "hidden"
+        }}>
+          {children}
         </div>
       </div>
-      {/* Main body */}
-      <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
-        {/* Thumbnails */}
-        <div style={{ width: "24px", borderRight: "1px solid var(--border)", display: "flex", flexDirection: "column", gap: "4px", padding: "4px", backgroundColor: "var(--c-surface, #ffffff)" }}>
-          {[1, 2, 3].map(num => (
-            <div key={num} style={{ aspectRatio: "1", border: num === 2 ? "1px solid var(--c-accent, #4f46e5)" : "1px solid var(--border, #e2e8f0)", borderRadius: "2px", backgroundColor: "#fff", display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}>
-              <span style={{ fontSize: "0.4rem", color: num === 2 ? "var(--c-accent)" : "var(--text-muted)" }}>{num}</span>
-            </div>
-          ))}
-        </div>
-        {/* Editor workspace */}
-        <div style={{ flex: 1, backgroundColor: "color-mix(in srgb, var(--c-surface, #ffffff) 90%, var(--c-text, #1e293b))", padding: "8px", display: "flex", justifyContent: "center", alignItems: "center", position: "relative" }}>
-          {/* Main page */}
-          <div style={{ width: "85%", height: "95%", backgroundColor: "#fff", borderRadius: "3px", boxShadow: "0 4px 10px rgba(0,0,0,0.08)", padding: "8px", position: "relative", display: "flex", flexDirection: "column", gap: "4px" }}>
-            {/* Mock text lines */}
-            <div style={{ height: "4px", width: "40%", backgroundColor: "#e2e8f0", borderRadius: "2px" }}></div>
-            <div style={{ height: "4px", width: "80%", backgroundColor: "#e2e8f0", borderRadius: "2px" }}></div>
-            {/* Highlighted text block */}
-            <div style={{ position: "relative", height: "6px", width: "90%", display: "flex", alignItems: "center" }}>
-              <div style={{ height: "4px", width: "30%", backgroundColor: "#e2e8f0", borderRadius: "2px" }}></div>
-              <div style={{ position: "absolute", left: "10%", right: "30%", top: 0, bottom: 0, backgroundColor: "#fef08a", opacity: 0.7, borderRadius: "2px", border: "1px dashed #ca8a04" }}></div>
-            </div>
-            <div style={{ height: "4px", width: "60%", backgroundColor: "#e2e8f0", borderRadius: "2px" }}></div>
-            
-            {/* Selection overlay box */}
-            <div style={{ position: "absolute", top: "42%", left: "15%", width: "60%", height: "30%", border: "1px dashed var(--c-accent, #4f46e5)", backgroundColor: "rgba(99,102,241,0.05)", borderRadius: "2px", padding: "2px", boxSizing: "border-box" }}>
-              <span style={{ position: "absolute", top: "-6px", left: "2px", fontSize: "0.35rem", color: "var(--c-accent)", fontWeight: "600", backgroundColor: "#fff", padding: "0 2px" }}>Text Box</span>
-              <span style={{ fontSize: "0.45rem", fontWeight: "600", color: "#1e293b", display: "block", marginTop: "1px" }}>Interactive PDF Edit</span>
-              {/* resize handle */}
-              <div style={{ position: "absolute", bottom: "-2.5px", right: "-2.5px", width: "4px", height: "4px", border: "1px solid var(--c-accent)", borderRadius: "50%", backgroundColor: "#fff" }}></div>
-            </div>
-          </div>
-        </div>
-        {/* Properties panel */}
-        <div style={{ width: "44px", borderLeft: "1px solid var(--border)", backgroundColor: "var(--c-surface, #ffffff)", padding: "4px", display: "flex", flexDirection: "column", gap: "4px" }}>
-          <span style={{ fontWeight: "600", color: "var(--text-muted, #64748b)", fontSize: "0.45rem" }}>Properties</span>
-          <div style={{ height: "1px", backgroundColor: "var(--border, #e2e8f0)" }}></div>
-          <div style={{ display: "flex", gap: "2px" }}>
-            {["B", "I", "U"].map((style) => (
-              <span key={style} style={{ width: "10px", height: "10px", border: "1px solid var(--border, #e2e8f0)", borderRadius: "2px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.4rem", fontWeight: "700" }}>{style}</span>
-            ))}
-          </div>
-          <div style={{ display: "flex", gap: "2px", alignItems: "center", marginTop: "2px" }}>
-            <span style={{ fontSize: "0.38rem" }}>Color:</span>
-            <div style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#3b82f6", border: "1px solid rgba(0,0,0,0.1)" }}></div>
-          </div>
-        </div>
-      </div>
+
+      {/* Floating Badges */}
+      {floatingBadges}
     </div>
   );
 }
 
-function SignatureMockup() {
-  return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%", width: "100%", fontSize: "0.58rem", position: "relative", color: "var(--c-text)", background: "var(--c-bg, #f8fafc)", overflow: "hidden" }}>
-      {/* Background document layout */}
-      <div style={{ padding: "12px", display: "flex", flexDirection: "column", gap: "6px", opacity: 0.35, filter: "blur(0.5px)" }}>
-        <div style={{ alignSelf: "center", fontWeight: "800", fontSize: "0.7rem", color: "#1e293b", letterSpacing: "0.05em" }}>MUTUAL NDA AGREEMENT</div>
-        <div style={{ display: "flex", flexDirection: "column", gap: "3px", marginTop: "4px" }}>
-          <div style={{ height: "4px", width: "100%", backgroundColor: "#94a3b8", borderRadius: "1px" }}></div>
-          <div style={{ height: "4px", width: "95%", backgroundColor: "#94a3b8", borderRadius: "1px" }}></div>
-          <div style={{ height: "4px", width: "98%", backgroundColor: "#94a3b8", borderRadius: "1px" }}></div>
-          <div style={{ height: "4px", width: "80%", backgroundColor: "#94a3b8", borderRadius: "1px" }}></div>
-        </div>
-        <div style={{ display: "flex", justifyContent: "space-between", marginTop: "16px", padding: "0 8px" }}>
-          <div>
-            <div style={{ height: "3px", width: "40px", backgroundColor: "#94a3b8" }}></div>
-            <div style={{ fontSize: "0.4rem", color: "#94a3b8", marginTop: "2px" }}>Date</div>
-          </div>
-          <div>
-            <div style={{ height: "1px", width: "60px", backgroundColor: "#475569" }}></div>
-            <div style={{ fontSize: "0.4rem", color: "#94a3b8", marginTop: "2px" }}>Signature of Party B</div>
-          </div>
-        </div>
+export function PremiumEditorMockup() {
+  const toolbar = (
+    <div style={{ height: "32px", background: "#ffffff", borderBottom: "1px solid #e2e8f0", display: "flex", alignItems: "center", padding: "0 8px", gap: "4px" }}>
+      <div style={{ width: "24px", height: "24px", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "4px", background: "rgba(37, 99, 235, 0.08)", color: "#2563eb" }}>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M4.5,3v15.2l3.9-3.9l2.8,6.8l2.9-1.2l-2.8-6.8l5.2,0.1L4.5,3z" />
+        </svg>
       </div>
-      
-      {/* Signature Modal Overlay */}
-      <div style={{ position: "absolute", inset: 0, backgroundColor: "rgba(15,23,42,0.15)", backdropFilter: "blur(1px)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <div style={{ width: "75%", backgroundColor: "var(--c-surface, #ffffff)", borderRadius: "8px", border: "1px solid var(--border, #e2e8f0)", boxShadow: "0 10px 25px -5px rgba(0,0,0,0.15)", padding: "10px", display: "flex", flexDirection: "column", gap: "6px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <span style={{ fontWeight: "800", fontSize: "0.65rem" }}>Electronic Signature</span>
-            <span style={{ color: "var(--text-muted, #64748b)", fontSize: "0.5rem" }}>Draw Mode</span>
-          </div>
-          {/* Signature Canvas Area */}
-          <div style={{ height: "48px", border: "1px dashed var(--border, #e2e8f0)", borderRadius: "4px", backgroundColor: "var(--c-bg, #f8fafc)", position: "relative", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            {/* Draw curve via SVG */}
-            <svg style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} viewBox="0 0 100 100" preserveAspectRatio="none">
-              <path d="M 15 65 Q 25 25 38 60 T 68 35 Q 78 50 88 40" fill="none" stroke="var(--c-accent, #4f46e5)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-            <span style={{ fontSize: "0.38rem", color: "var(--text-muted, #64748b)", position: "absolute", bottom: "2px", right: "4px" }}>Clear</span>
-          </div>
-          {/* Buttons */}
-          <div style={{ display: "flex", justifyContent: "flex-end", gap: "4px" }}>
-            <span style={{ padding: "2px 6px", borderRadius: "9999px", border: "1px solid var(--border, #e2e8f0)", fontSize: "0.45rem", cursor: "pointer", fontWeight: "500" }}>Cancel</span>
-            <span style={{ padding: "2px 8px", borderRadius: "9999px", backgroundColor: "var(--c-accent, #4f46e5)", color: "#fff", fontSize: "0.45rem", cursor: "pointer", fontWeight: "700" }}>Insert Signature</span>
-          </div>
-        </div>
-      </div>
+      <div style={{ width: "24px", height: "24px", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "4px", color: "#64748b", fontSize: "11px", fontWeight: "700" }}>T</div>
+      <div style={{ width: "24px", height: "24px", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "4px", color: "#64748b" }}><PenTool size={12} /></div>
+      <div style={{ width: "24px", height: "24px", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "4px", color: "#64748b" }}><Square size={12} /></div>
     </div>
+  );
+
+  const floatingBadges = (
+    <>
+      <div className="float-anim-1" style={{ position: "absolute", top: "43%", left: "0%", zIndex: 10 }}>
+        <div className="floating-badge" style={{ backgroundColor: "#708099", border: "1px solid rgba(255, 255, 255, 0.15)", width: "38px", height: "38px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 10px 25px rgba(112, 128, 153, 0.35)", color: "#ffffff" }}>
+          <PenTool size={16} />
+        </div>
+      </div>
+      <div className="float-anim-4" style={{ position: "absolute", top: "54%", right: "0%", zIndex: 10 }}>
+        <div className="floating-badge" style={{ backgroundColor: "#b9c5d6", border: "1px solid rgba(255, 255, 255, 0.15)", width: "38px", height: "38px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 10px 25px rgba(185, 197, 214, 0.35)", color: "#ffffff" }}>
+          <Image size={16} />
+        </div>
+      </div>
+    </>
+  );
+
+  return (
+    <PremiumBrowserMockup url="pdfmount.online/edit" toolbar={toolbar} floatingBadges={floatingBadges}>
+      <div style={{ position: "relative", width: "100%", maxWidth: "320px", height: "100%", backgroundColor: "#ffffff", border: "1px solid #e2e8f0", borderRadius: "4px", padding: "16px 12px", boxShadow: "0 2px 8px rgba(0, 0, 0, 0.04)" }}>
+        <div style={{ height: "4px", width: "90%", backgroundColor: "#e2e8f0", borderRadius: "2px", marginBottom: "8px" }}></div>
+        <div style={{ height: "4px", width: "80%", backgroundColor: "#e2e8f0", borderRadius: "2px", marginBottom: "8px" }}></div>
+        <div style={{ position: "relative", height: "24px", width: "90%", border: "1.5px solid #2563eb", backgroundColor: "rgba(37, 99, 235, 0.08)", borderRadius: "2px", display: "flex", alignItems: "center", padding: "0 6px", marginBottom: "8px" }}>
+          <span style={{ fontSize: "0.62rem", fontWeight: "600", color: "#2563eb" }}>Interactive PDF Text Edit</span>
+          <span style={{ position: "absolute", width: "4px", height: "4px", backgroundColor: "#ffffff", border: "1px solid #2563eb", borderRadius: "50%", bottom: "-2.5px", right: "-2.5px" }}></span>
+        </div>
+        <div style={{ height: "4px", width: "95%", backgroundColor: "#e2e8f0", borderRadius: "2px", marginBottom: "8px" }}></div>
+        <div style={{ position: "relative", width: "140px", height: "28px", border: "1.5px solid #22c55e", backgroundColor: "rgba(34, 197, 94, 0.06)", borderRadius: "3px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <span style={{ fontSize: "0.55rem", color: "#22c55e", fontWeight: "600" }}>Annotate & Highlight</span>
+          <span style={{ position: "absolute", width: "4px", height: "4px", backgroundColor: "#ffffff", border: "1px solid #22c55e", borderRadius: "50%", bottom: "-2.5px", right: "-2.5px" }}></span>
+        </div>
+      </div>
+    </PremiumBrowserMockup>
   );
 }
 
-function OrganizerMockup() {
-  return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%", width: "100%", fontSize: "0.58rem", color: "var(--c-text)", background: "var(--c-bg, #f8fafc)", overflow: "hidden" }}>
-      {/* Header toolbar */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border)", padding: "4px 8px", backgroundColor: "var(--c-surface, #ffffff)" }}>
-        <span style={{ fontWeight: "700" }}>Page Organizer</span>
-        <div style={{ display: "flex", gap: "4px" }}>
-          <span style={{ padding: "2px 6px", borderRadius: "4px", backgroundColor: "var(--c-accent, #4f46e5)", color: "#fff", fontWeight: "700" }}>Merge Files</span>
-          <span style={{ padding: "2px 6px", borderRadius: "4px", border: "1px solid var(--border, #e2e8f0)", fontWeight: "500" }}>Add Page</span>
+export function PremiumSignatureMockup() {
+  const toolbar = (
+    <div style={{ height: "32px", background: "#ffffff", borderBottom: "1px solid #e2e8f0", display: "flex", alignItems: "center", padding: "0 8px", gap: "4px" }}>
+      <span style={{ fontSize: "0.7rem", fontWeight: "700", color: "#1e293b" }}>Electronic Signature</span>
+      <div style={{ width: "1px", height: "14px", backgroundColor: "#e2e8f0", margin: "0 4px" }}></div>
+      <span style={{ fontSize: "0.55rem", padding: "2px 6px", borderRadius: "4px", backgroundColor: "rgba(79, 70, 229, 0.08)", color: "#4f46e5", fontWeight: "700" }}>Secure Mode</span>
+    </div>
+  );
+
+  const floatingBadges = (
+    <>
+      <div className="float-anim-3" style={{ position: "absolute", top: "2%", right: "10%", zIndex: 10 }}>
+        <div className="floating-badge" style={{ backgroundColor: "#4d607b", border: "1px solid rgba(255, 255, 255, 0.15)", width: "38px", height: "38px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 10px 25px rgba(77, 96, 123, 0.35)", color: "#ffffff" }}>
+          <Edit2 size={16} />
         </div>
       </div>
-      
-      {/* Organize Grid */}
-      <div style={{ flex: 1, padding: "8px", display: "flex", flexDirection: "column", gap: "6px", backgroundColor: "color-mix(in srgb, var(--c-surface, #ffffff) 90%, var(--c-text, #1e293b))" }}>
-        {/* Source files info */}
-        <div style={{ display: "flex", gap: "10px", fontSize: "0.5rem" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "3px" }}>
-            <span style={{ width: "6px", height: "6px", borderRadius: "2px", backgroundColor: "#3b82f6" }}></span>
-            <span>Doc_A.pdf (2 pgs)</span>
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: "3px" }}>
-            <span style={{ width: "6px", height: "6px", borderRadius: "2px", backgroundColor: "#10b981" }}></span>
-            <span>Doc_B.pdf (2 pgs)</span>
-          </div>
+    </>
+  );
+
+  return (
+    <PremiumBrowserMockup url="pdfmount.online/sign" toolbar={toolbar} floatingBadges={floatingBadges}>
+      <div style={{ position: "relative", width: "100%", maxWidth: "320px", height: "100%", backgroundColor: "#ffffff", border: "1px solid #e2e8f0", borderRadius: "4px", padding: "16px 12px", boxShadow: "0 2px 8px rgba(0, 0, 0, 0.04)", display: "flex", flexDirection: "column", gap: "6px" }}>
+        <div style={{ alignSelf: "center", fontWeight: "800", fontSize: "0.68rem", color: "#1e293b", letterSpacing: "0.05em" }}>MUTUAL NDA AGREEMENT</div>
+        <div style={{ height: "4px", width: "100%", backgroundColor: "#e2e8f0", borderRadius: "1px" }}></div>
+        <div style={{ height: "4px", width: "95%", backgroundColor: "#e2e8f0", borderRadius: "1px" }}></div>
+        <div style={{ height: "4px", width: "80%", backgroundColor: "#e2e8f0", borderRadius: "1px" }}></div>
+        <div style={{ border: "1.5px dashed rgba(79, 70, 229, 0.4)", borderRadius: "4px", backgroundColor: "rgba(79, 70, 229, 0.03)", padding: "6px", position: "relative", marginTop: "16px" }}>
+          <svg viewBox="0 0 120 30" fill="none" stroke="#4f46e5" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: "100%", height: "24px" }}>
+            <path d="M15,22 C30,16 38,4 52,16 C62,26 66,8 76,10 C86,12 92,22 102,10" />
+          </svg>
+          <span style={{ position: "absolute", top: "-5px", left: "6px", fontSize: "0.42rem", color: "#4f46e5", backgroundColor: "#fff", padding: "0 2px", fontWeight: "600" }}>Authorized Signature</span>
         </div>
-        
-        {/* Grid of pages */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "6px", flex: 1, alignItems: "center" }}>
+      </div>
+    </PremiumBrowserMockup>
+  );
+}
+
+export function PremiumOrganizerMockup() {
+  const toolbar = (
+    <div style={{ height: "32px", background: "#ffffff", borderBottom: "1px solid #e2e8f0", display: "flex", alignItems: "center", padding: "0 8px", justifyContent: "space-between" }}>
+      <span style={{ fontSize: "0.7rem", fontWeight: "700", color: "#1e293b" }}>Page Organizer</span>
+      <span style={{ fontSize: "0.55rem", padding: "2px 6px", borderRadius: "4px", backgroundColor: "#2563eb", color: "#fff", fontWeight: "700" }}>Merge PDF</span>
+    </div>
+  );
+
+  const floatingBadges = (
+    <>
+      <div className="float-anim-2" style={{ position: "absolute", top: "-4%", left: "54%", zIndex: 10 }}>
+        <div className="floating-badge" style={{ backgroundColor: "#2d3d52", border: "1px solid rgba(255, 255, 255, 0.15)", width: "38px", height: "38px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 10px 25px rgba(45, 61, 82, 0.35)", color: "#ffffff" }}>
+          <FileText size={16} />
+        </div>
+      </div>
+    </>
+  );
+
+  return (
+    <PremiumBrowserMockup url="pdfmount.online/organize" toolbar={toolbar} floatingBadges={floatingBadges}>
+      <div style={{ position: "relative", width: "100%", maxWidth: "320px", height: "100%", backgroundColor: "#ffffff", border: "1px solid #e2e8f0", borderRadius: "4px", padding: "12px 10px", boxShadow: "0 2px 8px rgba(0, 0, 0, 0.04)" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "8px", height: "100%", alignItems: "center" }}>
           {[
-            { id: 1, doc: "A", color: "#3b82f6", num: "pg. 1" },
-            { id: 2, doc: "A", color: "#3b82f6", num: "pg. 2", rotated: 90 },
-            { id: 3, doc: "B", color: "#10b981", num: "pg. 3 (Move)", active: true },
-            { id: 4, doc: "B", color: "#10b981", num: "pg. 4", deleted: true }
-          ].map((item) => (
-            <div
-              key={item.id}
-              style={{
-                borderRadius: "4px",
-                border: item.active ? "1.5px solid var(--c-accent, #4f46e5)" : "1px solid var(--border, #e2e8f0)",
-                backgroundColor: "#fff",
-                padding: "4px",
-                position: "relative",
-                aspectRatio: "0.75",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-between",
-                boxShadow: item.active ? "0 4px 10px rgba(99,102,241,0.2)" : "0 1px 4px rgba(0,0,0,0.06)",
-                transform: item.rotated ? `rotate(${item.rotated}deg)` : item.active ? "translateY(-3px)" : "none",
-                opacity: item.deleted ? 0.4 : 1,
-                transition: "all 0.2s"
-              }}
-            >
-              {/* Page content representation */}
-              <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-                <div style={{ height: "3px", width: "100%", backgroundColor: item.color, borderRadius: "1px" }}></div>
-                <div style={{ height: "2px", width: "70%", backgroundColor: "#e2e8f0" }}></div>
-                <div style={{ height: "2px", width: "50%", backgroundColor: "#e2e8f0" }}></div>
-              </div>
-              
-              {/* Page footer marker */}
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span style={{ fontSize: "0.38rem", color: "var(--text-muted, #64748b)", fontWeight: "700" }}>{item.num}</span>
-                {item.deleted && (
-                  <span style={{ color: "#ef4444", fontWeight: "900", fontSize: "0.55rem" }}>✕</span>
-                )}
-              </div>
+            { id: 1, num: "Page 1", color: "#3b82f6" },
+            { id: 2, num: "Page 2 (Move)", color: "#10b981", active: true },
+            { id: 3, num: "Page 3 (Rotated)", color: "#f59e0b", rotated: 90 },
+          ].map(p => (
+            <div key={p.id} style={{ border: p.active ? "1.5px solid #2563eb" : "1px solid #e2e8f0", borderRadius: "4px", padding: "6px", aspectRatio: "0.75", display: "flex", flexDirection: "column", justifyContent: "space-between", transform: p.rotated ? "rotate(90deg)" : "none", boxShadow: p.active ? "0 4px 10px rgba(37,99,235,0.15)" : "none" }}>
+              <div style={{ height: "3px", width: "100%", backgroundColor: p.color, borderRadius: "1px" }}></div>
+              <div style={{ height: "2px", width: "60%", backgroundColor: "#e2e8f0" }}></div>
+              <span style={{ fontSize: "0.45rem", fontWeight: "700", color: "#64748b" }}>{p.num}</span>
             </div>
           ))}
         </div>
       </div>
-    </div>
+    </PremiumBrowserMockup>
   );
 }
 
-function DashboardMockup() {
-  return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%", width: "100%", fontSize: "0.58rem", color: "var(--c-text)", background: "var(--c-bg, #f8fafc)", overflow: "hidden" }}>
-      {/* Dashboard Top bar */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border)", padding: "4px 8px", backgroundColor: "var(--c-surface, #ffffff)" }}>
-        <span style={{ fontWeight: "700" }}>Conversion Queue</span>
-        <span style={{ padding: "1px 6px", borderRadius: "9999px", backgroundColor: "var(--accent-soft, #e0e7ff)", color: "var(--c-accent, #4f46e5)", fontSize: "0.45rem", fontWeight: "700" }}>3 Active Tasks</span>
-      </div>
-      
-      {/* Dashboard Queue list */}
-      <div style={{ flex: 1, padding: "6px", display: "flex", flexDirection: "column", gap: "4px", backgroundColor: "color-mix(in srgb, var(--c-surface, #ffffff) 90%, var(--c-text, #1e293b))" }}>
-        {[
-          { name: "invoice_compress.pdf", tool: "Compress", status: "Completed -64%", color: "#22c55e", badgeBg: "rgba(34,197,94,0.1)", action: "Download" },
-          { name: "mutual_nda_signed.pdf", tool: "Sign PDF", status: "Completed", color: "#22c55e", badgeBg: "rgba(34,197,94,0.1)", action: "Download" },
-          { name: "annual_report.pdf", tool: "AI Summarize", status: "AI processing...", color: "#f59e0b", badgeBg: "rgba(245,158,11,0.1)", progress: 60 }
-        ].map((job, idx) => (
-          <div
-            key={idx}
-            style={{
-              padding: "4px 8px",
-              backgroundColor: "var(--c-surface, #ffffff)",
-              borderRadius: "5px",
-              border: "1px solid var(--border, #e2e8f0)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              gap: "8px",
-              boxShadow: "0 1px 3px rgba(0,0,0,0.04)"
-            }}
-          >
-            {/* File info */}
-            <div style={{ display: "flex", flexDirection: "column", flex: 1, minWidth: 0 }}>
-              <span style={{ fontWeight: "700", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{job.name}</span>
-              <span style={{ fontSize: "0.42rem", color: "var(--text-muted, #64748b)" }}>Tool: {job.tool}</span>
-            </div>
-            
-            {/* Status with badge or progress bar */}
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "2px", width: "70px" }}>
-              <span
-                style={{
-                  padding: "1px 4px",
-                  borderRadius: "9999px",
-                  color: job.color,
-                  backgroundColor: job.badgeBg,
-                  fontSize: "0.4rem",
-                  fontWeight: "700",
-                  whiteSpace: "nowrap"
-                }}
-              >
-                {job.status}
-              </span>
-              {job.progress !== undefined && (
-                <div style={{ width: "100%", height: "2.5px", backgroundColor: "var(--border, #e2e8f0)", borderRadius: "1px", overflow: "hidden" }}>
-                  <div style={{ width: `${job.progress}%`, height: "100%", backgroundColor: job.color, borderRadius: "1px" }}></div>
-                </div>
-              )}
-            </div>
+export function PremiumDashboardMockup() {
+  const toolbar = (
+    <div style={{ height: "32px", background: "#ffffff", borderBottom: "1px solid #e2e8f0", display: "flex", alignItems: "center", padding: "0 8px", justifyContent: "space-between" }}>
+      <span style={{ fontSize: "0.7rem", fontWeight: "700", color: "#1e293b" }}>Conversion Queue</span>
+      <span style={{ fontSize: "0.5rem", padding: "1px 6px", borderRadius: "9999px", backgroundColor: "#dcfce7", color: "#15803d", fontWeight: "700" }}>3 Completed</span>
+    </div>
+  );
 
-            {/* Action button */}
-            {job.action ? (
-              <span
-                style={{
-                  padding: "2px 8px",
-                  borderRadius: "9999px",
-                  backgroundColor: "var(--c-accent, #4f46e5)",
-                  color: "#fff",
-                  fontSize: "0.42rem",
-                  fontWeight: "700",
-                  cursor: "pointer"
-                }}
-              >
-                {job.action}
-              </span>
-            ) : (
-              <span
-                style={{
-                  padding: "2px 8px",
-                  borderRadius: "9999px",
-                  border: "1px solid var(--border, #e2e8f0)",
-                  color: "var(--text-muted, #64748b)",
-                  fontSize: "0.42rem",
-                  cursor: "not-allowed"
-                }}
-              >
-                Wait
-              </span>
-            )}
+  const floatingBadges = (
+    <>
+      <div className="float-anim-6" style={{ position: "absolute", bottom: "-4%", right: "18%", zIndex: 10 }}>
+        <div className="floating-badge" style={{ backgroundColor: "#1e293b", border: "1px solid rgba(255, 255, 255, 0.15)", width: "38px", height: "38px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 10px 25px rgba(30, 41, 59, 0.35)", color: "#ffffff" }}>
+          <Minimize2 size={16} />
+        </div>
+      </div>
+    </>
+  );
+
+  return (
+    <PremiumBrowserMockup url="pdfmount.online/dashboard" toolbar={toolbar} floatingBadges={floatingBadges}>
+      <div style={{ position: "relative", width: "100%", maxWidth: "320px", height: "100%", backgroundColor: "#ffffff", border: "1px solid #e2e8f0", borderRadius: "4px", padding: "8px", boxShadow: "0 2px 8px rgba(0, 0, 0, 0.04)", display: "flex", flexDirection: "column", gap: "6px" }}>
+        {[
+          { name: "tax_return_2026.pdf", size: "1.2 MB", status: "Compressed -70%" },
+          { name: "contract_final_signed.pdf", size: "450 KB", status: "Signed" },
+          { name: "invoice_merge.pdf", size: "2.1 MB", status: "Merged" }
+        ].map((f, i) => (
+          <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "4px 6px", border: "1px solid #f1f5f9", borderRadius: "4px", backgroundColor: "#f8fafc" }}>
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              <span style={{ fontSize: "0.55rem", fontWeight: "700", color: "#1e293b" }}>{f.name}</span>
+              <span style={{ fontSize: "0.45rem", color: "#94a3b8" }}>{f.size}</span>
+            </div>
+            <span style={{ fontSize: "0.45rem", padding: "2px 6px", borderRadius: "9999px", backgroundColor: "#dcfce7", color: "#15803d", fontWeight: "700" }}>{f.status}</span>
           </div>
         ))}
       </div>
-    </div>
+    </PremiumBrowserMockup>
   );
 }
 
@@ -371,10 +376,10 @@ export function BrowserMockup() {
       {/* Skewed decorative background card */}
       <div style={{
         position: "absolute",
-        width: "98%",
-        height: "86%",
+        width: "100%",
+        height: "94%",
         left: "0%",
-        top: "8%",
+        top: "3%",
         background: "linear-gradient(135deg, rgba(235, 244, 255, 0.95) 0%, rgba(243, 247, 254, 0.95) 100%)",
         transform: "rotate(-5.5deg)",
         borderRadius: "28px",
@@ -387,8 +392,8 @@ export function BrowserMockup() {
       {/* Browser Frame */}
       <div style={{
         position: "relative",
-        width: "82%",
-        height: "76%",
+        width: "92%",
+        height: "88%",
         background: "#ffffff",
         border: "1px solid #e2e8f0",
         borderRadius: "12px",
@@ -611,7 +616,7 @@ export function BrowserMockup() {
 
       {/* Floating Badges exactly matching user screenshot, wrapped with float animations */}
       {/* Left Pencil Draw Badge (slate-gray #708099) */}
-      <div className="float-anim-1" style={{ position: "absolute", top: "43%", left: "2%", zIndex: 10 }}>
+      <div className="float-anim-1" style={{ position: "absolute", top: "43%", left: "0%", zIndex: 10 }}>
         <div
           className="floating-badge"
           style={{
@@ -633,7 +638,7 @@ export function BrowserMockup() {
       </div>
 
       {/* Top Document List Badge (deep navy #2d3d52) */}
-      <div className="float-anim-2" style={{ position: "absolute", top: "4%", left: "54%", zIndex: 10 }}>
+      <div className="float-anim-2" style={{ position: "absolute", top: "-4%", left: "54%", zIndex: 10 }}>
         <div
           className="floating-badge"
           style={{
@@ -655,7 +660,7 @@ export function BrowserMockup() {
       </div>
 
       {/* Top Address Edit Badge (slate-blue #4d607b) */}
-      <div className="float-anim-3" style={{ position: "absolute", top: "10%", right: "13%", zIndex: 10 }}>
+      <div className="float-anim-3" style={{ position: "absolute", top: "2%", right: "10%", zIndex: 10 }}>
         <div
           className="floating-badge"
           style={{
@@ -677,7 +682,7 @@ export function BrowserMockup() {
       </div>
 
       {/* Right Image Badge (light blue-gray #b9c5d6) */}
-      <div className="float-anim-4" style={{ position: "absolute", top: "54%", right: "2%", zIndex: 10 }}>
+      <div className="float-anim-4" style={{ position: "absolute", top: "54%", right: "0%", zIndex: 10 }}>
         <div
           className="floating-badge"
           style={{
@@ -699,7 +704,7 @@ export function BrowserMockup() {
       </div>
 
       {/* Bottom-Right Word 'W' Badge (slate #78829c) */}
-      <div className="float-anim-5" style={{ position: "absolute", bottom: "16%", right: "3%", zIndex: 10 }}>
+      <div className="float-anim-5" style={{ position: "absolute", bottom: "16%", right: "0%", zIndex: 10 }}>
         <div
           className="floating-badge"
           style={{
@@ -721,7 +726,7 @@ export function BrowserMockup() {
       </div>
 
       {/* Bottom Compress Badge (dark slate-blue #1e293b) */}
-      <div className="float-anim-6" style={{ position: "absolute", bottom: "3%", right: "15%", zIndex: 10 }}>
+      <div className="float-anim-6" style={{ position: "absolute", bottom: "-4%", right: "18%", zIndex: 10 }}>
         <div
           className="floating-badge"
           style={{
@@ -762,7 +767,6 @@ export function LandingPage({ onToolSelect, onViewChange }: LandingPageProps) {
         <div className="stitch-hero-inner">
           {/* Left copy */}
           <div className="stitch-hero-copy">
-            <span className="eyebrow">Ultimate Productivity</span>
             <h1>All PDF tools at your<br/>fingertips.</h1>
             <p className="stitch-hero-sub">
               Edit, convert, merge, and sign PDF documents in seconds.
@@ -775,15 +779,10 @@ export function LandingPage({ onToolSelect, onViewChange }: LandingPageProps) {
             </div>
           </div>
 
-          {/* Right illustration — transparent PNG from Hero-illustration folder */}
-          <div className="stitch-hero-illustration">
+          {/* Right illustration — interactive-looking Canvas/Browser Mockup */}
+          <div className="stitch-hero-illustration" style={{ width: "100%", height: "520px", display: "flex", position: "relative" }}>
             <div className="stitch-hero-glow" />
-            <img
-              src="/hero-illustration.png"
-              alt="Pdfmount.online — All PDF tools illustrated"
-              className="stitch-hero-img"
-              draggable={false}
-            />
+            <BrowserMockup />
           </div>
         </div>
       </section>
@@ -793,7 +792,6 @@ export function LandingPage({ onToolSelect, onViewChange }: LandingPageProps) {
         <div className="stitch-container">
           <div className="stitch-block-header">
             <div>
-              <span className="eyebrow" style={{ color: "rgba(0,0,0,0.5)" }}>Suite Core</span>
               <h2 className="stitch-block-heading">Popular Utilities</h2>
             </div>
             <button className="stitch-pill-outline" onClick={scrollToTools}>
@@ -842,18 +840,12 @@ export function LandingPage({ onToolSelect, onViewChange }: LandingPageProps) {
         <div className="stitch-container">
           <div className="stitch-split-section has-large-visual">
             {/* Left visual */}
-            <div className="stitch-split-visual">
-              <img
-                src="/Secure Enterprise Signing for Modern Teams.png"
-                alt="Secure Enterprise Signing"
-                className="stitch-section-img stitch-section-img-large"
-                draggable={false}
-              />
+            <div className="stitch-split-visual" style={{ width: "100%", height: "520px", display: "flex", position: "relative" }}>
+              <PremiumSignatureMockup />
             </div>
 
             {/* Right copy */}
             <div className="stitch-split-copy">
-              <span className="eyebrow" style={{ color: "rgba(0,0,0,0.55)" }}>Premium Feature</span>
               <h2 style={{ fontSize: "clamp(28px, 4vw, 42px)", fontWeight: 540, letterSpacing: "-0.5px", lineHeight: 1.15, marginBottom: "20px" }}>
                 Secure Enterprise Signing for Modern Teams
               </h2>
@@ -879,7 +871,6 @@ export function LandingPage({ onToolSelect, onViewChange }: LandingPageProps) {
       <section className="stitch-features-section">
         <div className="stitch-container">
           <div style={{ textAlign: "center", marginBottom: "64px" }}>
-            <span className="eyebrow">Core Capabilities</span>
             <h2 style={{ fontSize: "clamp(32px, 5vw, 56px)", fontWeight: 340, letterSpacing: "-0.8px" }}>
               Keep your simple tasks simple
             </h2>
@@ -902,18 +893,11 @@ export function LandingPage({ onToolSelect, onViewChange }: LandingPageProps) {
                 </button>
               </div>
 
-              <div className="stitch-feature-visual">
-                <img
-                  src={
-                    feature.id === "editor"    ? "/Keep you task single work.png" :
-                    feature.id === "signature" ? "/Secure Enterprise Signing for Modern Teams.png" :
-                    feature.id === "organizer" ? "/Create the perfect document.png" :
-                                                 "/Smart conversion in progress.png"
-                  }
-                  alt={feature.illustrationText}
-                  className={`stitch-section-img ${feature.id === "signature" ? "stitch-section-img-large" : ""}`}
-                  draggable={false}
-                />
+              <div className="stitch-feature-visual" style={{ width: "100%", height: "520px", display: "flex", position: "relative" }}>
+                {feature.id === "editor" && <PremiumEditorMockup />}
+                {feature.id === "signature" && <PremiumSignatureMockup />}
+                {feature.id === "organizer" && <PremiumOrganizerMockup />}
+                {feature.id === "dashboard" && <PremiumDashboardMockup />}
               </div>
             </div>
           ))}
@@ -924,7 +908,6 @@ export function LandingPage({ onToolSelect, onViewChange }: LandingPageProps) {
       <section className="stitch-block-section stitch-block-lilac">
         <div className="stitch-container">
           <div style={{ marginBottom: "48px" }}>
-            <span className="eyebrow" style={{ color: "rgba(0,0,0,0.5)" }}>Why Pdfmount.online</span>
             <h2 style={{ fontSize: "clamp(32px, 5vw, 56px)", fontWeight: 340, letterSpacing: "-0.8px" }}>
               Built for real workflows.
             </h2>
@@ -961,7 +944,6 @@ export function LandingPage({ onToolSelect, onViewChange }: LandingPageProps) {
               Get Started for Free
             </button>
           </div>
-          <p className="eyebrow" style={{ marginTop: "32px", fontSize: "12px" }}>No credit card required</p>
         </div>
       </section>
 

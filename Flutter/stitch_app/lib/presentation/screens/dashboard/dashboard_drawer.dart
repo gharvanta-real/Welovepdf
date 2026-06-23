@@ -85,6 +85,14 @@ class DashboardDrawer extends StatelessWidget {
               state.setBottomNavIndex(4);
             },
           ),
+          ListTile(
+            leading: const Icon(Icons.sync_alt_rounded),
+            title: const Text('Uploads & Operations'),
+            onTap: () {
+              Navigator.pop(context);
+              state.setBottomNavIndex(5);
+            },
+          ),
           const Divider(),
           ListTile(
             leading: const Icon(Icons.delete_outline),

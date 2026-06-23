@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
+import { RotateCw, Trash2, ArrowLeft, ArrowRight, CornerUpLeft } from "lucide-react";
 
 interface PdfPageCardProps {
   pdfDoc: any;
@@ -124,8 +125,8 @@ export function PdfPageCard({
         )}
         
         {isRemoved && (
-          <div className="page-removed-overlay" style={{ position: "absolute", inset: 0, backgroundColor: "rgba(239, 68, 68, 0.45)", backdropFilter: "blur(2px)", display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontSize: "0.8rem", fontWeight: "900", zIndex: 5 }}>
-            <span>EXCLUDED</span>
+          <div className="page-removed-overlay" style={{ position: "absolute", inset: 0, backgroundColor: "rgba(239, 68, 68, 0.15)", backdropFilter: "blur(3px)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 5 }}>
+            <div style={{ backgroundColor: "#ef4444", color: "white", padding: "4px 10px", borderRadius: "9999px", fontSize: "10px", fontWeight: 700, letterSpacing: "0.05em", boxShadow: "0 4px 10px rgba(0,0,0,0.15)" }}>EXCLUDED</div>
           </div>
         )}
       </div>
@@ -133,48 +134,148 @@ export function PdfPageCard({
       <div className="file-card-meta page-meta" style={{ display: "flex", flexDirection: "column", gap: "6px", alignItems: "stretch" }}>
         <span className="file-card-name" style={{ fontSize: "0.78rem", fontWeight: "600", textAlign: "center" }}>Page {pageNum}</span>
         
-        <div className="page-card-actions" style={{ display: "flex", gap: "4px", justifyContent: "center", width: "100%" }}>
+        <div className="page-card-actions" style={{ display: "flex", gap: "6px", justifyContent: "center", width: "100%" }}>
           {showRotate && (
             <button 
               className="page-action-btn" 
               onClick={(e) => { e.stopPropagation(); onRotate(); }}
-              title="Rotate 90° Clockwise"
-              style={{ padding: "4px 8px", fontSize: "0.72rem", cursor: "pointer", border: "1px solid var(--border)", background: "var(--c-surface)", color: "var(--c-text)", borderRadius: "var(--radius-xs)" }}
+              title="Rotate 90°"
+              style={{
+                width: "28px",
+                height: "28px",
+                borderRadius: "50%",
+                border: "1px solid var(--border)",
+                background: "var(--c-bg)",
+                color: "var(--c-text)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                cursor: "pointer",
+                transition: "all 0.15s ease-in-out",
+                boxShadow: "0 2px 5px rgba(0,0,0,0.03)"
+              }}
+              onMouseOver={e => {
+                e.currentTarget.style.background = "var(--s-primary)";
+                e.currentTarget.style.color = "var(--s-on-primary)";
+                e.currentTarget.style.borderColor = "var(--s-primary)";
+              }}
+              onMouseOut={e => {
+                e.currentTarget.style.background = "var(--c-bg)";
+                e.currentTarget.style.color = "var(--c-text)";
+                e.currentTarget.style.borderColor = "var(--border)";
+              }}
             >
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" style={{ display: "block" }}>
-                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
-              </svg>
+              <RotateCw size={13} strokeWidth={2.4} />
             </button>
           )}
           {showRemove && (
             <button 
-              className="page-action-btn delete-btn" 
+              className="page-action-btn" 
               onClick={(e) => { e.stopPropagation(); onRemove(); }}
               title={isRemoved ? "Restore Page" : "Delete Page"}
-              style={{ padding: "4px 8px", fontSize: "0.72rem", cursor: "pointer", border: "1px solid var(--border)", background: isRemoved ? "var(--c-accent)" : "var(--c-surface)", color: isRemoved ? "white" : "var(--c-text)", borderRadius: "var(--radius-xs)" }}
+              style={{
+                width: "28px",
+                height: "28px",
+                borderRadius: "50%",
+                border: "1px solid var(--border)",
+                background: isRemoved ? "var(--s-primary)" : "var(--c-bg)",
+                color: isRemoved ? "var(--s-on-primary)" : "var(--c-text)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                cursor: "pointer",
+                transition: "all 0.15s ease-in-out",
+                boxShadow: "0 2px 5px rgba(0,0,0,0.03)"
+              }}
+              onMouseOver={e => {
+                e.currentTarget.style.background = isRemoved ? "var(--c-bg)" : "var(--s-primary)";
+                e.currentTarget.style.color = isRemoved ? "var(--c-text)" : "var(--s-on-primary)";
+                e.currentTarget.style.borderColor = isRemoved ? "var(--border)" : "var(--s-primary)";
+              }}
+              onMouseOut={e => {
+                e.currentTarget.style.background = isRemoved ? "var(--s-primary)" : "var(--c-bg)";
+                e.currentTarget.style.color = isRemoved ? "var(--s-on-primary)" : "var(--c-text)";
+                e.currentTarget.style.borderColor = isRemoved ? "var(--s-primary)" : "var(--border)";
+              }}
             >
-              {isRemoved ? "Restore" : "Delete"}
+              {isRemoved ? <CornerUpLeft size={13} strokeWidth={2.4} /> : <Trash2 size={13} strokeWidth={2.4} />}
             </button>
           )}
           {showMove && (
-            <div style={{ display: "flex", gap: "2px" }}>
+            <div style={{ display: "flex", gap: "4px" }}>
               <button 
                 className="page-action-btn" 
                 onClick={(e) => { e.stopPropagation(); onMoveLeft(); }}
                 disabled={indexInGrid === 0}
                 title="Move Left"
-                style={{ padding: "2px 6px", fontSize: "0.68rem", cursor: indexInGrid === 0 ? "not-allowed" : "pointer", opacity: indexInGrid === 0 ? 0.3 : 1, border: "1px solid var(--border)", background: "var(--c-surface)", color: "var(--c-text)", borderRadius: "var(--radius-xs)" }}
+                style={{
+                  width: "28px",
+                  height: "28px",
+                  borderRadius: "50%",
+                  border: "1px solid var(--border)",
+                  background: "var(--c-bg)",
+                  color: "var(--c-text)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  cursor: indexInGrid === 0 ? "not-allowed" : "pointer",
+                  opacity: indexInGrid === 0 ? 0.35 : 1,
+                  transition: "all 0.15s ease-in-out",
+                  boxShadow: "0 2px 5px rgba(0,0,0,0.03)"
+                }}
+                onMouseOver={e => {
+                  if (indexInGrid > 0) {
+                    e.currentTarget.style.background = "var(--s-primary)";
+                    e.currentTarget.style.color = "var(--s-on-primary)";
+                    e.currentTarget.style.borderColor = "var(--s-primary)";
+                  }
+                }}
+                onMouseOut={e => {
+                  if (indexInGrid > 0) {
+                    e.currentTarget.style.background = "var(--c-bg)";
+                    e.currentTarget.style.color = "var(--c-text)";
+                    e.currentTarget.style.borderColor = "var(--border)";
+                  }
+                }}
               >
-                &larr;
+                <ArrowLeft size={13} strokeWidth={2.4} />
               </button>
               <button 
                 className="page-action-btn" 
                 onClick={(e) => { e.stopPropagation(); onMoveRight(); }}
                 disabled={indexInGrid === totalGridItems - 1}
                 title="Move Right"
-                style={{ padding: "2px 6px", fontSize: "0.68rem", cursor: indexInGrid === totalGridItems - 1 ? "not-allowed" : "pointer", opacity: indexInGrid === totalGridItems - 1 ? 0.3 : 1, border: "1px solid var(--border)", background: "var(--c-surface)", color: "var(--c-text)", borderRadius: "var(--radius-xs)" }}
+                style={{
+                  width: "28px",
+                  height: "28px",
+                  borderRadius: "50%",
+                  border: "1px solid var(--border)",
+                  background: "var(--c-bg)",
+                  color: "var(--c-text)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  cursor: indexInGrid === totalGridItems - 1 ? "not-allowed" : "pointer",
+                  opacity: indexInGrid === totalGridItems - 1 ? 0.35 : 1,
+                  transition: "all 0.15s ease-in-out",
+                  boxShadow: "0 2px 5px rgba(0,0,0,0.03)"
+                }}
+                onMouseOver={e => {
+                  if (indexInGrid < totalGridItems - 1) {
+                    e.currentTarget.style.background = "var(--s-primary)";
+                    e.currentTarget.style.color = "var(--s-on-primary)";
+                    e.currentTarget.style.borderColor = "var(--s-primary)";
+                  }
+                }}
+                onMouseOut={e => {
+                  if (indexInGrid < totalGridItems - 1) {
+                    e.currentTarget.style.background = "var(--c-bg)";
+                    e.currentTarget.style.color = "var(--c-text)";
+                    e.currentTarget.style.borderColor = "var(--border)";
+                  }
+                }}
               >
-                &rarr;
+                <ArrowRight size={13} strokeWidth={2.4} />
               </button>
             </div>
           )}

@@ -30,11 +30,11 @@
   flex: 1;
   height: 100%;
   overflow-y: auto;
-  padding: var(--space-6) var(--space-8);
+  padding: 0;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: var(--space-5);
+  gap: 0;
   min-width: 0;
   background: var(--s-surface);
 }
@@ -104,18 +104,18 @@
   padding: var(--space-3) var(--space-2);
   background: var(--c-bg);
   border: 1px solid transparent;
-  border-radius: var(--radius-sm);
+  border-radius: 14px;
   aspect-ratio: 0.85;
   text-align: center;
-  transition: all 0.15s ease;
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.15s ease;
   box-sizing: border-box;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
 }
 
 .canvas-file-card:hover {
   border-color: color-mix(in srgb, var(--c-text) 22%, var(--border));
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
 }
 
 .file-card-remove {
@@ -153,7 +153,7 @@
   position: relative;
   overflow: hidden;
   background: var(--surface-raised);
-  border-radius: 4px;
+  border-radius: 8px;
   margin-bottom: var(--space-2);
   border: 1px solid var(--border);
 }
@@ -334,14 +334,14 @@
 }
 
 .option-card:hover {
-  border-color: #1b1b1b;
+  border-color: #1b1b1b !important;
 }
 
 .option-card.active {
-  border-color: var(--c-accent);
-  border-width: 2px;
-  background: var(--accent-soft);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-accent) 10%, transparent);
+  border-color: var(--c-accent, #000000) !important;
+  border-width: 2px !important;
+  background: var(--accent-soft, #f3f3f3) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-accent, #000000) 10%, transparent) !important;
 }
 
 .option-title {
@@ -510,11 +510,11 @@
   display: flex;
   flex-direction: column;
   flex: 1;
-  background: var(--c-bg);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  overflow: hidden;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: visible;
   height: 100%;
   width: 100%;
   box-sizing: border-box;
@@ -556,7 +556,7 @@
   flex: 1;
   width: 100%;
   background: #ffffff;
-  border-radius: 4px;
+  border-radius: 8px;
   border: 1px solid #f0f0f2;
   position: relative;
   overflow: hidden;
@@ -614,7 +614,7 @@
   gap: 28px;
   align-content: start;
   justify-content: center;
-  background: var(--s-surface-low);
+  background: transparent;
   box-sizing: border-box;
 }
 

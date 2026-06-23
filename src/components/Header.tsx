@@ -33,7 +33,8 @@ const dropdownColumns: DropdownGroup[][] = [
       { name: "Organize PDF" },
       { name: "Crop PDF" },
       { name: "Page Numbers" },
-      { name: "PDF Annotator" }
+      { name: "PDF Annotator" },
+      { name: "Document Editor" }
     ] }
   ],
   [

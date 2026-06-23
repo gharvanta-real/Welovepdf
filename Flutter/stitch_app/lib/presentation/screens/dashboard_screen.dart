@@ -12,6 +12,7 @@ import 'dashboard/recent_tab.dart';
 import 'dashboard/tools_tab.dart';
 import 'dashboard/liked_tab.dart';
 import 'dashboard/profile_tab.dart';
+import 'dashboard/operations_tab.dart';
 import 'dashboard/dashboard_drawer.dart';
 import 'dashboard/sheets/dashboard_sheets.dart';
 
@@ -75,18 +76,20 @@ class _DashboardScreenState extends State<DashboardScreen>
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
+    final Color topAreaColor = isDark ? theme.colorScheme.error : const Color(0xFFD5E8F4); // Mono in dark mode, Cambridge Blue in light mode
+
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle(
-        statusBarColor: theme.colorScheme.error,
-        statusBarIconBrightness: isDark ? Brightness.dark : Brightness.light,
-        statusBarBrightness: isDark ? Brightness.light : Brightness.dark,
+        statusBarColor: topAreaColor,
+        statusBarIconBrightness: Brightness.dark, // Dark status bar icons on light blue / white header
+        statusBarBrightness: Brightness.light,
         systemNavigationBarColor: theme.colorScheme.surface,
         systemNavigationBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
       ),
       child: Scaffold(
         key: _scaffoldKey,
         drawer: const DashboardDrawer(),
-        backgroundColor: theme.colorScheme.error,
+        backgroundColor: topAreaColor,
         body: Stack(
           children: [
             Column(
@@ -156,24 +159,42 @@ class _DashboardScreenState extends State<DashboardScreen>
           ],
         ),
         floatingActionButton: state.bottomNavIndex != 4
-            ? RotationTransition(
-                turns: _fabRotation,
-                child: GestureDetector(
-                  onTap: _toggleMenu,
-                  child: Container(
-                    width: 60,
-                    height: 60,
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.error,
-                      shape: BoxShape.circle,
-                      boxShadow: const [AppTokens.shadowFAB],
+            ? GestureDetector(
+                onTap: _toggleMenu,
+                child: Stack(
+                  alignment: Alignment.center,
+                  clipBehavior: Clip.none,
+                  children: [
+                    // Semicircular cutout shadow (only bottom half is rendered)
+                    ClipRect(
+                      clipper: _BottomHalfClipper(),
+                      child: Container(
+                        width: 80, // 60 + 20 (spread of 10.0 on both sides)
+                        height: 80,
+                        decoration: BoxDecoration(
+                          color: isDark ? const Color(0xFF121212) : const Color(0xFFE2EDF5),
+                          shape: BoxShape.circle,
+                        ),
+                      ),
                     ),
-                    child: Icon(
-                      Icons.add,
-                      color: theme.colorScheme.onError,
-                      size: 32,
+                    // Rotating FAB itself
+                    RotationTransition(
+                      turns: _fabRotation,
+                      child: Container(
+                        width: 60,
+                        height: 60,
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.error,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Icons.add,
+                          color: theme.colorScheme.onError,
+                          size: 32,
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               )
             : null,
@@ -198,11 +219,15 @@ class _DashboardScreenState extends State<DashboardScreen>
         ? 8.0
         : (statusBarHeight > 0 ? statusBarHeight + 4.0 : 12.0);
 
-    // Dynamic header colors
-    final Color headerColor = theme.colorScheme.error; // Near-black in Light, White in Dark
-    final Color headerFgColor = isDark ? Colors.black : Colors.white;
-    final Color headerButtonBgColor = isDark ? Colors.black.withOpacity(0.08) : Colors.white.withOpacity(0.20);
-    final Color headerMenuButtonBgColor = isDark ? Colors.black.withOpacity(0.06) : Colors.white.withOpacity(0.15);
+    // Dynamic header colors (Mono in dark mode, Cam Blue in light mode)
+    final Color headerColor = isDark ? theme.colorScheme.error : const Color(0xFFD5E8F4);
+    final Color headerFgColor = isDark ? Colors.black : const Color(0xFF1B355A);
+    final Color headerButtonBgColor = isDark
+        ? Colors.black.withOpacity(0.08)
+        : const Color(0xFF1B355A).withOpacity(0.08);
+    final Color headerMenuButtonBgColor = isDark
+        ? Colors.black.withOpacity(0.06)
+        : const Color(0xFF1B355A).withOpacity(0.06);
 
     // Per-tab config
     String title = 'My Documents';
@@ -346,6 +371,11 @@ class _DashboardScreenState extends State<DashboardScreen>
         subtitle = null;
         actions = [];
         break;
+      case 5:
+        title = 'Operations';
+        subtitle = 'Monitor background job status';
+        actions = [];
+        break;
     }
 
     return Container(
@@ -431,6 +461,8 @@ class _DashboardScreenState extends State<DashboardScreen>
         return const LikedTab();
       case 4:
         return const ProfileTab();
+      case 5:
+        return const OperationsTab();
       default:
         return const HomeTab();
     }
@@ -482,3 +514,14 @@ class _DashboardScreenState extends State<DashboardScreen>
     );
   }
 }
+
+class _BottomHalfClipper extends CustomClipper<Rect> {
+  @override
+  Rect getClip(Size size) {
+    return Rect.fromLTRB(0, size.height / 2, size.width, size.height);
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Rect> oldClipper) => false;
+}
+

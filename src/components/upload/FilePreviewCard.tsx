@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { File } from "lucide-react";
+import { File, X } from "lucide-react";
 import { formatBytes } from "./UploadHelpers";
 import { getPdfjsLib } from "../../utils/pdfjs";
 
@@ -200,8 +200,9 @@ export function FilePreviewCard({ file, idx, toolColor, onRemove, onPreviewClick
         className="file-card-remove" 
         onClick={(e) => { e.stopPropagation(); onRemove(idx); }}
         aria-label="Remove file"
+        style={{ display: "flex", alignItems: "center", justifyContent: "center" }}
       >
-        &times;
+        <X size={12} strokeWidth={2.5} />
       </button>
       
       <div className="file-card-preview-box">

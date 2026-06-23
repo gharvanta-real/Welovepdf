@@ -105,12 +105,12 @@ void showUploadFileBottomSheet(BuildContext context, AppState state) {
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
     builder: (context) {
+      PlatformFile? selectedFile;
+      bool isUploading = false;
+      String errorMsg = '';
+
       return StatefulBuilder(
         builder: (context, setDialogState) {
-          PlatformFile? selectedFile;
-          bool isUploading = false;
-          String errorMsg = '';
-
           return Container(
             decoration: BoxDecoration(
               color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
@@ -218,6 +218,7 @@ void showUploadFileBottomSheet(BuildContext context, AppState state) {
                                     isUploading = true;
                                   });
                                   final newDoc = await state.addRealDocument(selectedFile!);
+                                  if (!context.mounted) return;
                                   if (newDoc != null) {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(content: Text('File "${selectedFile!.name}" added!')),

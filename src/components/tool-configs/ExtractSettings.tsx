@@ -20,7 +20,28 @@ export function ExtractSettings({
       <div className="options-grid cols-2" style={{ gap: "8px" }}>
         <button
           className="quiet-button"
-          style={{ border: "1px solid var(--border)", padding: "8px", cursor: "pointer" }}
+          style={{ 
+            border: "1px solid var(--border)", 
+            padding: "8px 12px", 
+            borderRadius: "8px", 
+            background: "var(--c-bg)", 
+            color: "var(--c-text)", 
+            cursor: "pointer", 
+            transition: "all 0.15s ease", 
+            fontSize: "0.8rem", 
+            fontWeight: 550,
+            fontFamily: "Plus Jakarta Sans, sans-serif"
+          }}
+          onMouseOver={e => {
+            e.currentTarget.style.background = "var(--s-primary)";
+            e.currentTarget.style.color = "var(--s-on-primary)";
+            e.currentTarget.style.borderColor = "var(--s-primary)";
+          }}
+          onMouseOut={e => {
+            e.currentTarget.style.background = "var(--c-bg)";
+            e.currentTarget.style.color = "var(--c-text)";
+            e.currentTarget.style.borderColor = "var(--border)";
+          }}
           onClick={() => {
             const s = new Set<number>();
             for (let i = 1; i <= totalPdfPages; i++) s.add(i);
@@ -31,7 +52,28 @@ export function ExtractSettings({
         </button>
         <button
           className="quiet-button"
-          style={{ border: "1px solid var(--border)", padding: "8px", cursor: "pointer" }}
+          style={{ 
+            border: "1px solid var(--border)", 
+            padding: "8px 12px", 
+            borderRadius: "8px", 
+            background: "var(--c-bg)", 
+            color: "var(--c-text)", 
+            cursor: "pointer", 
+            transition: "all 0.15s ease", 
+            fontSize: "0.8rem", 
+            fontWeight: 550,
+            fontFamily: "Plus Jakarta Sans, sans-serif"
+          }}
+          onMouseOver={e => {
+            e.currentTarget.style.background = "var(--s-primary)";
+            e.currentTarget.style.color = "var(--s-on-primary)";
+            e.currentTarget.style.borderColor = "var(--s-primary)";
+          }}
+          onMouseOut={e => {
+            e.currentTarget.style.background = "var(--c-bg)";
+            e.currentTarget.style.color = "var(--c-text)";
+            e.currentTarget.style.borderColor = "var(--border)";
+          }}
           onClick={() => setSelectedPages(new Set())}
         >
           Deselect All

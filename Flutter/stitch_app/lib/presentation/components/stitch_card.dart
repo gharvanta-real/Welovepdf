@@ -14,6 +14,7 @@ class StitchCard extends StatefulWidget {
   final ValueChanged<bool>? onFavoriteToggle;
   final bool isGrid;
   final String? filePath;
+  final bool isProcessing;
 
   const StitchCard({
     super.key,
@@ -26,6 +27,7 @@ class StitchCard extends StatefulWidget {
     this.onFavoriteToggle,
     this.isGrid = false,
     this.filePath,
+    this.isProcessing = false,
   });
 
   @override
@@ -69,6 +71,7 @@ class _StitchCardState extends State<StitchCard> {
     if (widget.isGrid) {
       return GestureDetector(
         onTap: () {
+          if (widget.isProcessing) return;
           HapticFeedback.lightImpact();
           widget.onTap();
         },
@@ -93,16 +96,27 @@ class _StitchCardState extends State<StitchCard> {
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(AppTokens.radiusMd),
-                    child: widget.filePath != null && File(widget.filePath!).existsSync()
-                        ? Image.file(
-                            File(widget.filePath!),
-                            fit: BoxFit.cover,
-                            width: double.infinity,
-                            height: double.infinity,
+                    child: widget.isProcessing
+                        ? Center(
+                            child: SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: theme.colorScheme.error,
+                              ),
+                            ),
                           )
-                        : Center(
-                            child: StitchPdfBadge(fileType: widget.fileType, scale: 1.3),
-                          ),
+                        : (widget.filePath != null && File(widget.filePath!).existsSync()
+                            ? Image.file(
+                                File(widget.filePath!),
+                                fit: BoxFit.cover,
+                                width: double.infinity,
+                                height: double.infinity,
+                              )
+                            : Center(
+                                child: StitchPdfBadge(fileType: widget.fileType, scale: 1.3),
+                              )),
                   ),
                 ),
               ),
@@ -130,7 +144,7 @@ class _StitchCardState extends State<StitchCard> {
                     ),
                   ),
                   GestureDetector(
-                    onTap: widget.onMoreTap,
+                    onTap: widget.isProcessing ? null : widget.onMoreTap,
                     child: Icon(
                       Icons.more_vert,
                       size: 20,
@@ -148,6 +162,7 @@ class _StitchCardState extends State<StitchCard> {
     // Horizontal List Style
     return GestureDetector(
       onTap: () {
+        if (widget.isProcessing) return;
         HapticFeedback.lightImpact();
         widget.onTap();
       },
@@ -166,17 +181,28 @@ class _StitchCardState extends State<StitchCard> {
               height: 48,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(AppTokens.radiusMd),
+                color: widget.isProcessing
+                    ? (isDark ? Colors.white10 : Colors.black12)
+                    : null,
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(AppTokens.radiusMd),
-                child: widget.filePath != null && File(widget.filePath!).existsSync()
-                    ? Image.file(
-                        File(widget.filePath!),
-                        fit: BoxFit.cover,
-                        width: 48,
-                        height: 48,
+                child: widget.isProcessing
+                    ? Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: theme.colorScheme.error,
+                        ),
                       )
-                    : StitchPdfBadge(fileType: widget.fileType),
+                    : (widget.filePath != null && File(widget.filePath!).existsSync()
+                        ? Image.file(
+                            File(widget.filePath!),
+                            fit: BoxFit.cover,
+                            width: 48,
+                            height: 48,
+                          )
+                        : StitchPdfBadge(fileType: widget.fileType)),
               ),
             ),
             const SizedBox(width: AppTokens.gutter),

@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
-import 'package:flutter/foundation.dart' show kIsWeb, debugPrint;
+import 'package:flutter/foundation.dart' show kIsWeb, debugPrint, kDebugMode;
 import 'package:file_picker/file_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
@@ -23,8 +23,23 @@ class ApiService {
       final devHost = host.isNotEmpty ? host : 'localhost';
       return 'http://$devHost:8080';
     }
-    // Set to your computer's local Wi-Fi IP address so physical phones or emulators can connect.
-    return 'http://192.168.1.2:8080';
+
+    // Release/Production mode on Native platforms (Android, iOS)
+    if (!kDebugMode) {
+      return 'https://pdfmount.online';
+    }
+
+    // Local Development/Debug mode on Native platforms
+    // On Android emulators, 10.0.2.2 points to host's localhost (127.0.0.1)
+    // On iOS simulators or desktop builds, localhost works directly.
+    try {
+      if (Platform.isAndroid) {
+        // NOTE: If you are using a physical Android device, replace this with your computer's local Wi-Fi IP
+        // e.g. return 'http://192.168.1.2:8080';
+        return 'http://10.0.2.2:8080';
+      }
+    } catch (_) {}
+    return 'http://localhost:8080';
   }
 
   /// Runs the selected PDF tool on the backend by uploading files and options,

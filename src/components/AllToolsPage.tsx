@@ -46,9 +46,6 @@ export function AllToolsPage({ onToolSelect, onPricingClick, onContactSalesClick
 
         {/* Hero Section */}
         <div style={{ marginBottom: "64px", maxWidth: "900px" }}>
-          <span className="eyebrow" style={{ color: "var(--s-secondary)", textTransform: "uppercase", fontSize: "14px", letterSpacing: "1px", display: "block", marginBottom: "16px" }}>
-            Ultimate Productivity
-          </span>
           <h1 style={{ fontSize: "clamp(36px, 7vw, 76px)", fontWeight: 340, letterSpacing: "-1.50px", lineHeight: 1.05, marginBottom: "24px", color: "var(--s-primary)" }}>
             All PDF tools at your fingertips.
           </h1>
@@ -69,9 +66,6 @@ export function AllToolsPage({ onToolSelect, onPricingClick, onContactSalesClick
         >
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "40px", flexWrap: "wrap", gap: "20px" }}>
             <div style={{ flex: 1, minWidth: "250px" }}>
-              <span className="eyebrow" style={{ textTransform: "uppercase", fontSize: "12px", color: "rgba(0,0,0,0.5)", fontWeight: "600", display: "block", marginBottom: "8px" }}>
-                Suite Core
-              </span>
               <h2 style={{ fontSize: "clamp(28px, 4vw, 42px)", fontWeight: 540, letterSpacing: "-0.5px", margin: 0, color: "var(--s-primary)" }}>
                 Popular Utilities
               </h2>
@@ -193,9 +187,6 @@ export function AllToolsPage({ onToolSelect, onPricingClick, onContactSalesClick
           </div>
 
           <div style={{ flex: "1 1 400px" }}>
-            <span className="eyebrow" style={{ color: "rgba(0,0,0,0.5)", textTransform: "uppercase", fontSize: "12px", fontWeight: "600", display: "block", marginBottom: "16px" }}>
-              Premium Feature
-            </span>
             <h2 style={{ fontSize: "clamp(26px, 3.5vw, 38px)", fontWeight: 540, letterSpacing: "-0.5px", lineHeight: 1.15, marginBottom: "20px", color: "var(--s-primary)" }}>
               Secure Enterprise Signing for Modern Teams
             </h2>
@@ -223,9 +214,6 @@ export function AllToolsPage({ onToolSelect, onPricingClick, onContactSalesClick
         {/* Structured Sitemap Directory */}
         <div id="sitemap" style={{ borderTop: "1px solid var(--s-hairline)", paddingTop: "64px", marginBottom: "80px" }}>
           <div style={{ marginBottom: "40px" }}>
-            <span className="eyebrow" style={{ textTransform: "uppercase", fontSize: "12px", color: "var(--s-secondary)", fontWeight: "600", display: "block", marginBottom: "8px" }}>
-              Suite Index
-            </span>
             <h2 style={{ fontSize: "32px", fontWeight: 540, letterSpacing: "-0.5px", margin: 0, color: "var(--s-primary)" }}>
               Browse all {tools.filter(t => t.status !== "coming-soon").length} available tools
             </h2>
@@ -313,9 +301,6 @@ export function AllToolsPage({ onToolSelect, onPricingClick, onContactSalesClick
               Contact Sales
             </button>
           </div>
-          <p className="eyebrow" style={{ fontSize: "11px", opacity: 0.5, marginTop: "24px", textTransform: "uppercase", letterSpacing: "1px" }}>
-            No credit card required
-          </p>
         </div>
 
       </div>
