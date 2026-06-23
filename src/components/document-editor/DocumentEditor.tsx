@@ -462,12 +462,12 @@ export function DocumentEditor({ onClose, initialContent }: DocumentEditorProps)
     } else if (tag === 'hr') {
       executeDirect('insertHorizontalRule');
     } else if (tag === 'pagebreak') {
-      executeDirect('insertHTML', '<div class="hard-page-break" style="page-break-after:always;border-bottom:2px dashed #93c5fd;margin:24px 0;text-align:center;color:#3b82f6;font-size:10px;font-family:\'Google Sans\',sans-serif;user-select:none;padding:4px 0;">[ Hard Page Break ]</div>');
+      executeDirect('insertHTML', '<div class="hard-page-break" style="page-break-after:always;border-bottom:2px dashed rgba(37,99,235,0.3);margin:24px 0;text-align:center;color:#2563eb;font-size:10px;font-family:\'Google Sans\',sans-serif;user-select:none;padding:4px 0;">[ Hard Page Break ]</div>');
     } else if (tag === 'footnote') {
       const text = prompt("Enter footnote content:");
       if (text) {
         const footnoteId = `footnote-${Date.now()}`;
-        executeDirect('insertHTML', `<sup><a href="#${footnoteId}" style="text-decoration:none;color:#3b82f6;font-weight:bold;">[1]</a></sup>`);
+        executeDirect('insertHTML', `<sup><a href="#${footnoteId}" style="text-decoration:none;color:#2563eb;font-weight:bold;">[1]</a></sup>`);
         if (editorRef.current) {
           editorRef.current.innerHTML += `<div id="${footnoteId}" style="font-size:11px;color:#5f6368;border-top:1px solid #e0e0e0;margin-top:16px;padding-top:4px;font-family:Arial,sans-serif;">[1] ${text}</div>`;
           setContentHtml(editorRef.current.innerHTML);

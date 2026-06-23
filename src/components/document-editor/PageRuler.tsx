@@ -279,7 +279,7 @@ export function PageRuler({
           height: 0,
           borderLeft: '5px solid transparent',
           borderRight: '5px solid transparent',
-          borderTop: '6px solid #3b82f6',
+          borderTop: '6px solid #2563eb',
         }}
       />
 
@@ -301,7 +301,7 @@ export function PageRuler({
           height: 0,
           borderLeft: '5px solid transparent',
           borderRight: '5px solid transparent',
-          borderBottom: '6px solid #3b82f6',
+          borderBottom: '6px solid #2563eb',
         }}
       />
 
@@ -323,7 +323,7 @@ export function PageRuler({
           height: 0,
           borderLeft: '5px solid transparent',
           borderRight: '5px solid transparent',
-          borderBottom: '6px solid #3b82f6',
+          borderBottom: '6px solid #2563eb',
         }}
       />
 
@@ -336,7 +336,7 @@ export function PageRuler({
             top: 0,
             width: 1,
             height: 2500, // drawing down the canvas
-            borderLeft: '1px dashed #3b82f6',
+            borderLeft: '1px dashed #2563eb',
             pointerEvents: 'none',
             zIndex: 1000,
           }}

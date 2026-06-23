@@ -613,7 +613,7 @@ export function HeaderMenu({
                         >
                           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1, minWidth: 0 }}>
                             {item.checked !== undefined ? (
-                              <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#1a73e8', fontWeight: 'bold', width: 14, flexShrink: 0 }}>
+                              <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2563eb', fontWeight: 'bold', width: 14, flexShrink: 0 }}>
                                 {item.checked ? '✓' : ''}
                               </span>
                             ) : item.icon ? (
