@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Meet S. - Document Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-tint": "#466369",
+                    "error": "#ba1a1a",
+                    "outline-variant": "#c1c8c9",
+                    "on-primary-fixed": "#001f24",
+                    "error-container": "#ffdad6",
+                    "on-primary": "#ffffff",
+                    "surface-container": "#d9f2ff",
+                    "on-tertiary": "#ffffff",
+                    "primary": "#001519",
+                    "on-tertiary-fixed": "#410002",
+                    "secondary-fixed-dim": "#b4cbce",
+                    "on-background": "#001f2a",
+                    "tertiary-container": "#570004",
+                    "background": "#f4faff",
+                    "secondary": "#4d6265",
+                    "on-secondary-fixed-variant": "#364a4d",
+                    "on-error-container": "#93000a",
+                    "inverse-primary": "#adccd2",
+                    "surface-variant": "#c9e7f7",
+                    "surface-dim": "#c0dfee",
+                    "surface-container-highest": "#c9e7f7",
+                    "on-primary-fixed-variant": "#2e4b51",
+                    "primary-fixed": "#c8e8ee",
+                    "inverse-surface": "#163440",
+                    "on-primary-container": "#759399",
+                    "surface-container-lowest": "#ffffff",
+                    "on-tertiary-container": "#ff4e46",
+                    "on-secondary-container": "#53686b",
+                    "on-surface": "#001f2a",
+                    "secondary-container": "#d0e7ea",
+                    "on-secondary": "#ffffff",
+                    "inverse-on-surface": "#e0f4ff",
+                    "surface-container-low": "#e6f6ff",
+                    "surface": "#f4faff",
+                    "surface-bright": "#f4faff",
+                    "tertiary": "#300001",
+                    "secondary-fixed": "#d0e7ea",
+                    "surface-container-high": "#ceedfd",
+                    "outline": "#72787a",
+                    "primary-fixed-dim": "#adccd2",
+                    "on-error": "#ffffff",
+                    "tertiary-fixed-dim": "#ffb4ac",
+                    "on-surface-variant": "#414849",
+                    "on-secondary-fixed": "#091f21",
+                    "tertiary-fixed": "#ffdad6",
+                    "on-tertiary-fixed-variant": "#93000d",
+                    "primary-container": "#0b2b30"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "16px",
+                    "container-padding": "20px",
+                    "stack-md": "12px",
+                    "base": "8px",
+                    "stack-lg": "24px",
+                    "stack-sm": "4px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Hanken Grotesk"],
+                    "headline-lg": ["Hanken Grotesk"],
+                    "body-sm": ["Hanken Grotesk"],
+                    "headline-sm": ["Hanken Grotesk"],
+                    "label-md": ["Hanken Grotesk"],
+                    "headline-md": ["Hanken Grotesk"],
+                    "body-md": ["Hanken Grotesk"],
+                    "headline-lg-mobile": ["Hanken Grotesk"],
+                    "label-lg": ["Hanken Grotesk"]
+            },
+            "fontSize": {
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-lg": ["28px", {"lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-sm": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                    "headline-sm": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "headline-md": ["22px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "label-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            font-family: 'Hanken Grotesk', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .custom-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen pb-24">
+<!-- TopAppBar -->
+<header class="bg-error dark:bg-error docked full-width top-0 rounded-b-none flex flex-col pt-12 pb-6 px-container-padding w-full sticky z-50">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<button class="text-on-error hover:bg-error-container/20 transition-colors p-2 rounded-full transition-all duration-100 active:scale-95 active:opacity-80">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-on-error">Good morning Reader 👋</h1>
+</div>
+<div class="flex items-center gap-2">
+<button class="text-on-error hover:bg-error-container/20 transition-colors p-2 rounded-full transition-all duration-100 active:scale-95 active:opacity-80">
+<span class="material-symbols-outlined">add</span>
+</button>
+<button class="text-on-error hover:bg-error-container/20 transition-colors p-2 rounded-full transition-all duration-100 active:scale-95 active:opacity-80">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+</div>
+</header>
+<main class="mt-4 px-container-padding space-y-stack-lg">
+<!-- Search Bar -->
+<div class="relative group">
+<div class="absolute inset-y-0 left-4 flex items-center pointer-events-none text-outline">
+<span class="material-symbols-outlined">search</span>
+</div>
+<input class="w-full h-14 pl-12 pr-12 bg-surface-container-lowest border border-outline-variant rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.08)] focus:ring-2 focus:ring-error focus:border-error transition-all font-body-md text-body-md" placeholder="Search your documents..." type="text"/>
+<div class="absolute inset-y-0 right-4 flex items-center text-outline">
+<span class="material-symbols-outlined">tune</span>
+</div>
+</div>
+<!-- Filter Chips -->
+<div class="flex overflow-x-auto gap-3 py-2 custom-scrollbar -mx-container-padding px-container-padding">
+<button class="px-5 py-2 rounded-full font-label-lg text-label-lg whitespace-nowrap bg-surface-container-highest text-on-surface-variant hover:bg-surface-container-high transition-colors">All</button>
+<button class="px-5 py-2 rounded-full font-label-lg text-label-lg whitespace-nowrap bg-error text-on-error shadow-md">PDF</button>
+<button class="px-5 py-2 rounded-full font-label-lg text-label-lg whitespace-nowrap bg-surface-container-highest text-on-surface-variant hover:bg-surface-container-high transition-colors">Word</button>
+<button class="px-5 py-2 rounded-full font-label-lg text-label-lg whitespace-nowrap bg-surface-container-highest text-on-surface-variant hover:bg-surface-container-high transition-colors">Excel</button>
+<button class="px-5 py-2 rounded-full font-label-lg text-label-lg whitespace-nowrap bg-surface-container-highest text-on-surface-variant hover:bg-surface-container-high transition-colors">PPT</button>
+</div>
+<!-- Recently Added Section -->
+<section class="space-y-stack-md">
+<h2 class="font-headline-sm text-headline-sm text-on-surface px-1">Recently Added</h2>
+<div class="relative w-full h-48 rounded-2xl overflow-hidden shadow-lg group">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" data-alt="A dark and moody high-end corporate office workspace at night with subtle red neon accents illuminating professional document editing software on a sleek, dual-monitor setup. The lighting is low-key and sophisticated, highlighting rich textures of carbon fiber and glass surfaces with a professional, high-performance aesthetic." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBnAPQDf27VO8P_lVsPWcdDnJPHCTPRRcjC2zezV3CzthVWczZ80m48ZdpR0Ihqtcoqy6DP1tmPw272VGm--MnKTE9y5fklCnyiKLddc4skD7EVINS0iI_nPwcCfApTt0AVAeOY5EAGa27lqdP6fd4VJZRHpGz_dzFoTd2VYAuYN8fHpgL9c0YtksPqIY_ml0uvgeu_1Tgza1ADk1GisSeC1lHbr_e4ReqzS1_hbTnU_f5pQjeCzlnXSW0FbHW6a6_epaW-Ad1uL6r3')"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/40 to-transparent"></div>
+<div class="absolute bottom-0 left-0 p-6 w-full flex justify-between items-end">
+<div class="space-y-1">
+<span class="px-2 py-0.5 bg-error text-on-error text-[10px] font-bold rounded uppercase tracking-wider">New</span>
+<h3 class="text-white font-headline-md text-headline-md">Q3 Finance Report.pdf</h3>
+<p class="text-white/70 font-body-sm text-body-sm">Added 12 mins ago • 14.8 MB</p>
+</div>
+<button class="bg-white/20 backdrop-blur-md hover:bg-white/30 text-white rounded-full p-2 transition-all">
+<span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</div>
+</section>
+<!-- All Documents List -->
+<section class="space-y-stack-md">
+<div class="flex items-center justify-between px-1">
+<h2 class="font-headline-sm text-headline-sm text-on-surface">All Documents</h2>
+<button class="text-error font-label-lg text-label-lg">See all</button>
+</div>
+<div class="space-y-stack-md">
+<!-- Document Item 1 -->
+<div class="flex items-center gap-4 p-4 bg-white rounded-xl border border-outline-variant/30 shadow-[0_4px_20px_rgba(0,0,0,0.04)] hover:shadow-md transition-all group">
+<div class="w-12 h-12 bg-error rounded-lg flex items-center justify-center shrink-0">
+<span class="text-white font-bold text-[10px]">PDF</span>
+</div>
+<div class="flex-1 min-w-0">
+<h4 class="font-label-lg text-label-lg text-on-surface truncate">Wedding invitation.pdf</h4>
+<p class="font-body-sm text-body-sm text-outline">02/03/2024 • 5.2 MB</p>
+</div>
+<div class="flex gap-1">
+<button class="p-2 text-outline hover:text-error transition-colors rounded-full hover:bg-error/10">
+<span class="material-symbols-outlined">favorite</span>
+</button>
+<button class="p-2 text-outline hover:text-on-surface transition-colors rounded-full hover:bg-surface-variant">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Document Item 2 -->
+<div class="flex items-center gap-4 p-4 bg-white rounded-xl border border-outline-variant/30 shadow-[0_4px_20px_rgba(0,0,0,0.04)] hover:shadow-md transition-all">
+<div class="w-12 h-12 bg-surface-container flex items-center justify-center shrink-0 rounded-lg">
+<span class="material-symbols-outlined text-on-secondary-container">description</span>
+</div>
+<div class="flex-1 min-w-0">
+<h4 class="font-label-lg text-label-lg text-on-surface truncate">Project Proposal_v2.docx</h4>
+<p class="font-body-sm text-body-sm text-outline">01/03/2024 • 1.1 MB</p>
+</div>
+<button class="p-2 text-outline hover:text-on-surface transition-colors rounded-full">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<!-- Document Item 3 -->
+<div class="flex items-center gap-4 p-4 bg-white rounded-xl border border-outline-variant/30 shadow-[0_4px_20px_rgba(0,0,0,0.04)] hover:shadow-md transition-all">
+<div class="w-12 h-12 bg-error rounded-lg flex items-center justify-center shrink-0">
+<span class="text-white font-bold text-[10px]">PDF</span>
+</div>
+<div class="flex-1 min-w-0">
+<h4 class="font-label-lg text-label-lg text-on-surface truncate">Bank Statement Feb.pdf</h4>
+<p class="font-body-sm text-body-sm text-outline">28/02/2024 • 2.4 MB</p>
+</div>
+<button class="p-2 text-outline hover:text-on-surface transition-colors rounded-full">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<!-- Document Item 4 -->
+<div class="flex items-center gap-4 p-4 bg-white rounded-xl border border-outline-variant/30 shadow-[0_4px_20px_rgba(0,0,0,0.04)] hover:shadow-md transition-all">
+<div class="w-12 h-12 bg-surface-container flex items-center justify-center shrink-0 rounded-lg">
+<span class="material-symbols-outlined text-on-secondary-container">table_chart</span>
+</div>
+<div class="flex-1 min-w-0">
+<h4 class="font-label-lg text-label-lg text-on-surface truncate">Inventory_Sheet.xlsx</h4>
+<p class="font-body-sm text-body-sm text-outline">25/02/2024 • 850 KB</p>
+</div>
+<button class="p-2 text-outline hover:text-on-surface transition-colors rounded-full">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+</div>
+</section>
+</main>
+<!-- FAB -->
+<button class="fixed bottom-24 right-6 w-14 h-14 bg-error text-on-error rounded-full shadow-[0_6px_15px_rgba(229,57,53,0.3)] flex items-center justify-center z-40 transition-transform active:scale-90">
+<span class="material-symbols-outlined text-3xl">add</span>
+</button>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center py-3 bg-surface dark:bg-surface-dim shadow-[0_-4px_20px_rgba(0,0,0,0.04)] border-t border-outline-variant z-50">
+<a class="flex flex-col items-center justify-center text-error dark:text-on-tertiary-container font-bold transition-all duration-200 active:scale-90 hover:bg-surface-container-low rounded-full px-4" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="font-label-md text-label-md">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline transition-all duration-200 active:scale-90 hover:bg-surface-container-low rounded-full px-4" href="#">
+<span class="material-symbols-outlined">document_scanner</span>
+<span class="font-label-md text-label-md">Recent</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline transition-all duration-200 active:scale-90 hover:bg-surface-container-low rounded-full px-4" href="#">
+<span class="material-symbols-outlined">favorite</span>
+<span class="font-label-md text-label-md">Like</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline transition-all duration-200 active:scale-90 hover:bg-surface-container-low rounded-full px-4" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-md text-label-md">Profile</span>
+</a>
+</nav>
+<script>
+        // Simple scroll interaction for header shadow
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            if (window.scrollY > 10) {
+                header.classList.add('shadow-lg');
+            } else {
+                header.classList.remove('shadow-lg');
+            }
+        });
+
+        // Toggle heart icon on click
+        document.querySelectorAll('.material-symbols-outlined').forEach(icon => {
+            if (icon.textContent === 'favorite') {
+                icon.parentElement.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const isFilled = icon.style.fontVariationSettings.includes("'FILL' 1");
+                    icon.style.fontVariationSettings = isFilled ? "'FILL' 0" : "'FILL' 1";
+                    icon.classList.toggle('text-error');
+                });
+            }
+        });
+    </script>
+</body></html>

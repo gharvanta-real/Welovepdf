@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Edit Document - S. PDF</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .ios-sheet-shadow {
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.12);
+        }
+        .drag-handle {
+            width: 36px;
+            height: 5px;
+            border-radius: 2.5px;
+            background-color: #c1c8c9;
+        }
+        .document-blur {
+            backdrop-filter: blur(2px);
+        }
+        .context-menu-shadow {
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+        .animate-slide-up {
+            animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-tint": "#466369",
+                        "error": "#ba1a1a",
+                        "outline-variant": "#c1c8c9",
+                        "on-primary-fixed": "#001f24",
+                        "error-container": "#ffdad6",
+                        "on-primary": "#ffffff",
+                        "surface-container": "#d9f2ff",
+                        "on-tertiary": "#ffffff",
+                        "primary": "#001519",
+                        "on-tertiary-fixed": "#410002",
+                        "secondary-fixed-dim": "#b4cbce",
+                        "on-background": "#001f2a",
+                        "tertiary-container": "#570004",
+                        "background": "#f4faff",
+                        "secondary": "#4d6265",
+                        "on-secondary-fixed-variant": "#364a4d",
+                        "on-error-container": "#93000a",
+                        "inverse-primary": "#adccd2",
+                        "surface-variant": "#c9e7f7",
+                        "surface-dim": "#c0dfee",
+                        "surface-container-highest": "#c9e7f7",
+                        "on-primary-fixed-variant": "#2e4b51",
+                        "primary-fixed": "#c8e8ee",
+                        "inverse-surface": "#163440",
+                        "on-primary-container": "#759399",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-container": "#ff4e46",
+                        "on-secondary-container": "#53686b",
+                        "on-surface": "#001f2a",
+                        "secondary-container": "#d0e7ea",
+                        "on-secondary": "#ffffff",
+                        "inverse-on-surface": "#e0f4ff",
+                        "surface-container-low": "#e6f6ff",
+                        "surface": "#f4faff",
+                        "surface-bright": "#f4faff",
+                        "tertiary": "#300001",
+                        "secondary-fixed": "#d0e7ea",
+                        "surface-container-high": "#ceedfd",
+                        "outline": "#72787a",
+                        "primary-fixed-dim": "#adccd2",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed-dim": "#ffb4ac",
+                        "on-surface-variant": "#414849",
+                        "on-secondary-fixed": "#091f21",
+                        "tertiary-fixed": "#ffdad6",
+                        "on-tertiary-fixed-variant": "#93000d",
+                        "primary-container": "#0b2b30"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "16px",
+                        "container-padding": "20px",
+                        "stack-md": "12px",
+                        "base": "8px",
+                        "stack-lg": "24px",
+                        "stack-sm": "4px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Hanken Grotesk"],
+                        "headline-lg": ["Hanken Grotesk"],
+                        "body-sm": ["Hanken Grotesk"],
+                        "headline-sm": ["Hanken Grotesk"],
+                        "label-md": ["Hanken Grotesk"],
+                        "headline-md": ["Hanken Grotesk"],
+                        "body-md": ["Hanken Grotesk"],
+                        "headline-lg-mobile": ["Hanken Grotesk"],
+                        "label-lg": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-lg": ["28px", {"lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-sm": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                        "headline-sm": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "headline-md": ["22px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                        "label-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface font-body-md overflow-hidden">
+<!-- Main PDF Viewport (Background) -->
+<div class="relative w-full h-screen flex flex-col bg-surface-dim p-4 md:p-8">
+<!-- Document Page -->
+<div class="mx-auto w-full max-w-3xl aspect-[1/1.414] bg-white shadow-lg overflow-hidden relative flex flex-col p-container-padding">
+<!-- PDF Header Emulation -->
+<div class="w-full flex justify-between items-start mb-8">
+<div class="space-y-2">
+<div class="h-6 w-32 bg-surface-container rounded-sm"></div>
+<div class="h-3 w-48 bg-surface-container-low rounded-sm"></div>
+</div>
+<div class="w-16 h-16 rounded bg-error/10 flex items-center justify-center">
+<span class="font-headline-sm text-error">PDF</span>
+</div>
+</div>
+<!-- Content Lines -->
+<div class="space-y-4">
+<div class="h-4 w-full bg-surface-container-low rounded-sm"></div>
+<div class="h-4 w-[90%] bg-surface-container-low rounded-sm"></div>
+<!-- Highlighted Text and Context Menu Area -->
+<div class="relative py-2">
+<div class="h-6 w-[70%] bg-error/20 rounded-sm relative z-0">
+<!-- Floating Context Menu -->
+<div class="absolute -top-14 left-1/2 -translate-x-1/2 flex items-center bg-inverse-surface text-inverse-on-surface rounded-lg px-2 py-1.5 context-menu-shadow z-50 whitespace-nowrap">
+<button class="px-3 py-1 font-label-md hover:bg-white/10 rounded-md transition-colors">Edit</button>
+<div class="w-[1px] h-4 bg-white/20"></div>
+<button class="px-3 py-1 font-label-md hover:bg-white/10 rounded-md transition-colors">Copy</button>
+<div class="w-[1px] h-4 bg-white/20"></div>
+<button class="px-3 py-1 font-label-md hover:bg-white/10 rounded-md transition-colors">Delete</button>
+<!-- Triangle Pointer -->
+<div class="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-inverse-surface rotate-45"></div>
+</div>
+</div>
+</div>
+<div class="h-4 w-[95%] bg-surface-container-low rounded-sm"></div>
+<div class="h-4 w-[85%] bg-surface-container-low rounded-sm"></div>
+<!-- Placeholder Image in Document -->
+<div class="w-full h-48 bg-surface-container rounded-xl overflow-hidden my-4 relative">
+<div class="absolute inset-0 bg-cover bg-center opacity-60" data-alt="A clean and professional architectural blueprint showing the floor plan of a modern office space, rendered in a sophisticated technical style with thin light teal lines on a soft white background. The aesthetic is precise, technical, and high-utility, perfectly fitting the premium PDF editor theme." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBXoPLfhw_OpaHUOjZwKTmkguaEu-Lj8uBdQkO1eKSxeoPKv0yyRjlujIi6zZ6rac5sFvp2BD_WHUJ_ABmp9_5xLYqCSt3n7zdEAiJ_Vj5c_LfyiFSYv4s2BTigKmsZqokOUZUrjm1JS4Ay9Jg0U4KJMKaUisdJXSYnXEIChJxVpmDJHn4fcuTqM2SXIBmOTMrTYhVnjTnK0Xu3_kltnAUB0rrPEEt9LeK3rPNkOsR74oSXRu8qdlNeGWTZgPFhECbkSCbHk5GIDAk5')"></div>
+</div>
+<div class="h-4 w-full bg-surface-container-low rounded-sm"></div>
+<div class="h-4 w-[40%] bg-surface-container-low rounded-sm"></div>
+</div>
+</div>
+<!-- Sheet Overlay / Dimming -->
+<div class="absolute inset-0 bg-black/5 document-blur z-30 pointer-events-none"></div>
+</div>
+<!-- iOS-Style Sheet Presentation -->
+<div class="fixed inset-0 z-50 flex items-end justify-center px-0 md:px-4">
+<!-- Sheet Container -->
+<div class="w-full max-w-2xl bg-surface-container-lowest rounded-t-[32px] ios-sheet-shadow animate-slide-up flex flex-col pb-safe max-h-[530px]">
+<!-- Handle & Header -->
+<div class="flex flex-col items-center pt-4 pb-2 relative">
+<div class="drag-handle mb-4"></div>
+<!-- Close Button -->
+<button class="absolute top-4 right-6 w-8 h-8 rounded-full bg-surface-variant/30 flex items-center justify-center text-on-surface-variant hover:bg-surface-variant/50 transition-colors" onclick="this.closest('.fixed').classList.add('hidden')">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+<h2 class="font-headline-sm text-on-surface">Edit Document</h2>
+</div>
+<!-- Scrollable Content Area (Options) -->
+<div class="flex-1 overflow-y-auto px-container-padding py-4">
+<!-- Formatting Panel (Secondary Panel) -->
+<div class="bg-surface-container-low rounded-2xl p-4 mb-6 flex items-center justify-between">
+<div class="flex items-center gap-1 bg-surface-container-highest/50 p-1 rounded-xl">
+<button class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-surface-container-highest text-on-surface-variant font-bold">B</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-surface-container-highest text-on-surface-variant italic">I</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg bg-surface-container-highest text-error font-bold">U</button>
+</div>
+<div class="flex items-center gap-4 bg-surface-container-highest/50 px-4 py-1 rounded-xl h-10">
+<button class="text-on-surface-variant font-medium flex items-center gap-1">
+<span class="font-label-md">A</span>
+<span class="material-symbols-outlined text-sm">remove</span>
+</button>
+<span class="font-body-md text-on-surface-variant">14pt</span>
+<button class="text-on-surface-variant font-medium flex items-center gap-1">
+<span class="font-label-md">A</span>
+<span class="material-symbols-outlined text-sm">add</span>
+</button>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-xl bg-surface-container-highest text-on-surface-variant">
+<span class="material-symbols-outlined">palette</span>
+</button>
+</div>
+<!-- Main Tool Grid/Panel -->
+<div class="grid grid-cols-4 gap-4 pb-8">
+<!-- Tool Item -->
+<div class="flex flex-col items-center gap-2 group cursor-pointer">
+<div class="w-full aspect-square rounded-2xl bg-error flex items-center justify-center text-on-error shadow-md transition-transform active:scale-95">
+<span class="material-symbols-outlined text-[28px]">edit_note</span>
+</div>
+<span class="font-label-md text-on-surface-variant">Pen</span>
+</div>
+<!-- Tool Item -->
+<div class="flex flex-col items-center gap-2 group cursor-pointer">
+<div class="w-full aspect-square rounded-2xl bg-surface-container-high flex items-center justify-center text-on-surface-variant transition-transform active:scale-95">
+<span class="material-symbols-outlined text-[28px]">title</span>
+</div>
+<span class="font-label-md text-on-surface-variant">Text</span>
+</div>
+<!-- Tool Item -->
+<div class="flex flex-col items-center gap-2 group cursor-pointer">
+<div class="w-full aspect-square rounded-2xl bg-surface-container-high flex items-center justify-center text-on-surface-variant transition-transform active:scale-95">
+<span class="material-symbols-outlined text-[28px]">image</span>
+</div>
+<span class="font-label-md text-on-surface-variant">Image</span>
+</div>
+<!-- Tool Item -->
+<div class="flex flex-col items-center gap-2 group cursor-pointer">
+<div class="w-full aspect-square rounded-2xl bg-surface-container-high flex items-center justify-center text-on-surface-variant transition-transform active:scale-95">
+<span class="material-symbols-outlined text-[28px]">undo</span>
+</div>
+<span class="font-label-md text-on-surface-variant">Undo</span>
+</div>
+</div>
+<!-- Bottom Safe Area Spacer -->
+<div class="h-8"></div>
+</div>
+</div>
+</div>
+<!-- Interaction Logic -->
+<script>
+        // Simple touch simulation for the sheet
+        let startY = 0;
+        const sheet = document.querySelector('.animate-slide-up');
+        
+        sheet.addEventListener('touchstart', (e) => {
+            startY = e.touches[0].clientY;
+        });
+
+        sheet.addEventListener('touchmove', (e) => {
+            const currentY = e.touches[0].clientY;
+            const diff = currentY - startY;
+            if (diff > 0) {
+                sheet.style.transform = `translateY(${diff}px)`;
+            }
+        });
+
+        sheet.addEventListener('touchend', (e) => {
+            const currentY = e.changedTouches[0].clientY;
+            if (currentY - startY > 150) {
+                sheet.style.transition = 'transform 0.3s ease-out';
+                sheet.style.transform = 'translateY(100%)';
+                setTimeout(() => {
+                    sheet.parentElement.classList.add('hidden');
+                }, 300);
+            } else {
+                sheet.style.transition = 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)';
+                sheet.style.transform = 'translateY(0)';
+            }
+        });
+    </script>
+</body></html>

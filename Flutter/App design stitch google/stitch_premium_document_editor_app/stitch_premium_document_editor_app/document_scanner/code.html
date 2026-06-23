@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>S. Scanner - High Precision Document Capture</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Hanken+Grotesk', sans-serif;
+            background-color: #001f2a; /* Deep Slate Teal for camera background */
+            overflow: hidden;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+            transition: all 0.2s ease;
+        }
+
+        /* Blue glowing edge detection animation */
+        @keyframes edge-glow {
+            0% { opacity: 0.4; transform: scale(0.995); }
+            50% { opacity: 1; transform: scale(1.005); }
+            100% { opacity: 0.4; transform: scale(0.995); }
+        }
+
+        .document-overlay {
+            border: 2px solid #ceedfd;
+            box-shadow: 0 0 25px rgba(206, 237, 253, 0.6), inset 0 0 25px rgba(206, 237, 253, 0.4);
+            animation: edge-glow 2s infinite ease-in-out;
+            pointer-events: none;
+        }
+
+        /* Glassmorphism for UI elements */
+        .glass-ui {
+            background: rgba(0, 31, 42, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .camera-shutter-active:active {
+            transform: scale(0.9);
+            background-color: #4d6265;
+        }
+
+        /* Hide scrollbars */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-high": "#ceedfd",
+                    "on-secondary": "#ffffff",
+                    "surface-dim": "#c0dfee",
+                    "on-primary": "#ffffff",
+                    "tertiary-fixed": "#ffdad6",
+                    "on-tertiary-fixed": "#410002",
+                    "on-secondary-fixed-variant": "#364a4d",
+                    "secondary-fixed-dim": "#b4cbce",
+                    "secondary-container": "#d0e7ea",
+                    "on-primary-fixed-variant": "#2e4b51",
+                    "on-error": "#ffffff",
+                    "outline": "#72787a",
+                    "surface-container-low": "#e6f6ff",
+                    "on-background": "#001f2a",
+                    "inverse-primary": "#adccd2",
+                    "surface-tint": "#466369",
+                    "tertiary": "#300001",
+                    "primary-fixed-dim": "#adccd2",
+                    "on-error-container": "#93000a",
+                    "on-secondary-container": "#53686b",
+                    "primary-container": "#0b2b30",
+                    "inverse-surface": "#163440",
+                    "surface-container-highest": "#c9e7f7",
+                    "primary": "#001519",
+                    "surface-container": "#d9f2ff",
+                    "tertiary-container": "#570004",
+                    "on-primary-container": "#759399",
+                    "error-container": "#ffdad6",
+                    "primary-fixed": "#c8e8ee",
+                    "on-secondary-fixed": "#091f21",
+                    "error": "#ba1a1a",
+                    "secondary-fixed": "#d0e7ea",
+                    "tertiary-fixed-dim": "#ffb4ac",
+                    "secondary": "#4d6265",
+                    "on-surface-variant": "#414849",
+                    "on-tertiary-container": "#ff4e46",
+                    "surface-variant": "#c9e7f7",
+                    "on-tertiary": "#ffffff",
+                    "background": "#f4faff",
+                    "outline-variant": "#c1c8c9",
+                    "inverse-on-surface": "#e0f4ff",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-bright": "#f4faff",
+                    "surface": "#f4faff",
+                    "on-surface": "#001f2a",
+                    "on-primary-fixed": "#001f24",
+                    "on-tertiary-fixed-variant": "#93000d"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-md": "12px",
+                    "base": "8px",
+                    "gutter": "16px",
+                    "stack-sm": "4px",
+                    "stack-lg": "24px",
+                    "container-padding": "20px"
+            },
+            "fontFamily": {
+                    "headline-sm": ["Hanken Grotesk"],
+                    "headline-lg-mobile": ["Hanken Grotesk"],
+                    "label-lg": ["Hanken Grotesk"],
+                    "body-sm": ["Hanken Grotesk"],
+                    "body-md": ["Hanken Grotesk"],
+                    "label-md": ["Hanken Grotesk"],
+                    "headline-md": ["Hanken Grotesk"],
+                    "headline-lg": ["Hanken Grotesk"]
+            },
+            "fontSize": {
+                    "headline-sm": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "label-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                    "body-sm": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "headline-md": ["22px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "headline-lg": ["28px", {"lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="flex flex-col h-full bg-primary-container relative">
+<!-- Camera Viewport Layer -->
+<div class="absolute inset-0 z-0 bg-primary-container overflow-hidden">
+<!-- Main Background Image (The Desk with Document) -->
+<div class="w-full h-full bg-cover bg-center opacity-80 scale-105 blur-[2px] md:blur-none" data-alt="A cinematic, high-definition photo of a clean, minimalist wooden desk with a single crisp white document sheet laying in the center. The room is dimly lit with a soft teal atmospheric glow coming from the edges, creating a professional workspace environment. The document is perfectly angled for scanning, showing clear text blocks and a header. The camera angle is slightly overhead, capturing a premium, high-tech documentary or product photography style." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBeeAoNkyirWV_LVuLSGnLFxs8SfUsIyMK5G2qLuA0uFjTy2YBmxaZEgdwXnH4imy8dN9UHQQZ8DGstcGseq1jo4JjlebeJBLbRxzRYMZ3HSM6rTqzyq64qcYPBPk5ScTb3fKrKTgyGGP_A2kRzXOBi_0jMGOX1U_IcxED9r0JhsumKD7Wmh8QAQayEpGSPb0qgQUZr150NXjcLjZxxfKk92Fp3hJu1ebtpSRmxPlfGTfyTQuHTfRVHZ-9mzzLhH6gJibiYa3o8Rul7')"></div>
+<!-- Edge Detection Overlay -->
+<div class="absolute inset-0 flex items-center justify-center p-container-padding">
+<div class="document-overlay w-[85%] h-[70%] max-w-md max-h-[600px] rounded-lg flex items-center justify-center">
+<!-- Optical Corner Accents -->
+<div class="absolute -top-1 -left-1 w-6 h-6 border-t-4 border-l-4 border-surface-container-high rounded-tl-md"></div>
+<div class="absolute -top-1 -right-1 w-6 h-6 border-t-4 border-r-4 border-surface-container-high rounded-tr-md"></div>
+<div class="absolute -bottom-1 -left-1 w-6 h-6 border-b-4 border-l-4 border-surface-container-high rounded-bl-md"></div>
+<div class="absolute -bottom-1 -right-1 w-6 h-6 border-b-4 border-r-4 border-surface-container-high rounded-br-md"></div>
+<!-- Scanning Line -->
+<div class="absolute w-full h-[2px] bg-surface-container-high/60 shadow-[0_0_10px_#ceedfd] top-0 animate-[scan_4s_infinite_linear]"></div>
+<style>
+                    @keyframes scan {
+                        0% { top: 0%; opacity: 0; }
+                        5% { opacity: 1; }
+                        95% { opacity: 1; }
+                        100% { top: 100%; opacity: 0; }
+                    }
+                </style>
+</div>
+</div>
+</div>
+<!-- Top Bar Navigation (JSON: TopAppBar context) -->
+<header class="relative z-20 pt-12 pb-6 px-container-padding w-full flex items-center justify-between">
+<div class="flex items-center gap-stack-md glass-ui p-2 rounded-full px-4 text-on-primary">
+<button class="flex items-center gap-2 hover:opacity-80">
+<span class="material-symbols-outlined text-[20px]" data-icon="flash_auto">flash_auto</span>
+<span class="font-label-md text-label-md">AUTO</span>
+</button>
+</div>
+<h1 class="font-headline-md text-headline-md font-bold text-on-error dark:text-on-error">Hello, Meet S.</h1>
+<button class="glass-ui w-10 h-10 rounded-full flex items-center justify-center text-on-primary active:scale-90 transition-transform">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+</header>
+<!-- Main Workspace (Flexible Space) -->
+<main class="flex-1 relative z-10">
+<!-- Central Focus Indicator -->
+<div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+<div class="w-12 h-12 border border-white/20 rounded-full flex items-center justify-center">
+<div class="w-1 h-1 bg-white rounded-full"></div>
+</div>
+</div>
+</main>
+<!-- Bottom Controls Area -->
+<footer class="relative z-20 pb-10 px-container-padding flex flex-col items-center gap-6">
+<!-- Mode Slider -->
+<div class="w-full max-w-sm flex justify-center items-center gap-stack-lg overflow-x-auto no-scrollbar py-2 glass-ui rounded-full px-8">
+<button class="whitespace-nowrap font-label-md text-label-md text-outline-variant hover:text-white transition-colors">QR CODE</button>
+<button class="whitespace-nowrap font-label-md text-label-md text-outline-variant hover:text-white transition-colors">BOOK</button>
+<button class="whitespace-nowrap font-label-md text-label-md text-on-error font-bold border-b-2 border-on-error pb-1">DOCUMENT</button>
+<button class="whitespace-nowrap font-label-md text-label-md text-outline-variant hover:text-white transition-colors">ID CARD</button>
+</div>
+<!-- Action Row -->
+<div class="w-full flex items-center justify-between max-w-md">
+<!-- Gallery Thumbnail -->
+<button class="w-14 h-14 rounded-xl border-2 border-white/30 overflow-hidden glass-ui group active:scale-95 transition-all">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all" data-alt="A miniature thumbnail preview of a scanned contract page with sharp black text on a clean white background, slightly curled at the corner to show depth. The image is clear and professional." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXihMQ6c419I_LK-VVzU1CKRy4_TB1iP0EEX12bvezX3zsBWmtemYalc8x4UTLPJml_3LGLLHkU5yaDXeqgN-i28wVsHtHg2Z-X38W1US8yw6CBUPf2mawH3UjlM2vqZT62PFAHZKQFGBm9Sw-vsFA4iyif5Wbk8qxwGinpO7SU9XdPETPr8iygs4UJRQCsYVdzUzVipCAP42KJrmok18ZF6UaeXyXYG12bZeCzpHaV1pZRkSdDj5oBBj4g3MU045wq1mtXIoXUaL3"/>
+</button>
+<!-- Main Shutter Button -->
+<div class="relative group">
+<div class="absolute -inset-2 bg-error/20 rounded-full blur-lg group-active:blur-md transition-all"></div>
+<button class="relative w-20 h-20 bg-secondary rounded-full border-4 border-white flex items-center justify-center camera-shutter-active shadow-2xl" id="shutter">
+<div class="w-16 h-16 rounded-full border-2 border-on-secondary/30 flex items-center justify-center">
+<div class="w-4 h-4 rounded-sm bg-white/20"></div>
+</div>
+</button>
+</div>
+<!-- Batch Mode Toggle -->
+<button class="w-14 h-14 rounded-full glass-ui flex flex-col items-center justify-center text-white active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[24px]" data-icon="layers">layers</span>
+<span class="text-[8px] font-bold mt-0.5">BATCH</span>
+</button>
+</div>
+</footer>
+<!-- Bottom Navigation Shell (JSON: BottomNavBar context) -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center py-3 bg-surface dark:bg-surface-dim shadow-[0_-4px_20px_rgba(0,0,0,0.04)] rounded-t-xl z-30">
+<div class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline hover:bg-surface-container-low rounded-full px-4 py-1 transition-all">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-label-md text-label-md">Home</span>
+</div>
+<!-- Active Tab: Recent/Scan -->
+<div class="flex flex-col items-center justify-center text-error dark:text-on-tertiary-container font-bold hover:bg-surface-container-low rounded-full px-4 py-1 transition-all">
+<span class="material-symbols-outlined" data-icon="document_scanner">document_scanner</span>
+<span class="font-label-md text-label-md">Recent</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline hover:bg-surface-container-low rounded-full px-4 py-1 transition-all">
+<span class="material-symbols-outlined" data-icon="favorite">favorite</span>
+<span class="font-label-md text-label-md">Like</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline hover:bg-surface-container-low rounded-full px-4 py-1 transition-all">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-label-md text-label-md">Profile</span>
+</div>
+</nav>
+<!-- Interactive Layer -->
+<script>
+        const shutter = document.getElementById('shutter');
+        const overlay = document.querySelector('.document-overlay');
+
+        shutter.addEventListener('click', () => {
+            // Flash Effect
+            const flash = document.createElement('div');
+            flash.className = 'fixed inset-0 bg-white z-[100] transition-opacity duration-300 pointer-events-none';
+            document.body.appendChild(flash);
+            
+            setTimeout(() => {
+                flash.style.opacity = '0';
+                setTimeout(() => flash.remove(), 300);
+            }, 50);
+
+            // Shutter feedback
+            shutter.classList.add('scale-90');
+            setTimeout(() => shutter.classList.remove('scale-90'), 100);
+            
+            // Temporary glow intensify
+            overlay.style.boxShadow = '0 0 50px rgba(255, 255, 255, 0.9)';
+            setTimeout(() => {
+                overlay.style.boxShadow = '';
+            }, 500);
+        });
+
+        // Mode Switching Micro-interaction
+        const modeButtons = document.querySelectorAll('.no-scrollbar button');
+        modeButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                modeButtons.forEach(b => {
+                    b.className = "whitespace-nowrap font-label-md text-label-md text-outline-variant hover:text-white transition-colors";
+                });
+                btn.className = "whitespace-nowrap font-label-md text-label-md text-on-error font-bold border-b-2 border-on-error pb-1";
+            });
+        });
+    </script>
+</body></html>

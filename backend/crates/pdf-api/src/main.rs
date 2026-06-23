@@ -257,6 +257,36 @@ async fn add_security_headers(req: axum::extract::Request, next: Next) -> Respon
     response
 }
 
+async fn cors_middleware(req: axum::extract::Request, next: Next) -> Response {
+    let method = req.method().clone();
+    let origin = req.headers().get("origin").cloned();
+    
+    if method == axum::http::Method::OPTIONS {
+        let mut response = StatusCode::OK.into_response();
+        let headers = response.headers_mut();
+        if let Some(ref origin_val) = origin {
+            headers.insert(header::ACCESS_CONTROL_ALLOW_ORIGIN, origin_val.clone());
+        } else {
+            headers.insert(header::ACCESS_CONTROL_ALLOW_ORIGIN, HeaderValue::from_static("*"));
+        }
+        headers.insert(header::ACCESS_CONTROL_ALLOW_METHODS, HeaderValue::from_static("GET, POST, PUT, DELETE, OPTIONS"));
+        headers.insert(header::ACCESS_CONTROL_ALLOW_HEADERS, HeaderValue::from_static("*"));
+        headers.insert(header::ACCESS_CONTROL_MAX_AGE, HeaderValue::from_static("86400"));
+        return response;
+    }
+
+    let mut response = next.run(req).await;
+    let headers = response.headers_mut();
+    if let Some(ref origin_val) = origin {
+        headers.insert(header::ACCESS_CONTROL_ALLOW_ORIGIN, origin_val.clone());
+    } else {
+        headers.insert(header::ACCESS_CONTROL_ALLOW_ORIGIN, HeaderValue::from_static("*"));
+    }
+    headers.insert(header::ACCESS_CONTROL_ALLOW_HEADERS, HeaderValue::from_static("*"));
+    headers.insert(header::ACCESS_CONTROL_ALLOW_METHODS, HeaderValue::from_static("GET, POST, PUT, DELETE, OPTIONS"));
+    response
+}
+
 #[tokio::main]
 async fn main() {
     // Database Setup
@@ -349,13 +379,14 @@ async fn main() {
         .route("/api/admin/tool-stats", get(admin_tool_stats))
         .with_state(state)
         .layer(middleware::from_fn(add_security_headers))
+        .layer(middleware::from_fn(cors_middleware))
         .layer(DefaultBodyLimit::max(524_288_000));
 
     let port = env::var("PDFMOUNT_PORT")
         .ok()
         .and_then(|value| value.parse::<u16>().ok())
         .unwrap_or(8080);
-    let addr = SocketAddr::from(([127, 0, 0, 1], port));
+    let addr = SocketAddr::from(([0, 0, 0, 0], port));
     let listener = tokio::net::TcpListener::bind(addr)
         .await
         .expect("bind pdf api");

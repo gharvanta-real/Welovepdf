@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Add New Action Menu - Meet S.</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "surface-container-high": "#ceedfd",
+                "on-secondary": "#ffffff",
+                "surface-dim": "#c0dfee",
+                "on-primary": "#ffffff",
+                "tertiary-fixed": "#ffdad6",
+                "on-tertiary-fixed": "#410002",
+                "on-secondary-fixed-variant": "#364a4d",
+                "secondary-fixed-dim": "#b4cbce",
+                "secondary-container": "#d0e7ea",
+                "on-primary-fixed-variant": "#2e4b51",
+                "on-error": "#ffffff",
+                "outline": "#72787a",
+                "surface-container-low": "#e6f6ff",
+                "on-background": "#001f2a",
+                "inverse-primary": "#adccd2",
+                "surface-tint": "#466369",
+                "tertiary": "#300001",
+                "primary-fixed-dim": "#adccd2",
+                "on-error-container": "#93000a",
+                "on-secondary-container": "#53686b",
+                "primary-container": "#0b2b30",
+                "inverse-surface": "#163440",
+                "surface-container-highest": "#c9e7f7",
+                "primary": "#001519",
+                "surface-container": "#d9f2ff",
+                "tertiary-container": "#570004",
+                "on-primary-container": "#759399",
+                "error-container": "#ffdad6",
+                "primary-fixed": "#c8e8ee",
+                "on-secondary-fixed": "#091f21",
+                "error": "#ba1a1a",
+                "secondary-fixed": "#d0e7ea",
+                "tertiary-fixed-dim": "#ffb4ac",
+                "secondary": "#4d6265",
+                "on-surface-variant": "#414849",
+                "on-tertiary-container": "#ff4e46",
+                "surface-variant": "#c9e7f7",
+                "on-tertiary": "#ffffff",
+                "background": "#f4faff",
+                "outline-variant": "#c1c8c9",
+                "inverse-on-surface": "#e0f4ff",
+                "surface-container-lowest": "#ffffff",
+                "surface-bright": "#f4faff",
+                "surface": "#f4faff",
+                "on-surface": "#001f2a",
+                "on-primary-fixed": "#001f24",
+                "on-tertiary-fixed-variant": "#93000d"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+            },
+            "spacing": {
+                "stack-md": "12px",
+                "base": "8px",
+                "gutter": "16px",
+                "stack-sm": "4px",
+                "stack-lg": "24px",
+                "container-padding": "20px"
+            },
+            "fontFamily": {
+                "headline-sm": ["Hanken Grotesk"],
+                "headline-lg-mobile": ["Hanken Grotesk"],
+                "label-lg": ["Hanken Grotesk"],
+                "body-sm": ["Hanken Grotesk"],
+                "body-lg": ["Hanken Grotesk"],
+                "body-md": ["Hanken Grotesk"],
+                "label-md": ["Hanken Grotesk"],
+                "headline-md": ["Hanken Grotesk"],
+                "headline-lg": ["Hanken Grotesk"]
+            },
+            "fontSize": {
+                "headline-sm": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                "label-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                "body-sm": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                "label-md": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                "headline-md": ["22px", {"lineHeight": "28px", "fontWeight": "600"}],
+                "headline-lg": ["28px", {"lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        body {
+            font-family: 'Hanken Grotesk', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .action-item {
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transform: translateY(20px) scale(0);
+            opacity: 0;
+        }
+        .action-active .action-item {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+        }
+        /* Custom Stagger Delays */
+        .delay-1 { transition-delay: 50ms; }
+        .delay-2 { transition-delay: 100ms; }
+        .delay-3 { transition-delay: 150ms; }
+        .delay-4 { transition-delay: 200ms; }
+
+        .glass-bg {
+            background: rgba(244, 250, 255, 0.85);
+            backdrop-filter: blur(12px);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen relative overflow-hidden">
+<!-- Top App Bar (Shared Component Reference) -->
+<header class="bg-error dark:bg-error text-on-error font-headline-lg-mobile text-headline-lg-mobile docked full-width top-0 rounded-b-none flex flex-col pt-12 pb-6 px-container-padding w-full z-10">
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined cursor-pointer">menu</span>
+<span class="font-headline-md text-headline-md font-bold text-on-error">Hello, Meet S.</span>
+</div>
+<span class="material-symbols-outlined cursor-pointer">notifications</span>
+</div>
+</header>
+<!-- Main Dashboard Content (Blurred) -->
+<main class="px-container-padding pt-gutter space-y-stack-lg filter blur-md pointer-events-none">
+<!-- Search Bar Mock -->
+<div class="bg-surface-container-lowest rounded-xl p-4 shadow-[0_8px_30px_rgba(0,0,0,0.08)] flex items-center gap-3">
+<span class="material-symbols-outlined text-outline">search</span>
+<span class="text-on-surface-variant font-body-md">Search your documents...</span>
+</div>
+<!-- Recent Files Section -->
+<section>
+<h2 class="font-headline-sm text-headline-sm mb-stack-md">Recent Files</h2>
+<div class="space-y-stack-md">
+<!-- Mock Card 1 -->
+<div class="bg-surface-container-lowest border border-surface-container-highest rounded-xl p-4 flex items-center gap-4">
+<div class="w-12 h-12 bg-error rounded-lg flex items-center justify-center">
+<span class="text-white font-bold text-[10px]">PDF</span>
+</div>
+<div class="flex-1">
+<div class="font-label-lg text-label-lg text-on-surface">Tax_Report_2023.pdf</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">Modified 2 hours ago</div>
+</div>
+<span class="material-symbols-outlined text-outline">more_vert</span>
+</div>
+<!-- Mock Card 2 -->
+<div class="bg-surface-container-lowest border border-surface-container-highest rounded-xl p-4 flex items-center gap-4">
+<div class="w-12 h-12 bg-secondary-container rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary">folder</span>
+</div>
+<div class="flex-1">
+<div class="font-label-lg text-label-lg text-on-surface">Client Project Alpha</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">12 files • Oct 24</div>
+</div>
+<span class="material-symbols-outlined text-outline">more_vert</span>
+</div>
+</div>
+</section>
+<!-- Bento Layout Mock -->
+<div class="grid grid-cols-2 gap-stack-md">
+<div class="bg-surface-container-low p-stack-lg rounded-3xl flex flex-col items-center justify-center text-center">
+<span class="material-symbols-outlined text-secondary mb-2" style="font-size: 32px;">verified_user</span>
+<div class="font-label-md text-label-md">Secure Vault</div>
+</div>
+<div class="bg-surface-container-highest p-stack-lg rounded-3xl flex flex-col items-center justify-center text-center">
+<span class="material-symbols-outlined text-error mb-2" style="font-size: 32px;">favorite</span>
+<div class="font-label-md text-label-md">Favorites</div>
+</div>
+</div>
+</main>
+<!-- Modal Overlay Backdrop -->
+<div class="fixed inset-0 glass-bg z-40 transition-opacity duration-300" id="overlay"></div>
+<!-- Action Menu Container -->
+<div class="fixed inset-0 z-50 flex flex-col justify-end items-end p-container-padding pb-32 pointer-events-none action-active" id="actionContainer">
+<!-- Action List Sprouting Up -->
+<div class="flex flex-col items-end space-y-gutter mb-gutter pointer-events-auto">
+<!-- Item 4: Take Note -->
+<div class="action-item delay-4 flex items-center gap-4">
+<span class="bg-surface-container-lowest px-4 py-2 rounded-lg shadow-sm font-label-lg text-label-lg text-on-surface">Take Note</span>
+<button class="w-14 h-14 bg-surface-container-lowest text-secondary rounded-full shadow-lg flex items-center justify-center border border-surface-container-highest active:scale-90 transition-transform">
+<span class="material-symbols-outlined">edit</span>
+</button>
+</div>
+<!-- Item 3: Create Folder -->
+<div class="action-item delay-3 flex items-center gap-4">
+<span class="bg-surface-container-lowest px-4 py-2 rounded-lg shadow-sm font-label-lg text-label-lg text-on-surface">Create Folder</span>
+<button class="w-14 h-14 bg-surface-container-lowest text-secondary rounded-full shadow-lg flex items-center justify-center border border-surface-container-highest active:scale-90 transition-transform">
+<span class="material-symbols-outlined">folder</span>
+</button>
+</div>
+<!-- Item 2: Upload File -->
+<div class="action-item delay-2 flex items-center gap-4">
+<span class="bg-surface-container-lowest px-4 py-2 rounded-lg shadow-sm font-label-lg text-label-lg text-on-surface">Upload File</span>
+<button class="w-14 h-14 bg-surface-container-lowest text-secondary rounded-full shadow-lg flex items-center justify-center border border-surface-container-highest active:scale-90 transition-transform">
+<span class="material-symbols-outlined">cloud_upload</span>
+</button>
+</div>
+<!-- Item 1: Scan Document (PRIMARY) -->
+<div class="action-item delay-1 flex items-center gap-4">
+<span class="bg-secondary px-4 py-2 rounded-lg shadow-md font-label-lg text-label-lg text-on-secondary">Scan Document</span>
+<button class="w-16 h-16 bg-secondary text-on-secondary rounded-full shadow-[0_6px_15px_rgba(77,98,101,0.3)] flex items-center justify-center border-2 border-surface-container-lowest active:scale-90 transition-transform">
+<span class="material-symbols-outlined" style="font-size: 32px;">camera</span>
+</button>
+</div>
+</div>
+<!-- Floating Action Button (Base) -->
+<button class="w-20 h-20 bg-error text-on-error rounded-full shadow-[0_6px_15px_rgba(186,26,26,0.3)] flex items-center justify-center pointer-events-auto active:scale-90 transition-all duration-300" id="closeFab">
+<span class="material-symbols-outlined" style="font-size: 40px; transform: rotate(45deg);">add</span>
+</button>
+</div>
+<!-- Bottom Navigation Bar (Shared Component Reference) -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center py-3 bg-surface dark:bg-surface-dim shadow-[0_-4px_20px_rgba(0,0,0,0.04)] z-30 rounded-t-xl">
+<div class="flex flex-col items-center justify-center text-error dark:text-on-tertiary-container font-bold transition-all duration-200 active:scale-90">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-md text-label-md">Home</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline transition-all duration-200 active:scale-90">
+<span class="material-symbols-outlined">document_scanner</span>
+<span class="font-label-md text-label-md">Recent</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline transition-all duration-200 active:scale-90">
+<span class="material-symbols-outlined">favorite</span>
+<span class="font-label-md text-label-md">Like</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline transition-all duration-200 active:scale-90">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-md text-label-md">Profile</span>
+</div>
+</nav>
+<script>
+        // Simple micro-interaction for the FAB
+        const fab = document.getElementById('closeFab');
+        const container = document.getElementById('actionContainer');
+        const overlay = document.getElementById('overlay');
+        
+        let isOpen = true;
+
+        fab.addEventListener('click', () => {
+            isOpen = !isOpen;
+            if (isOpen) {
+                container.classList.add('action-active');
+                overlay.style.opacity = '1';
+                fab.querySelector('span').style.transform = 'rotate(45deg)';
+            } else {
+                container.classList.remove('action-active');
+                overlay.style.opacity = '0';
+                fab.querySelector('span').style.transform = 'rotate(0deg)';
+                // Normally would redirect or close the "modal" view
+            }
+        });
+
+        // Close when clicking overlay
+        overlay.addEventListener('click', () => {
+            if (isOpen) {
+                isOpen = false;
+                container.classList.remove('action-active');
+                overlay.style.opacity = '0';
+                fab.querySelector('span').style.transform = 'rotate(0deg)';
+            }
+        });
+    </script>
+</body></html>
