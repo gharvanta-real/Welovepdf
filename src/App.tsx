@@ -735,8 +735,11 @@ export function App() {
     if (options) {
       for (const key in options) {
         if (options[key] !== undefined && options[key] !== null) {
-          const headerKey = "x-" + key.replace(/([A-Z])/g, "-$1").toLowerCase();
-          headers[headerKey] = String(options[key]);
+          const valStr = String(options[key]);
+          if (valStr.length < 1024) {
+            const headerKey = "x-" + key.replace(/([A-Z])/g, "-$1").toLowerCase();
+            headers[headerKey] = valStr;
+          }
         }
       }
     }
@@ -745,6 +748,14 @@ export function App() {
       const formData = new FormData();
       for (let i = 0; i < files.length; i++) {
         formData.append("files", files[i]);
+      }
+
+      if (options) {
+        for (const key in options) {
+          if (options[key] !== undefined && options[key] !== null) {
+            formData.append(key, String(options[key]));
+          }
+        }
       }
 
       const response = await fetch(endpoint, {

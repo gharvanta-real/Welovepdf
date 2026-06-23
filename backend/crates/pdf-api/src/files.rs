@@ -11,41 +11,65 @@ pub async fn save_multipart_files(
     state: &AppState,
     mut multipart: Multipart,
     max_bytes: u64,
-) -> Result<Vec<PathBuf>, String> {
+) -> Result<(Vec<PathBuf>, std::collections::HashMap<String, String>), String> {
     let upload_dir = state.config.work_dir.join("uploads").join(uuid_like());
     fs::create_dir_all(&upload_dir)
         .await
         .map_err(|error| error.to_string())?;
 
     let mut saved = Vec::new();
+    let mut form_options = std::collections::HashMap::new();
+
     while let Some(field) = multipart
         .next_field()
         .await
         .map_err(|error| error.to_string())?
     {
-        let safe_name = safe_file_name(field.file_name().unwrap_or("upload.pdf"));
-        let path = upload_dir.join(format!("{}-{safe_name}", saved.len()));
-        
-        let mut file = fs::File::create(&path)
-            .await
-            .map_err(|error| error.to_string())?;
-
-        let mut total_bytes = 0u64;
-        let mut field = field;
-        while let Some(chunk) = field.chunk().await.map_err(|error| error.to_string())? {
-            total_bytes += chunk.len() as u64;
-            if total_bytes > max_bytes {
-                let _ = fs::remove_file(&path).await;
-                return Err("uploaded file exceeds max size".into());
-            }
-            file.write_all(&chunk)
+        let name = field.name().unwrap_or("").to_string();
+        if field.file_name().is_some() {
+            let safe_name = safe_file_name(field.file_name().unwrap_or("upload.pdf"));
+            let path = upload_dir.join(format!("{}-{safe_name}", saved.len()));
+            
+            let mut file = fs::File::create(&path)
                 .await
                 .map_err(|error| error.to_string())?;
+
+            let mut total_bytes = 0u64;
+            let mut field = field;
+            while let Some(chunk) = field.chunk().await.map_err(|error| error.to_string())? {
+                total_bytes += chunk.len() as u64;
+                if total_bytes > max_bytes {
+                    let _ = fs::remove_file(&path).await;
+                    return Err("uploaded file exceeds max size".into());
+                }
+                file.write_all(&chunk)
+                    .await
+                    .map_err(|error| error.to_string())?;
+            }
+            saved.push(path);
+        } else {
+            if !name.is_empty() {
+                let value = field.text().await.map_err(|error| error.to_string())?;
+                if name == "options" {
+                    if let Ok(json_val) = serde_json::from_str::<serde_json::Value>(&value) {
+                        if let Some(obj) = json_val.as_object() {
+                            for (k, v) in obj {
+                                let str_val = match v {
+                                    serde_json::Value::String(s) => s.clone(),
+                                    _ => v.to_string(),
+                                };
+                                form_options.insert(k.clone(), str_val);
+                            }
+                        }
+                    }
+                } else {
+                    form_options.insert(name, value);
+                }
+            }
         }
-        saved.push(path);
     }
 
-    Ok(saved)
+    Ok((saved, form_options))
 }
 
 pub async fn download_file(

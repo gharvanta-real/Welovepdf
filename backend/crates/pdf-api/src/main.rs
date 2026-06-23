@@ -751,7 +751,7 @@ async fn upload_merge(
     let ip = addr.ip().to_string();
     match check_limits_and_authenticate(&state, &headers, &ip, "merge_pdf").await {
         Ok((user, max_bytes)) => match save_multipart_files(&state, multipart, max_bytes).await {
-            Ok(inputs) => {
+            Ok((inputs, _)) => {
                 let user_id = user.as_ref().map(|u| u.id.as_str());
                 let result = run_merge_job(&state.config, inputs);
                 job_response(&state, result, user_id, Some(&ip)).await
@@ -777,14 +777,20 @@ async fn upload_compress(
         .to_string();
     match check_limits_and_authenticate(&state, &headers, &ip, "compress_pdf").await {
         Ok((user, max_bytes)) => match save_multipart_files(&state, multipart, max_bytes).await {
-            Ok(inputs) => match require_one(inputs, "compress") {
-                Ok(input) => {
-                    let user_id = user.as_ref().map(|u| u.id.as_str());
-                    let result = run_compress_job(&state.config, input, &level);
-                    job_response(&state, result, user_id, Some(&ip)).await
+            Ok((inputs, form_options)) => {
+                let compression_level = form_options.get("compressionLevel")
+                    .or_else(|| form_options.get("x-compression-level"))
+                    .cloned()
+                    .unwrap_or_else(|| level.clone());
+                match require_one(inputs, "compress") {
+                    Ok(input) => {
+                        let user_id = user.as_ref().map(|u| u.id.as_str());
+                        let result = run_compress_job(&state.config, input, &compression_level);
+                        job_response(&state, result, user_id, Some(&ip)).await
+                    }
+                    Err(err_msg) => bad_request(err_msg),
                 }
-                Err(err_msg) => bad_request(err_msg),
-            },
+            }
             Err(error) => bad_request(error),
         },
         Err(err_msg) => bad_request(err_msg),
@@ -800,7 +806,7 @@ async fn upload_jpg_to_pdf(
     let ip = addr.ip().to_string();
     match check_limits_and_authenticate(&state, &headers, &ip, "jpg_to_pdf").await {
         Ok((user, max_bytes)) => match save_multipart_files(&state, multipart, max_bytes).await {
-            Ok(inputs) => {
+            Ok((inputs, _)) => {
                 let user_id = user.as_ref().map(|u| u.id.as_str());
                 let result = run_jpg_to_pdf_job(&state.config, inputs);
                 job_response(&state, result, user_id, Some(&ip)).await
@@ -820,7 +826,7 @@ async fn upload_pdf_to_jpg(
     let ip = addr.ip().to_string();
     match check_limits_and_authenticate(&state, &headers, &ip, "pdf_to_jpg").await {
         Ok((user, max_bytes)) => match save_multipart_files(&state, multipart, max_bytes).await {
-            Ok(inputs) => match require_one(inputs, "pdf-to-jpg") {
+            Ok((inputs, _)) => match require_one(inputs, "pdf-to-jpg") {
                 Ok(input) => {
                     let user_id = user.as_ref().map(|u| u.id.as_str());
                     let result = run_pdf_to_jpg_job(&state.config, input);
@@ -844,7 +850,7 @@ async fn upload_generic(
     let ip = addr.ip().to_string();
     match check_limits_and_authenticate(&state, &headers, &ip, &tool_id).await {
         Ok((user, max_bytes)) => match save_multipart_files(&state, multipart, max_bytes).await {
-            Ok(inputs) => {
+            Ok((inputs, form_options)) => {
                 if inputs.is_empty() {
                     return bad_request("No files uploaded for operation".to_string());
                 }
@@ -869,7 +875,7 @@ async fn upload_generic(
 
                 let output = workspace.output_dir().join(format!("output.{}", extension));
 
-                if let Err(err) = run_python_processor(&tool_id, &output, &inputs, &headers) {
+                if let Err(err) = run_python_processor(&tool_id, &output, &inputs, &headers, &form_options) {
                     eprintln!("Python processor error for tool {}: {}", tool_id, err);
                     return bad_request(err);
                 }
@@ -904,11 +910,33 @@ async fn upload_generic(
     }
 }
 
+fn to_env_name(s: &str) -> String {
+    let mut result = String::new();
+    let mut prev_is_lower = false;
+    for c in s.chars() {
+        if c == '-' || c == '_' {
+            result.push('_');
+            prev_is_lower = false;
+        } else if c.is_uppercase() {
+            if prev_is_lower {
+                result.push('_');
+            }
+            result.push(c);
+            prev_is_lower = false;
+        } else {
+            result.push(c.to_ascii_uppercase());
+            prev_is_lower = true;
+        }
+    }
+    result
+}
+
 fn run_python_processor(
     tool_id: &str,
     output: &std::path::Path,
     inputs: &[std::path::PathBuf],
     headers: &axum::http::HeaderMap,
+    form_options: &std::collections::HashMap<String, String>,
 ) -> Result<(), String> {
     let script = std::path::Path::new("scripts/pdf_processor.py");
     if !script.exists() {
@@ -930,6 +958,13 @@ fn run_python_processor(
                 cmd.env(env_name, val_str);
             }
         }
+    }
+
+    // Forward all form-data options as uppercase environment variables
+    for (name, value) in form_options.iter() {
+        let stripped = name.strip_prefix("x-").unwrap_or(name);
+        let env_name = to_env_name(stripped);
+        cmd.env(env_name, value);
     }
 
     cmd.arg(script);
