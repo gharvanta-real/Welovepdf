@@ -975,8 +975,6 @@ export function App() {
     (currentView === "workspace" || currentView === "beta-workspace") &&
     ((hasStagedFiles &&
       [
-        "Edit PDF",
-        "PDF Annotator",
         "Crop PDF",
       ].includes(selectedTool)) ||
       selectedTool === "Document Editor");

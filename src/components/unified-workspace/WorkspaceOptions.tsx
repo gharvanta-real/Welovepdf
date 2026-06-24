@@ -1039,6 +1039,58 @@ export function WorkspaceOptions({
           </>
         );
 
+      case "Edit PDF":
+        return (
+          <>
+            <Section label="Edit Options">
+              <ToggleRow
+                label="Optimize PDF for Web"
+                desc="Linearize and rebuild document structure for fast online viewing"
+                checked={allowPrint}
+                onChange={setAllowPrint}
+              />
+              <ToggleRow
+                label="Strip Document Metadata"
+                desc="Remove author, title, and creator details from document tags"
+                checked={removeMetadata}
+                onChange={setRemoveMetadata}
+              />
+              <ToggleRow
+                label="Flatten Transparent Elements"
+                desc="Merge page overlapping layers to improve reader compatibility"
+                checked={flattenAnnotations}
+                onChange={setFlattenAnnotations}
+              />
+            </Section>
+          </>
+        );
+
+      case "PDF Annotator":
+        return (
+          <>
+            <Section label="Annotation Options">
+              <ToggleRow
+                label="Flatten All Annotations"
+                desc="Render and lock comments/markup directly onto page graphics"
+                checked={flattenAnnotations}
+                onChange={setFlattenAnnotations}
+              />
+              <ToggleRow
+                label="Compress Text & Vector Streams"
+                desc="Minimize raw stream data sizes without affecting visual layout"
+                checked={removeMetadata}
+                onChange={setRemoveMetadata}
+              />
+              <ToggleRow
+                label="Strip Sticky Note Comments"
+                desc="Completely delete popup text comment fields and labels"
+                checked={allowCopy}
+                onChange={setAllowCopy}
+              />
+            </Section>
+          </>
+        );
+
       default:
         return (
           <div

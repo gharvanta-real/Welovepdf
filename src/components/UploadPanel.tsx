@@ -1,6 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
 import { Plus, FileText } from "lucide-react";
-import { PdfEditor } from "./PdfEditor";
 import { SignEditor } from "./pdf-editor/SignEditor";
 import { WatermarkEditor } from "./pdf-editor/WatermarkEditor";
 import { CropEditor } from "./pdf-editor/CropEditor";
@@ -204,11 +203,7 @@ export function UploadPanel({
   const [loadingPdf, setLoadingPdf] = useState(false);
   const [gridSize, setGridSize] = useState<"sm" | "md" | "lg">("md");
 
-  const isVisualEditorTool = [
-    "Edit PDF",
-    "PDF Annotator",
-    "Crop PDF"
-  ].includes(selectedTool);
+  const isVisualEditorTool = false;
 
   const blockColor = getToolBlockColor(selectedTool);
   const toolColor = getToolColor(selectedTool);
@@ -736,15 +731,6 @@ export function UploadPanel({
         ) : selectedTool === "Crop PDF" ? (
           <CropEditor
             file={stagedFiles[0]}
-            onClose={onBack}
-            onSave={(files, options) => {
-              onUpload(files, options);
-            }}
-          />
-        ) : isVisualEditorTool ? (
-          <PdfEditor
-            file={stagedFiles[0]}
-            selectedTool={selectedTool}
             onClose={onBack}
             onSave={(files, options) => {
               onUpload(files, options);

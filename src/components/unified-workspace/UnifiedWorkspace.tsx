@@ -7,7 +7,6 @@ import { WorkspaceOptions } from "./WorkspaceOptions";
 import { SuccessState } from "../upload/SuccessState";
 import { SignEditor } from "../pdf-editor/SignEditor";
 import { CropEditor } from "../pdf-editor/CropEditor";
-import { PdfEditor } from "../PdfEditor";
 import "../../styles/layout-unified-workspace.css";
 
 type UnifiedWorkspaceProps = {
@@ -191,7 +190,7 @@ export function UnifiedWorkspace({
 
   const isCompleted = activeJob?.status === "Done" && !!activeJob?.downloadUrl;
 
-  const isVisualEditorTool = ["Edit PDF", "PDF Annotator"].includes(activeTool);
+  const isVisualEditorTool = false;
   const isSignTool = activeTool === "Sign PDF";
   const isCropTool = activeTool === "Crop PDF";
   const hasStaged = stagedFiles && stagedFiles.length > 0;
@@ -263,18 +262,6 @@ export function UnifiedWorkspace({
           ) : hasStaged && !isProcessing && !isCompleted && isCropTool ? (
             <CropEditor
               file={stagedFiles[0]}
-              onClose={() => {
-                setStagedFiles(null);
-                onReset();
-              }}
-              onSave={(files, options) => {
-                onUpload(files, options);
-              }}
-            />
-          ) : hasStaged && !isProcessing && !isCompleted && isVisualEditorTool ? (
-            <PdfEditor
-              file={stagedFiles[0]}
-              selectedTool={activeTool}
               onClose={() => {
                 setStagedFiles(null);
                 onReset();
