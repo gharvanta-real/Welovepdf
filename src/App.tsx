@@ -72,6 +72,7 @@ const pathMap: Record<string, { view: "home" | "workspace" | "pricing" | "privac
   "/bates-numbering": { view: "workspace", tool: "Bates Numbering" },
   "/edit-pdf-metadata": { view: "workspace", tool: "Edit PDF Metadata" },
   "/ocr-pdf": { view: "workspace", tool: "PDF OCR" },
+  "/document-editor": { view: "workspace", tool: "Document Editor" },
   "/excel-pdf": { view: "workspace", tool: "Excel to PDF" },
   "/ppt-pdf": { view: "workspace", tool: "PPT to PDF" },
   "/pdf-png": { view: "workspace", tool: "PDF to PNG" },
@@ -972,12 +973,13 @@ export function App() {
 
   const isVisualEditorActive =
     (currentView === "workspace" || currentView === "beta-workspace") &&
-    (hasStagedFiles &&
+    ((hasStagedFiles &&
       [
         "Edit PDF",
         "PDF Annotator",
         "Crop PDF",
-      ].includes(selectedTool));
+      ].includes(selectedTool)) ||
+      selectedTool === "Document Editor");
 
   return (
     <div className={`app ${isVisualEditorActive ? "visual-editor-active" : ""}`} data-theme={theme}>

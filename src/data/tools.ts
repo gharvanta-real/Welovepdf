@@ -107,5 +107,6 @@ export const tools: PdfTool[] = [
   { id: "ocr", name: "PDF OCR", group: "AI", description: "Make scanned PDF pages fully searchable and editable", icon: RefreshCw, sitemapGroup: "Brand & Security", status: "coming-soon" },
   { id: "bates-numbering", name: "Bates Numbering", group: "Secure", description: "Index legal sheets with unique alphanumeric Bates numbering", icon: Hash, sitemapGroup: "Brand & Security", status: "beta" },
   { id: "metadata-pdf", name: "Edit PDF Metadata", group: "Secure", description: "Edit title, author, subject, and keywords fields in a PDF", icon: Info, sitemapGroup: "Brand & Security", status: "beta" },
+  { id: "document-editor", name: "Document Editor", group: "AI", description: "Write rich documents with automated A4 page breaks and PDF export", icon: FileText, sitemapGroup: "View & Edit", status: "beta" },
 ];
 

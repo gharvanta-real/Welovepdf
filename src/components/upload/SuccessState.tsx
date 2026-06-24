@@ -12,6 +12,7 @@ interface SuccessStateProps {
   clearSelection: () => void;
   onToolSelect: (toolName: string) => void;
   onViewChange: (view: any) => void;
+  onOpenInEditor?: (fileName: string) => void;
 }
 
 export function SuccessState({
@@ -23,6 +24,7 @@ export function SuccessState({
   clearSelection,
   onToolSelect,
   onViewChange,
+  onOpenInEditor,
 }: SuccessStateProps) {
   return (
     <div style={{ width: "100%", background: "#F8FAFC", display: "flex", flexDirection: "column", minHeight: "100%" }}>
@@ -163,6 +165,37 @@ export function SuccessState({
                 </div>
               </div>
 
+              {/* Primary Action Button */}
+              {selectedTool === "PDF to Word" && onOpenInEditor && (
+                <button
+                  onClick={() => onOpenInEditor(activeJob.file)}
+                  style={{
+                    backgroundColor: "#000000",
+                    color: "#ffffff",
+                    border: "none",
+                    marginBottom: "12px",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "8px",
+                    width: "100%",
+                    padding: "14px 20px",
+                    borderRadius: "8px",
+                    fontFamily: "Plus Jakarta Sans, sans-serif",
+                    fontSize: "15px",
+                    fontWeight: 600,
+                    outline: "none",
+                    boxSizing: "border-box",
+                    transition: "opacity 0.15s"
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.opacity = "0.85"}
+                  onMouseLeave={e => e.currentTarget.style.opacity = "1"}
+                >
+                  <FileText size={18} />
+                  Edit in Document Editor
+                </button>
+              )}
 
               <a 
                 href={activeJob.downloadUrl} 

@@ -745,14 +745,14 @@ export function PropertiesPanel({
           </div>
         ) : (
           // DEFAULT VIEW OPTIONS - STACKED FOR FULL ANNOTATION/EDIT PROPERTIES
-          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-            <span style={{ fontSize: "13px", fontWeight: "700", color: "#334155", marginBottom: "4px" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+            <span style={{ fontSize: "0.68rem", fontWeight: "700", color: "#475569", textTransform: "uppercase", letterSpacing: "0.03em", marginBottom: "6px" }}>
               Annotation Defaults
             </span>
 
             {/* 1. Text Tool Settings */}
-            <div style={{ padding: "12px", border: "none", borderRadius: "6px", background: "#f4f4f4", display: "flex", flexDirection: "column", gap: "6px" }}>
-              <span style={{ fontSize: "11px", fontWeight: "700", color: "#64748b", textTransform: "uppercase", letterSpacing: "0.03em" }}>Text Defaults</span>
+            <div style={{ padding: "10px", border: "1px solid #e2e8f0", borderRadius: "6px", background: "#f8fafc", display: "flex", flexDirection: "column", gap: "6px" }}>
+              <span style={{ fontSize: "0.68rem", fontWeight: "700", color: "#1e293b" }}>Text Defaults</span>
               <select
                 value={textFont}
                 onChange={e => handleFontChange(e.target.value)}
@@ -803,8 +803,8 @@ export function PropertiesPanel({
             </div>
 
             {/* 2. Highlighter Settings */}
-            <div style={{ padding: "12px", border: "none", borderRadius: "6px", background: "#f4f4f4", display: "flex", flexDirection: "column", gap: "6px" }}>
-              <span style={{ fontSize: "11px", fontWeight: "700", color: "#64748b", textTransform: "uppercase", letterSpacing: "0.03em" }}>Highlighter Defaults</span>
+            <div style={{ padding: "10px", border: "1px solid #e2e8f0", borderRadius: "6px", background: "#f8fafc", display: "flex", flexDirection: "column", gap: "6px" }}>
+              <span style={{ fontSize: "0.68rem", fontWeight: "700", color: "#1e293b" }}>Highlighter Defaults</span>
               <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
                 <div style={{ flex: 1 }}>
                   <ColorSwatchPill 
@@ -833,8 +833,8 @@ export function PropertiesPanel({
             </div>
 
             {/* 3. Pen/Drawing Settings */}
-            <div style={{ padding: "12px", border: "none", borderRadius: "6px", background: "#f4f4f4", display: "flex", flexDirection: "column", gap: "6px" }}>
-              <span style={{ fontSize: "11px", fontWeight: "700", color: "#64748b", textTransform: "uppercase", letterSpacing: "0.03em" }}>Pen Defaults</span>
+            <div style={{ padding: "10px", border: "1px solid #e2e8f0", borderRadius: "6px", background: "#f8fafc", display: "flex", flexDirection: "column", gap: "6px" }}>
+              <span style={{ fontSize: "0.68rem", fontWeight: "700", color: "#1e293b" }}>Pen Defaults</span>
               <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
                 <div style={{ flex: 1 }}>
                   <ColorSwatchPill 
@@ -862,8 +862,8 @@ export function PropertiesPanel({
             </div>
 
             {/* 4. Shapes Settings */}
-            <div style={{ padding: "12px", border: "none", borderRadius: "6px", background: "#f4f4f4", display: "flex", flexDirection: "column", gap: "6px" }}>
-              <span style={{ fontSize: "11px", fontWeight: "700", color: "#64748b", textTransform: "uppercase", letterSpacing: "0.03em" }}>Shapes Defaults</span>
+            <div style={{ padding: "10px", border: "1px solid #e2e8f0", borderRadius: "6px", background: "#f8fafc", display: "flex", flexDirection: "column", gap: "6px" }}>
+              <span style={{ fontSize: "0.68rem", fontWeight: "700", color: "#1e293b" }}>Shapes Defaults</span>
               <select
                 value={shapeType}
                 onChange={e => setShapeType && setShapeType(e.target.value as any)}
