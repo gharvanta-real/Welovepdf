@@ -8,7 +8,6 @@ import { PageNumberEditor } from "./pdf-editor/PageNumberEditor";
 import { BatesNumberEditor } from "./pdf-editor/BatesNumberEditor";
 import { getPdfjsLib } from "../utils/pdfjs";
 import { getToolColor } from "./ToolIcon";
-import { DocumentEditor } from "./document-editor/DocumentEditor";
 
 
 // Import modular subcomponents
@@ -588,9 +587,6 @@ export function UploadPanel({
     viewMode = "staged";
   }
 
-  if (selectedTool === "Document Editor") {
-    return <DocumentEditor onClose={onBack} initialContent={editorInitialContent} />;
-  }
 
   if (viewMode === "idle" || viewMode === "processing") {
     return (
@@ -1130,11 +1126,6 @@ export function UploadPanel({
             clearSelection={clearSelection}
             onToolSelect={onToolSelect}
             onViewChange={onViewChange}
-            onOpenInEditor={(fileName) => {
-              const html = generateReconstructedDoc(fileName);
-              setEditorInitialContent(html);
-              onToolSelect("Document Editor");
-            }}
           />
         )
       )}
