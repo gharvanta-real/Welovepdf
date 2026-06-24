@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { Header } from "./components/Header";
 import { RecentJobs } from "./components/RecentJobs";
 import { UploadPanel } from "./components/UploadPanel";
+import { UnifiedWorkspace } from "./components/unified-workspace/UnifiedWorkspace";
 import { LandingPage } from "./components/LandingPage";
 import { LoginModal } from "./components/LoginModal";
 import { AccountDrawer } from "./components/AccountDrawer";
@@ -28,7 +29,7 @@ const AdminDashboard = lazy(() => import("./admin/AdminDashboard").then(m => ({ 
 const LandingPageV2 = lazy(() => import("./components/landing-v2/LandingPageV2").then(m => ({ default: m.LandingPageV2 })));
 const FooterV2 = lazy(() => import("./components/landing-v2/FooterV2").then(m => ({ default: m.FooterV2 })));
 
-const pathMap: Record<string, { view: "home" | "workspace" | "pricing" | "privacy" | "terms" | "faq" | "contact" | "tools" | "about" | "contact-sales" | "settings" | "dashboard" | "security" | "file-privacy" | "data-deletion" | "admin"; tool?: string }> = {
+const pathMap: Record<string, { view: "home" | "workspace" | "pricing" | "privacy" | "terms" | "faq" | "contact" | "tools" | "about" | "contact-sales" | "settings" | "dashboard" | "security" | "file-privacy" | "data-deletion" | "admin" | "beta-workspace"; tool?: string }> = {
   "/": { view: "home" },
   "/v2": { view: "home" },
   "/pricing": { view: "home" },
@@ -45,6 +46,7 @@ const pathMap: Record<string, { view: "home" | "workspace" | "pricing" | "privac
   "/file-privacy": { view: "file-privacy" },
   "/data-deletion": { view: "data-deletion" },
   "/admin": { view: "admin" },
+  "/beta-workspace": { view: "beta-workspace" },
   
   // Tools
   "/merge-pdf": { view: "workspace", tool: "Merge PDF" },
@@ -227,7 +229,7 @@ const viewMetadata: Record<string, { title: string; desc: string }> = {
 // Derive the initial view and tool from the URL path synchronously so the
 // very first render matches the requested route (no homepage flash, no
 // "Loading interactive workspace…" flicker visible to crawlers or SSG shells).
-function getInitialState(): { view: "home" | "workspace" | "pricing" | "privacy" | "terms" | "faq" | "contact" | "tools" | "about" | "contact-sales" | "settings" | "dashboard" | "security" | "file-privacy" | "data-deletion" | "admin"; tool: string } {
+function getInitialState(): { view: "home" | "workspace" | "pricing" | "privacy" | "terms" | "faq" | "contact" | "tools" | "about" | "contact-sales" | "settings" | "dashboard" | "security" | "file-privacy" | "data-deletion" | "admin" | "beta-workspace"; tool: string } {
   if (typeof window !== "undefined" && window.location.hostname === "admin.pdfmount.online") {
     return { view: "admin", tool: "Compress PDF" };
   }
@@ -245,7 +247,7 @@ export function App() {
   const [selectedTool, setSelectedTool] = useState(_initial.tool);
   const [toast, setToast] = useState("");
   const [jobs, setJobs] = useState<any[]>([]);
-  const [currentView, setCurrentView] = useState<"home" | "workspace" | "pricing" | "privacy" | "terms" | "faq" | "contact" | "tools" | "about" | "contact-sales" | "settings" | "dashboard" | "security" | "file-privacy" | "data-deletion" | "admin">(_initial.view);
+  const [currentView, setCurrentView] = useState<"home" | "workspace" | "pricing" | "privacy" | "terms" | "faq" | "contact" | "tools" | "about" | "contact-sales" | "settings" | "dashboard" | "security" | "file-privacy" | "data-deletion" | "admin" | "beta-workspace">(_initial.view);
   const [activeJobId, setActiveJobId] = useState<string | null>(null);
   const [hasStagedFiles, setHasStagedFiles] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -1120,6 +1122,33 @@ export function App() {
                 <DataDeletionPage onBack={() => setCurrentView("home")} />
               ) : currentView === "faq" ? (
                 <FaqPage onBack={() => setCurrentView("home")} />
+              ) : currentView === "beta-workspace" ? (
+                <UnifiedWorkspace 
+                  selectedTool={selectedTool} 
+                  onUpload={handleUpload} 
+                  onBack={() => {
+                    setCurrentView("home");
+                    setActiveJobId(null);
+                    setHasStagedFiles(false);
+                  }} 
+                  activeJob={activeJob}
+                  onReset={() => {
+                    setActiveJobId(null);
+                    setHasStagedFiles(false);
+                  }}
+                  onStagedChange={setHasStagedFiles}
+                  onToolSelect={handleToolSelect}
+                  onViewChange={(view) => {
+                    if (view === "contact") {
+                      setCurrentView("contact-sales");
+                    } else {
+                      setCurrentView(view);
+                    }
+                    setActiveJobId(null);
+                    setHasStagedFiles(false);
+                  }}
+                  jobs={jobs}
+                />
               ) : (
                 <main className={`workspace-page-wrapper ${hasStagedFiles && activeJob?.status !== "Done" ? "staged-view-active" : ""}`}>
                   <div className="workspace-full-bleed-container">
