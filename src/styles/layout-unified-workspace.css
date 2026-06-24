@@ -718,9 +718,9 @@
 }
 
 .uw-toggle-btn.active {
-  background-color: #ffffff;
+  background-color: #F8FAFC; /* Match main page background */
   color: var(--s-primary, #2563eb);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  box-shadow: none;
 }
 
 .uw-crown-badge {
@@ -740,8 +740,8 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  background-color: #ffffff;
-  border: 1px solid var(--s-hairline, #D0E1FD);
+  background-color: #f4f4f4;
+  border: none;
   padding: 6px 14px;
   border-radius: 6px;
   font-size: 13px;
@@ -752,8 +752,7 @@
 }
 
 .uw-add-dropdown:hover {
-  background-color: var(--s-surface-soft, #F5F9FF);
-  border-color: var(--s-primary, #2563eb);
+  background-color: #eaeaea;
   color: var(--s-primary, #2563eb);
 }
 
@@ -764,16 +763,15 @@
   width: 32px;
   height: 32px;
   border-radius: 6px;
-  border: 1px solid var(--s-hairline, #D0E1FD);
-  background-color: #ffffff;
+  border: none;
+  background-color: #f4f4f4;
   color: #475569;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .uw-action-icon-btn:hover:not(:disabled) {
-  background-color: var(--s-surface-soft, #F5F9FF);
-  border-color: var(--s-primary, #2563eb);
+  background-color: #eaeaea;
   color: var(--s-primary, #2563eb);
 }
 
@@ -786,9 +784,9 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background-color: #f1f5f9; /* Slate 100 grey */
+  background-color: #f4f4f4;
   color: #475569; /* Slate 600 */
-  border: 1px solid var(--s-hairline, #D0E1FD);
+  border: none;
   padding: 8px 24px;
   border-radius: 6px;
   font-size: 14px;
@@ -798,9 +796,8 @@
 }
 
 .uw-finish-btn:hover:not(:disabled) {
-  background-color: #e2e8f0;
+  background-color: #eaeaea;
   color: #1e293b;
-  border-color: #cbd5e1;
 }
 
 .uw-finish-btn:disabled {
@@ -891,9 +888,9 @@
 }
 
 .uw-view-btn.active {
-  background-color: #ffffff;
+  background-color: #F8FAFC; /* Match main page background */
   color: var(--s-primary, #2563eb);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+  box-shadow: none;
 }
 
 /* LIST VIEW AND GRID LAYOUT SWITCHER FOR ITEMS */
