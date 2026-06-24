@@ -116,7 +116,6 @@ export function WorkspaceSubMenu({
         >
           <span className="uw-submenu-btn-icon">{tool.icon}</span>
           <span className="uw-submenu-btn-text">{tool.name}</span>
-          {tool.isBeta && <span className="uw-submenu-btn-badge">BETA</span>}
         </button>
       ))}
     </div>

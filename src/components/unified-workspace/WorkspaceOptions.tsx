@@ -103,7 +103,7 @@ export function WorkspaceOptions({
                 <div className="uw-radio-circle" />
                 <div>
                   <span className="uw-radio-card-title">Exact Formatting</span>
-                  <span className="uw-radio-card-desc">Preserve pixel-perfect visual elements (Pro)</span>
+                  <span className="uw-radio-card-desc">Preserve pixel-perfect visual elements</span>
                 </div>
               </div>
             </div>

@@ -989,7 +989,7 @@ export function App() {
         </Suspense>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
-          {!isVisualEditorActive && (
+          {!isVisualEditorActive && currentView !== "beta-workspace" && (
             <Header
               onLogoClick={() => {
                 setCurrentView("home");

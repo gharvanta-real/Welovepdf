@@ -28,10 +28,6 @@ export function WorkspaceHeader({
       </div>
 
       <div className="uw-header-right">
-        <button className="uw-pro-badge" onClick={onProClick}>
-          <Crown size={16} fill="currentColor" />
-          <span>Get Pro</span>
-        </button>
         <button className="uw-login-btn" onClick={onLoginClick}>
           Log In
         </button>
