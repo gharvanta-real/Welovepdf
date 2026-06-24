@@ -155,6 +155,7 @@ function getPathForState(view: string, tool?: string): string {
     case "file-privacy": return "/file-privacy";
     case "data-deletion": return "/data-deletion";
     case "admin": return "/admin";
+    case "beta-workspace": return "/beta-workspace";
     default: return "/";
   }
 }
@@ -223,6 +224,10 @@ const viewMetadata: Record<string, { title: string; desc: string }> = {
   admin: {
     title: "PDFMount Admin Panel Dashboard",
     desc: "Administrative system console for managing user databases, Stripe transactions, tool statistics, and CLI engine status.",
+  },
+  "beta-workspace": {
+    title: "Beta Interactive Workspace - PDFMount",
+    desc: "Unified beta dashboard for all PDF Mount processing utilities.",
   },
 };
 
