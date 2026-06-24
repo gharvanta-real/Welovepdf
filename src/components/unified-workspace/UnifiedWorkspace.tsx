@@ -5,6 +5,9 @@ import { WorkspaceHeader } from "./WorkspaceHeader";
 import { WorkspaceCanvas } from "./WorkspaceCanvas";
 import { WorkspaceOptions } from "./WorkspaceOptions";
 import { SuccessState } from "../upload/SuccessState";
+import { SignEditor } from "../pdf-editor/SignEditor";
+import { CropEditor } from "../pdf-editor/CropEditor";
+import { PdfEditor } from "../PdfEditor";
 import "../../styles/layout-unified-workspace.css";
 
 type UnifiedWorkspaceProps = {
@@ -17,6 +20,7 @@ type UnifiedWorkspaceProps = {
   onToolSelect: (toolName: string) => void;
   onViewChange: (view: any) => void;
   jobs?: any[];
+  initialFiles?: File[] | null;
 };
 
 export function UnifiedWorkspace({
@@ -28,13 +32,22 @@ export function UnifiedWorkspace({
   onStagedChange,
   onToolSelect,
   onViewChange,
-  jobs
+  jobs,
+  initialFiles = null
 }: UnifiedWorkspaceProps) {
   
   const [activeTab, setActiveTab] = useState<SidebarTab | null>("Compress");
   const [activeTool, setActiveTool] = useState<string>(selectedTool || "Compress PDF");
-  const [stagedFiles, setStagedFiles] = useState<File[] | null>(null);
-  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [stagedFiles, setStagedFiles] = useState<File[] | null>(initialFiles);
+
+  useEffect(() => {
+    if (initialFiles) {
+      setStagedFiles(initialFiles);
+    }
+  }, [initialFiles]);
+  
+  // Popover state
+  const [openDropdownTab, setOpenDropdownTab] = useState<SidebarTab | null>(null);
 
   // Options states
   const [compressionLevel, setCompressionLevel] = useState<"extreme" | "recommended" | "less">("recommended");
@@ -44,6 +57,45 @@ export function UnifiedWorkspace({
   const [watermarkText, setWatermarkText] = useState("CONFIDENTIAL");
   const [translateLang, setTranslateLang] = useState("hi");
   const [copied, setCopied] = useState(false);
+
+  // Progress Bar states & effect (3 second rules sync)
+  const [progressPercent, setProgressPercent] = useState(0);
+  const [showProgressBar, setShowProgressBar] = useState(false);
+
+  // Determine current view mode: staged, processing, completed
+  const isProcessing = activeJob?.status === "Processing" || (activeJob?.status === "Done" && !activeJob?.downloadUrl);
+
+  useEffect(() => {
+    let interval: any;
+    if (isProcessing) {
+      setShowProgressBar(true);
+      setProgressPercent(0);
+      const startTime = Date.now();
+      interval = setInterval(() => {
+        const elapsed = Date.now() - startTime;
+        if (elapsed < 2800) {
+          // smoothly go to 95%
+          const current = Math.floor((elapsed / 2800) * 95);
+          setProgressPercent(current);
+        } else {
+          setProgressPercent(95);
+        }
+      }, 50);
+    } else {
+      // Completed or idle
+      if (showProgressBar) {
+        setProgressPercent(100);
+        const timeout = setTimeout(() => {
+          setShowProgressBar(false);
+          setProgressPercent(0);
+        }, 500);
+        return () => clearTimeout(timeout);
+      }
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isProcessing, showProgressBar]);
 
   const handleShare = () => {
     if (activeJob?.downloadUrl) {
@@ -55,50 +107,48 @@ export function UnifiedWorkspace({
     }
   };
 
+  const mapToolToCategory = (toolName: string): SidebarTab | null => {
+    if (toolName.includes("Compress") || toolName.includes("Optimize") || toolName.includes("Grayscale") || toolName.includes("Flatten") || toolName.includes("Edit") || toolName.includes("Annotate") || toolName.includes("Annotator")) {
+      return "Compress";
+    } else if (toolName.includes("to PDF") || toolName.includes("PDF to") || toolName.includes("to Word") || toolName.includes("Excel to") || toolName.includes("PPT to")) {
+      return "Convert";
+    } else if (toolName.includes("Merge") || toolName.includes("Split") || toolName.includes("Repair") || toolName.includes("Crop")) {
+      return "Organize";
+    } else if (toolName.includes("Protect") || toolName.includes("Unlock") || toolName.includes("Metadata") || toolName.includes("Watermark") || toolName.includes("Sign")) {
+      return "Security";
+    } else if (toolName.includes("OCR") || toolName.includes("Summarize") || toolName.includes("Translate")) {
+      return "AI Tools";
+    }
+    return null;
+  };
+
   useEffect(() => {
     if (selectedTool) {
       setActiveTool(selectedTool);
-      // Map tool to corresponding sidebar category
-      if (selectedTool.includes("Compress") || selectedTool.includes("Flatten")) {
-        setActiveTab("Compress");
-      } else if (selectedTool.includes("to")) {
-        setActiveTab("Convert");
-      } else if (selectedTool.includes("Merge") || selectedTool.includes("Split") || selectedTool.includes("Rotate") || selectedTool.includes("Remove") || selectedTool.includes("Extract")) {
-        setActiveTab("Organize");
-      } else if (selectedTool.includes("Annotator") || selectedTool.includes("Crop") || selectedTool.includes("Watermark") || selectedTool.includes("Numbers") || selectedTool.includes("Editor")) {
-        setActiveTab("Edit");
-      } else if (selectedTool.includes("Sign")) {
-        setActiveTab("Sign");
-      } else if (selectedTool.includes("OCR") || selectedTool.includes("Chat") || selectedTool.includes("Summarize") || selectedTool.includes("Translate")) {
-        setActiveTab("AI PDF");
-      } else {
-        setActiveTab("More");
+      const cat = mapToolToCategory(selectedTool);
+      if (cat) {
+        setActiveTab(cat);
       }
     }
   }, [selectedTool]);
 
   const handleTabClick = (tab: SidebarTab) => {
-    setActiveTab(tab);
-    if (tab === "Compress") {
-      setActiveTool("Compress PDF");
-      onToolSelect("Compress PDF");
-      setIsPopoverOpen(false);
-    } else if (tab === "Sign") {
-      setActiveTool("Sign PDF");
-      onToolSelect("Sign PDF");
-      setIsPopoverOpen(false);
-    } else if (tab === "Documents") {
+    if (tab === "Documents") {
+      setOpenDropdownTab(null);
       onViewChange("dashboard");
-      setIsPopoverOpen(false);
     } else {
-      setIsPopoverOpen(true);
+      setOpenDropdownTab(prev => prev === tab ? null : tab);
     }
   };
 
   const handleToolSelect = (toolName: string) => {
     setActiveTool(toolName);
+    const cat = mapToolToCategory(toolName);
+    if (cat) {
+      setActiveTab(cat);
+    }
     onToolSelect(toolName);
-    setIsPopoverOpen(false);
+    setOpenDropdownTab(null);
   };
 
   const handleFilesSelected = (files: FileList) => {
@@ -139,25 +189,29 @@ export function UnifiedWorkspace({
     onUpload(dataTransfer.files, options);
   };
 
-  // Determine current view mode: staged, processing, completed
-  const isProcessing = activeJob?.status === "Processing";
-  const isCompleted = activeJob?.status === "Done";
+  const isCompleted = activeJob?.status === "Done" && !!activeJob?.downloadUrl;
+
+  const isVisualEditorTool = ["Edit PDF", "PDF Annotator"].includes(activeTool);
+  const isSignTool = activeTool === "Sign PDF";
+  const isCropTool = activeTool === "Crop PDF";
+  const hasStaged = stagedFiles && stagedFiles.length > 0;
 
   return (
-    <div className="unified-workspace-container" onClick={() => setIsPopoverOpen(false)}>
+    <div className="unified-workspace-container" onClick={() => setOpenDropdownTab(null)}>
       {/* 1. Left Sidebar Navigation */}
       <WorkspaceSidebar
         activeTab={activeTab}
+        openDropdownTab={openDropdownTab}
         onTabClick={handleTabClick}
         onLogoClick={onBack}
         onSettingsClick={() => onViewChange("settings")}
       />
 
-      {/* 2. Floating popover submenu */}
-      {isPopoverOpen && activeTab && (
+      {/* 2. Floating popover submenu (droplist on click) */}
+      {openDropdownTab && openDropdownTab !== "Documents" && (
         <div onClick={(e) => e.stopPropagation()}>
           <WorkspaceSubMenu
-            activeTab={activeTab}
+            activeTab={openDropdownTab}
             activeTool={activeTool}
             onToolSelect={handleToolSelect}
           />
@@ -165,7 +219,28 @@ export function UnifiedWorkspace({
       )}
 
       {/* 3. Main Workspace Area */}
-      <div className="uw-main-wrapper">
+      <div className="uw-main-wrapper" style={{ position: "relative" }}>
+        {showProgressBar && (
+          <div style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            height: "4px",
+            backgroundColor: "#ffffff",
+            borderBottom: "1px solid #E2E8F0",
+            zIndex: 9999
+          }}>
+            <div 
+              style={{ 
+                height: "100%",
+                width: `${progressPercent}%`,
+                transition: "width 0.05s linear",
+                backgroundColor: "#2563eb"
+              }} 
+            />
+          </div>
+        )}
         <WorkspaceHeader
           activeTool={activeTool}
           onBack={onBack}
@@ -174,22 +249,40 @@ export function UnifiedWorkspace({
         />
 
         <div className="uw-body">
-          {isCompleted && activeJob ? (
-            <div className="uw-canvas-container">
-              <SuccessState
-                selectedTool={activeTool}
-                blockColor="#3b82f6"
-                activeJob={activeJob}
-                copied={copied}
-                handleShare={handleShare}
-                clearSelection={() => {
-                  setStagedFiles(null);
-                  onReset();
-                }}
-                onToolSelect={onToolSelect}
-                onViewChange={onViewChange}
-              />
-            </div>
+          {hasStaged && !isProcessing && !isCompleted && isSignTool ? (
+            <SignEditor
+              file={stagedFiles[0]}
+              onClose={() => {
+                setStagedFiles(null);
+                onReset();
+              }}
+              onSave={(files, options) => {
+                onUpload(files, options);
+              }}
+            />
+          ) : hasStaged && !isProcessing && !isCompleted && isCropTool ? (
+            <CropEditor
+              file={stagedFiles[0]}
+              onClose={() => {
+                setStagedFiles(null);
+                onReset();
+              }}
+              onSave={(files, options) => {
+                onUpload(files, options);
+              }}
+            />
+          ) : hasStaged && !isProcessing && !isCompleted && isVisualEditorTool ? (
+            <PdfEditor
+              file={stagedFiles[0]}
+              selectedTool={activeTool}
+              onClose={() => {
+                setStagedFiles(null);
+                onReset();
+              }}
+              onSave={(files, options) => {
+                onUpload(files, options);
+              }}
+            />
           ) : (
             <>
               {/* Central Canvas Workspace */}
@@ -199,31 +292,42 @@ export function UnifiedWorkspace({
                 onFilesSelected={handleFilesSelected}
                 onRemoveFile={handleRemoveFile}
                 onAddMoreClick={() => {}}
-                pageOrder={[]}
-                rotationMap={{}}
-                removedPages={new Set()}
-                selectedPages={new Set()}
+                onExecute={handleExecute}
+                isProcessing={isProcessing}
+                isCompleted={isCompleted}
+                activeJob={activeJob}
+                progressPercent={progressPercent}
               />
 
               {/* Right Options Sidebar Panel */}
-              <WorkspaceOptions
-                activeTool={activeTool}
-                stagedFiles={stagedFiles}
-                onExecute={handleExecute}
-                isProcessing={isProcessing}
-                compressionLevel={compressionLevel}
-                setCompressionLevel={setCompressionLevel}
-                conversionMode={conversionMode}
-                setConversionMode={setConversionMode}
-                outputQuality={outputQuality}
-                setOutputQuality={setOutputQuality}
-                pdfPassword={pdfPassword}
-                setPdfPassword={setPdfPassword}
-                watermarkText={watermarkText}
-                setWatermarkText={setWatermarkText}
-                translateLang={translateLang}
-                setTranslateLang={setTranslateLang}
-              />
+              {((stagedFiles && stagedFiles.length > 0) || isCompleted) && (
+                <WorkspaceOptions
+                  activeTool={activeTool}
+                  stagedFiles={stagedFiles}
+                  onExecute={handleExecute}
+                  isProcessing={isProcessing}
+                  isCompleted={isCompleted}
+                  activeJob={activeJob}
+                  copied={copied}
+                  handleShare={handleShare}
+                  clearSelection={() => {
+                    setStagedFiles(null);
+                    onReset();
+                  }}
+                  compressionLevel={compressionLevel}
+                  setCompressionLevel={setCompressionLevel}
+                  conversionMode={conversionMode}
+                  setConversionMode={setConversionMode}
+                  outputQuality={outputQuality}
+                  setOutputQuality={setOutputQuality}
+                  pdfPassword={pdfPassword}
+                  setPdfPassword={setPdfPassword}
+                  watermarkText={watermarkText}
+                  setWatermarkText={setWatermarkText}
+                  translateLang={translateLang}
+                  setTranslateLang={setTranslateLang}
+                />
+              )}
             </>
           )}
         </div>

@@ -24,6 +24,7 @@ export function WorkspaceHeader({
         >
           <ArrowLeft size={20} strokeWidth={2.2} />
         </button>
+        <div className="uw-header-divider"></div>
         <span className="uw-header-title">{activeTool}</span>
       </div>
 

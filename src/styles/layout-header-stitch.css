@@ -84,12 +84,12 @@
   padding: 8px 18px;
   border-radius: 8px;
   border: none;
-  background: transparent;
+  background: #f4f4f4;
   cursor: pointer;
-  transition: color 0.15s;
+  transition: background-color 0.15s, color 0.15s;
 }
 .stitch-login-btn:hover {
-  background: transparent;
+  background: #eaeaea;
   color: var(--s-primary);
 }
 
@@ -460,15 +460,15 @@
   font-size: 15px;
   font-weight: 480;
   color: var(--s-on-surface);
-  background: transparent;
-  border: 1px solid var(--s-hairline);
+  background: #f4f4f4;
+  border: none;
   border-radius: 8px;
   padding: 12px 24px;
   cursor: pointer;
   transition: background 0.15s;
   width: 100%;
 }
-.mobile-auth-btn-ghost:hover { background: var(--s-surface-low); }
+.mobile-auth-btn-ghost:hover { background: #eaeaea; }
 
 @keyframes fade-in {
   from { opacity: 0; }

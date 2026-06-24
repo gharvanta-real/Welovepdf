@@ -90,6 +90,7 @@ type UploadPanelProps = {
   jobs?: any[];
   onRetry?: (job: any) => void;
   onDeleteJob?: (jobId: string) => void;
+  onFilesSelected?: (files: FileList) => void;
 };
 
 export function UploadPanel({ 
@@ -103,7 +104,8 @@ export function UploadPanel({
   onViewChange,
   jobs,
   onRetry,
-  onDeleteJob
+  onDeleteJob,
+  onFilesSelected
 }: UploadPanelProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const addMoreInputRef = useRef<HTMLInputElement>(null);
@@ -400,8 +402,12 @@ export function UploadPanel({
 
   function handleFilesSelected(files: FileList) {
     if (!files || files.length === 0) return;
-    setStagedFiles(Array.from(files));
-    onStagedChange?.(true);
+    if (onFilesSelected) {
+      onFilesSelected(files);
+    } else {
+      setStagedFiles(Array.from(files));
+      onStagedChange?.(true);
+    }
   }
 
   function appendStagedFiles(files: FileList) {
@@ -574,9 +580,9 @@ export function UploadPanel({
 
   // Determine viewMode
   let viewMode: "idle" | "staged" | "processing" | "completed" = "idle";
-  if (activeJob?.status === "Processing") {
+  if (activeJob?.status === "Processing" || (activeJob?.status === "Done" && !activeJob?.downloadUrl)) {
     viewMode = "processing";
-  } else if (activeJob?.status === "Done") {
+  } else if (activeJob?.status === "Done" && !!activeJob?.downloadUrl) {
     viewMode = "completed";
   } else if (stagedFiles && stagedFiles.length > 0) {
     viewMode = "staged";
@@ -630,6 +636,36 @@ export function UploadPanel({
               boxSizing: "border-box",
               position: "relative"
             }}>
+              {stagedFiles && stagedFiles[0] && (
+                <div style={{ 
+                  display: "flex", 
+                  justifyContent: "center", 
+                  marginBottom: "32px",
+                  animation: "uwFloat 3s infinite ease-in-out"
+                }}>
+                  <div style={{ 
+                    width: "120px", 
+                    height: "150px", 
+                    border: "1px solid #e2e8f0", 
+                    borderRadius: "12px", 
+                    backgroundColor: "#ffffff", 
+                    overflow: "hidden", 
+                    boxShadow: "0 8px 16px rgba(0,0,0,0.05)",
+                    display: "flex",
+                    alignItems: "stretch",
+                    justifyContent: "stretch"
+                  }}>
+                    <FilePreviewCard
+                      file={stagedFiles[0]}
+                      idx={0}
+                      toolColor={toolColor}
+                      onRemove={() => {}}
+                      readOnly={true}
+                      isLoading={true}
+                    />
+                  </div>
+                </div>
+              )}
               <div style={{
                 display: "flex",
                 justifyContent: "space-between",

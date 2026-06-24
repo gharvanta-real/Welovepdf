@@ -338,7 +338,7 @@ export function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps)
           {showMfaChallenge ? (
             <div style={{ display: "flex", flexDirection: "column", gap: "20px", width: "100%" }}>
               <div style={{ textAlign: "center", marginBottom: "12px" }}>
-                <div style={{ display: "inline-flex", padding: "16px", borderRadius: "50%", backgroundColor: "var(--s-surface-soft)", border: "1px solid var(--s-hairline)", color: "var(--s-primary)", marginBottom: "16px" }}>
+                <div style={{ display: "inline-flex", padding: "16px", borderRadius: "50%", backgroundColor: "#f4f4f4", border: "none", color: "var(--s-primary)", marginBottom: "16px" }}>
                   <Shield size={36} />
                 </div>
                 <h2 
@@ -497,9 +497,9 @@ export function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps)
                         gap: "10px", 
                         flex: 1, 
                         padding: "12px 18px", 
-                        border: "1px solid var(--s-hairline)", 
+                        border: "none", 
                         borderRadius: "8px", 
-                        backgroundColor: "#ffffff", 
+                        backgroundColor: "#f4f4f4", 
                         color: "var(--s-on-surface)",
                         cursor: "pointer",
                         fontSize: "14px",
@@ -527,10 +527,10 @@ export function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps)
                         gap: "10px", 
                         flex: 1, 
                         padding: "12px 18px", 
-                        border: "1px solid #000000", 
+                        border: "none", 
                         borderRadius: "8px", 
-                        backgroundColor: "#000000", 
-                        color: "#ffffff",
+                        backgroundColor: "#f4f4f4", 
+                        color: "var(--s-on-surface)",
                         cursor: "pointer",
                         fontSize: "14px",
                         fontWeight: "600",

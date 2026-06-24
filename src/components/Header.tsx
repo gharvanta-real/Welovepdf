@@ -143,7 +143,7 @@ export function Header({
             onClick={(e) => { e.preventDefault(); setIsDropdownOpen(false); setIsMobileMenuOpen(false); onLogoClick(); }}
             style={{ display: "flex", alignItems: "center" }}
           >
-            <img src="/logo.png" alt="Pdfmount.online" style={{ height: "42px", width: "42px", objectFit: "contain" }} />
+            <img src="/logo.png" alt="Pdfmount.online" style={{ height: "30px", width: "auto", objectFit: "contain" }} />
           </a>
 
           {/* Desktop Center nav */}

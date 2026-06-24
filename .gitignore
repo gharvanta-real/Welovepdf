@@ -25,3 +25,13 @@ backend/*.log
 backups/
 /backups/
 **/backups/
+
+# Allow Flutter assets and launcher icons
+!**/mipmap-*/*.png
+!**/*.appiconset/*.png
+!**/web/icons/*.png
+!**/web/favicon.png
+!**/stitch_app/Icon/*.png
+!**/stitch_app/assets/**/*.png
+!**/stitch_app/New-apk-icon.png
+

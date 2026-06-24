@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { getPdfjsLib } from "../../utils/pdfjs";
 import { formatBytes } from "./UploadHelpers";
+import { renderSmileyIllustration } from "./FilePreviewCard";
 
 interface ImagePreviewViewerProps {
   file: File;
@@ -161,8 +162,11 @@ function PdfPreviewViewer({ file, scale, rotation }: PdfPreviewViewerProps) {
 
   if (error) {
     return (
-      <div style={{ textAlign: "center", padding: "40px 20px", color: "var(--text-muted)", fontSize: "0.8rem" }}>
-        {error}
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "40px 20px", gap: "16px", minHeight: "200px" }}>
+        <div style={{ width: "100px", height: "130px" }}>
+          {renderSmileyIllustration("ERROR", "#ef4444", "#fee2e2", { isCrying: true })}
+        </div>
+        <span style={{ fontSize: "0.85rem", color: "var(--text-muted)", fontWeight: "500", textAlign: "center" }}>{error}</span>
       </div>
     );
   }

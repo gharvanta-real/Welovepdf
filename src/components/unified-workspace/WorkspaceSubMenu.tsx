@@ -1,31 +1,9 @@
 import React from "react";
-import { 
-  Layers, 
-  Scissors, 
-  RotateCw, 
-  Trash2, 
-  FileDown, 
-  FileText, 
-  Type, 
-  Crop, 
-  Stamp, 
-  Binary, 
-  Sparkles, 
-  MessageSquare, 
-  FileSpreadsheet, 
-  Play, 
-  Languages, 
-  Unlock, 
-  Lock, 
-  Wrench,
-  Activity
-} from "lucide-react";
 import type { SidebarTab } from "./WorkspaceSidebar";
+import { ToolIcon } from "../ToolIcon";
 
 interface SubMenuTool {
   name: string;
-  icon: React.ReactNode;
-  isBeta?: boolean;
 }
 
 interface WorkspaceSubMenuProps {
@@ -42,45 +20,44 @@ export function WorkspaceSubMenu({
   
   const getSubMenuTools = (tab: SidebarTab): SubMenuTool[] => {
     switch (tab) {
+      case "Compress":
+        return [
+          { name: "Compress PDF" },
+          { name: "Optimize PDF" },
+          { name: "Edit PDF" },
+          { name: "PDF Annotator" },
+          { name: "Grayscale PDF" },
+          { name: "Flatten PDF" }
+        ];
       case "Convert":
         return [
-          { name: "Word to PDF", icon: <FileText size={16} /> },
-          { name: "PDF to Word", icon: <FileText size={16} /> },
-          { name: "JPG to PDF", icon: <Layers size={16} /> },
-          { name: "PDF to JPG", icon: <Layers size={16} /> },
-          { name: "Excel to PDF", icon: <FileSpreadsheet size={16} /> },
-          { name: "PPT to PDF", icon: <Play size={16} /> }
+          { name: "Word to PDF" },
+          { name: "PDF to Word" },
+          { name: "JPG to PDF" },
+          { name: "PDF to JPG" },
+          { name: "Excel to PDF" },
+          { name: "PPT to PDF" }
         ];
       case "Organize":
         return [
-          { name: "Merge PDF", icon: <Layers size={16} /> },
-          { name: "Split PDF", icon: <Scissors size={16} /> },
-          { name: "Rotate PDF", icon: <RotateCw size={16} /> },
-          { name: "Remove Pages", icon: <Trash2 size={16} /> },
-          { name: "Extract Pages", icon: <FileDown size={16} /> }
+          { name: "Merge PDF" },
+          { name: "Split PDF" },
+          { name: "Crop PDF" },
+          { name: "Repair PDF" }
         ];
-      case "Edit":
+      case "Security":
         return [
-          { name: "PDF Annotator", icon: <Type size={16} /> },
-          { name: "Document Editor", icon: <FileText size={16} /> },
-          { name: "Crop PDF", icon: <Crop size={16} /> },
-          { name: "Watermark PDF", icon: <Stamp size={16} /> },
-          { name: "Page Numbers", icon: <Binary size={16} /> }
+          { name: "Protect PDF" },
+          { name: "Unlock PDF" },
+          { name: "Sign PDF" },
+          { name: "Watermark PDF" },
+          { name: "Edit PDF Metadata" }
         ];
-      case "AI PDF":
+      case "AI Tools":
         return [
-          { name: "PDF OCR", icon: <Sparkles size={16} /> },
-          { name: "Chat with PDF", icon: <MessageSquare size={16} />, isBeta: true },
-          { name: "Summarize PDF", icon: <FileText size={16} />, isBeta: true },
-          { name: "Translate PDF", icon: <Languages size={16} />, isBeta: true }
-        ];
-      case "More":
-        return [
-          { name: "Unlock PDF", icon: <Unlock size={16} /> },
-          { name: "Protect PDF", icon: <Lock size={16} /> },
-          { name: "Bates Numbering", icon: <Binary size={16} /> },
-          { name: "Edit PDF Metadata", icon: <FileText size={16} /> },
-          { name: "Repair PDF", icon: <Wrench size={16} /> }
+          { name: "PDF OCR" },
+          { name: "Summarize PDF" },
+          { name: "Translate PDF" }
         ];
       default:
         return [];
@@ -93,11 +70,11 @@ export function WorkspaceSubMenu({
 
   // Position popover based on tab index
   const tabPositions: Record<string, number> = {
-    "Convert": 96,
-    "Organize": 176,
-    "Edit": 256,
-    "AI PDF": 416,
-    "More": 496
+    "Compress": 96,
+    "Convert": 158,
+    "Organize": 220,
+    "Security": 282,
+    "AI Tools": 344
   };
 
   const topOffset = tabPositions[activeTab] || 96;
@@ -114,10 +91,11 @@ export function WorkspaceSubMenu({
           className={`uw-submenu-btn ${activeTool === tool.name ? "active" : ""}`}
           onClick={() => onToolSelect(tool.name)}
         >
-          <span className="uw-submenu-btn-icon">{tool.icon}</span>
+          <ToolIcon toolNameOrId={tool.name} size={13} style={{ borderRadius: "6px" }} />
           <span className="uw-submenu-btn-text">{tool.name}</span>
         </button>
       ))}
     </div>
   );
 }
+

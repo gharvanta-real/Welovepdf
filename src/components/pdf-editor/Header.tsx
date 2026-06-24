@@ -65,7 +65,7 @@ export function Header({
           <img 
             src="/logo.png" 
             alt="PDFMount" 
-            style={{ height: "36px", width: "36px", objectFit: "contain" }}
+            style={{ height: "26px", width: "auto", objectFit: "contain" }}
             onError={(e) => {
               e.currentTarget.style.display = "none";
               const sib = e.currentTarget.nextSibling as HTMLElement;

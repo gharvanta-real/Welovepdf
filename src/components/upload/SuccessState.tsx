@@ -1,6 +1,7 @@
 import React from "react";
 import { Check, File, Download, Share2, Cloud, RotateCcw, ArrowRight, FileText } from "lucide-react";
 import { Footer } from "../Footer";
+import { renderSmileyIllustration } from "./FilePreviewCard";
 
 interface SuccessStateProps {
   selectedTool: string;
@@ -63,25 +64,15 @@ export function SuccessState({
                   height: "110px",
                   backgroundColor: "#ffffff",
                   borderRadius: "12px",
-                  boxShadow: "0 10px 25px -5px rgba(37,99,235,0.08)",
+                  boxShadow: "0 10px 25px -5px rgba(22,163,74,0.08)",
                   border: "1px solid #D0E1FD",
+                  overflow: "hidden",
+                  marginBottom: "28px",
                   display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  marginBottom: "28px"
+                  alignItems: "stretch",
+                  justifyContent: "stretch"
                 }}>
-                  <div style={{
-                    width: "40px",
-                    height: "40px",
-                    borderRadius: "50%",
-                    backgroundColor: "#2563eb",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    color: "#ffffff"
-                  }}>
-                    <Check size={22} strokeWidth={3} />
-                  </div>
+                  {renderSmileyIllustration("DONE", "#16a34a", "#dcfce7", { scale: 0.95 })}
                 </div>
                 <p style={{
                   fontFamily: "Plus Jakarta Sans, sans-serif",

@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import { RotateCw, Trash2, ArrowLeft, ArrowRight, CornerUpLeft } from "lucide-react";
+import { renderSmileyIllustration } from "./FilePreviewCard";
 
 interface PdfPageCardProps {
   pdfDoc: any;
@@ -102,12 +103,8 @@ export function PdfPageCard({
         )}
         
         {renderError ? (
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "8px", color: "#94a3b8", zIndex: 1 }}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: toolColor }}>
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-            </svg>
-            <span style={{ fontSize: "10px", fontWeight: "600", letterSpacing: "0.2px" }}>Locked / Encrypted</span>
+          <div style={{ width: "100%", height: "100%", zIndex: 1 }}>
+            {renderSmileyIllustration("LOCKED", "#ef4444", "#fee2e2", { isLocked: true, scale: 0.85 })}
           </div>
         ) : (
           <canvas 

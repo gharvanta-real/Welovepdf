@@ -255,6 +255,7 @@ export function App() {
   const [currentView, setCurrentView] = useState<"home" | "workspace" | "pricing" | "privacy" | "terms" | "faq" | "contact" | "tools" | "about" | "contact-sales" | "settings" | "dashboard" | "security" | "file-privacy" | "data-deletion" | "admin" | "beta-workspace">(_initial.view);
   const [activeJobId, setActiveJobId] = useState<string | null>(null);
   const [hasStagedFiles, setHasStagedFiles] = useState(false);
+  const [workspaceInitialFiles, setWorkspaceInitialFiles] = useState<File[] | null>(null);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState<{ name: string; email: string; plan?: string } | null>(() => {
     const token = localStorage.getItem("authToken");
@@ -314,11 +315,11 @@ export function App() {
     // Prevent overriding programmatic SEO URLs back to the generic tool URL
     const isProgrammaticCompress = currentPath.match(/^\/compress-pdf-to-(\d+)(kb|mb)$/i);
     const isIndianProgrammatic = indianSeoRoutes.some(r => r.route === currentPath);
-    if ((isProgrammaticCompress || isIndianProgrammatic) && currentView === "workspace" && selectedTool === "Compress PDF") {
+    if ((isProgrammaticCompress || isIndianProgrammatic) && (currentView === "workspace" || currentView === "beta-workspace") && selectedTool === "Compress PDF") {
       return;
     }
 
-    const targetPath = getPathForState(currentView, currentView === "workspace" ? selectedTool : undefined);
+    const targetPath = getPathForState(currentView, (currentView === "workspace" || currentView === "beta-workspace") ? selectedTool : undefined);
     if (currentPath !== targetPath) {
       window.history.pushState(null, "", targetPath);
     }
@@ -329,7 +330,7 @@ export function App() {
     let title = "PDFMount - Free Online PDF Tools & Editor";
     let desc = "Merge, split, compress, convert, sign, and secure PDF files online. Free, secure, and fast PDF tools inside your browser.";
     
-    if (currentView === "workspace") {
+    if (currentView === "workspace" || currentView === "beta-workspace") {
       const matchedTool = tools.find(t => t.name === selectedTool);
       const toolId = matchedTool?.id;
       
@@ -416,10 +417,10 @@ export function App() {
       const currentPath = typeof window !== "undefined" ? window.location.pathname : "/";
       const isProgrammaticCompress = currentPath.match(/^\/compress-pdf-to-(\d+)(kb|mb)$/i);
       const isIndianProgrammatic = indianSeoRoutes.some(r => r.route === currentPath);
-      const path = ((isProgrammaticCompress || isIndianProgrammatic) && currentView === "workspace" && selectedTool === "Compress PDF")
+      const path = ((isProgrammaticCompress || isIndianProgrammatic) && (currentView === "workspace" || currentView === "beta-workspace") && selectedTool === "Compress PDF")
         ? currentPath
-        : getPathForState(currentView, currentView === "workspace" ? selectedTool : undefined);
-      const pageName = currentView === "workspace" ? selectedTool : (currentView.charAt(0).toUpperCase() + currentView.slice(1));
+        : getPathForState(currentView, (currentView === "workspace" || currentView === "beta-workspace") ? selectedTool : undefined);
+      const pageName = (currentView === "workspace" || currentView === "beta-workspace") ? selectedTool : (currentView.charAt(0).toUpperCase() + currentView.slice(1));
       schemas.push({
         "@context": "https://schema.org",
         "@type": "BreadcrumbList",
@@ -441,7 +442,7 @@ export function App() {
     }
     
     // Tool-specific JSON-LD schemas
-    if (currentView === "workspace") {
+    if (currentView === "workspace" || currentView === "beta-workspace") {
       const matchedTool = tools.find(t => t.name === selectedTool);
       const toolId = matchedTool?.id;
       
@@ -705,7 +706,9 @@ export function App() {
       return;
     }
     setSelectedTool(toolName);
-    setCurrentView("workspace");
+    if (currentView !== "beta-workspace") {
+      setCurrentView("workspace");
+    }
     setActiveJobId(null);
     setHasStagedFiles(false);
   }
@@ -805,6 +808,7 @@ export function App() {
       }
     }
 
+    const startTime = Date.now();
     try {
       const formData = new FormData();
       for (let i = 0; i < files.length; i++) {
@@ -840,6 +844,12 @@ export function App() {
       const result = await response.json();
       const fileName = result.output_path.split(/[/\\]/).pop() || "output.pdf";
       const downloadUrl = `/download/${result.job_id}/${fileName}`;
+
+      // Enforce a minimum loading time of 3 seconds for AdSense attention
+      const elapsed = Date.now() - startTime;
+      if (elapsed < 3000) {
+        await new Promise((resolve) => setTimeout(resolve, 3000 - elapsed));
+      }
 
       setJobs((prev) =>
         prev.map((job) => {
@@ -879,6 +889,12 @@ export function App() {
         friendlyMsg = rawMsg;
       }
       
+      // Enforce a minimum loading time of 3 seconds even on failure
+      const elapsed = Date.now() - startTime;
+      if (elapsed < 3000) {
+        await new Promise((resolve) => setTimeout(resolve, 3000 - elapsed));
+      }
+
       setToast(`Error: ${friendlyMsg}`);
       window.setTimeout(() => setToast(""), 5000);
       setJobs((prev) =>
@@ -956,7 +972,7 @@ export function App() {
   const activeJob = jobs.find((j) => j.id === activeJobId) || null;
 
   const isVisualEditorActive =
-    currentView === "workspace" &&
+    (currentView === "workspace" || currentView === "beta-workspace") &&
     ((hasStagedFiles &&
       [
         "Edit PDF",
@@ -1135,11 +1151,13 @@ export function App() {
                     setCurrentView("home");
                     setActiveJobId(null);
                     setHasStagedFiles(false);
+                    setWorkspaceInitialFiles(null);
                   }} 
                   activeJob={activeJob}
                   onReset={() => {
                     setActiveJobId(null);
                     setHasStagedFiles(false);
+                    setWorkspaceInitialFiles(null);
                   }}
                   onStagedChange={setHasStagedFiles}
                   onToolSelect={handleToolSelect}
@@ -1151,11 +1169,13 @@ export function App() {
                     }
                     setActiveJobId(null);
                     setHasStagedFiles(false);
+                    setWorkspaceInitialFiles(null);
                   }}
                   jobs={jobs}
+                  initialFiles={workspaceInitialFiles}
                 />
               ) : (
-                <main className={`workspace-page-wrapper ${hasStagedFiles && activeJob?.status !== "Done" ? "staged-view-active" : ""}`}>
+                <main className={`workspace-page-wrapper ${hasStagedFiles && !(activeJob?.status === "Done" && activeJob?.downloadUrl) ? "staged-view-active" : ""}`}>
                   <div className="workspace-full-bleed-container">
                     <UploadPanel 
                       selectedTool={selectedTool} 
@@ -1184,6 +1204,11 @@ export function App() {
                       jobs={jobs}
                       onRetry={handleRetryJob}
                       onDeleteJob={handleDeleteJob}
+                      onFilesSelected={(files) => {
+                        setWorkspaceInitialFiles(Array.from(files));
+                        setHasStagedFiles(true);
+                        setCurrentView("beta-workspace");
+                      }}
                     />
                   </div>
                 </main>

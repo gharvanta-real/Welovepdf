@@ -431,14 +431,14 @@ export function UploadHero({
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "48px", marginBottom: "80px", alignItems: "center" }}>
               {/* Left side: Illustration */}
               <div style={{
-                background: "linear-gradient(135deg, #F5F9FF 0%, #EBF2FF 100%)",
+                background: "#f4f4f4",
                 borderRadius: "16px",
                 height: "320px",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 overflow: "hidden",
-                border: "1px solid var(--s-hairline, #D0E1FD)"
+                border: "none"
               }}>
                 {heroIllustration}
               </div>
