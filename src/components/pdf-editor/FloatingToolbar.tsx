@@ -79,7 +79,7 @@ export function FloatingToolbar({
   ];
 
   const coreTools = selectedTool === "PDF Annotator"
-    ? allCoreTools.filter(t => t.id !== "crop" && (t.id as string) !== "watermark")
+    ? allCoreTools.filter(t => (t.id as string) !== "crop" && (t.id as string) !== "watermark")
     : allCoreTools;
 
   const rawPopoverMenu = [
