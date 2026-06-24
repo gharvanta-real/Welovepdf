@@ -38,42 +38,42 @@ export function WorkspaceSidebar({
   const sidebarItems: { tab: SidebarTab; icon: React.ReactNode; label: string }[] = [
     { 
       tab: "Compress", 
-      icon: <Archive size={20} strokeWidth={2.2} />, 
+      icon: <Archive size={20} strokeWidth={1.6} />, 
       label: "Compress" 
     },
     { 
       tab: "Convert", 
-      icon: <RefreshCw size={20} strokeWidth={2.2} />, 
+      icon: <RefreshCw size={20} strokeWidth={1.6} />, 
       label: "Convert" 
     },
     { 
       tab: "Organize", 
-      icon: <FolderKanban size={20} strokeWidth={2.2} />, 
+      icon: <FolderKanban size={20} strokeWidth={1.6} />, 
       label: "Organize" 
     },
     { 
       tab: "Edit", 
-      icon: <PenTool size={20} strokeWidth={2.2} />, 
+      icon: <PenTool size={20} strokeWidth={1.6} />, 
       label: "Edit" 
     },
     { 
       tab: "Sign", 
-      icon: <FileText size={20} strokeWidth={2.2} />, 
+      icon: <FileText size={20} strokeWidth={1.6} />, 
       label: "Sign" 
     },
     { 
       tab: "AI PDF", 
-      icon: <Sparkles size={20} strokeWidth={2.2} />, 
+      icon: <Sparkles size={20} strokeWidth={1.6} />, 
       label: "AI PDF" 
     },
     { 
       tab: "More", 
-      icon: <Wrench size={20} strokeWidth={2.2} />, 
+      icon: <Wrench size={20} strokeWidth={1.6} />, 
       label: "More" 
     },
     { 
       tab: "Documents", 
-      icon: <FileText size={20} strokeWidth={2.2} />, 
+      icon: <FileText size={20} strokeWidth={1.6} />, 
       label: "Docs" 
     }
   ];
@@ -107,7 +107,7 @@ export function WorkspaceSidebar({
           onClick={onSettingsClick} 
           title="Account Settings"
         >
-          <Settings size={20} strokeWidth={2.2} />
+          <Settings size={20} strokeWidth={1.6} />
           <span className="uw-sidebar-label">Settings</span>
         </button>
         <button 
@@ -115,7 +115,7 @@ export function WorkspaceSidebar({
           title="Account profile"
           style={{ borderTop: "1px solid rgba(255,255,255,0.05)", borderRadius: 0, height: "56px" }}
         >
-          <User size={20} strokeWidth={2.2} />
+          <User size={20} strokeWidth={1.6} />
         </button>
       </div>
     </aside>

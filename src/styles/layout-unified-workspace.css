@@ -71,10 +71,14 @@
   position: relative;
 }
 
-.uw-sidebar-item:hover,
-.uw-sidebar-item.active {
+.uw-sidebar-item:hover {
   color: #ffffff;
   background-color: rgba(255, 255, 255, 0.08);
+}
+
+.uw-sidebar-item.active {
+  color: #3b82f6;
+  background-color: rgba(255, 255, 255, 0.05);
 }
 
 .uw-sidebar-item.active::before {
