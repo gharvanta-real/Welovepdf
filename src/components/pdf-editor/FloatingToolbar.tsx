@@ -32,6 +32,7 @@ interface FloatingToolbarProps {
   showSignatureModal: () => void;
   showLinkModal: () => void;
   onDragStart?: (e: React.MouseEvent) => void;
+  selectedTool?: string;
 }
 
 export function FloatingToolbar({
@@ -42,7 +43,8 @@ export function FloatingToolbar({
   showWatermarkModal,
   showSignatureModal,
   showLinkModal,
-  onDragStart
+  onDragStart,
+  selectedTool
 }: FloatingToolbarProps) {
   const [showPopover, setShowPopover] = useState(false);
   const toolbarRef = useRef<HTMLDivElement>(null);
@@ -64,7 +66,7 @@ export function FloatingToolbar({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const coreTools = [
+  const allCoreTools = [
     { id: "select" as ActiveTool, label: "Select", icon: <MousePointer size={15} /> },
     { id: "text" as ActiveTool, label: "Text", icon: <Type size={15} /> },
     { id: "pen" as ActiveTool, label: "Pen", icon: <PenTool size={15} /> },
@@ -76,7 +78,11 @@ export function FloatingToolbar({
     { id: "watermark" as ActiveTool, label: "Watermark", icon: <Droplets size={15} />, action: showWatermarkModal },
   ];
 
-  const popoverMenu = [
+  const coreTools = selectedTool === "PDF Annotator"
+    ? allCoreTools.filter(t => t.id !== "crop" && (t.id as string) !== "watermark")
+    : allCoreTools;
+
+  const rawPopoverMenu = [
     {
       category: "INSERT",
       items: [
@@ -119,6 +125,10 @@ export function FloatingToolbar({
       ]
     }
   ];
+
+  const popoverMenu = selectedTool === "PDF Annotator"
+    ? rawPopoverMenu.filter(g => g.category !== "EDIT" && g.category !== "ORGANIZE")
+    : rawPopoverMenu;
 
   const handleToolClick = (tool: typeof coreTools[0]) => {
     if (tool.action) {

@@ -878,6 +878,7 @@ export function PdfEditor({ file, selectedTool, onClose, onSave }: PdfEditorProp
               showSignatureModal={() => setShowSigModal(true)}
               showLinkModal={() => setShowLinkModal(true)}
               onDragStart={handleToolbarDragStart}
+              selectedTool={selectedTool}
             />
           </div>
 

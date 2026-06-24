@@ -744,193 +744,168 @@ export function PropertiesPanel({
             </div>
           </div>
         ) : (
-          // DEFAULT VIEW OPTIONS BASED ON ACTIVE TOOL
-          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-            {activeTool !== "select" && activeTool !== "pan" ? (
-              <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                <span style={{ fontSize: "0.68rem", fontWeight: "700", color: "#64748b", textTransform: "uppercase", letterSpacing: "0.03em" }}>
-                  Tool Defaults: {activeTool}
-                </span>
-                
-                {/* Text Defaults */}
-                {activeTool === "text" && (
-                  <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                    <span style={{ fontSize: "0.65rem", color: "#64748b" }}>Font Style</span>
-                    <select
-                      value={textFont}
-                      onChange={e => handleFontChange(e.target.value)}
-                      style={{
-                        width: "100%",
-                        height: "32px",
-                        padding: "0 8px",
-                        border: "1px solid #cbd5e1",
-                        borderRadius: "6px",
-                        fontSize: "0.76rem",
-                        color: "#1e293b",
-                        background: "#ffffff",
-                        cursor: "pointer",
-                        outline: "none"
-                      }}
-                    >
-                      {FONTS.map(f => <option key={f} value={f}>{f}</option>)}
-                    </select>
+          // DEFAULT VIEW OPTIONS - STACKED FOR FULL ANNOTATION/EDIT PROPERTIES
+          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+            <span style={{ fontSize: "0.68rem", fontWeight: "700", color: "#475569", textTransform: "uppercase", letterSpacing: "0.03em", marginBottom: "6px" }}>
+              Annotation Defaults
+            </span>
 
-                    <div style={{ display: "flex", gap: "6px" }}>
-                      <select
-                        value={textSize}
-                        onChange={e => handleTextSizeChange(parseInt(e.target.value))}
-                        style={{
-                          flex: 1,
-                          height: "32px",
-                          padding: "0 8px",
-                          border: "1px solid #cbd5e1",
-                          borderRadius: "6px",
-                          fontSize: "0.76rem",
-                          color: "#1e293b",
-                          background: "#ffffff",
-                          cursor: "pointer",
-                          outline: "none"
-                        }}
-                      >
-                        {FONT_SIZES.map(s => <option key={s} value={s}>{s}</option>)}
-                      </select>
-                    </div>
+            {/* 1. Text Tool Settings */}
+            <div style={{ padding: "10px", border: "1px solid #e2e8f0", borderRadius: "6px", background: "#f8fafc", display: "flex", flexDirection: "column", gap: "6px" }}>
+              <span style={{ fontSize: "0.68rem", fontWeight: "700", color: "#1e293b" }}>Text Defaults</span>
+              <select
+                value={textFont}
+                onChange={e => handleFontChange(e.target.value)}
+                style={{
+                  width: "100%",
+                  height: "28px",
+                  padding: "0 6px",
+                  border: "1px solid #cbd5e1",
+                  borderRadius: "6px",
+                  fontSize: "0.72rem",
+                  color: "#1e293b",
+                  background: "#ffffff",
+                  cursor: "pointer",
+                  outline: "none"
+                }}
+              >
+                {FONTS.map(f => <option key={f} value={f}>{f}</option>)}
+              </select>
 
-                    <div style={{ display: "flex", gap: "8px" }}>
-                      <ColorSwatchPill 
-                        color={textColor} 
-                        label="Text Color" 
-                        onChange={handleTextColorChange} 
-                        dropdownId="default_text_color"
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {/* Pen Defaults */}
-                {activeTool === "pen" && (
-                  <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                    <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-                      <span style={{ fontSize: "0.65rem", color: "#64748b" }}>Pen Color</span>
-                      <ColorSwatchPill 
-                        color={penColor} 
-                        label="Pen Color" 
-                        onChange={setPenColor} 
-                        dropdownId="default_pen_color"
-                      />
-                    </div>
-                    <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-                      <div style={{ display: "flex", justifyContent: "space-between" }}>
-                        <span style={{ fontSize: "0.62rem", color: "#64748b" }}>Line Thickness</span>
-                        <span style={{ fontSize: "0.65rem", fontWeight: "600", color: "#475569" }}>{penThickness}px</span>
-                      </div>
-                      <input
-                        type="range"
-                        min="1"
-                        max="15"
-                        value={penThickness}
-                        onChange={e => setPenThickness && setPenThickness(parseInt(e.target.value))}
-                        style={{ width: "100%", cursor: "pointer", height: "4px" }}
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {/* Highlighter Defaults */}
-                {activeTool === "highlight" && (
-                  <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                    <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-                      <span style={{ fontSize: "0.65rem", color: "#64748b" }}>Highlight Color</span>
-                      <ColorSwatchPill 
-                        color={markerColor} 
-                        label="Marker Color" 
-                        onChange={setMarkerColor} 
-                        dropdownId="default_marker_color"
-                      />
-                    </div>
-                    <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-                      <div style={{ display: "flex", justifyContent: "space-between" }}>
-                        <span style={{ fontSize: "0.62rem", color: "#64748b" }}>Opacity</span>
-                        <span style={{ fontSize: "0.65rem", fontWeight: "600", color: "#475569" }}>{Math.round(markerOpacity * 100)}%</span>
-                      </div>
-                      <input
-                        type="range"
-                        min="0.1"
-                        max="0.9"
-                        step="0.05"
-                        value={markerOpacity}
-                        onChange={e => setMarkerOpacity && setMarkerOpacity(parseFloat(e.target.value))}
-                        style={{ width: "100%", cursor: "pointer", height: "4px" }}
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {/* Shape Defaults */}
-                {activeTool === "shape" && (
-                  <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                    <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-                      <span style={{ fontSize: "0.65rem", color: "#64748b" }}>Shape Type</span>
-                      <select
-                        value={shapeType}
-                        onChange={e => setShapeType && setShapeType(e.target.value as any)}
-                        style={{
-                          width: "100%",
-                          height: "32px",
-                          padding: "0 8px",
-                          border: "1px solid #cbd5e1",
-                          borderRadius: "6px",
-                          fontSize: "0.76rem",
-                          color: "#1e293b",
-                          background: "#ffffff",
-                          cursor: "pointer",
-                          outline: "none"
-                        }}
-                      >
-                        <option value="rectangle">Rectangle</option>
-                        <option value="circle">Circle</option>
-                        <option value="line">Line</option>
-                        <option value="arrow">Arrow</option>
-                        <option value="diamond">Diamond</option>
-                      </select>
-                    </div>
-
-                    <div style={{ display: "flex", gap: "8px" }}>
-                      <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "4px" }}>
-                        <span style={{ fontSize: "0.62rem", color: "#64748b" }}>Fill</span>
-                        <ColorSwatchPill 
-                          color={shapeFillColor} 
-                          label="Fill" 
-                          onChange={setShapeFillColor} 
-                          dropdownId="default_shape_fill"
-                        />
-                      </div>
-                      <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "4px" }}>
-                        <span style={{ fontSize: "0.62rem", color: "#64748b" }}>Border</span>
-                        <ColorSwatchPill 
-                          color={shapeColor} 
-                          label="Border" 
-                          onChange={setShapeColor} 
-                          dropdownId="default_shape_border"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                )}
+              <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
+                <select
+                  value={textSize}
+                  onChange={e => handleTextSizeChange(parseInt(e.target.value))}
+                  style={{
+                    width: "56px",
+                    height: "28px",
+                    padding: "0 4px",
+                    border: "1px solid #cbd5e1",
+                    borderRadius: "6px",
+                    fontSize: "0.72rem",
+                    color: "#1e293b",
+                    background: "#ffffff",
+                    cursor: "pointer",
+                    outline: "none"
+                  }}
+                >
+                  {FONT_SIZES.map(s => <option key={s} value={s}>{s}</option>)}
+                </select>
+                <div style={{ flex: 1 }}>
+                  <ColorSwatchPill 
+                    color={textColor} 
+                    label="Text Color" 
+                    onChange={handleTextColorChange} 
+                    dropdownId="default_text_color"
+                  />
+                </div>
               </div>
-            ) : (
-              <div style={{
-                textAlign: "center",
-                padding: "24px 16px",
-                background: "#f8fafc",
-                borderRadius: "8px",
-                border: "1px dashed #cbd5e1"
-              }}>
-                <span style={{ fontSize: "0.72rem", color: "#64748b", lineHeight: 1.4, display: "block" }}>
-                  Select an overlay element or choose a tool from the left floating toolbar to edit.
-                </span>
+            </div>
+
+            {/* 2. Highlighter Settings */}
+            <div style={{ padding: "10px", border: "1px solid #e2e8f0", borderRadius: "6px", background: "#f8fafc", display: "flex", flexDirection: "column", gap: "6px" }}>
+              <span style={{ fontSize: "0.68rem", fontWeight: "700", color: "#1e293b" }}>Highlighter Defaults</span>
+              <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
+                <div style={{ flex: 1 }}>
+                  <ColorSwatchPill 
+                    color={markerColor} 
+                    label="Marker Color" 
+                    onChange={setMarkerColor} 
+                    dropdownId="default_marker_color"
+                  />
+                </div>
+                <div style={{ width: "80px", display: "flex", flexDirection: "column", gap: "2px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.6rem", color: "#64748b" }}>
+                    <span>Opacity</span>
+                    <span>{Math.round(markerOpacity * 100)}%</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="0.1"
+                    max="0.9"
+                    step="0.05"
+                    value={markerOpacity}
+                    onChange={e => setMarkerOpacity && setMarkerOpacity(parseFloat(e.target.value))}
+                    style={{ width: "100%", cursor: "pointer", height: "3px" }}
+                  />
+                </div>
               </div>
-            )}
+            </div>
+
+            {/* 3. Pen/Drawing Settings */}
+            <div style={{ padding: "10px", border: "1px solid #e2e8f0", borderRadius: "6px", background: "#f8fafc", display: "flex", flexDirection: "column", gap: "6px" }}>
+              <span style={{ fontSize: "0.68rem", fontWeight: "700", color: "#1e293b" }}>Pen Defaults</span>
+              <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
+                <div style={{ flex: 1 }}>
+                  <ColorSwatchPill 
+                    color={penColor} 
+                    label="Pen Color" 
+                    onChange={setPenColor} 
+                    dropdownId="default_pen_color"
+                  />
+                </div>
+                <div style={{ width: "80px", display: "flex", flexDirection: "column", gap: "2px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.6rem", color: "#64748b" }}>
+                    <span>Size</span>
+                    <span>{penThickness}px</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="1"
+                    max="15"
+                    value={penThickness}
+                    onChange={e => setPenThickness && setPenThickness(parseInt(e.target.value))}
+                    style={{ width: "100%", cursor: "pointer", height: "3px" }}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* 4. Shapes Settings */}
+            <div style={{ padding: "10px", border: "1px solid #e2e8f0", borderRadius: "6px", background: "#f8fafc", display: "flex", flexDirection: "column", gap: "6px" }}>
+              <span style={{ fontSize: "0.68rem", fontWeight: "700", color: "#1e293b" }}>Shapes Defaults</span>
+              <select
+                value={shapeType}
+                onChange={e => setShapeType && setShapeType(e.target.value as any)}
+                style={{
+                  width: "100%",
+                  height: "28px",
+                  padding: "0 6px",
+                  border: "1px solid #cbd5e1",
+                  borderRadius: "6px",
+                  fontSize: "0.72rem",
+                  color: "#1e293b",
+                  background: "#ffffff",
+                  cursor: "pointer",
+                  outline: "none"
+                }}
+              >
+                <option value="rectangle">Rectangle</option>
+                <option value="circle">Circle</option>
+                <option value="line">Line</option>
+                <option value="arrow">Arrow</option>
+                <option value="diamond">Diamond</option>
+              </select>
+
+              <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
+                <div style={{ flex: 1 }}>
+                  <ColorSwatchPill 
+                    color={shapeFillColor} 
+                    label="Fill" 
+                    onChange={setShapeFillColor} 
+                    dropdownId="default_shape_fill"
+                  />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <ColorSwatchPill 
+                    color={shapeColor} 
+                    label="Border" 
+                    onChange={setShapeColor} 
+                    dropdownId="default_shape_border"
+                  />
+                </div>
+              </div>
+            </div>
           </div>
         )}
 
