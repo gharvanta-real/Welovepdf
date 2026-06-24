@@ -11,6 +11,13 @@
   box-sizing: border-box;
 }
 
+.unified-workspace-container button,
+.unified-workspace-container input,
+.unified-workspace-container select,
+.unified-workspace-container textarea {
+  font-family: "Google Sans", "Google Sans Text", "Inter", sans-serif;
+}
+
 /* LEFT SIDEBAR */
 .uw-sidebar {
   width: 80px;
@@ -197,7 +204,7 @@
 
 /* HEADER */
 .uw-header {
-  height: 64px;
+  height: 56px;
   background-color: #ffffff;
   border-bottom: 1px solid var(--s-hairline, #D0E1FD);
   display: flex;
@@ -246,11 +253,11 @@
 }
 
 .uw-login-btn {
-  background-color: var(--s-surface-soft, #F5F9FF);
-  color: var(--s-primary, #2563eb);
-  border: 1px solid var(--s-hairline, #D0E1FD);
-  padding: 8px 18px;
-  border-radius: 20px;
+  background-color: var(--s-primary, #2563eb);
+  color: #ffffff;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 12px;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
@@ -258,7 +265,7 @@
 }
 
 .uw-login-btn:hover {
-  background-color: var(--s-surface-low, #EBF2FF);
+  background-color: #1d4ed8;
 }
 
 /* WORKSPACE LAYOUT */
@@ -266,7 +273,7 @@
   display: flex;
   flex: 1;
   overflow: hidden;
-  height: calc(100vh - 64px);
+  height: calc(100vh - 56px);
 }
 
 .uw-canvas-container {
