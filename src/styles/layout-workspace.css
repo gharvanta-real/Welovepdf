@@ -147,7 +147,7 @@
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.15s ease;
-  font-family: "Plus Jakarta Sans", sans-serif;
+  font-family: "Google Sans", "Google Sans Text", "Plus Jakarta Sans", sans-serif;
 }
 
 .choose-dropdown-menu .dropdown-item:hover {
@@ -296,4 +296,14 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+}
+
+/* Upload hero card styles (figma-inspired white backdrop with brand blue hover states) */
+.upload-hero-card {
+  transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+.upload-hero-card:hover {
+  border-color: #2563eb !important;
+  background-color: #fafafa !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.02) !important;
 }

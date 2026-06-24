@@ -25,9 +25,12 @@ const SecurityPage = lazy(() => import("./components/TrustPages").then(m => ({ d
 const FilePrivacyPage = lazy(() => import("./components/TrustPages").then(m => ({ default: m.FilePrivacyPage })));
 const DataDeletionPage = lazy(() => import("./components/TrustPages").then(m => ({ default: m.DataDeletionPage })));
 const AdminDashboard = lazy(() => import("./admin/AdminDashboard").then(m => ({ default: m.AdminDashboard })));
+const LandingPageV2 = lazy(() => import("./components/landing-v2/LandingPageV2").then(m => ({ default: m.LandingPageV2 })));
+const FooterV2 = lazy(() => import("./components/landing-v2/FooterV2").then(m => ({ default: m.FooterV2 })));
 
 const pathMap: Record<string, { view: "home" | "workspace" | "pricing" | "privacy" | "terms" | "faq" | "contact" | "tools" | "about" | "contact-sales" | "settings" | "dashboard" | "security" | "file-privacy" | "data-deletion" | "admin"; tool?: string }> = {
   "/": { view: "home" },
+  "/v2": { view: "home" },
   "/pricing": { view: "home" },
   "/privacy": { view: "privacy" },
   "/terms": { view: "terms" },
@@ -68,7 +71,19 @@ const pathMap: Record<string, { view: "home" | "workspace" | "pricing" | "privac
   "/edit-pdf-metadata": { view: "workspace", tool: "Edit PDF Metadata" },
   "/ocr-pdf": { view: "workspace", tool: "PDF OCR" },
   "/document-editor": { view: "workspace", tool: "Document Editor" },
-
+  "/excel-pdf": { view: "workspace", tool: "Excel to PDF" },
+  "/ppt-pdf": { view: "workspace", tool: "PPT to PDF" },
+  "/pdf-png": { view: "workspace", tool: "PDF to PNG" },
+  "/flatten-pdf": { view: "workspace", tool: "Flatten PDF" },
+  "/repair-pdf": { view: "workspace", tool: "Repair PDF" },
+  "/grayscale-pdf": { view: "workspace", tool: "Grayscale PDF" },
+  "/optimize-pdf": { view: "workspace", tool: "Optimize PDF" },
+  "/html-pdf": { view: "workspace", tool: "HTML to PDF" },
+  "/txt-pdf": { view: "workspace", tool: "TXT to PDF" },
+  "/pdf-excel": { view: "workspace", tool: "PDF to Excel" },
+  "/pdf-ppt": { view: "workspace", tool: "PDF to PPT" },
+  "/pdf-txt": { view: "workspace", tool: "PDF to TXT" },
+  "/pdf-html": { view: "workspace", tool: "PDF to HTML" },
 };
 
 const programmaticSizes = ["50kb", "100kb", "150kb", "200kb", "300kb", "500kb", "1mb", "2mb", "5mb"];
@@ -105,11 +120,25 @@ function getPathForState(view: string, tool?: string): string {
       case "Bates Numbering": return "/bates-numbering";
       case "Edit PDF Metadata": return "/edit-pdf-metadata";
       case "PDF OCR": return "/ocr-pdf";
+      case "Excel to PDF": return "/excel-pdf";
+      case "PPT to PDF": return "/ppt-pdf";
+      case "PDF to PNG": return "/pdf-png";
+      case "Flatten PDF": return "/flatten-pdf";
+      case "Repair PDF": return "/repair-pdf";
+      case "Grayscale PDF": return "/grayscale-pdf";
+      case "Optimize PDF": return "/optimize-pdf";
+      case "HTML to PDF": return "/html-pdf";
+      case "TXT to PDF": return "/txt-pdf";
+      case "PDF to Excel": return "/pdf-excel";
+      case "PDF to PPT": return "/pdf-ppt";
+      case "PDF to TXT": return "/pdf-txt";
+      case "PDF to HTML": return "/pdf-html";
       default: return "/";
     }
   }
   
   switch (view) {
+    case "home_v2": return "/v2";
     case "pricing": return "/pricing";
     case "privacy": return "/privacy";
     case "terms": return "/terms";
@@ -131,6 +160,10 @@ function getPathForState(view: string, tool?: string): string {
 const viewMetadata: Record<string, { title: string; desc: string }> = {
   home: {
     title: "PDFMount - Free Online PDF Tools & Editor",
+    desc: "Merge, split, compress, convert, sign, and secure PDF files online. Free, secure, and fast PDF tools inside your browser.",
+  },
+  home_v2: {
+    title: "PDFMount V2 - Free Online PDF Tools & Editor",
     desc: "Merge, split, compress, convert, sign, and secure PDF files online. Free, secure, and fast PDF tools inside your browser.",
   },
   pricing: {
@@ -216,7 +249,19 @@ export function App() {
   const [activeJobId, setActiveJobId] = useState<string | null>(null);
   const [hasStagedFiles, setHasStagedFiles] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const [currentUser, setCurrentUser] = useState<{ name: string; email: string; plan?: string } | null>(null);
+  const [currentUser, setCurrentUser] = useState<{ name: string; email: string; plan?: string } | null>(() => {
+    const token = localStorage.getItem("authToken");
+    if (!token) return null;
+    const cached = localStorage.getItem("currentUser");
+    if (cached) {
+      try {
+        return JSON.parse(cached);
+      } catch (e) {
+        return null;
+      }
+    }
+    return null;
+  });
   const [isAccountDrawerOpen, setIsAccountDrawerOpen] = useState(false);
   const jobInputsRef = useRef<Record<string, { files: File[]; options?: any; toolName: string }>>({});
 
@@ -483,9 +528,11 @@ export function App() {
         if (res.ok) {
           const user = await res.json();
           setCurrentUser(user);
+          localStorage.setItem("currentUser", JSON.stringify(user));
         } else if (res.status === 401 || res.status === 403) {
           // Only discard token if the server explicitly rejects it
           localStorage.removeItem("authToken");
+          localStorage.removeItem("currentUser");
         }
       })
       .catch(err => console.error("Error restoring session:", err));
@@ -510,6 +557,7 @@ export function App() {
           const data = await res.json();
           localStorage.setItem("authToken", data.token);
           setCurrentUser(data.user);
+          localStorage.setItem("currentUser", JSON.stringify(data.user));
         }
       } catch (e) {
         console.error("Supabase sync failed:", e);
@@ -537,6 +585,7 @@ export function App() {
         }
       } else if (event === "SIGNED_OUT") {
         localStorage.removeItem("authToken");
+        localStorage.removeItem("currentUser");
         setCurrentUser(null);
       }
     });
@@ -604,6 +653,7 @@ export function App() {
       }
     }
     localStorage.removeItem("authToken");
+    localStorage.removeItem("currentUser");
     setCurrentUser(null);
     setJobs([]);
     setToast("Logged out successfully");
@@ -631,7 +681,11 @@ export function App() {
         return;
       }
     }
-    setCurrentUser((prev) => prev ? { ...prev, plan: planName } : { name: "Premium User", email: "premium.user@example.com", plan: planName });
+    setCurrentUser((prev) => {
+      const updated = prev ? { ...prev, plan: planName } : { name: "Premium User", email: "premium.user@example.com", plan: planName };
+      localStorage.setItem("currentUser", JSON.stringify(updated));
+      return updated;
+    });
     setToast(`Upgraded to ${planName} successfully!`);
     window.setTimeout(() => setToast(""), 2500);
   }
@@ -927,167 +981,202 @@ export function App() {
           />
         </Suspense>
       ) : (
-        <>
-      {!isVisualEditorActive && (
-        <Header
-          onLogoClick={() => {
-            setCurrentView("home");
-            setActiveJobId(null);
-            setHasStagedFiles(false);
-          }}
-          onToolSelect={handleToolSelect}
-          onLoginClick={() => setIsLoginModalOpen(true)}
-          currentUser={currentUser}
-          onLogout={handleLogout}
-          onAvatarClick={() => setIsAccountDrawerOpen(true)}
-          onPricingClick={() => setCurrentView("pricing")}
-          onToolsClick={() => {
-            setCurrentView("tools");
-            setActiveJobId(null);
-            setHasStagedFiles(false);
-          }}
-          onContactSalesClick={() => {
-            setCurrentView("contact-sales");
-            setActiveJobId(null);
-            setHasStagedFiles(false);
-          }}
-          onWorkspaceClick={() => {
-            setCurrentView("dashboard");
-            setActiveJobId(null);
-            setHasStagedFiles(false);
-          }}
-        />
-      )}
-      
-      <Suspense fallback={
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "60vh", color: "var(--text-muted)", fontSize: "15px", fontFamily: "sans-serif" }}>
-          <div style={{ width: "28px", height: "28px", border: "2.5px solid var(--border)", borderTopColor: "var(--c-accent, #0074f0)", borderRadius: "50%", animation: "spinnerRotate 0.8s linear infinite", marginBottom: "12px" }}></div>
-          <span>Loading...</span>
-        </div>
-      }>
-        {currentView === "home" ? (
-          <LandingPage 
-            onToolSelect={handleToolSelect} 
-            onViewChange={(view) => {
-              if (view === "contact") {
+        <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+          {!isVisualEditorActive && (
+            <Header
+              onLogoClick={() => {
+                setCurrentView("home");
+                setActiveJobId(null);
+                setHasStagedFiles(false);
+              }}
+              onToolSelect={handleToolSelect}
+              onLoginClick={() => setIsLoginModalOpen(true)}
+              currentUser={currentUser}
+              onLogout={handleLogout}
+              onAvatarClick={() => setIsAccountDrawerOpen(true)}
+              onPricingClick={() => setCurrentView("pricing")}
+              onToolsClick={() => {
+                setCurrentView("tools");
+                setActiveJobId(null);
+                setHasStagedFiles(false);
+              }}
+              onContactSalesClick={() => {
                 setCurrentView("contact-sales");
-              } else {
-                setCurrentView(view);
-              }
-              setActiveJobId(null);
-              setHasStagedFiles(false);
-            }}
-          />
-        ) : currentView === "tools" ? (
-          <AllToolsPage 
-            onToolSelect={handleToolSelect}
-            onPricingClick={() => setCurrentView("pricing")}
-            onContactSalesClick={() => setCurrentView("contact-sales")}
-            onBack={() => setCurrentView("home")}
-            onViewChange={(view) => {
-              if (view === "contact") {
-                setCurrentView("contact-sales");
-              } else {
-                setCurrentView(view);
-              }
-              setActiveJobId(null);
-              setHasStagedFiles(false);
-            }}
-          />
-        ) : currentView === "about" ? (
-          <AboutPage 
-            onBack={() => setCurrentView("home")} 
-            onViewChange={(view) => {
-              setCurrentView(view);
-              setActiveJobId(null);
-              setHasStagedFiles(false);
-            }}
-          />
-        ) : currentView === "contact-sales" ? (
-          <ContactSalesPage onBack={() => setCurrentView("home")} />
-        ) : currentView === "settings" ? (
-          <AccountSettingsPage 
-            onBack={() => setCurrentView("home")} 
-            currentUser={currentUser}
-            onLogout={handleLogout}
-            onUpdateUser={(updatedUser) => setCurrentUser(updatedUser)}
-            onPricingClick={() => setCurrentView("pricing")}
-          />
-
-        ) : currentView === "dashboard" ? (
-          <UserDashboardPage 
-            onBack={() => setCurrentView("home")} 
-            onToolSelect={handleToolSelect}
-            onBrowseTools={() => setCurrentView("tools")}
-            jobs={jobs}
-            currentUser={currentUser}
-            onManageSubscription={() => setCurrentView("pricing")}
-          />
-        ) : currentView === "pricing" ? (
-          <PricingPage
-            currentUser={currentUser}
-            onUpgradeSuccess={handleUpgrade}
-            onLoginRequired={() => {
-              setIsLoginModalOpen(true);
-              setToast("Please log in to upgrade your plan.");
-              window.setTimeout(() => setToast(""), 3000);
-            }}
-            onBack={() => setCurrentView("home")}
-            onToolSelect={handleToolSelect}
-            onViewChange={(view) => {
-              setCurrentView(view);
-              setActiveJobId(null);
-              setHasStagedFiles(false);
-            }}
-          />
-        ) : currentView === "privacy" ? (
-          <PrivacyPage onBack={() => setCurrentView("home")} />
-        ) : currentView === "terms" ? (
-          <TermsPage onBack={() => setCurrentView("home")} />
-        ) : currentView === "contact" ? (
-          <ContactPage onBack={() => setCurrentView("home")} />
-        ) : currentView === "security" ? (
-          <SecurityPage onBack={() => setCurrentView("home")} />
-        ) : currentView === "file-privacy" ? (
-          <FilePrivacyPage onBack={() => setCurrentView("home")} />
-        ) : currentView === "data-deletion" ? (
-          <DataDeletionPage onBack={() => setCurrentView("home")} />
-        ) : (
-          <main className={`workspace-page-wrapper ${hasStagedFiles && activeJob?.status !== "Done" ? "staged-view-active" : ""}`}>
-            <div className="workspace-full-bleed-container">
-              <UploadPanel 
-                selectedTool={selectedTool} 
-                onUpload={handleUpload} 
-                onBack={() => {
-                  setCurrentView("home");
-                  setActiveJobId(null);
-                  setHasStagedFiles(false);
-                }} 
-                activeJob={activeJob}
-                onReset={() => {
-                  setActiveJobId(null);
-                  setHasStagedFiles(false);
-                }}
-                onStagedChange={setHasStagedFiles}
-                onToolSelect={handleToolSelect}
-                onViewChange={(view) => {
-                  if (view === "contact") {
-                    setCurrentView("contact-sales");
-                  } else {
+                setActiveJobId(null);
+                setHasStagedFiles(false);
+              }}
+              onWorkspaceClick={() => {
+                setCurrentView("dashboard");
+                setActiveJobId(null);
+                setHasStagedFiles(false);
+              }}
+            />
+          )}
+          
+          <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+            <Suspense fallback={
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "60vh", color: "var(--text-muted)", fontSize: "15px", fontFamily: "sans-serif" }}>
+                <div style={{ width: "28px", height: "28px", border: "2.5px solid var(--border)", borderTopColor: "var(--c-accent, #0074f0)", borderRadius: "50%", animation: "spinnerRotate 0.8s linear infinite", marginBottom: "12px" }}></div>
+                <span>Loading...</span>
+              </div>
+            }>
+              {currentView === "home" ? (
+                <LandingPageV2 
+                  onToolSelect={handleToolSelect} 
+                  onViewChange={(view) => {
+                    if (view === "contact") {
+                      setCurrentView("contact-sales");
+                    } else {
+                      setCurrentView(view);
+                    }
+                    setActiveJobId(null);
+                    setHasStagedFiles(false);
+                  }}
+                  onLogoClick={() => {
+                    setCurrentView("home");
+                    setActiveJobId(null);
+                    setHasStagedFiles(false);
+                  }}
+                />
+              ) : currentView === "tools" ? (
+                <AllToolsPage 
+                  onToolSelect={handleToolSelect}
+                  onPricingClick={() => setCurrentView("pricing")}
+                  onContactSalesClick={() => setCurrentView("contact-sales")}
+                  onBack={() => setCurrentView("home")}
+                  onViewChange={(view) => {
+                    if (view === "contact") {
+                      setCurrentView("contact-sales");
+                    } else {
+                      setCurrentView(view);
+                    }
+                    setActiveJobId(null);
+                    setHasStagedFiles(false);
+                  }}
+                />
+              ) : currentView === "about" ? (
+                <AboutPage 
+                  onBack={() => setCurrentView("home")} 
+                  onViewChange={(view) => {
                     setCurrentView(view);
-                  }
-                  setActiveJobId(null);
-                  setHasStagedFiles(false);
-                }}
-                jobs={jobs}
-                onRetry={handleRetryJob}
-                onDeleteJob={handleDeleteJob}
-              />
-            </div>
-          </main>
-        )}
-      </Suspense>
-      </>
+                    setActiveJobId(null);
+                    setHasStagedFiles(false);
+                  }}
+                />
+              ) : currentView === "contact-sales" ? (
+                <ContactSalesPage onBack={() => setCurrentView("home")} />
+              ) : currentView === "settings" ? (
+                <AccountSettingsPage 
+                  onBack={() => setCurrentView("home")} 
+                  currentUser={currentUser}
+                  onLogout={handleLogout}
+                  onUpdateUser={(updatedUser) => {
+                    setCurrentUser(updatedUser);
+                    if (updatedUser) {
+                      localStorage.setItem("currentUser", JSON.stringify(updatedUser));
+                    } else {
+                      localStorage.removeItem("currentUser");
+                    }
+                  }}
+                  onPricingClick={() => setCurrentView("pricing")}
+                />
+              ) : currentView === "dashboard" ? (
+                <UserDashboardPage 
+                  onBack={() => setCurrentView("home")} 
+                  onToolSelect={handleToolSelect}
+                  onBrowseTools={() => setCurrentView("tools")}
+                  jobs={jobs}
+                  currentUser={currentUser}
+                  onManageSubscription={() => setCurrentView("pricing")}
+                />
+              ) : currentView === "pricing" ? (
+                <PricingPage
+                  currentUser={currentUser}
+                  onUpgradeSuccess={handleUpgrade}
+                  onLoginRequired={() => {
+                    setIsLoginModalOpen(true);
+                    setToast("Please log in to upgrade your plan.");
+                    window.setTimeout(() => setToast(""), 3000);
+                  }}
+                  onBack={() => setCurrentView("home")}
+                  onToolSelect={handleToolSelect}
+                  onViewChange={(view) => {
+                    setCurrentView(view);
+                    setActiveJobId(null);
+                    setHasStagedFiles(false);
+                  }}
+                />
+              ) : currentView === "privacy" ? (
+                <PrivacyPage onBack={() => setCurrentView("home")} />
+              ) : currentView === "terms" ? (
+                <TermsPage onBack={() => setCurrentView("home")} />
+              ) : currentView === "contact" ? (
+                <ContactPage onBack={() => setCurrentView("home")} />
+              ) : currentView === "security" ? (
+                <SecurityPage onBack={() => setCurrentView("home")} />
+              ) : currentView === "file-privacy" ? (
+                <FilePrivacyPage onBack={() => setCurrentView("home")} />
+              ) : currentView === "data-deletion" ? (
+                <DataDeletionPage onBack={() => setCurrentView("home")} />
+              ) : currentView === "faq" ? (
+                <FaqPage onBack={() => setCurrentView("home")} />
+              ) : (
+                <main className={`workspace-page-wrapper ${hasStagedFiles && activeJob?.status !== "Done" ? "staged-view-active" : ""}`}>
+                  <div className="workspace-full-bleed-container">
+                    <UploadPanel 
+                      selectedTool={selectedTool} 
+                      onUpload={handleUpload} 
+                      onBack={() => {
+                        setCurrentView("home");
+                        setActiveJobId(null);
+                        setHasStagedFiles(false);
+                      }} 
+                      activeJob={activeJob}
+                      onReset={() => {
+                        setActiveJobId(null);
+                        setHasStagedFiles(false);
+                      }}
+                      onStagedChange={setHasStagedFiles}
+                      onToolSelect={handleToolSelect}
+                      onViewChange={(view) => {
+                        if (view === "contact") {
+                          setCurrentView("contact-sales");
+                        } else {
+                          setCurrentView(view);
+                        }
+                        setActiveJobId(null);
+                        setHasStagedFiles(false);
+                      }}
+                      jobs={jobs}
+                      onRetry={handleRetryJob}
+                      onDeleteJob={handleDeleteJob}
+                    />
+                  </div>
+                </main>
+              )}
+            </Suspense>
+          </div>
+          
+          {!isVisualEditorActive && ["pricing", "privacy", "terms", "faq", "contact", "about", "contact-sales", "security", "file-privacy", "data-deletion", "tools", "dashboard", "settings"].includes(currentView) && (
+            <FooterV2
+              onToolSelect={handleToolSelect}
+              onViewChange={(view) => {
+                if (view === "contact") {
+                  setCurrentView("contact-sales");
+                } else {
+                  setCurrentView(view);
+                }
+                setActiveJobId(null);
+                setHasStagedFiles(false);
+              }}
+              onLogoClick={() => {
+                setCurrentView("home");
+                setActiveJobId(null);
+                setHasStagedFiles(false);
+              }}
+            />
+          )}
+        </div>
       )}
       {toast && <div className="toast">{toast}</div>}
       <LoginModal
@@ -1095,6 +1184,7 @@ export function App() {
         onClose={() => setIsLoginModalOpen(false)}
         onLoginSuccess={(user) => {
           setCurrentUser(user);
+          localStorage.setItem("currentUser", JSON.stringify(user));
           setIsLoginModalOpen(false);
           if (currentView !== "admin") {
             setToast(`Logged in as ${user.name || user.email}!`);
@@ -1113,6 +1203,10 @@ export function App() {
         }}
         onSupportClick={() => {
           setCurrentView("contact");
+          setIsAccountDrawerOpen(false);
+        }}
+        onDashboardClick={() => {
+          setCurrentView("dashboard");
           setIsAccountDrawerOpen(false);
         }}
       />

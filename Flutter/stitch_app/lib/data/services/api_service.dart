@@ -24,22 +24,9 @@ class ApiService {
       return 'http://$devHost:8080';
     }
 
-    // Release/Production mode on Native platforms (Android, iOS)
-    if (!kDebugMode) {
-      return 'https://pdfmount.online';
-    }
-
-    // Local Development/Debug mode on Native platforms
-    // On Android emulators, 10.0.2.2 points to host's localhost (127.0.0.1)
-    // On iOS simulators or desktop builds, localhost works directly.
-    try {
-      if (Platform.isAndroid) {
-        // NOTE: If you are using a physical Android device, replace this with your computer's local Wi-Fi IP
-        // e.g. return 'http://192.168.1.2:8080';
-        return 'http://10.0.2.2:8080';
-      }
-    } catch (_) {}
-    return 'http://localhost:8080';
+    // For native mobile platforms, always point to the live server
+    // to ensure the APK connects correctly on any physical device.
+    return 'https://pdfmount.online';
   }
 
   /// Runs the selected PDF tool on the backend by uploading files and options,
@@ -184,11 +171,13 @@ class ApiService {
 
   static String _formatBytes(int bytes) {
     if (bytes <= 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    final i = (bytes > 0) ? (bytes / k).floor() : 0;
-    final index = i < sizes.length ? i : sizes.length - 1;
-    final size = bytes / (1 << (10 * index));
-    return '${size.toStringAsFixed(1)} ${sizes[index]}';
+    const suffixes = ['Bytes', 'KB', 'MB', 'GB'];
+    double size = bytes.toDouble();
+    int index = 0;
+    while (size >= 1024 && index < suffixes.length - 1) {
+      size /= 1024;
+      index++;
+    }
+    return '${size.toStringAsFixed(1)} ${suffixes[index]}';
   }
 }

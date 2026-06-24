@@ -23,67 +23,55 @@ class StitchPdfBadge extends StatelessWidget {
     final double iconSize = 20.0 * scale;
 
     if (typeUpper == 'PDF') {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(radius),
-        child: Image.asset(
-          'Icon/pdf-icon.webp',
-          width: size,
-          height: size,
-          fit: BoxFit.cover,
-        ),
+      return Image.asset(
+        'Icon/pdf-icon.webp',
+        width: size + 2.0,
+        height: size + 2.0,
+        fit: BoxFit.contain,
       );
     }
 
     if (typeUpper == 'FOLDER') {
       return Container(
-        width: size,
-        height: size,
+        width: size + 2.0,
+        height: size + 2.0,
         decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF3E2C00) : const Color(0xFFFFF3CD),
+          color: isDark ? const Color(0xFF1B355A) : const Color(0xFFE8F0FE),
           borderRadius: BorderRadius.circular(radius),
         ),
         alignment: Alignment.center,
         child: Icon(
           Icons.folder,
           size: iconSize * 1.2,
-          color: isDark ? Colors.amber.shade300 : Colors.amber.shade800,
+          color: isDark ? const Color(0xFF8AB4F8) : const Color(0xFF1A73E8),
         ),
       );
     }
 
     if (typeUpper == 'DOC' || typeUpper == 'DOCX' || typeUpper == 'WORD') {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(radius),
-        child: Image.asset(
-          'Icon/msword-svg.webp',
-          width: size,
-          height: size,
-          fit: BoxFit.cover,
-        ),
+      return Image.asset(
+        'Icon/msword-svg.webp',
+        width: size + 2.0,
+        height: size + 2.0,
+        fit: BoxFit.contain,
       );
     }
 
     if (typeUpper == 'XLS' || typeUpper == 'XLSX' || typeUpper == 'EXCEL') {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(radius),
-        child: Image.asset(
-          'Icon/ms-excel.webp',
-          width: size,
-          height: size,
-          fit: BoxFit.cover,
-        ),
+      return Image.asset(
+        'Icon/ms-excel.webp',
+        width: size + 2.0,
+        height: size + 2.0,
+        fit: BoxFit.contain,
       );
     }
 
     if (typeUpper == 'PPT' || typeUpper == 'PPTX' || typeUpper == 'POWERPOINT') {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(radius),
-        child: Image.asset(
-          'Icon/PPT.webp',
-          width: size,
-          height: size,
-          fit: BoxFit.cover,
-        ),
+      return Image.asset(
+        'Icon/PPT.webp',
+        width: size + 2.0,
+        height: size + 2.0,
+        fit: BoxFit.contain,
       );
     }
 
@@ -92,8 +80,8 @@ class StitchPdfBadge extends StatelessWidget {
     Color bgColor = isDark ? const Color(0xFF161616) : theme.colorScheme.secondaryContainer;
 
     return Container(
-      width: size,
-      height: size,
+      width: size + 2.0,
+      height: size + 2.0,
       decoration: BoxDecoration(
         color: bgColor,
         borderRadius: BorderRadius.circular(radius),

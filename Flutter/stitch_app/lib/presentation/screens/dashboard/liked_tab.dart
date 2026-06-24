@@ -141,24 +141,55 @@ class _LikedTabState extends State<LikedTab> {
                                 ),
                                 itemBuilder: (context, index) {
                                   final doc = filteredDocs[index];
-                                  return StitchCard(
-                                    title: doc.title,
-                                    dateAndSize: '${doc.addedDate} • ${doc.size}',
-                                    fileType: doc.fileType,
-                                    isFavorite: doc.isFavorite,
-                                    filePath: doc.filePath,
-                                    onTap: () {
-                                      state.selectDocument(doc);
-                                      if (doc.fileType.toLowerCase() == 'pdf') {
-                                        state.setScreen(AppScreen.pdfViewer);
-                                      } else {
-                                        state.setScreen(AppScreen.fileDetails);
-                                      }
+                                  return Dismissible(
+                                    key: Key('liked_${doc.id}'),
+                                    direction: DismissDirection.endToStart,
+                                    background: Container(
+                                      alignment: Alignment.centerRight,
+                                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFFD32F2F),
+                                        borderRadius: BorderRadius.circular(AppTokens.radiusLg),
+                                      ),
+                                      child: const Icon(
+                                        Icons.delete_outline_rounded,
+                                        color: Colors.white,
+                                        size: 24,
+                                      ),
+                                    ),
+                                    onDismissed: (direction) {
+                                      state.deleteDocument(doc.id);
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: Text('"${doc.title.replaceAll('/', '')}" deleted'),
+                                          action: SnackBarAction(
+                                            label: 'Undo',
+                                            onPressed: () {
+                                              state.restoreDocument(doc);
+                                            },
+                                          ),
+                                        ),
+                                      );
                                     },
-                                    onFavoriteToggle: (fav) =>
-                                        state.toggleFavorite(doc.id),
-                                    onMoreTap: () => showDocumentOptionsBottomSheet(
-                                        context, doc, state),
+                                    child: StitchCard(
+                                      title: doc.title,
+                                      dateAndSize: '${doc.addedDate} • ${doc.size}',
+                                      fileType: doc.fileType,
+                                      isFavorite: doc.isFavorite,
+                                      filePath: doc.filePath,
+                                      onTap: () {
+                                        state.selectDocument(doc);
+                                        if (doc.fileType.toLowerCase() == 'pdf') {
+                                          state.setScreen(AppScreen.pdfViewer);
+                                        } else {
+                                          state.setScreen(AppScreen.fileDetails);
+                                        }
+                                      },
+                                      onFavoriteToggle: (fav) =>
+                                          state.toggleFavorite(doc.id),
+                                      onMoreTap: () => showDocumentOptionsBottomSheet(
+                                          context, doc, state),
+                                    ),
                                   );
                                 },
                               ),
@@ -202,7 +233,7 @@ class _LikedTabState extends State<LikedTab> {
                       ? theme.colorScheme.error
                       : (isDark
                           ? const Color(0xFF282828)
-                          : const Color(0xFFE2EDF5)),
+                          : const Color(0xFFF0F0F0)),
                   borderRadius: BorderRadius.circular(AppTokens.radiusFull),
                   border: Border.all(
                     color: isSelected

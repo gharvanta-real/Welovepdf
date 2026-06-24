@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowLeft, ChevronDown, HelpCircle } from "lucide-react";
+import { ChevronDown, HelpCircle } from "lucide-react";
 
 interface FaqPageProps {
   onBack: () => void;
@@ -15,79 +15,59 @@ export function FaqPage({ onBack }: FaqPageProps) {
 
   const faqs: FaqItem[] = [
     {
-      q: "Is Pdfmount.online really free to use?",
-      a: "Yes, 100% free! You can use all conversions, page organization, AI summaries, and security tools without paying anything. We support server expenses by showing clean, non-intrusive advertisements and accepting optional UPI tips."
+      q: "Is PDFMount really free to use?",
+      a: "Yes, 100% free! You can merge, split, compress, and convert files without spending a penny. We cover our server costs using simple, non-intrusive advertisements and optional tips from users who want to buy us a cup of hot tea."
     },
     {
-      q: "Is my personal document secure on your servers?",
-      a: "Absolutely. We employ an automated server cleanup task that deletes all uploaded documents and processed outputs exactly 1 hour after conversion. We do not read, scan, store, or share your document contents."
+      q: "Are my uploaded files safe?",
+      a: "Absolutely. We automatically delete all uploaded documents and converted files after exactly 60 minutes. We do not read, scan, store, or share your document contents. Your files remain completely yours."
     },
     {
-      q: "Why are some tools like Edit PDF, Annotator, and Page Numbers missing from the menu?",
-      a: "These features are currently undergoing developer testing (Beta phase) to ensure they work smoothly. We have temporarily hidden them to maintain a highly stable, production-ready tool suite."
+      q: "Why are some tools like Edit PDF, Annotate, and Page Numbers missing?",
+      a: "These features are currently in our testing phase to make sure they work perfectly before release. We want to ensure a stable, bug-free experience, so we have temporarily hidden them until they are ready."
     },
     {
       q: "Are there size limits for uploading files?",
-      a: "Yes. Guest (not logged in) users can process up to 10 tools per day, with files up to 25 MB each. Logged-in free users can upload up to 50 MB per file with the same 10 jobs/day limit. Pro users get 500 MB per file and 100 jobs per day."
+      a: "Yes, to keep our servers running smoothly for everyone. Guest users can convert files up to 25 MB. If you sign up for a free account, you can upload files up to 50 MB. Pro members can upload files up to 500 MB."
     },
     {
-      q: "Can I cancel or delete my files before the 1-hour auto-delete timer?",
-      a: "Yes. You can clear your session history or delete files instantly by clicking the 'Reset' button in the dashboard, which purges your staged file cache immediately."
+      q: "Can I delete my files immediately instead of waiting an hour?",
+      a: "Yes! If you don't want to wait, you can click the delete or trash icon next to your file in the download panel to delete it from our servers instantly."
     },
     {
-      q: "How can I support Pdfmount.online?",
-      a: "If our free tools saved you time, you can scan our UPI QR code in the feedback section or donate panel to buy the developers a cup of hot chai! Sharing Pdfmount.online with your colleagues and friends is also a huge help."
+      q: "How can I support PDFMount?",
+      a: "If our tools saved you time, you can scan our UPI QR code in the support section to buy the developers a chai! Sharing PDFMount with your friends and coworkers is also a massive help."
     }
   ];
 
   return (
-    <div className="stitch-landing" style={{ width: "100%", minHeight: "100vh", backgroundColor: "var(--s-background, #f9f9f9)", paddingBottom: "80px" }}>
-      <div className="stitch-container" style={{ paddingTop: "60px", paddingBottom: "40px" }}>
+    <div className="stitch-landing-v2 theme-blue" style={{ width: "100%", minHeight: "100vh", backgroundColor: "var(--v2-bg-page)", color: "var(--v2-text-main)", fontFamily: "var(--v2-font-sans)", paddingBottom: "100px" }}>
+      <div className="v2-container" style={{ paddingTop: "64px", maxWidth: "1100px", margin: "0 auto" }}>
         
-        {/* Back Button */}
-        <button 
-          onClick={onBack} 
-          className="stitch-pill-outline"
-          style={{ 
-            display: "inline-flex", 
-            alignItems: "center", 
-            gap: "8px", 
-            padding: "8px 20px", 
-            fontSize: "14px", 
-            marginBottom: "40px"
-          }}
-        >
-          <ArrowLeft size={16} /> Back to Tools
-        </button>
-
-        {/* Hero Header */}
-        <div style={{ marginBottom: "56px" }}>
-          <span className="eyebrow" style={{ color: "rgba(0,0,0,0.5)", display: "block", marginBottom: "12px" }}>Common Inquiries</span>
-          <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px" }}>
-            <HelpCircle size={36} style={{ color: "var(--s-primary)" }} />
-            <h1 style={{ fontSize: "clamp(32px, 5vw, 56px)", fontWeight: 340, letterSpacing: "-0.8px", margin: 0, lineHeight: 1.1 }}>
-              Frequently Asked Questions
-            </h1>
-          </div>
-          <p style={{ color: "rgba(0, 0, 0, 0.5)", fontSize: "18px", fontWeight: 320, margin: 0 }}>
-            Everything you need to know about our free PDF tools, security, and usage constraints.
+        {/* Title Section */}
+        <div style={{ marginBottom: "48px" }}>
+          <span style={{ fontSize: "14px", fontWeight: "600", color: "var(--v2-primary)", letterSpacing: "1px", textTransform: "uppercase", display: "block", marginBottom: "8px" }}>
+            Common Inquiries
+          </span>
+          <h1 style={{ fontSize: "clamp(32px, 5vw, 46px)", fontWeight: 800, letterSpacing: "-1px", lineHeight: 1.15, marginBottom: "16px", color: "var(--v2-text-main)" }}>
+            Frequently Asked Questions
+          </h1>
+          <p style={{ fontSize: "16px", color: "var(--v2-text-muted)", lineHeight: 1.6, margin: 0 }}>
+            Everything you need to know about our free tools, safety protocols, and server guidelines.
           </p>
         </div>
 
-        {/* Accordion List */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+        {/* Flat Accordion Rows */}
+        <div style={{ display: "flex", flexDirection: "column", backgroundColor: "#ffffff", borderRadius: "16px", border: "1px solid var(--v2-border)", overflow: "hidden" }}>
           {faqs.map((faq, idx) => {
             const isOpen = openIndex === idx;
             return (
               <div 
                 key={idx}
                 style={{
-                  backgroundColor: "#ffffff",
-                  borderRadius: "16px",
-                  border: "1px solid var(--s-hairline)",
-                  boxShadow: "0 2px 8px rgba(0,0,0,0.02)",
-                  overflow: "hidden",
-                  transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)"
+                  borderBottom: idx === faqs.length - 1 ? "none" : "1px solid var(--v2-border-light)",
+                  backgroundColor: isOpen ? "rgba(37, 99, 235, 0.01)" : "transparent",
+                  transition: "background-color 0.2s ease"
                 }}
               >
                 <button
@@ -97,26 +77,28 @@ export function FaqPage({ onBack }: FaqPageProps) {
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
-                    padding: "24px 28px",
+                    padding: "24px 32px",
                     background: "transparent",
                     border: "none",
-                    color: "var(--s-on-surface)",
+                    color: "var(--v2-text-main)",
                     textAlign: "left",
-                    fontWeight: 540,
-                    fontSize: "18px",
-                    letterSpacing: "-0.1px",
+                    fontWeight: 700,
+                    fontSize: "17px",
                     cursor: "pointer",
                     outline: "none",
-                    fontFamily: "'Plus Jakarta Sans', sans-serif"
+                    fontFamily: "var(--v2-font-sans)"
                   }}
                 >
-                  <span>{faq.q}</span>
+                  <span style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                    <HelpCircle size={18} style={{ color: "var(--v2-primary)", opacity: 0.8 }} />
+                    {faq.q}
+                  </span>
                   <ChevronDown 
-                    size={20} 
+                    size={18} 
                     style={{ 
                       transform: isOpen ? "rotate(180deg)" : "rotate(0deg)", 
-                      transition: "transform 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
-                      color: "rgba(0,0,0,0.45)",
+                      transition: "transform 0.25s ease",
+                      color: "var(--v2-text-light)",
                       flexShrink: 0,
                       marginLeft: "16px"
                     }} 
@@ -125,15 +107,14 @@ export function FaqPage({ onBack }: FaqPageProps) {
 
                 <div 
                   style={{
-                    maxHeight: isOpen ? "300px" : "0px",
+                    maxHeight: isOpen ? "600px" : "0px",
                     opacity: isOpen ? 1 : 0,
                     overflow: "hidden",
-                    transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
-                    padding: isOpen ? "0 28px 24px" : "0 28px"
+                    transition: "all 0.25s ease",
+                    padding: isOpen ? "0 32px 24px 62px" : "0 32px 0 62px"
                   }}
                 >
-                  <div style={{ height: "1px", backgroundColor: "var(--s-hairline-soft)", marginBottom: "16px" }} />
-                  <p style={{ fontSize: "16px", fontWeight: 320, color: "var(--s-on-surface-variant)", lineHeight: 1.6, margin: 0 }}>
+                  <p style={{ fontSize: "14px", color: "var(--v2-text-muted)", lineHeight: 1.7, margin: 0 }}>
                     {faq.a}
                   </p>
                 </div>

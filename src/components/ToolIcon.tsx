@@ -7,12 +7,12 @@ export function getToolColor(identifier: string): string {
   if (key.includes("compress")) return "#ef4444"; // Coral Red
   if (key.includes("flatten")) return "#f97316"; // Orange
   if (key.includes("repair")) return "#d97706"; // Amber/Gold
-
+  
   // 2. AI Intelligence
   if (key.includes("copilot") || key.includes("ai")) return "#a855f7"; // Violet
   if (key.includes("summarize")) return "#ec4899"; // Pink
   if (key.includes("translate")) return "#d946ef"; // Magenta
-
+  
   // 3. Page Operations
   if (key.includes("merge")) return "#6366f1"; // Indigo
   if (key.includes("split")) return "#8b5cf6"; // Purple
@@ -20,7 +20,7 @@ export function getToolColor(identifier: string): string {
   if (key.includes("remove") || key.includes("delete")) return "#dc2626"; // Crimson Red
   if (key.includes("extract")) return "#4f46e5"; // Royal Indigo
   if (key.includes("organize")) return "#5b21b6"; // Deep Purple
-
+  
   // 4. Edit Tools
   if (key.includes("edit")) return "#0d9488"; // Teal
   if (key.includes("annotator") || key.includes("annotate")) return "#0ea5e9"; // Cyan
@@ -28,7 +28,7 @@ export function getToolColor(identifier: string): string {
   if (key.includes("number")) return "#4f46e5"; // Indigo
   if (key.includes("crop")) return "#059669"; // Emerald
   if (key.includes("bates")) return "#475569"; // Slate
-
+  
   // 5. Convert to PDF
   if (key.includes("word") || key.includes("doc")) return "#2563eb"; // Blue
   if (key.includes("excel") || key.includes("xls") || key.includes("sheet")) return "#16a34a"; // Green
@@ -36,13 +36,13 @@ export function getToolColor(identifier: string): string {
   if (key.includes("jpg") || key.includes("png") || key.includes("image")) return "#db2777"; // Deep Pink
   if (key.includes("html") || key.includes("url")) return "#0891b2"; // Cyan-Teal
   if (key.includes("txt") || key.includes("text")) return "#4b5563"; // Dark Grey
-
+  
   // 6. Sign & Protect
   if (key.includes("esign") || key.includes("sign")) return "#d97706"; // Amber
   if (key.includes("unlock")) return "#dc2626"; // Red
   if (key.includes("protect")) return "#1e3a8a"; // Navy Blue
   if (key.includes("ocr")) return "#06b6d4"; // Bright Cyan
-
+  
   // Default fallback
   return "#0074f0"; // Pdfmount.online Brand Blue
 }
@@ -291,7 +291,7 @@ export function ToolIcon({ toolNameOrId, size = 22, className = "", style = {} }
         ...style
       }}
     >
-      {getToolIconSVG(toolNameOrId, size)}
+      {getToolIconSVG(toolNameOrId, size * 1.6)}
     </div>
   );
 }

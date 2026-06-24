@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { ArrowLeft, CheckCircle2, Tag, X, Loader2, Crown, Zap } from "lucide-react";
-import { Footer } from "./Footer";
+
 
 interface PricingPageProps {
   currentUser: { name: string; email: string; plan?: string } | null;
@@ -125,7 +125,7 @@ export function PricingPage({ currentUser, onUpgradeSuccess, onLoginRequired, on
       price: "$0",
       sub: "/month",
       desc: "For individuals & light projects.",
-      color: "#000000",
+      color: "#64748B",
       isCurrent: !isProActive,
       featured: false,
       features: [
@@ -144,14 +144,14 @@ export function PricingPage({ currentUser, onUpgradeSuccess, onLoginRequired, on
       price: "$19",
       sub: "/month",
       desc: "For professionals and heavy users.",
-      color: "#10b981",
+      color: "#2563EB",
       isCurrent: isProActive,
       featured: true,
       features: [
         "100 jobs per day",
         "500 MB file size limit",
         "All core PDF tools",
-        "Priority processing",
+        "Priority processing speed",
         "Advanced annotations & editor",
         "Priority support (24/5)",
         "Billed monthly, cancel anytime",
@@ -164,7 +164,7 @@ export function PricingPage({ currentUser, onUpgradeSuccess, onLoginRequired, on
       price: "Custom",
       sub: "",
       desc: "For teams requiring control and scale.",
-      color: "#6366f1",
+      color: "#475569",
       isCurrent: false,
       featured: false,
       features: [
@@ -172,58 +172,387 @@ export function PricingPage({ currentUser, onUpgradeSuccess, onLoginRequired, on
         "Unlimited file size",
         "Dedicated processing servers",
         "SSO & Advanced Security",
-        "Admin dashboard",
-        "Unlimited storage",
+        "Admin dashboard access",
+        "Unlimited cloud storage",
         "24/7 VIP dedicated support",
         "Custom API integration",
       ],
       cta: "Contact Sales",
-      ctaAction: () => onBack(),
+      ctaAction: () => onViewChange("contact"),
     },
   ];
 
   const comparisonRows = [
-    { feature: "Jobs per day", starter: "5", pro: "100", enterprise: "Unlimited" },
+    { feature: "Jobs per day", starter: "10", pro: "100", enterprise: "Unlimited" },
     { feature: "Max file size", starter: "50 MB", pro: "500 MB", enterprise: "Unlimited" },
     { feature: "All PDF Tools", starter: "✓", pro: "✓", enterprise: "✓" },
     { feature: "Priority Processing", starter: "—", pro: "✓", enterprise: "✓" },
     { feature: "Annotations & Editor", starter: "Basic", pro: "Full", enterprise: "Full" },
-    { feature: "Plan Duration", starter: "Permanent", pro: "Monthly (or 1 Year via Code)", enterprise: "Custom" },
+    { feature: "Plan Duration", starter: "Permanent", pro: "Monthly", enterprise: "Custom" },
     { feature: "API Access", starter: "—", pro: "Add-on", enterprise: "✓" },
     { feature: "SSO / Security", starter: "—", pro: "—", enterprise: "✓" },
     { feature: "Support", starter: "Community", pro: "24/5 Priority", enterprise: "24/7 VIP" },
   ];
 
   return (
-    <div className="stitch-landing" style={{ width: "100%", minHeight: "100vh", backgroundColor: "#ffffff", color: "#1b1b1b" }}>
+    <div className="pricing-page-wrapper" style={{ width: "100%", minHeight: "100vh", color: "#0F172A" }}>
+      {/* Scoped CSS Styles */}
+      <style>{`
+        .pricing-page-wrapper {
+          background-color: #FFFFFF;
+        }
+        .theme-dark .pricing-page-wrapper {
+          background-color: #0B0F19;
+          color: #F8FAFC !important;
+        }
+        
+        .pricing-hero-sec {
+          text-align: left;
+          padding: 32px 0 40px 0;
+          margin-bottom: 40px;
+        }
+        .pricing-hero-chip {
+          display: inline-block;
+          font-family: "JetBrains Mono", monospace;
+          font-size: 12px;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 1.5px;
+          color: #2563EB;
+          background-color: rgba(37, 99, 235, 0.06);
+          padding: 6px 16px;
+          border-radius: 9999px;
+          margin-bottom: 20px;
+        }
+        .theme-dark .pricing-hero-chip {
+          color: #3B82F6;
+          background-color: rgba(59, 130, 246, 0.1);
+        }
+        .pricing-hero-sec h1 {
+          font-family: "Google Sans", "Google Sans Text", "Plus Jakarta Sans", sans-serif;
+          font-size: clamp(28px, 3.5vw, 40px);
+          font-weight: 700;
+          line-height: 1.18;
+          letter-spacing: -1px;
+          color: #0F172A;
+          margin: 0 0 16px;
+        }
+        .theme-dark .pricing-hero-sec h1 {
+          color: #F8FAFC;
+        }
+        .pricing-hero-sec p {
+          font-size: 14px;
+          line-height: 1.6;
+          color: #64748B;
+          max-width: 580px;
+          margin: 0;
+        }
+        .theme-dark .pricing-hero-sec p {
+          color: #94A3B8;
+        }
+
+        .pricing-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+          gap: 32px;
+          margin-bottom: 80px;
+          align-items: stretch;
+        }
+        
+        .pricing-card {
+          background-color: #FFFFFF;
+          border: 1px solid #E2E8F0;
+          border-radius: 16px;
+          padding: 40px 32px;
+          display: flex;
+          flex-direction: column;
+          position: relative;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .theme-dark .pricing-card {
+          background-color: #0F172A;
+          border-color: #1E293B;
+          box-shadow: none;
+        }
+        .pricing-card:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
+        }
+        .pricing-card.featured {
+          border: 2px solid #2563EB;
+          box-shadow: 0 8px 30px rgba(37, 99, 235, 0.05);
+        }
+        .theme-dark .pricing-card.featured {
+          border-color: #3B82F6;
+        }
+        .pricing-card.current-plan-border {
+          border: 2px solid #0F172A;
+        }
+        .theme-dark .pricing-card.current-plan-border {
+          border-color: #E2E8F0;
+        }
+        
+        .pricing-card-badge {
+          position: absolute;
+          top: -14px;
+          left: 32px;
+          background-color: #2563EB;
+          color: #FFFFFF;
+          font-size: 11px;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+          padding: 4px 14px;
+          border-radius: 9999px;
+        }
+        .theme-dark .pricing-card-badge {
+          background-color: #3B82F6;
+        }
+        
+        .pricing-card h3 {
+          font-family: "Google Sans", "Google Sans Text", "Plus Jakarta Sans", sans-serif;
+          font-size: 18px;
+          font-weight: 700;
+          color: #0F172A;
+          margin: 0 0 6px 0;
+        }
+        .theme-dark .pricing-card h3 {
+          color: #F8FAFC;
+        }
+        .pricing-desc {
+          font-size: 14px;
+          color: #64748B;
+          line-height: 1.5;
+          margin: 0 0 28px 0;
+        }
+        .theme-dark .pricing-desc {
+          color: #94A3B8;
+        }
+        
+        .price-wrap {
+          display: flex;
+          align-items: baseline;
+          margin-bottom: 28px;
+        }
+        .price-val {
+          font-size: 42px;
+          font-weight: 800;
+          color: #0F172A;
+          letter-spacing: -1.5px;
+        }
+        .theme-dark .price-val {
+          color: #F8FAFC;
+        }
+        .price-period {
+          font-size: 14px;
+          color: #64748B;
+          margin-left: 4px;
+        }
+        .theme-dark .price-period {
+          color: #94A3B8;
+        }
+        
+        .features-list {
+          list-style: none;
+          padding: 0;
+          margin: 0 0 36px 0;
+          display: flex;
+          flex-direction: column;
+          gap: 14px;
+          flex-grow: 1;
+        }
+        .feature-item {
+          display: flex;
+          align-items: flex-start;
+          gap: 10px;
+          font-size: 14px;
+          color: #334155;
+        }
+        .theme-dark .feature-item {
+          color: #CBD5E1;
+        }
+        .feature-icon {
+          color: #2563EB;
+          flex-shrink: 0;
+          margin-top: 2px;
+        }
+        .theme-dark .feature-icon {
+          color: #3B82F6;
+        }
+        
+        .pricing-btn {
+          width: 100%;
+          padding: 13px;
+          border-radius: 8px;
+          font-size: 14.5px;
+          font-weight: 600;
+          border: none;
+          cursor: pointer;
+          font-family: "Google Sans", "Google Sans Text", "Plus Jakarta Sans", sans-serif;
+          transition: background-color 0.15s ease, opacity 0.15s ease;
+        }
+        .pricing-btn-primary {
+          background-color: #2563EB;
+          color: #FFFFFF;
+        }
+        .pricing-btn-primary:hover {
+          background-color: #1d4ed8;
+        }
+        .theme-dark .pricing-btn-primary {
+          background-color: #3B82F6;
+        }
+        .theme-dark .pricing-btn-primary:hover {
+          background-color: #2563eb;
+        }
+        .pricing-btn-outline {
+          background-color: transparent;
+          border: 1px solid #E2E8F0;
+          color: #0F172A;
+        }
+        .theme-dark .pricing-btn-outline {
+          border-color: #334155;
+          color: #F8FAFC;
+        }
+        .pricing-btn-outline:hover {
+          background-color: #F8FAFC;
+        }
+        .theme-dark .pricing-btn-outline:hover {
+          background-color: #1E293B;
+        }
+        .pricing-btn-disabled {
+          background-color: #F1F5F9;
+          color: #94A3B8;
+          cursor: default;
+        }
+        .theme-dark .pricing-btn-disabled {
+          background-color: #1E293B;
+          color: #64748B;
+        }
+        
+        .comparison-title {
+          font-family: "Google Sans", "Google Sans Text", "Plus Jakarta Sans", sans-serif;
+          font-size: 28px;
+          font-weight: 800;
+          color: #0F172A;
+          margin: 0 0 6px 0;
+          letter-spacing: -0.5px;
+        }
+        .theme-dark .comparison-title {
+          color: #F8FAFC;
+        }
+        .comparison-table {
+          width: 100%;
+          border-collapse: collapse;
+          text-align: left;
+        }
+        .comparison-table th {
+          padding: 16px 12px;
+          font-size: 14px;
+          font-weight: 600;
+          color: #475569;
+          border-bottom: 2px solid #E2E8F0;
+        }
+        .theme-dark .comparison-table th {
+          color: #94A3B8;
+          border-bottom-color: #334155;
+        }
+        .comparison-table td {
+          padding: 16px 12px;
+          font-size: 14px;
+          color: #334155;
+          border-bottom: 1px solid #F1F5F9;
+        }
+        .theme-dark .comparison-table td {
+          color: #CBD5E1;
+          border-bottom-color: #1E293B;
+        }
+        .comparison-table tr:hover td {
+          background-color: #F8FAFC;
+        }
+        .theme-dark .comparison-table tr:hover td {
+          background-color: #0F172A;
+        }
+        
+        .promo-banner {
+          background-color: #F8FAFC;
+          border: 1px solid #E2E8F0;
+          border-radius: 16px;
+          padding: 60px 40px;
+          text-align: center;
+          margin-bottom: 64px;
+        }
+        .theme-dark .promo-banner {
+          background-color: #0F172A;
+          border-color: #1E293B;
+        }
+        .promo-banner h2 {
+          font-family: "Google Sans", "Google Sans Text", "Plus Jakarta Sans", sans-serif;
+          font-size: clamp(26px, 4vw, 36px);
+          font-weight: 800;
+          color: #0F172A;
+          letter-spacing: -0.8px;
+          margin: 0 0 10px;
+        }
+        .theme-dark .promo-banner h2 {
+          color: #F8FAFC;
+        }
+        .promo-banner p {
+          font-size: 15px;
+          color: #64748B;
+          margin: 0 0 28px;
+          max-width: 580px;
+          margin-inline: auto;
+          line-height: 1.5;
+        }
+        .theme-dark .promo-banner p {
+          color: #94A3B8;
+        }
+        
+        .promo-modal-box {
+          background-color: #FFFFFF;
+          border-radius: 16px;
+          padding: 40px;
+          max-width: 440px;
+          width: 100%;
+          position: relative;
+          box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
+          border: 1px solid #E2E8F0;
+        }
+        .theme-dark .promo-modal-box {
+          background-color: #0F172A;
+          border-color: #1E293B;
+          box-shadow: none;
+        }
+      `}</style>
 
       {/* Promo Code Modal */}
       {showPromoModal && (
-        <div style={{ position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.55)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: "20px" }}>
-          <div style={{ backgroundColor: "#ffffff", borderRadius: "20px", padding: "40px", maxWidth: "440px", width: "100%", position: "relative", boxShadow: "0 24px 60px rgba(0,0,0,0.18)" }}>
+        <div style={{ position: "fixed", inset: 0, backgroundColor: "rgba(11,15,25,0.65)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: "20px", backdropFilter: "blur(4px)" }}>
+          <div className="promo-modal-box">
             <button onClick={() => setShowPromoModal(false)} style={{ position: "absolute", top: "16px", right: "16px", background: "none", border: "none", cursor: "pointer", color: "#9ca3af" }}>
               <X size={20} />
             </button>
 
             {promoSuccess ? (
-              <div style={{ textAlign: "center", padding: "20px 0" }}>
-                <div style={{ width: "56px", height: "56px", borderRadius: "50%", background: "linear-gradient(135deg,#000,#10b981)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px" }}>
-                  <Crown size={24} color="#fff" />
+              <div style={{ textAlign: "center", padding: "10px 0" }}>
+                <div style={{ width: "56px", height: "56px", borderRadius: "50%", backgroundColor: "rgba(37,99,235,0.08)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px" }}>
+                  <Crown size={26} color="#2563EB" />
                 </div>
-                <h3 style={{ fontSize: "22px", fontWeight: 700, marginBottom: "8px" }}>Pro Activated! 🎉</h3>
-                <p style={{ color: "#6b7280", fontSize: "14px", margin: 0 }}>
+                <h3 style={{ fontSize: "20px", fontWeight: 700, marginBottom: "8px" }}>Pro Activated! 🎉</h3>
+                <p style={{ color: "#64748B", fontSize: "14px", margin: 0, lineHeight: 1.5 }}>
                   Your Pro plan is active until {formatDate(planInfo?.expires_at || null)}.
                 </p>
               </div>
             ) : (
               <>
                 <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "28px" }}>
-                  <div style={{ width: "44px", height: "44px", borderRadius: "12px", background: "linear-gradient(135deg,#000,#10b981)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                    <Tag size={20} color="#fff" />
+                  <div style={{ width: "44px", height: "44px", borderRadius: "8px", backgroundColor: "rgba(37,99,235,0.08)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    <Tag size={20} color="#2563EB" />
                   </div>
                   <div>
-                    <h3 style={{ fontSize: "20px", fontWeight: 700, margin: "0 0 2px" }}>Enter Promo Code</h3>
-                    <p style={{ fontSize: "13px", color: "#6b7280", margin: 0 }}>Activate Pro for 1 full year</p>
+                    <h3 style={{ fontSize: "18px", fontWeight: 700, margin: "0 0 2px" }}>Enter Promo Code</h3>
+                    <p style={{ fontSize: "12.5px", color: "#64748B", margin: 0 }}>Activate Pro for 1 full year</p>
                   </div>
                 </div>
 
@@ -236,15 +565,17 @@ export function PricingPage({ currentUser, onUpgradeSuccess, onLoginRequired, on
                     placeholder="e.g. PDFMOUNT2025"
                     autoFocus
                     style={{
-                      padding: "14px 18px",
-                      borderRadius: "12px",
-                      border: promoError ? "1.5px solid #ef4444" : "1.5px solid #e5e7eb",
+                      padding: "13px 16px",
+                      borderRadius: "8px",
+                      border: promoError ? "1.5px solid #ef4444" : "1.5px solid #e2e8f0",
+                      backgroundColor: "transparent",
+                      color: "inherit",
                       outline: "none",
-                      fontSize: "16px",
+                      fontSize: "15px",
                       fontFamily: "JetBrains Mono, monospace",
                       fontWeight: 600,
-                      letterSpacing: "1px",
-                      transition: "border-color 0.2s",
+                      letterSpacing: "0.5px",
+                      transition: "border-color 0.2s"
                     }}
                   />
 
@@ -257,27 +588,20 @@ export function PricingPage({ currentUser, onUpgradeSuccess, onLoginRequired, on
                   <button
                     onClick={handleActivatePromo}
                     disabled={promoLoading}
+                    className="pricing-btn pricing-btn-primary"
                     style={{
-                      padding: "14px",
-                      borderRadius: "12px",
-                      background: "linear-gradient(135deg,#000 0%,#10b981 100%)",
-                      color: "#fff",
-                      border: "none",
-                      fontSize: "15px",
-                      fontWeight: 600,
-                      cursor: promoLoading ? "not-allowed" : "pointer",
+                      padding: "13px",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
                       gap: "8px",
-                      opacity: promoLoading ? 0.75 : 1,
-                      transition: "opacity 0.2s",
+                      opacity: promoLoading ? 0.75 : 1
                     }}
                   >
-                    {promoLoading ? <><Loader2 size={16} style={{ animation: "spin 1s linear infinite" }} /> Activating...</> : <><Zap size={16} /> Activate Pro Plan</>}
+                    {promoLoading ? <><Loader2 size={16} style={{ animation: "spin 1s linear infinite" }} /> Activating...</> : <><Zap size={15} /> Activate Pro Plan</>}
                   </button>
 
-                  <p style={{ margin: 0, fontSize: "12px", color: "#9ca3af", textAlign: "center", lineHeight: 1.5 }}>
+                  <p style={{ margin: "8px 0 0", fontSize: "12px", color: "#94A3B8", textAlign: "center", lineHeight: 1.5 }}>
                     Activating a code gives you 1 full year of Pro access.<br />
                     100 jobs/day · 500 MB files · Priority processing.
                   </p>
@@ -288,142 +612,97 @@ export function PricingPage({ currentUser, onUpgradeSuccess, onLoginRequired, on
         </div>
       )}
 
-      <div className="stitch-container" style={{ paddingTop: "120px" }}>
-
-        {/* Back */}
-        <button onClick={onBack} className="stitch-pill-outline" style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "8px 20px", fontSize: "14px", marginBottom: "40px" }}>
-          <ArrowLeft size={16} /> Back to Tools
-        </button>
+      <div className="stitch-container" style={{ paddingTop: "32px" }}>
 
         {/* Hero Section */}
-        <section style={{ backgroundColor: "var(--s-block-lime, #D3F57B)", borderRadius: "16px", padding: "80px 48px 100px", overflow: "hidden", marginBottom: "80px" }}>
-          <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", marginBottom: "64px" }}>
-              <span style={{ fontFamily: "JetBrains Mono, monospace", fontSize: "13px", fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.8px", color: "rgba(0,0,0,0.5)", display: "block", marginBottom: "24px" }}>
-                Transparent Pricing
-              </span>
-              <h1 style={{ fontFamily: "Plus Jakarta Sans, sans-serif", fontSize: "clamp(36px,6vw,72px)", lineHeight: 1.05, fontWeight: 340, color: "#000", letterSpacing: "-1.5px", marginBottom: "20px", maxWidth: "800px" }}>
-                Plans for every workflow.
-              </h1>
-              <p style={{ fontFamily: "Plus Jakarta Sans, sans-serif", fontSize: "18px", lineHeight: "1.55", color: "rgba(0,0,0,0.65)", maxWidth: "600px", fontWeight: 320, margin: "0 auto" }}>
-                Start free, upgrade with a promo code. No credit card required.
-              </p>
-              {currentUser && isProActive && planInfo?.expires_at && (
-                <div style={{ marginTop: "24px", background: "rgba(0,0,0,0.08)", borderRadius: "9999px", padding: "8px 20px", fontSize: "13px", fontWeight: 600, display: "inline-flex", alignItems: "center", gap: "8px" }}>
-                  <Crown size={14} /> Pro active · Expires {formatDate(planInfo.expires_at)}
+        <div className="pricing-hero-sec">
+          <h1>Plans for every workflow.</h1>
+          <p>
+            Start free, upgrade with a promo code. No credit card required.
+          </p>
+          {currentUser && isProActive && planInfo?.expires_at && (
+            <div style={{ marginTop: "16px", backgroundColor: "rgba(37,99,235,0.06)", border: "1px solid rgba(37,99,235,0.15)", borderRadius: "9999px", padding: "6px 18px", fontSize: "12.5px", fontWeight: 600, display: "inline-flex", alignItems: "center", gap: "6px", color: "#2563EB", width: "fit-content" }}>
+              <Crown size={13} /> Pro active · Expires {formatDate(planInfo.expires_at)}
+            </div>
+          )}
+        </div>
+
+        {/* Pricing Cards Grid */}
+        <div className="pricing-grid">
+          {tiers.map((tier) => (
+            <div 
+              key={tier.name} 
+              className={`pricing-card ${tier.featured ? "featured" : ""} ${tier.isCurrent ? "current-plan-border" : ""}`}
+            >
+              {tier.featured && (
+                <div className="pricing-card-badge">
+                  Most Popular
                 </div>
               )}
-            </div>
-
-            {/* Pricing Cards */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px,1fr))", gap: "24px", alignItems: "stretch" }}>
-              {tiers.map((tier) => (
-                <div key={tier.name} style={{
-                  backgroundColor: tier.featured ? "#000000" : "#ffffff",
-                  color: tier.featured ? "#ffffff" : "#1b1b1b",
-                  padding: "32px",
-                  borderRadius: "16px",
-                  border: tier.isCurrent ? `2px solid ${tier.color}` : tier.featured ? "1px solid #000" : "1px solid var(--s-hairline)",
-                  display: "flex",
-                  flexDirection: "column",
-                  height: "100%",
-                  position: "relative",
-                  boxShadow: tier.featured ? "0 20px 40px rgba(0,0,0,0.18)" : "none",
-                  transform: tier.featured ? "scale(1.02)" : "none",
-                  zIndex: tier.featured ? 2 : 1,
-                  transition: "box-shadow 0.2s",
-                }}>
-                  {tier.featured && (
-                    <div style={{ position: "absolute", top: "-14px", left: "50%", transform: "translateX(-50%)", backgroundColor: "#10b981", color: "#fff", padding: "4px 16px", borderRadius: "9999px", fontSize: "11px", fontWeight: 600, fontFamily: "JetBrains Mono, monospace", textTransform: "uppercase", letterSpacing: "0.8px", whiteSpace: "nowrap" }}>
-                      Most Popular
-                    </div>
-                  )}
-                  {tier.isCurrent && !tier.featured && (
-                    <div style={{ position: "absolute", top: "-14px", left: "50%", transform: "translateX(-50%)", backgroundColor: tier.color, color: "#fff", padding: "4px 16px", borderRadius: "9999px", fontSize: "11px", fontWeight: 600, fontFamily: "JetBrains Mono, monospace", textTransform: "uppercase", letterSpacing: "0.8px", whiteSpace: "nowrap" }}>
-                      Current Plan
-                    </div>
-                  )}
-
-                  <div style={{ marginBottom: "24px" }}>
-                    <h3 style={{ fontFamily: "Plus Jakarta Sans, sans-serif", fontSize: "22px", fontWeight: 540, marginBottom: "6px", color: tier.featured ? "#fff" : "#000" }}>{tier.name}</h3>
-                    <p style={{ fontSize: "14px", color: tier.featured ? "rgba(255,255,255,0.65)" : "var(--s-secondary)", margin: 0 }}>{tier.desc}</p>
-                  </div>
-
-                  <div style={{ marginBottom: "28px" }}>
-                    <span style={{ fontSize: "48px", fontWeight: 340, color: tier.featured ? "#fff" : "#000" }}>{tier.price}</span>
-                    {tier.sub && <span style={{ fontSize: "14px", color: tier.featured ? "rgba(255,255,255,0.6)" : "var(--s-secondary)" }}>{tier.sub}</span>}
-                    {tier.name === "Pro" && (
-                      <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.5)", margin: "4px 0 0" }}>Billed via secure Stripe checkout</p>
-                    )}
-                  </div>
-
-                  <ul style={{ listStyle: "none", padding: 0, margin: "0 0 auto 0", display: "flex", flexDirection: "column", gap: "13px", flexGrow: 1, marginBottom: "32px" }}>
-                    {tier.features.map(f => (
-                      <li key={f} style={{ display: "flex", alignItems: "flex-start", gap: "10px", fontSize: "14px", color: tier.featured ? "rgba(255,255,255,0.9)" : "#374151" }}>
-                        <CheckCircle2 size={15} style={{ color: tier.isCurrent && !tier.featured ? tier.color : tier.featured ? "#10b981" : "#000", flexShrink: 0, marginTop: "1px" }} />
-                        {f}
-                      </li>
-                    ))}
-                  </ul>
-
-                  <button
-                    onClick={tier.ctaAction}
-                    disabled={(tier.isCurrent && tier.name !== "Starter") || checkoutLoading}
-                    style={{
-                      width: "100%",
-                      padding: "14px",
-                      borderRadius: "9999px",
-                      border: "none",
-                      fontSize: "15px",
-                      fontWeight: 600,
-                      cursor: ((tier.isCurrent && tier.name !== "Starter") || checkoutLoading) ? "default" : "pointer",
-                      fontFamily: "Plus Jakarta Sans, sans-serif",
-                      backgroundColor: tier.featured
-                        ? (tier.isCurrent ? "rgba(255,255,255,0.15)" : "#ffffff")
-                        : tier.isCurrent ? "#f3f4f6" : "#000000",
-                      color: tier.featured
-                        ? (tier.isCurrent ? "rgba(255,255,255,0.7)" : "#000000")
-                        : tier.isCurrent ? "#9ca3af" : "#ffffff",
-                      opacity: ((tier.isCurrent && tier.name !== "Starter") || checkoutLoading) ? 0.7 : 1,
-                      transition: "opacity 0.15s",
-                    }}
-                  >
-                    {checkoutLoading && tier.name === "Pro"
-                      ? "Processing..."
-                      : planLoading && tier.name === "Pro"
-                      ? "Loading..."
-                      : tier.cta}
-                  </button>
+              {tier.isCurrent && !tier.featured && (
+                <div className="pricing-card-badge" style={{ backgroundColor: "#475569" }}>
+                  Current Plan
                 </div>
-              ))}
-            </div>
-          </div>
-        </section>
+              )}
 
-        {/* Comparison Table */}
+              <div style={{ marginBottom: "20px" }}>
+                <h3>{tier.name}</h3>
+                <p className="pricing-desc">{tier.desc}</p>
+              </div>
+
+              <div className="price-wrap">
+                <span className="price-val">{tier.price}</span>
+                {tier.sub && <span className="price-period">{tier.sub}</span>}
+              </div>
+
+              <ul className="features-list">
+                {tier.features.map(f => (
+                  <li key={f} className="feature-item">
+                    <CheckCircle2 size={15} className="feature-icon" />
+                    <span>{f}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <button
+                onClick={tier.ctaAction}
+                disabled={(tier.isCurrent && tier.name !== "Starter") || checkoutLoading}
+                className={`pricing-btn ${tier.isCurrent ? "pricing-btn-disabled" : tier.featured ? "pricing-btn-primary" : "pricing-btn-outline"}`}
+              >
+                {checkoutLoading && tier.name === "Pro"
+                  ? "Processing..."
+                  : planLoading && tier.name === "Pro"
+                  ? "Loading..."
+                  : tier.cta}
+              </button>
+            </div>
+          ))}
+        </div>
+
+        {/* Comparison Table Section */}
         <section style={{ marginBottom: "80px" }}>
-          <div style={{ marginBottom: "48px" }}>
-            <h2 style={{ fontSize: "clamp(28px,4vw,40px)", fontWeight: 540, letterSpacing: "-0.5px", margin: "0 0 8px" }}>Compare Plans</h2>
-            <p style={{ fontSize: "16px", color: "var(--s-secondary)", margin: 0 }}>Exact limits enforced on every request.</p>
+          <div style={{ marginBottom: "36px" }}>
+            <h2 className="comparison-title">Compare Plans</h2>
+            <p style={{ fontSize: "14.5px", color: "#64748B", margin: 0 }}>Exact limits enforced on every request.</p>
           </div>
 
           <div style={{ overflowX: "auto" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
+            <table className="comparison-table">
               <thead>
-                <tr style={{ borderBottom: "2px solid #000" }}>
-                  <th style={{ padding: "16px 12px", fontSize: "15px", fontWeight: 600, width: "38%" }}>Feature</th>
-                  <th style={{ padding: "16px 12px", fontSize: "15px", fontWeight: 500, textAlign: "center", color: "var(--s-secondary)" }}>Starter</th>
-                  <th style={{ padding: "16px 12px", fontSize: "15px", fontWeight: 700, textAlign: "center", color: "#10b981", background: "#f0fdf4", borderRadius: "8px" }}>Pro ★</th>
-                  <th style={{ padding: "16px 12px", fontSize: "15px", fontWeight: 500, textAlign: "center", color: "var(--s-secondary)" }}>Enterprise</th>
+                <tr>
+                  <th style={{ width: "38%" }}>Feature</th>
+                  <th style={{ textAlign: "center" }}>Starter</th>
+                  <th style={{ textAlign: "center", color: "#2563EB", fontWeight: 700 }}>Pro</th>
+                  <th style={{ textAlign: "center" }}>Enterprise</th>
                 </tr>
               </thead>
-              <tbody style={{ fontSize: "14px" }}>
-                {comparisonRows.map((row, i) => (
-                  <tr key={row.feature} style={{ borderBottom: "1px solid var(--s-hairline-soft)", backgroundColor: i % 2 === 0 ? "transparent" : "#fafafa" }}>
-                    <td style={{ padding: "16px 12px", fontWeight: 500 }}>{row.feature}</td>
-                    <td style={{ padding: "16px 12px", textAlign: "center", color: row.starter === "—" ? "#d1d5db" : "#374151" }}>{row.starter}</td>
-                    <td style={{ padding: "16px 12px", textAlign: "center", fontWeight: 600, color: "#10b981", background: "#f0fdf4" }}>{row.pro}</td>
-                    <td style={{ padding: "16px 12px", textAlign: "center", color: row.enterprise === "—" ? "#d1d5db" : "#374151" }}>{row.enterprise}</td>
+              <tbody>
+                {comparisonRows.map((row) => (
+                  <tr key={row.feature}>
+                    <td style={{ fontWeight: 600 }}>{row.feature}</td>
+                    <td style={{ textAlign: "center" }}>{row.starter}</td>
+                    <td style={{ textAlign: "center", fontWeight: 700, color: "#2563EB" }}>{row.pro}</td>
+                    <td style={{ textAlign: "center" }}>{row.enterprise}</td>
                   </tr>
                 ))}
               </tbody>
@@ -432,28 +711,23 @@ export function PricingPage({ currentUser, onUpgradeSuccess, onLoginRequired, on
         </section>
 
         {/* Promo Code CTA Banner */}
-        <section style={{ background: "linear-gradient(135deg, #000 0%, #10b981 100%)", borderRadius: "20px", padding: "64px 40px", textAlign: "center", color: "#fff", marginBottom: "120px" }}>
-          <span style={{ fontFamily: "JetBrains Mono, monospace", fontSize: "12px", fontWeight: 500, textTransform: "uppercase", letterSpacing: "1px", color: "rgba(255,255,255,0.6)", display: "block", marginBottom: "16px" }}>
-            Get Pro Access
-          </span>
-          <h2 style={{ fontSize: "clamp(28px,5vw,46px)", fontWeight: 340, letterSpacing: "-0.8px", margin: "0 0 12px", color: "#fff" }}>
-            Have a promo code?
-          </h2>
-          <p style={{ fontSize: "17px", color: "rgba(255,255,255,0.7)", margin: "0 0 36px", fontWeight: 320 }}>
+        <section className="promo-banner">
+          <h2 className="comparison-title" style={{ fontSize: "28px", marginBottom: "12px" }}>Have a promo code?</h2>
+          <p>
             Enter your code to activate a 1-year Pro trial plan — 500MB files, 100 jobs/day, priority support.
           </p>
           <div style={{ display: "flex", gap: "16px", justifyContent: "center", flexWrap: "wrap" }}>
-            <button onClick={handleOpenPromo} style={{ padding: "16px 40px", borderRadius: "9999px", background: "#fff", color: "#000", border: "none", fontSize: "16px", fontWeight: 600, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: "8px", fontFamily: "Plus Jakarta Sans, sans-serif" }}>
-              <Tag size={18} /> Enter Promo Code
+            <button onClick={handleOpenPromo} className="pricing-btn pricing-btn-primary" style={{ width: "auto", padding: "14px 32px", display: "inline-flex", alignItems: "center", gap: "8px" }}>
+              <Tag size={16} /> Enter Promo Code
             </button>
-            <button onClick={onBack} style={{ padding: "16px 40px", borderRadius: "9999px", background: "transparent", color: "#fff", border: "1px solid rgba(255,255,255,0.3)", fontSize: "16px", cursor: "pointer", fontFamily: "Plus Jakarta Sans, sans-serif" }}>
+            <button onClick={onBack} className="pricing-btn pricing-btn-outline" style={{ width: "auto", padding: "14px 32px" }}>
               Explore Free Tools
             </button>
           </div>
         </section>
 
       </div>
-      <Footer onToolSelect={onToolSelect} onViewChange={onViewChange} />
     </div>
   );
 }
+export default PricingPage;

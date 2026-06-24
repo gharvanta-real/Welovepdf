@@ -1,3 +1,5 @@
+@import url('https://cdn.jsdelivr.net/fontsource/fonts/google-sans@latest/index.css');
+
 * {
   box-sizing: border-box;
 }
@@ -31,14 +33,14 @@ a {
   min-height: 100vh;
   background: var(--s-background);
   color: var(--s-on-surface);
-  font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: "Google Sans", "Google Sans Text", "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
   overflow-x: clip;
 }
 
 /* ── Stitch typography base ── */
 h1, h2, h3, h4, h5, h6 {
   margin: 0;
-  font-family: "Plus Jakarta Sans", sans-serif;
+  font-family: "Google Sans", "Google Sans Text", "Plus Jakarta Sans", sans-serif;
 }
 
 h1 {

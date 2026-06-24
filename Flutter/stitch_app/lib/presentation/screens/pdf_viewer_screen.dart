@@ -1,11 +1,13 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:provider/provider.dart';
-import 'package:share_plus/share_plus.dart';
+
 import '../../core/theme/app_tokens.dart';
 import '../state/app_state.dart';
 import 'dashboard/sheets/dashboard_sheets.dart';
+import '../../data/models/document.dart';
 
 class PdfViewerScreen extends StatefulWidget {
   const PdfViewerScreen({super.key});
@@ -25,6 +27,7 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
   final FocusNode _searchFocusNode = FocusNode();
   List<int> _searchResults = [];
   int _currentResultIndex = -1;
+  bool _showAllTools = false;
 
   final List<String> _pageImages = [
     'https://lh3.googleusercontent.com/aida-public/AB6AXuCDhX47lTA0qqANlaBdQQewpgpb5wzTwWAoT52jE4amC29rpLaZayFNgB_Bt33PoiAEUOWcmMxhWoemlZO0-I1qCgtfw6YApp9HPJn_odsqlbbfcLLnQPyw5ffFpYNGdwMzFwX2SyIcKdEl8kvXH0I6V-Ly5XVpxGjF9px0EGk5DDFOSII8E0nCdvfXhYlvvhqdg3uYYE0nwqkLhQdNtCBAcBhKWjsxJWUjXh9gaQqIyk7Dyk-UIJp40BAqO2DhRUM91SlUMSslbMz7',
@@ -106,6 +109,77 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
     }
   }
 
+  Widget _buildPageContent(Document? doc, int index, String imgUrl, AppState state) {
+    if (doc != null) {
+      final cachedImages = state.getDocumentImages(doc.id);
+      if (cachedImages != null && index < cachedImages.length) {
+        final item = cachedImages[index];
+        if (item is Uint8List) {
+          return Image.memory(item, fit: BoxFit.contain);
+        } else if (item is String && item.isNotEmpty) {
+          if (!kIsWeb && File(item).existsSync()) {
+            return Image.file(File(item), fit: BoxFit.contain);
+          }
+        }
+      }
+
+      if (!kIsWeb && doc.description.startsWith('image_paths:')) {
+        final paths = doc.description.replaceFirst('image_paths:', '').split(',');
+        if (index < paths.length && paths[index].isNotEmpty) {
+          if (File(paths[index]).existsSync()) {
+            return Image.file(File(paths[index]), fit: BoxFit.contain);
+          }
+        }
+      }
+
+      final extractedText = state.getDocumentPageText(doc.id, index);
+      if (extractedText != null && extractedText.trim().isNotEmpty) {
+        return _buildExtractedTextPage(extractedText);
+      }
+    }
+
+    return Image.network(
+      imgUrl,
+      fit: BoxFit.cover,
+      loadingBuilder: (context, child, loadingProgress) {
+        if (loadingProgress == null) return child;
+        return const Center(child: CircularProgressIndicator());
+      },
+      errorBuilder: (context, error, stackTrace) {
+        return _buildOfflinePagePlaceholder(context, index, doc?.title ?? 'Document');
+      },
+    );
+  }
+
+  Widget _buildExtractedTextPage(String text) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
+      color: isDark ? const Color(0xFF1E1E1E) : const Color(0xFFFAF9F6),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              physics: const NeverScrollableScrollPhysics(),
+              child: Text(
+                text,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontSize: 10,
+                  height: 1.5,
+                  fontFamily: 'Courier',
+                  color: isDark ? Colors.grey[300] : Colors.black87,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _zoom(double factor) {
     final double currentScale = _transformationController.value.getMaxScaleOnAxis();
     double targetScale = (currentScale * factor).clamp(1.0, 4.0);
@@ -120,11 +194,17 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
     });
   }
 
-  String _getPageText(int index) {
+  String _getPageText(int index, AppState state, Document? doc) {
+    if (doc != null) {
+      final text = state.getDocumentPageText(doc.id, index);
+      if (text != null && text.trim().isNotEmpty) {
+        return text;
+      }
+    }
     if (index >= 0 && index < _pageTexts.length) {
       return _pageTexts[index];
     }
-    return 'Page ${index + 1} of document. This is simulated content for search verification in serious mode.';
+    return 'Page ${index + 1} of document. This is simulated content for search verification.';
   }
 
   void _performSearch(String query) {
@@ -141,7 +221,7 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
 
     final List<int> matches = [];
     for (int i = 0; i < pagesCount; i++) {
-      if (_getPageText(i).toLowerCase().contains(query.toLowerCase())) {
+      if (_getPageText(i, state, doc).toLowerCase().contains(query.toLowerCase())) {
         matches.add(i);
       }
     }
@@ -183,13 +263,13 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
     final title = doc?.title ?? 'Document';
     final pagesCount = doc?.pagesCount ?? 12;
 
-    final appBarFgColor = theme.appBarTheme.foregroundColor ?? (isDark ? Colors.black : Colors.white);
+    const Color appBarFgColor = Colors.white;
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle(
         statusBarColor: theme.colorScheme.error,
-        statusBarIconBrightness: isDark ? Brightness.dark : Brightness.light,
-        statusBarBrightness: isDark ? Brightness.light : Brightness.dark,
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.dark,
         systemNavigationBarColor: theme.colorScheme.surface,
         systemNavigationBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
       ),
@@ -246,6 +326,7 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
               )
             : AppBar(
                 backgroundColor: theme.colorScheme.error,
+                foregroundColor: appBarFgColor,
                 leading: IconButton(
                   onPressed: () {
                     state.goBack();
@@ -305,7 +386,7 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
                   separatorBuilder: (c, i) => const SizedBox(height: AppTokens.stackLg),
                   itemBuilder: (c, index) {
                     final imgUrl = _pageImages[index % _pageImages.length];
-                    final pageText = _getPageText(index);
+                    final pageText = _getPageText(index, state, doc);
                     final query = _searchController.text.trim();
                     final isMatched = query.isNotEmpty && pageText.toLowerCase().contains(query.toLowerCase());
 
@@ -329,15 +410,7 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
                                 Positioned.fill(
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(AppTokens.radiusSm),
-                                    child: doc != null && doc.filePath != null && File(doc.filePath!).existsSync()
-                                        ? Image.file(
-                                            File(doc.filePath!),
-                                            fit: BoxFit.cover,
-                                          )
-                                        : Image.network(
-                                            imgUrl,
-                                            fit: BoxFit.cover,
-                                          ),
+                                    child: _buildPageContent(doc, index, imgUrl, state),
                                   ),
                                 ),
                                 Positioned(
@@ -419,32 +492,44 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
                   _buildSideToolButton(context, Icons.border_color, () {
                     state.setScreen(AppScreen.editDocument);
                   }),
+                  if (_showAllTools) ...[
+                    const SizedBox(height: AppTokens.stackMd),
+                    _buildSideToolButton(context, Icons.title, () {
+                      state.setScreen(AppScreen.editDocument);
+                    }),
+                    const SizedBox(height: AppTokens.stackMd),
+                    _buildSideToolButton(context, Icons.assignment, () {
+                      state.setScreen(AppScreen.editDocument);
+                    }),
+                    const SizedBox(height: 16),
+                    Container(
+                      width: 32,
+                      height: 1,
+                      color: theme.colorScheme.outlineVariant.withOpacity(0.5),
+                    ),
+                    const SizedBox(height: 16),
+                    _buildSideToolButton(context, Icons.add, () {
+                      _zoom(1.25);
+                    }),
+                    const SizedBox(height: AppTokens.stackMd),
+                    _buildSideToolButton(context, Icons.remove, () {
+                      _zoom(1 / 1.25);
+                    }),
+                    const SizedBox(height: AppTokens.stackMd),
+                    _buildSideToolButton(context, Icons.restart_alt, () {
+                      _resetZoom();
+                    }),
+                  ],
                   const SizedBox(height: AppTokens.stackMd),
-                  _buildSideToolButton(context, Icons.title, () {
-                    state.setScreen(AppScreen.editDocument);
-                  }),
-                  const SizedBox(height: AppTokens.stackMd),
-                  _buildSideToolButton(context, Icons.assignment, () {
-                    state.setScreen(AppScreen.editDocument);
-                  }),
-                  const SizedBox(height: 16),
-                  Container(
-                    width: 32,
-                    height: 1,
-                    color: theme.colorScheme.outlineVariant.withOpacity(0.5),
+                  _buildSideToolButton(
+                    context,
+                    _showAllTools ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                    () {
+                      setState(() {
+                        _showAllTools = !_showAllTools;
+                      });
+                    },
                   ),
-                  const SizedBox(height: 16),
-                  _buildSideToolButton(context, Icons.add, () {
-                    _zoom(1.25);
-                  }),
-                  const SizedBox(height: AppTokens.stackMd),
-                  _buildSideToolButton(context, Icons.remove, () {
-                    _zoom(1 / 1.25);
-                  }),
-                  const SizedBox(height: AppTokens.stackMd),
-                  _buildSideToolButton(context, Icons.restart_alt, () {
-                    _resetZoom();
-                  }),
                 ],
               ),
             ),
@@ -558,30 +643,7 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
               ),
             ),
 
-            // Primary FAB (Share) - placed higher to prevent overlap with the ribbon
-            Positioned(
-              bottom: 240,
-              right: AppTokens.containerPadding,
-              child: FloatingActionButton(
-                backgroundColor: theme.colorScheme.error,
-                onPressed: () async {
-                  if (doc != null) {
-                    if (doc.filePath != null && await File(doc.filePath!).exists()) {
-                      await Share.shareXFiles(
-                        [XFile(doc.filePath!)],
-                        text: doc.title,
-                      );
-                    } else {
-                      await Share.share(
-                        '${doc.title}\nFormat: ${doc.fileType.toUpperCase()}\nSize: ${doc.size}\nAuthor: ${doc.author}',
-                        subject: 'Stitch Document Share',
-                      );
-                    }
-                  }
-                },
-                child: const Icon(Icons.share, color: Colors.white),
-              ),
-            ),
+
           ],
         ),
       ),
@@ -630,15 +692,7 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
                   Positioned.fill(
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(AppTokens.radiusSm - (isActive ? 2 : 1)),
-                      child: doc != null && doc.filePath != null && File(doc.filePath!).existsSync()
-                          ? Image.file(
-                              File(doc.filePath!),
-                              fit: BoxFit.cover,
-                            )
-                          : Image.network(
-                              imgUrl,
-                              fit: BoxFit.cover,
-                            ),
+                      child: _buildPageContent(doc, pageNum - 1, imgUrl, state),
                     ),
                   ),
                   Positioned(
@@ -696,5 +750,143 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
       ),
     );
   }
+
+  Widget _buildOfflinePagePlaceholder(BuildContext context, int pageIndex, String title) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: isDark
+              ? [const Color(0xFF1E1E1E), const Color(0xFF121212)]
+              : [const Color(0xFFF9FBFC), const Color(0xFFE8F1F5)],
+        ),
+      ),
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: Opacity(
+              opacity: isDark ? 0.04 : 0.08,
+              child: CustomPaint(
+                painter: _GridLinesPainter(lineColor: isDark ? Colors.white : Colors.black87),
+              ),
+            ),
+          ),
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.error.withOpacity(0.08),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.picture_as_pdf_rounded,
+                    size: 48,
+                    color: theme.colorScheme.error,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                  child: Text(
+                    title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: theme.colorScheme.onSurface,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  'Page ${pageIndex + 1}',
+                  style: theme.textTheme.labelLarge?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.secondary.withOpacity(0.08),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: theme.colorScheme.secondary.withOpacity(0.15),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.cloud_off_rounded,
+                        size: 12,
+                        color: theme.colorScheme.secondary,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        'Offline Preview',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.secondary,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 10,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _GridLinesPainter extends CustomPainter {
+  final Color lineColor;
+  _GridLinesPainter({required this.lineColor});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = lineColor
+      ..strokeWidth = 1.0;
+    
+    final double startY = size.height * 0.2;
+    final double spacing = 18.0;
+    for (int i = 0; i < 6; i++) {
+      final double y = startY + i * spacing;
+      final double widthRatio = i % 2 == 0 ? 0.7 : 0.55;
+      canvas.drawLine(
+        Offset(size.width * 0.15, y),
+        Offset(size.width * (0.15 + widthRatio * 0.7), y),
+        paint,
+      );
+    }
+
+    final double bottomStartY = size.height * 0.68;
+    for (int i = 0; i < 4; i++) {
+      final double y = bottomStartY + i * spacing;
+      final double widthRatio = i % 2 == 0 ? 0.65 : 0.45;
+      canvas.drawLine(
+        Offset(size.width * 0.15, y),
+        Offset(size.width * (0.15 + widthRatio * 0.7), y),
+        paint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 

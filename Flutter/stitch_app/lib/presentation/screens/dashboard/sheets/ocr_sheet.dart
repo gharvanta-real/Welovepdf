@@ -36,7 +36,7 @@ class _StatefulOCRSheetState extends State<_StatefulOCRSheet> {
     try {
       final result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
-        allowedExtensions: ['pdf'],
+        allowedExtensions: ['pdf', 'png', 'jpg', 'jpeg'],
       );
       if (result != null && result.files.isNotEmpty) {
         setState(() {

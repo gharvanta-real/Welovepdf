@@ -227,11 +227,11 @@
 .download-btn {
   background: var(--s-primary);
   color: var(--s-on-primary) !important;
-  font-family: "Plus Jakarta Sans", sans-serif;
+  font-family: "Google Sans", "Google Sans Text", "Plus Jakarta Sans", sans-serif;
   font-size: 15px;
   font-weight: 600;
   height: 52px;
-  border-radius: 9999px;
+  border-radius: 8px;
   border: none;
   display: flex;
   align-items: center;
@@ -252,11 +252,11 @@
   background: #ffffff;
   color: var(--s-primary);
   border: 1px solid var(--s-hairline);
-  font-family: "Plus Jakarta Sans", sans-serif;
+  font-family: "Google Sans", "Google Sans Text", "Plus Jakarta Sans", sans-serif;
   font-size: 14px;
   font-weight: 500;
   height: 46px;
-  border-radius: 9999px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;

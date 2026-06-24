@@ -17,6 +17,8 @@ import "./styles/layout-checkout.css";
 import "./styles/layout-header-stitch.css";
 import "./styles/layout-landing-stitch.css";
 import "./styles/layout-landing-stitch-details.css";
+import "./styles/tokens-v2.css";
+import "./styles/layout-landing-v2.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

@@ -39,28 +39,30 @@ class _ScanPreviewScreenState extends State<ScanPreviewScreen> {
       _titleController.text = state.scannedTitle;
     }
 
-    final appBarFgColor = theme.appBarTheme.foregroundColor ?? (isDark ? Colors.black : Colors.white);
+    const appBarBgColor = Color(0xFF1A73E8);
+    const appBarFgColor = Colors.white;
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle(
-        statusBarColor: theme.appBarTheme.backgroundColor ?? theme.colorScheme.error,
-        statusBarIconBrightness: isDark ? Brightness.dark : Brightness.light,
-        statusBarBrightness: isDark ? Brightness.light : Brightness.dark,
+        statusBarColor: appBarBgColor,
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.dark,
         systemNavigationBarColor: theme.colorScheme.surface,
         systemNavigationBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
       ),
       child: Scaffold(
         backgroundColor: isDark ? AppTokens.backgroundDark : AppTokens.backgroundLight,
         appBar: AppBar(
-          backgroundColor: theme.appBarTheme.backgroundColor ?? theme.colorScheme.error,
+          backgroundColor: appBarBgColor,
+          foregroundColor: appBarFgColor,
           elevation: 0,
           leading: IconButton(
             onPressed: () {
               state.goBack();
             },
-            icon: Icon(Icons.arrow_back, color: appBarFgColor),
+            icon: const Icon(Icons.arrow_back, color: appBarFgColor),
           ),
-          title: Text(
+          title: const Text(
             'Save Document',
             style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold, color: appBarFgColor),
           ),
@@ -73,7 +75,7 @@ class _ScanPreviewScreenState extends State<ScanPreviewScreen> {
                   state.updateScannedTitle(_titleController.text);
                   state.saveScannedDocument();
                 },
-                child: Text(
+                child: const Text(
                   'Save',
                   style: TextStyle(
                     color: appBarFgColor,
@@ -97,7 +99,7 @@ class _ScanPreviewScreenState extends State<ScanPreviewScreen> {
                   ElevatedButton.icon(
                     onPressed: () => state.startScanFlow(context),
                     icon: const Icon(Icons.camera_alt_outlined),
-                    label: const Text('Open ML Camera'),
+                    label: const Text('Open Camera'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: theme.colorScheme.error,
                       foregroundColor: Colors.white,
@@ -235,13 +237,8 @@ class _ScanPreviewScreenState extends State<ScanPreviewScreen> {
                       Expanded(
                         child: Container(
                           decoration: BoxDecoration(
+                            color: theme.colorScheme.error,
                             borderRadius: BorderRadius.circular(AppTokens.radiusFull),
-                            gradient: LinearGradient(
-                              colors: [
-                                theme.colorScheme.error,
-                                isDark ? Colors.black : const Color(0xFF444444),
-                              ],
-                            ),
                             boxShadow: [
                               BoxShadow(
                                 color: theme.colorScheme.error.withOpacity(0.3),
@@ -261,7 +258,7 @@ class _ScanPreviewScreenState extends State<ScanPreviewScreen> {
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.transparent,
                               shadowColor: Colors.transparent,
-                              foregroundColor: Colors.white,
+                              foregroundColor: isDark ? Colors.black : Colors.white,
                               padding: const EdgeInsets.symmetric(vertical: 16),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(AppTokens.radiusFull),

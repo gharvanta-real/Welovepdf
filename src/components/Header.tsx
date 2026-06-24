@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { ChevronDown, ArrowRight, X, Menu } from "lucide-react";
+import { ChevronDown, ArrowRight, X, Menu, LayoutGrid } from "lucide-react";
 import { ToolIcon, getToolColor } from "./ToolIcon";
 import { tools } from "../data/tools";
 
@@ -143,7 +143,7 @@ export function Header({
             onClick={(e) => { e.preventDefault(); setIsDropdownOpen(false); setIsMobileMenuOpen(false); onLogoClick(); }}
             style={{ display: "flex", alignItems: "center" }}
           >
-            <img src="/logo.png" alt="Pdfmount.online" style={{ height: "30px", width: "auto", objectFit: "contain" }} />
+            <img src="/logo.png" alt="Pdfmount.online" style={{ height: "42px", width: "42px", objectFit: "contain" }} />
           </a>
 
           {/* Desktop Center nav */}
@@ -155,9 +155,7 @@ export function Header({
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 aria-expanded={isDropdownOpen}
               >
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style={{ opacity: 0.7 }}>
-                  <path d="M4 4h4v4H4V4zm6 0h4v4h-4V4zm6 0h4v4h-4V4zM4 10h4v4H4v-4zm6 0h4v4h-4v-4zm6 0h4v4h-4v-4zM4 16h4v4H4v-4zm6 0h4v4h-4v-4zm6 0h4v4h-4v-4z"/>
-                </svg>
+                <LayoutGrid size={14} style={{ opacity: 0.8 }} />
                 Tools
                 <ChevronDown size={13} style={{ transform: isDropdownOpen ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" }} />
               </button>
@@ -239,13 +237,20 @@ export function Header({
 
         {/* Right actions */}
         <div className="stitch-header-actions">
-          {/* Workspace Links (Desktop Only) */}
-          <div className="stitch-desktop-only" style={{ display: "flex", alignItems: "center", gap: "16px", marginRight: "12px" }}>
+          {/* Workspace & Pricing Links (Desktop Only) */}
+          <div className="stitch-desktop-only" style={{ display: "flex", alignItems: "center", gap: "20px", marginRight: "8px" }}>
+            <a 
+              className="stitch-nav-link" 
+              href="#pricing" 
+              onClick={(e) => { e.preventDefault(); setIsDropdownOpen(false); onPricingClick(); }}
+            >
+              Pricing
+            </a>
             {currentUser && (
               <a 
                 className="stitch-nav-link" 
                 href="#workspace" 
-                style={{ fontWeight: "600", padding: 0 }} 
+                style={{ fontWeight: "600" }} 
                 onClick={(e) => { e.preventDefault(); setIsDropdownOpen(false); onWorkspaceClick?.(); }}
               >
                 My Workspace

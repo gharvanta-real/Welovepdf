@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import '../../core/theme/app_tokens.dart';
 import '../components/stitch_button.dart';
 import '../components/stitch_pdf_badge.dart';
@@ -266,7 +267,7 @@ class _FileDetailsScreenState extends State<FileDetailsScreen> {
                         boxShadow: const [AppTokens.shadowLevel1],
                       ),
                       alignment: Alignment.center,
-                      child: doc.filePath != null && File(doc.filePath!).existsSync()
+                      child: doc.filePath != null && !kIsWeb && File(doc.filePath!).existsSync()
                           ? ClipRRect(
                               borderRadius: BorderRadius.circular(AppTokens.radiusXl),
                               child: Image.file(
@@ -318,7 +319,7 @@ class _FileDetailsScreenState extends State<FileDetailsScreen> {
                   const SizedBox(width: AppTokens.gutter),
                   IconButton(
                     onPressed: () async {
-                      if (doc.filePath != null && await File(doc.filePath!).exists()) {
+                      if (doc.filePath != null && !kIsWeb && await File(doc.filePath!).exists()) {
                         await Share.shareXFiles(
                           [XFile(doc.filePath!)],
                           text: doc.title,

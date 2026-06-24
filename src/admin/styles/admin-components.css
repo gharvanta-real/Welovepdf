@@ -62,8 +62,9 @@
 }
 
 .admin-sidebar-logo img {
-  height: 24px;
-  width: auto;
+  height: 36px;
+  width: 36px;
+  object-fit: contain;
   flex-shrink: 0;
 }
 

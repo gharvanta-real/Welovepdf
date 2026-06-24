@@ -73,10 +73,8 @@
   display: flex;
   gap: 16px;
   align-items: center;
-  border-bottom: 1px solid var(--border);
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.03), rgba(139, 92, 246, 0.03), rgba(59, 130, 246, 0.03));
-  background-size: 200% 200%;
-  animation: dynamicGradient 10s ease infinite;
+  border-bottom: 1px solid var(--v2-border-light, #e2e8f0);
+  background: #ffffff;
   text-align: left;
 }
 
@@ -100,7 +98,7 @@
 }
 
 .dynamic-avatar-gradient {
-  background: radial-gradient(circle at 20% 20%, #10b981 0%, transparent 80%), #000000;
+  background: linear-gradient(135deg, var(--v2-primary, #2563eb), #1d4ed8);
   box-shadow: none;
   border: none;
 }
@@ -181,32 +179,25 @@
 }
 
 .settings-icon-wrapper {
-  width: 26px;
-  height: 26px;
-  border-radius: 7px;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  transition: transform 0.2s ease;
+  background: #f1f5f9;
+  color: #64748b;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Tool matching colors */
-.settings-icon-wrapper.security-color {
-  background: rgba(16, 185, 129, 0.1); /* Emerald */
-  color: #10b981;
-}
-.settings-icon-wrapper.support-color {
-  background: rgba(139, 92, 246, 0.1); /* Purple */
-  color: #8b5cf6;
-}
-.settings-icon-wrapper.storage-color {
-  background: rgba(59, 130, 246, 0.1); /* Blue */
-  color: #3b82f6;
-}
+/* Redundant tool matching colors overridden to neutral slate grey */
+.settings-icon-wrapper.security-color,
+.settings-icon-wrapper.support-color,
+.settings-icon-wrapper.storage-color,
 .settings-icon-wrapper.preferences-color {
-  background: rgba(249, 115, 22, 0.1); /* Orange */
-  color: #f97316;
+  background: #f1f5f9;
+  color: #64748b;
 }
 
 .storage-status-box {
@@ -214,23 +205,23 @@
   flex-direction: column;
   gap: 10px;
   text-align: left;
-  background: var(--c-surface);
+  background: #f8fafc;
   padding: 14px;
   border-radius: 10px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--v2-border-light, #e2e8f0);
 }
 
 .storage-labels {
   display: flex;
   justify-content: space-between;
   font-size: 0.82rem;
-  color: var(--c-text);
+  color: var(--v2-text-main, #1b1b1b);
   font-weight: 500;
 }
 
 .progress-bar-bg {
   height: 6px;
-  background: var(--border);
+  background: #f1f5f9;
   border-radius: 3px;
   overflow: hidden;
 }
@@ -241,9 +232,7 @@
 }
 
 .dynamic-progress-gradient {
-  background: linear-gradient(90deg, #000000, #10b981);
-  background-size: 200% 100%;
-  animation: dynamicGradient 4s linear infinite;
+  background: var(--v2-primary, #2563eb);
 }
 
 .storage-subtext {
@@ -355,12 +344,14 @@
 }
 
 .settings-option-item:hover {
-  background: var(--c-surface);
-  transform: translateX(4px);
+  background: #f8fafc;
+  transform: translateX(3px);
 }
 
 .settings-option-item:hover .settings-icon-wrapper {
-  transform: scale(1.08);
+  background: var(--v2-primary-soft, rgba(37, 99, 235, 0.08));
+  color: var(--v2-primary, #2563eb);
+  transform: scale(1.02);
 }
 
 .drawer-close-btn {
@@ -412,4 +403,32 @@
   border-color: #ef4444;
   box-shadow: 0 4px 14px rgba(239, 68, 68, 0.2);
 }
+
+/* V2 Account Settings Styles */
+.v2-settings-input {
+  width: 100%;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: 1.5px solid var(--v2-border);
+  background-color: #ffffff;
+  color: var(--v2-text-main);
+  font-size: 14px;
+  font-family: var(--v2-font-sans);
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.v2-settings-input:focus {
+  border-color: var(--v2-primary);
+  box-shadow: 0 0 0 3px var(--v2-primary-soft);
+}
+
+.v2-settings-card {
+  background-color: #ffffff;
+  border: 1px solid var(--v2-border-light);
+  border-radius: 12px;
+  padding: 24px;
+}
+
 

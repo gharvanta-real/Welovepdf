@@ -6,6 +6,12 @@ import '../../../components/stitch_button.dart';
 import '../../../components/stitch_input.dart';
 import 'sheet_header.dart';
 
+import 'dart:io';
+import 'dart:typed_data';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as p;
+import '../../../../data/engines/qr_generator_engine.dart';
+
 void showMakeQRSheet(BuildContext context) {
   showModalBottomSheet(
     context: context,
@@ -26,27 +32,82 @@ class _StatefulMakeQRSheet extends StatefulWidget {
 
 class _StatefulMakeQRSheetState extends State<_StatefulMakeQRSheet> {
   final _textController = TextEditingController(text: 'https://pdfmount.online');
-  String _qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https%3A%2F%2Fpdfmount.online';
+  Uint8List? _qrBytes;
   bool _isLoading = false;
 
-  void _generateQR() {
+  @override
+  void initState() {
+    super.initState();
+    _generateQR();
+  }
+
+  Future<void> _generateQR() async {
     final text = _textController.text.trim();
-    if (text.isEmpty) return;
+    if (text.isEmpty) {
+      setState(() {
+        _qrBytes = null;
+      });
+      return;
+    }
 
     setState(() {
       _isLoading = true;
-      final encoded = Uri.encodeComponent(text);
-      _qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=$encoded';
     });
 
-    // Simulate network delay for a real generator feel
-    Future.delayed(const Duration(milliseconds: 500), () {
+    try {
+      final bytes = await QrGeneratorEngine.generate(data: text, size: 512);
+      if (mounted) {
+        setState(() {
+          _qrBytes = bytes;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
       if (mounted) {
         setState(() {
           _isLoading = false;
         });
       }
-    });
+    }
+  }
+
+  Future<void> _shareQR() async {
+    if (_qrBytes == null) return;
+    try {
+      final tempDir = await getTemporaryDirectory();
+      final tempFile = File(p.join(tempDir.path, 'qr_share.png'));
+      await tempFile.writeAsBytes(_qrBytes!);
+      
+      await Share.shareXFiles(
+        [XFile(tempFile.path)],
+        text: 'Scan this QR code: ${_textController.text}',
+        subject: 'PDFmount QR Share',
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error sharing QR Code: $e')),
+      );
+    }
+  }
+
+  Future<void> _downloadQR() async {
+    if (_qrBytes == null) return;
+    try {
+      final docDir = await getApplicationDocumentsDirectory();
+      final dirPath = p.join(docDir.path, 'downloaded_qr');
+      await Directory(dirPath).create(recursive: true);
+      
+      final file = File(p.join(dirPath, 'qr_${DateTime.now().millisecondsSinceEpoch}.png'));
+      await file.writeAsBytes(_qrBytes!);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('QR Code saved offline: ${p.basename(file.path)}')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error saving QR Code: $e')),
+      );
+    }
   }
 
   @override
@@ -100,22 +161,17 @@ class _StatefulMakeQRSheetState extends State<_StatefulMakeQRSheet> {
               ),
               child: _isLoading
                   ? const Center(child: CircularProgressIndicator())
-                  : ClipRRect(
-                      borderRadius: BorderRadius.circular(AppTokens.radiusMd),
-                      child: Image.network(
-                        _qrUrl,
-                        fit: BoxFit.contain,
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return const Center(child: CircularProgressIndicator());
-                        },
-                        errorBuilder: (context, error, stackTrace) {
-                          return const Center(
-                            child: Icon(Icons.broken_image, color: Colors.grey, size: 48),
-                          );
-                        },
-                      ),
-                    ),
+                  : _qrBytes == null
+                      ? const Center(
+                          child: Icon(Icons.qr_code, color: Colors.grey, size: 48),
+                        )
+                      : ClipRRect(
+                          borderRadius: BorderRadius.circular(AppTokens.radiusMd),
+                          child: Image.memory(
+                            _qrBytes!,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
             ),
           ),
           const SizedBox(height: AppTokens.stackLg * 1.5),
@@ -127,10 +183,7 @@ class _StatefulMakeQRSheetState extends State<_StatefulMakeQRSheet> {
                   text: 'Share QR',
                   onPressed: () {
                     HapticFeedback.mediumImpact();
-                    Share.share(
-                      'Scan this QR code or click the link to read content: ${_textController.text}\nQR Image URL: $_qrUrl',
-                      subject: 'PDFmount QR Share',
-                    );
+                    _shareQR();
                   },
                 ),
               ),
@@ -140,9 +193,7 @@ class _StatefulMakeQRSheetState extends State<_StatefulMakeQRSheet> {
                   text: 'Download QR',
                   onPressed: () {
                     HapticFeedback.heavyImpact();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('QR Code image downloaded to your Gallery!')),
-                    );
+                    _downloadQR();
                   },
                 ),
               ),

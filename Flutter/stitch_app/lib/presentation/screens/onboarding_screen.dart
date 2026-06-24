@@ -254,7 +254,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                       ),
                       const SizedBox(height: AppTokens.stackLg * 1.5),
                       StitchButton(
-                        type: StitchButtonType.secondary,
+                        type: StitchButtonType.primary,
                         text: 'Get Started',
                         onPressed: () {
                           Provider.of<AppState>(context, listen: false)

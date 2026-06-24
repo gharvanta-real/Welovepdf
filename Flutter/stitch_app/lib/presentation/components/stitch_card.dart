@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import '../../core/theme/app_tokens.dart';
 import 'stitch_pdf_badge.dart';
 
@@ -36,6 +37,12 @@ class StitchCard extends StatefulWidget {
 
 class _StitchCardState extends State<StitchCard> {
   late bool _fav;
+
+  bool _shouldShowImagePreview() {
+    if (widget.filePath == null) return false;
+    final type = widget.fileType.toLowerCase();
+    return type == 'jpg' || type == 'jpeg' || type == 'png' || type == 'gif';
+  }
 
   @override
   void initState() {
@@ -107,7 +114,7 @@ class _StitchCardState extends State<StitchCard> {
                               ),
                             ),
                           )
-                        : (widget.filePath != null && File(widget.filePath!).existsSync()
+                        : (widget.filePath != null && !kIsWeb && _shouldShowImagePreview() && File(widget.filePath!).existsSync()
                             ? Image.file(
                                 File(widget.filePath!),
                                 fit: BoxFit.cover,
@@ -195,7 +202,7 @@ class _StitchCardState extends State<StitchCard> {
                           color: theme.colorScheme.error,
                         ),
                       )
-                    : (widget.filePath != null && File(widget.filePath!).existsSync()
+                    : (widget.filePath != null && !kIsWeb && _shouldShowImagePreview() && File(widget.filePath!).existsSync()
                         ? Image.file(
                             File(widget.filePath!),
                             fit: BoxFit.cover,

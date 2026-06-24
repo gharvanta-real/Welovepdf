@@ -179,7 +179,7 @@ export function PageNumberEditor({ file, onClose, onSave }: PageNumberEditorProp
       height: "100vh",
       width: "100%",
       backgroundColor: "#f3f3f3",
-      fontFamily: "'Plus Jakarta Sans', sans-serif",
+      fontFamily: "'Google Sans', 'Google Sans Text', 'Plus Jakarta Sans', sans-serif",
       overflow: "hidden"
     }}>
       <Header
@@ -282,7 +282,7 @@ export function PageNumberEditor({ file, onClose, onSave }: PageNumberEditorProp
               fontWeight: "bold",
               pointerEvents: "none",
               padding: "4px 8px",
-              fontFamily: "'Plus Jakarta Sans', sans-serif"
+              fontFamily: "'Google Sans', 'Google Sans Text', 'Plus Jakarta Sans', sans-serif"
             }}>
               {getPreviewText()}
             </div>
@@ -352,7 +352,7 @@ export function PageNumberEditor({ file, onClose, onSave }: PageNumberEditorProp
                 min="1"
                 value={startIndex}
                 onChange={e => setStartIndex(Math.max(1, parseInt(e.target.value) || 1))}
-                style={{ width: "100%", padding: "8px 10px", borderRadius: "8px", border: "1px solid rgba(0,0,0,0.15)", fontSize: "0.8rem", marginTop: "4px", outline: "none", boxSizing: "border-box", fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+                style={{ width: "100%", padding: "8px 10px", borderRadius: "8px", border: "1px solid rgba(0,0,0,0.15)", fontSize: "0.8rem", marginTop: "4px", outline: "none", boxSizing: "border-box", fontFamily: "'Google Sans', 'Google Sans Text', 'Plus Jakarta Sans', sans-serif" }}
               />
             </div>
 

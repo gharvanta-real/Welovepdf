@@ -47,7 +47,7 @@ export function CookieBanner({ onPrivacyPolicyClick }: CookieBannerProps) {
         maxWidth: "380px",
         width: "calc(100% - 48px)",
         boxSizing: "border-box",
-        fontFamily: "'Plus Jakarta Sans', sans-serif",
+        fontFamily: "'Google Sans', 'Google Sans Text', 'Plus Jakarta Sans', sans-serif",
         display: "flex",
         flexDirection: "column",
         gap: "16px",

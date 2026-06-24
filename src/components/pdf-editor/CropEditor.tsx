@@ -203,7 +203,7 @@ export function CropEditor({ file, onClose, onSave }: CropEditorProps) {
       height: "100vh",
       width: "100%",
       backgroundColor: "#f3f3f3",
-      fontFamily: "'Plus Jakarta Sans', sans-serif",
+      fontFamily: "'Google Sans', 'Google Sans Text', 'Plus Jakarta Sans', sans-serif",
       overflow: "hidden"
     }}>
       <Header

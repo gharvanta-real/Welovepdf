@@ -19,33 +19,33 @@ class DashboardDrawer extends StatelessWidget {
       child: Column(
         children: [
           UserAccountsDrawerHeader(
-            decoration: BoxDecoration(
-              color: theme.colorScheme.error,
+            decoration: const BoxDecoration(
+              color: Color(0xFF1A73E8),
             ),
             accountName: Text(
               state.isLoggedIn ? (state.userName ?? 'PDFmount User') : 'PDFmount Guest',
-              style: TextStyle(
+              style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 18,
-                color: isDark ? Colors.black : Colors.white,
+                color: Colors.white,
               ),
             ),
             accountEmail: Text(
               state.isLoggedIn ? (state.userEmail ?? 'user@pdfmount.com') : 'Log in to sync files',
-              style: TextStyle(
-                color: isDark ? Colors.black54 : Colors.white70,
+              style: const TextStyle(
+                color: Colors.white70,
               ),
             ),
             currentAccountPicture: CircleAvatar(
-              backgroundColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+              backgroundColor: Colors.white,
               child: Text(
                 state.isLoggedIn
                     ? (state.userName != null && state.userName!.isNotEmpty
                         ? state.userName!.split(' ').map((e) => e[0]).take(2).join('').toUpperCase()
                         : 'U')
                     : 'G',
-                style: TextStyle(
-                  color: isDark ? Colors.white : theme.colorScheme.error,
+                style: const TextStyle(
+                  color: Color(0xFF1A73E8),
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),

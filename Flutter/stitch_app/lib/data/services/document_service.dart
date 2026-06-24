@@ -4,74 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/document.dart';
 
 class DocumentService {
-  final List<Document> _documents = [
-    Document(
-      id: '1',
-      title: 'Q3 Finance Report.pdf',
-      fileType: 'pdf',
-      size: '14.8 MB',
-      addedDate: '12 mins ago',
-      isFavorite: false,
-      pagesCount: 12,
-      author: 'Finance Admin',
-      description: 'Q3 corporate quarterly financial status, performance metrics, and growth forecasts.',
-    ),
-    Document(
-      id: '2',
-      title: 'Wedding invitation.pdf',
-      fileType: 'pdf',
-      size: '5.2 MB',
-      addedDate: '02/03/2024',
-      isFavorite: true,
-      pagesCount: 2,
-      author: 'Sarah & Alex',
-      description: 'Elegant custom wedding invitation card and event itinerary details.',
-    ),
-    Document(
-      id: '3',
-      title: 'Project Proposal_v2.docx',
-      fileType: 'docx',
-      size: '1.1 MB',
-      addedDate: '01/03/2024',
-      isFavorite: false,
-      pagesCount: 8,
-      author: 'Lead Architect',
-      description: 'System architecture design proposal and project scoping documentation.',
-    ),
-    Document(
-      id: '4',
-      title: 'Bank Statement Feb.pdf',
-      fileType: 'pdf',
-      size: '2.4 MB',
-      addedDate: '28/02/2024',
-      isFavorite: false,
-      pagesCount: 4,
-      author: 'PDFmount Bank Corp',
-      description: 'Monthly checking and savings account statement details for February.',
-    ),
-    Document(
-      id: '5',
-      title: 'Inventory_Sheet.xlsx',
-      fileType: 'xlsx',
-      size: '850 KB',
-      addedDate: '25/02/2024',
-      isFavorite: false,
-      pagesCount: 1,
-      author: 'Store Manager',
-      description: 'Comprehensive list of retail items, quantities, and pricing database.',
-    ),
-    Document(
-      id: '6',
-      title: 'Product Pitch Presentation.pptx',
-      fileType: 'pptx',
-      size: '18.2 MB',
-      addedDate: '20/02/2024',
-      isFavorite: true,
-      pagesCount: 25,
-      author: 'Marketing Team',
-      description: 'Slide deck outlining product roadmap, marketing strategy, and pitch parameters.',
-    ),
-  ];
+  final List<Document> _documents = [];
 
   bool _isInitialized = false;
 
@@ -79,6 +12,14 @@ class DocumentService {
     if (_isInitialized) return;
     try {
       final prefs = await SharedPreferences.getInstance();
+      
+      // Wipe old mock documents database once
+      final clearedMock = prefs.getBool('mock_docs_cleared_v1') ?? false;
+      if (!clearedMock) {
+        await prefs.remove('documents_db');
+        await prefs.setBool('mock_docs_cleared_v1', true);
+      }
+
       final content = prefs.getString('documents_db');
       if (content != null && content.isNotEmpty) {
         final List<dynamic> jsonList = jsonDecode(content);
@@ -185,6 +126,14 @@ class DocumentService {
       _documents[index] = _documents[index].copyWith(
         isFavorite: !_documents[index].isFavorite,
       );
+      _saveToLocal();
+    }
+  }
+
+  void updateDocument(Document doc) {
+    final index = _documents.indexWhere((d) => d.id == doc.id);
+    if (index != -1) {
+      _documents[index] = doc;
       _saveToLocal();
     }
   }

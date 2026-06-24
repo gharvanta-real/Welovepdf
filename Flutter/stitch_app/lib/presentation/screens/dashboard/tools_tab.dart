@@ -334,8 +334,8 @@ class ToolsTab extends StatelessWidget {
                 height: 56,
                 decoration: BoxDecoration(
                   color: isDark
-                      ? const Color(0xFF1E1E1E)
-                      : Colors.white,
+                      ? const Color(0xFF282828)
+                      : const Color(0xFFF0F0F0),
                   shape: BoxShape.circle,
                   boxShadow: const [AppTokens.shadowLevel1],
                   border: null,
@@ -344,8 +344,8 @@ class ToolsTab extends StatelessWidget {
                     ? Center(
                         child: Image.asset(
                           tool.assetPath!,
-                          width: 34,
-                          height: 34,
+                          width: 36,
+                          height: 36,
                           fit: BoxFit.contain,
                         ),
                       )
@@ -370,10 +370,20 @@ class ToolsTab extends StatelessWidget {
                               ),
                             ),
                           )
-                        : Icon(
-                            tool.icon!,
-                            color: tool.badgeColor,
-                            size: 24,
+                        : Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              Icon(
+                                _getFilledIcon(tool.icon!),
+                                color: const Color(0xFF1A73E8).withOpacity(0.35),
+                                size: 24,
+                              ),
+                              Icon(
+                                tool.icon!,
+                                color: isDark ? Colors.white : const Color(0xFF1C1B1F),
+                                size: 24,
+                              ),
+                            ],
                           ),
               ),
               const SizedBox(height: 6),
@@ -408,7 +418,27 @@ class ToolsTab extends StatelessWidget {
     );
   }
 
-
+  IconData _getFilledIcon(IconData outlineIcon) {
+    if (outlineIcon == Icons.merge_type_rounded) return Icons.file_copy;
+    if (outlineIcon == Icons.compress_rounded) return Icons.insert_drive_file;
+    if (outlineIcon == Icons.call_split_rounded) return Icons.splitscreen;
+    if (outlineIcon == Icons.description_outlined) return Icons.description;
+    if (outlineIcon == Icons.add_photo_alternate_outlined) return Icons.add_photo_alternate;
+    if (outlineIcon == Icons.lock_outlined) return Icons.lock;
+    if (outlineIcon == Icons.lock_open_outlined) return Icons.lock;
+    if (outlineIcon == Icons.branding_watermark_outlined) return Icons.branding_watermark;
+    if (outlineIcon == Icons.image_outlined) return Icons.image;
+    if (outlineIcon == Icons.rotate_right_rounded) return Icons.change_circle; // rotating arrows circle for rotate
+    if (outlineIcon == Icons.delete_sweep_outlined) return Icons.delete_sweep;
+    if (outlineIcon == Icons.swap_vert_rounded) return Icons.swap_vertical_circle;
+    if (outlineIcon == Icons.file_download_outlined) return Icons.file_download;
+    if (outlineIcon == Icons.visibility_outlined) return Icons.visibility;
+    if (outlineIcon == Icons.qr_code_scanner_rounded) return Icons.camera_alt; // camera filled shape for QR scan
+    if (outlineIcon == Icons.qr_code_rounded) return Icons.grid_on; // grid filled shape for QR make
+    if (outlineIcon == Icons.square_foot_rounded) return Icons.square; // square area filled shape for measure
+    if (outlineIcon == Icons.analytics_outlined) return Icons.analytics;
+    return outlineIcon;
+  }
 }
 
 // ── Data class for tool items ──────────────────────────────────────────────

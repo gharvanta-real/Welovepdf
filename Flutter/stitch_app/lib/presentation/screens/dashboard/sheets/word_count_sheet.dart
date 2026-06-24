@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:file_picker/file_picker.dart';
 import '../../../../core/theme/app_tokens.dart';
+import '../../../../data/engines/pdf_word_count_engine.dart';
 import '../../../components/stitch_button.dart';
 import '../../../components/stitch_input.dart';
 import 'sheet_header.dart';
@@ -53,33 +54,44 @@ class _StatefulWordCountSheetState extends State<_StatefulWordCountSheet> {
     }
   }
 
-  void _runCounter() {
+  Future<void> _runCounter() async {
     if (_selectedFile == null) return;
     setState(() {
       _isLoading = true;
       _error = '';
     });
 
-    // Simulate word analysis on PDF file structure
-    Future.delayed(const Duration(milliseconds: 1500), () {
+    try {
+      final stats = await PdfWordCountEngine.count(file: _selectedFile!);
       if (mounted) {
         final query = _searchController.text.trim().toLowerCase();
+        int keywordCount = 0;
+        if (query.isNotEmpty && stats['text'] != null) {
+          final text = (stats['text'] as String).toLowerCase();
+          int index = 0;
+          while ((index = text.indexOf(query, index)) != -1) {
+            keywordCount++;
+            index += query.length;
+          }
+        }
+
         setState(() {
           _isLoading = false;
           _isSuccess = true;
-          // Generate realistic counts based on file size
-          final fileSizeFactor = _selectedFile!.size ~/ 250;
-          _wordCount = fileSizeFactor + 120;
-          _charCount = _wordCount * 6;
-          if (query.isNotEmpty) {
-            _keywordOccurrences = (fileSizeFactor % 7) + 2;
-          } else {
-            _keywordOccurrences = 0;
-          }
+          _wordCount = stats['wordCount'] as int;
+          _charCount = stats['characterCount'] as int;
+          _keywordOccurrences = keywordCount;
         });
         HapticFeedback.mediumImpact();
       }
-    });
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _error = 'Failed to count words: $e';
+        });
+      }
+    }
   }
 
   @override

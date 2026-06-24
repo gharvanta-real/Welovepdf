@@ -2,24 +2,24 @@
 
 
 :root {
-  font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: "Google Sans", "Google Sans Text", "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
 /* ── Stitch color tokens (light mode default) ── */
 .app {
   /* Stitch core palette */
-  --s-primary:       #000000;
+  --s-primary:       #2563eb;
   --s-on-primary:    #ffffff;
-  --s-background:    #f9f9f9;
-  --s-surface:       #f9f9f9;
-  --s-surface-low:   #f3f3f3;
-  --s-surface-soft:  #F5F5F5;
-  --s-hairline:      #E6E6E6;
-  --s-hairline-soft: #F0F0F0;
+  --s-background:    #F5F9FF;
+  --s-surface:       #ffffff;
+  --s-surface-low:   #EBF2FF;
+  --s-surface-soft:  #F5F9FF;
+  --s-hairline:      #D0E1FD;
+  --s-hairline-soft: #EBF2FF;
   --s-on-surface:    #1b1b1b;
-  --s-on-surface-variant: #4c4546;
-  --s-secondary:     #5d5f5f;
-  --s-outline:       #7e7576;
+  --s-on-surface-variant: #4B5563;
+  --s-secondary:     #4B5563;
+  --s-outline:       #94A3B8;
 
   /* Block accent colors */
   --s-block-mint:    #ADEFD1;
@@ -33,14 +33,14 @@
 
   /* Alias to existing var system for functional code (UploadPanel, PdfEditor, etc.) */
   --c-bg:       #ffffff;
-  --c-surface:  #f5f5f5;
+  --c-surface:  #F5F9FF;
   --c-text:     #1b1b1b;
-  --c-accent:   #000000;
-  --text-muted: #4c4546;
-  --border:     #E6E6E6;
+  --c-accent:   #2563eb;
+  --text-muted: #4B5563;
+  --border:     #D0E1FD;
   --surface-raised: #ffffff;
-  --accent-soft: #f3f3f3;
-  --accent-strong: #000000;
+  --accent-soft: #EBF2FF;
+  --accent-strong: #2563eb;
   --shadow: 0 8px 30px rgba(0,0,0,0.06);
 
   /* Spacing */
@@ -58,7 +58,7 @@
   --radius-pill: 9999px;
 
   /* Layout */
-  --header-h: 80px;
+  --header-h: 60px;
   --sidebar-w: 236px;
 
   /* Typography scales */

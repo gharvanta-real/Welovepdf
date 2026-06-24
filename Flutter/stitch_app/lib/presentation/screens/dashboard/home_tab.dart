@@ -92,6 +92,13 @@ class HomeTab extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final double padding = AppTokens.containerPadding * 2;
+    const double spacing = 10.0 * 3;
+    final double cellWidth = (screenWidth - padding - spacing) / 4;
+    const double cellHeight = 100.0;
+    final double dynamicAspectRatio = cellWidth > 0 ? (cellWidth / cellHeight) : 0.8;
+
     final List<Map<String, dynamic>> quickTools = [
       {
         'label': 'Merge\nPDF',
@@ -133,12 +140,51 @@ class HomeTab extends StatelessWidget {
         'icon': Icons.branding_watermark_outlined,
         'onTap': (ctx) => showWatermarkSheet(ctx),
       },
+      {
+        'label': 'Sign\nPDF',
+        'icon': Icons.draw_rounded,
+        'onTap': (ctx) => showSignSheet(ctx),
+      },
+      {
+        'label': 'OCR\nPDF',
+        'icon': Icons.document_scanner_rounded,
+        'onTap': (ctx) => showOCRSheet(ctx),
+      },
+      {
+        'label': 'Word\nCounter',
+        'icon': Icons.analytics_outlined,
+        'onTap': (ctx) => showWordCountSheet(ctx),
+      },
+      {
+        'label': 'Scan\nQR',
+        'icon': Icons.qr_code_scanner_rounded,
+        'onTap': (ctx) => showScanQRSheet(ctx),
+      },
+      {
+        'label': 'Make\nQR',
+        'icon': Icons.qr_code_rounded,
+        'onTap': (ctx) => showMakeQRSheet(ctx),
+      },
+      {
+        'label': 'Area\nMeasure',
+        'icon': Icons.square_foot_rounded,
+        'onTap': (ctx) => showAreaMeasureSheet(ctx),
+      },
+      {
+        'label': 'PDF to\nImage',
+        'icon': Icons.image_outlined,
+        'onTap': (ctx) => showPdfToOfficeSheet(ctx, 'Image'),
+      },
+      {
+        'label': 'Rotate\nPDF',
+        'icon': Icons.rotate_right_rounded,
+        'onTap': (ctx) => showPageManipulationSheet(ctx, 'Rotate'),
+      },
     ];
 
     final Color topSectionFgColor = theme.colorScheme.onSurface;
     final Color topSectionSeeAllColor = theme.colorScheme.error;
-    final Color quickToolCircleBgColor = isDark ? const Color(0xFF282828) : const Color(0xFFE2EDF5);
-    final Color quickToolIconColor = isDark ? Colors.white : theme.colorScheme.error;
+    final Color quickToolCircleBgColor = isDark ? const Color(0xFF282828) : const Color(0xFFF0F0F0);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -178,11 +224,11 @@ class HomeTab extends StatelessWidget {
         GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 4,
             crossAxisSpacing: 10,
             mainAxisSpacing: 10,
-            childAspectRatio: 0.80,
+            childAspectRatio: dynamicAspectRatio,
           ),
           itemCount: quickTools.length,
           itemBuilder: (context, index) {
@@ -204,10 +250,20 @@ class HomeTab extends StatelessWidget {
                       shape: BoxShape.circle,
                       boxShadow: const [AppTokens.shadowLevel1],
                     ),
-                    child: Icon(
-                      tool['icon'] as IconData,
-                      color: quickToolIconColor,
-                      size: 28,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Icon(
+                          _getFilledIcon(tool['icon'] as IconData),
+                          color: const Color(0xFF1A73E8).withOpacity(0.35),
+                          size: 26,
+                        ),
+                        Icon(
+                          tool['icon'] as IconData,
+                          color: isDark ? Colors.white : const Color(0xFF1C1B1F),
+                          size: 26,
+                        ),
+                      ],
                     ),
                   ),
                   const SizedBox(height: 6),
@@ -306,11 +362,42 @@ class HomeTab extends StatelessWidget {
                 ),
                 itemBuilder: (c, index) {
                   final doc = docs[index];
-                  if (doc.fileType == 'folder') {
-                    return _buildFolderDragTarget(context, doc, state);
-                  } else {
-                    return _buildFileDraggable(context, doc, state);
-                  }
+                  final item = doc.fileType == 'folder'
+                      ? _buildFolderDragTarget(context, doc, state)
+                      : _buildFileDraggable(context, doc, state);
+
+                  return Dismissible(
+                    key: Key('home_${doc.id}'),
+                    direction: DismissDirection.endToStart,
+                    background: Container(
+                      alignment: Alignment.centerRight,
+                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFD32F2F),
+                        borderRadius: BorderRadius.circular(AppTokens.radiusLg),
+                      ),
+                      child: const Icon(
+                        Icons.delete_outline_rounded,
+                        color: Colors.white,
+                        size: 24,
+                      ),
+                    ),
+                    onDismissed: (direction) {
+                      state.deleteDocument(doc.id);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('"${doc.title.replaceAll('/', '')}" deleted'),
+                          action: SnackBarAction(
+                            label: 'Undo',
+                            onPressed: () {
+                              state.restoreDocument(doc);
+                            },
+                          ),
+                        ),
+                      );
+                    },
+                    child: item,
+                  );
                 },
               ),
       ],
@@ -341,7 +428,7 @@ class HomeTab extends StatelessWidget {
                       ? theme.colorScheme.error
                       : (isDark
                           ? const Color(0xFF282828)
-                          : const Color(0xFFE2EDF5)),
+                          : const Color(0xFFF0F0F0)),
                   borderRadius:
                       BorderRadius.circular(AppTokens.radiusFull),
                   border: Border.all(
@@ -505,7 +592,7 @@ class HomeTab extends StatelessWidget {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
               content:
-                  Text('Moved "${data.title}" to "${folder.title}".')),
+                  Text('Moved "${data.title.replaceAll('/', '')}" to "${folder.title.replaceAll('/', '')}".')),
         );
       },
       builder: (context, candidateData, rejectedData) {
@@ -518,25 +605,61 @@ class HomeTab extends StatelessWidget {
                       BorderRadius.circular(AppTokens.radiusLg),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.amber.withOpacity(0.3),
+                      color: const Color(0xFF1A73E8).withOpacity(0.3),
                       blurRadius: 8,
                       spreadRadius: 2,
                     ),
                   ],
                 )
               : const BoxDecoration(),
-          child: StitchCard(
-            title: folder.title,
-            dateAndSize:
-                '${state.getAllFolderItemsCount(folder.id)} items',
-            fileType: folder.fileType,
-            isFavorite: folder.isFavorite,
-            filePath: folder.filePath,
-            onTap: () => state.openFolder(folder.id),
-            onFavoriteToggle: (fav) =>
-                state.toggleFavorite(folder.id),
-            onMoreTap: () =>
-                showDocumentOptionsBottomSheet(context, folder, state),
+          child: LongPressDraggable<Document>(
+            data: folder,
+            delay: const Duration(milliseconds: 200),
+            maxSimultaneousDrags: 1,
+            feedback: Material(
+              color: Colors.transparent,
+              child: Opacity(
+                opacity: 0.8,
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width -
+                      (AppTokens.containerPadding * 2),
+                  child: StitchCard(
+                    title: folder.title,
+                    dateAndSize: '${state.getAllFolderItemsCount(folder.id)} items',
+                    fileType: folder.fileType,
+                    isFavorite: folder.isFavorite,
+                    filePath: folder.filePath,
+                    onTap: () {},
+                    onMoreTap: () {},
+                  ),
+                ),
+              ),
+            ),
+            childWhenDragging: Opacity(
+              opacity: 0.3,
+              child: StitchCard(
+                title: folder.title,
+                dateAndSize: '${state.getAllFolderItemsCount(folder.id)} items',
+                fileType: folder.fileType,
+                isFavorite: folder.isFavorite,
+                filePath: folder.filePath,
+                onTap: () {},
+                onMoreTap: () {},
+              ),
+            ),
+            child: StitchCard(
+              title: folder.title,
+              dateAndSize:
+                  '${state.getAllFolderItemsCount(folder.id)} items',
+              fileType: folder.fileType,
+              isFavorite: folder.isFavorite,
+              filePath: folder.filePath,
+              onTap: () => state.openFolder(folder.id),
+              onFavoriteToggle: (fav) =>
+                  state.toggleFavorite(folder.id),
+              onMoreTap: () =>
+                  showDocumentOptionsBottomSheet(context, folder, state),
+            ),
           ),
         );
       },
@@ -548,6 +671,7 @@ class HomeTab extends StatelessWidget {
       BuildContext context, Document file, AppState state) {
     return LongPressDraggable<Document>(
       data: file,
+      delay: const Duration(milliseconds: 200),
       maxSimultaneousDrags: 1,
       feedback: Material(
         color: Colors.transparent,
@@ -634,5 +758,25 @@ class HomeTab extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  IconData _getFilledIcon(IconData outlineIcon) {
+    if (outlineIcon == Icons.merge_type_rounded) return Icons.file_copy; // double files background shape for merge
+    if (outlineIcon == Icons.compress_rounded) return Icons.insert_drive_file; // single file background shape for compress
+    if (outlineIcon == Icons.call_split_rounded) return Icons.splitscreen; // splitscreen background shape for split
+    if (outlineIcon == Icons.description_outlined) return Icons.description;
+    if (outlineIcon == Icons.add_photo_alternate_outlined) return Icons.add_photo_alternate;
+    if (outlineIcon == Icons.lock_outlined) return Icons.lock;
+    if (outlineIcon == Icons.lock_open_outlined) return Icons.lock; // lock background shape for unlock
+    if (outlineIcon == Icons.branding_watermark_outlined) return Icons.branding_watermark;
+    if (outlineIcon == Icons.draw_rounded) return Icons.gesture;
+    if (outlineIcon == Icons.document_scanner_rounded) return Icons.document_scanner;
+    if (outlineIcon == Icons.analytics_outlined) return Icons.analytics;
+    if (outlineIcon == Icons.qr_code_scanner_rounded) return Icons.camera_alt;
+    if (outlineIcon == Icons.qr_code_rounded) return Icons.grid_on;
+    if (outlineIcon == Icons.square_foot_rounded) return Icons.square;
+    if (outlineIcon == Icons.image_outlined) return Icons.image;
+    if (outlineIcon == Icons.rotate_right_rounded) return Icons.change_circle;
+    return outlineIcon;
   }
 }

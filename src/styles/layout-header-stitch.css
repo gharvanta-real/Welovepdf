@@ -13,17 +13,17 @@
   align-items: center;
   min-height: var(--header-h);
   padding: 0 40px;
-  background: rgba(249, 249, 249, 0.95);
+  background: #ffffff;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--s-hairline);
-  font-family: "Plus Jakarta Sans", sans-serif;
+  font-family: "Google Sans", "Google Sans Text", "Plus Jakarta Sans", sans-serif;
   box-sizing: border-box;
 }
 
 /* ── Brand ── */
 .stitch-brand {
-  font-family: "Plus Jakarta Sans", sans-serif;
+  font-family: "Google Sans", "Google Sans Text", "Plus Jakarta Sans", sans-serif;
   font-size: 17px;
   font-weight: 700;
   color: var(--s-primary);
@@ -42,12 +42,12 @@
 }
 
 .stitch-nav-link {
-  font-family: "Plus Jakarta Sans", sans-serif;
-  font-size: 14.5px;
-  font-weight: 480;
-  color: var(--s-on-surface-variant);
+  font-family: "Google Sans", "Google Sans Text", "Plus Jakarta Sans", sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: #000000;
   padding: 8px 14px;
-  border-radius: 9999px;
+  border-radius: 8px;
   border: none;
   background: transparent;
   cursor: pointer;
@@ -60,8 +60,8 @@
 }
 .stitch-nav-link:hover,
 .stitch-nav-link.active {
-  background: var(--s-surface-low);
-  color: var(--s-on-surface);
+  background: transparent;
+  color: var(--s-primary);
 }
 
 .stitch-nav-tools {
@@ -77,35 +77,42 @@
 }
 
 .stitch-login-btn {
-  font-family: "Plus Jakarta Sans", sans-serif;
-  font-size: 14.5px;
-  font-weight: 480;
-  color: var(--s-on-surface);
+  font-family: "Google Sans", "Google Sans Text", "Plus Jakarta Sans", sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: #000000;
   padding: 8px 18px;
-  border-radius: 9999px;
+  border-radius: 8px;
   border: none;
   background: transparent;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: color 0.15s;
 }
-.stitch-login-btn:hover { background: var(--s-surface-low); }
+.stitch-login-btn:hover {
+  background: transparent;
+  color: var(--s-primary);
+}
 
 .stitch-cta-btn {
-  font-family: "Plus Jakarta Sans", sans-serif;
+  font-family: "Google Sans", "Google Sans Text", "Plus Jakarta Sans", sans-serif;
   font-size: 14.5px;
   font-weight: 600;
   color: var(--s-on-primary);
   background: var(--s-primary);
   padding: 9px 20px;
-  border-radius: 9999px;
+  border-radius: 8px;
   border: none;
   cursor: pointer;
-  transition: opacity 0.15s, transform 0.15s;
+  transition: background-color 0.15s, transform 0.15s, box-shadow 0.15s;
   white-space: nowrap;
 }
 .stitch-cta-btn:hover {
-  opacity: 0.85;
+  background-color: #1d4ed8;
   transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.18);
+}
+.stitch-cta-btn:active {
+  transform: translateY(0);
 }
 
 /* ── Mobile Hamburger Button — hidden on desktop ── */
@@ -136,15 +143,13 @@
   left: 40px;
   width: 900px;
   z-index: 200;
-  background: rgba(255, 255, 255, 0.97);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: #ffffff;
   border: 1px solid var(--s-hairline);
-  border-radius: 16px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08),
-              0 24px 64px rgba(0, 0, 0, 0.04),
-              0 0 0 1px rgba(0, 0, 0, 0.02);
-  animation: dropdown-in 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.06),
+              0 24px 64px rgba(0, 0, 0, 0.03),
+              0 0 0 1px rgba(0, 0, 0, 0.01);
+  animation: dropdown-in 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   overflow: hidden;
 }
 
@@ -177,7 +182,7 @@
 }
 
 .mega-group-title {
-  font-family: "Plus Jakarta Sans", sans-serif;
+  font-family: "Google Sans", "Google Sans Text", "Plus Jakarta Sans", sans-serif;
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.06em;
@@ -219,7 +224,7 @@
   color: var(--s-on-surface);
   text-decoration: none;
   transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), background 0.15s, color 0.15s;
-  font-family: "Plus Jakarta Sans", sans-serif;
+  font-family: "Google Sans", "Google Sans Text", "Plus Jakarta Sans", sans-serif;
   margin-left: -10px;
 }
 .mega-item:hover {
@@ -366,7 +371,7 @@
 }
 
 .mobile-nav-link {
-  font-family: "Plus Jakarta Sans", sans-serif;
+  font-family: "Google Sans", "Google Sans Text", "Plus Jakarta Sans", sans-serif;
   font-size: 15px;
   font-weight: 480;
   color: var(--s-on-surface);
@@ -382,7 +387,7 @@
 .mobile-nav-link:hover { background: var(--s-surface-low); }
 
 .mobile-nav-expand-btn {
-  font-family: "Plus Jakarta Sans", sans-serif;
+  font-family: "Google Sans", "Google Sans Text", "Plus Jakarta Sans", sans-serif;
   font-size: 15px;
   font-weight: 480;
   color: var(--s-on-surface);
@@ -418,7 +423,7 @@
   border-radius: 8px;
   background: transparent;
   cursor: pointer;
-  font-family: "Plus Jakarta Sans", sans-serif;
+  font-family: "Google Sans", "Google Sans Text", "Plus Jakarta Sans", sans-serif;
   font-size: 13.5px;
   font-weight: 450;
   color: var(--s-on-surface);
@@ -436,13 +441,13 @@
 }
 
 .mobile-auth-btn-primary {
-  font-family: "Plus Jakarta Sans", sans-serif;
+  font-family: "Google Sans", "Google Sans Text", "Plus Jakarta Sans", sans-serif;
   font-size: 15px;
   font-weight: 600;
   color: var(--s-on-primary);
   background: var(--s-primary);
   border: none;
-  border-radius: 9999px;
+  border-radius: 8px;
   padding: 13px 24px;
   cursor: pointer;
   transition: opacity 0.15s;
@@ -451,13 +456,13 @@
 .mobile-auth-btn-primary:hover { opacity: 0.85; }
 
 .mobile-auth-btn-ghost {
-  font-family: "Plus Jakarta Sans", sans-serif;
+  font-family: "Google Sans", "Google Sans Text", "Plus Jakarta Sans", sans-serif;
   font-size: 15px;
   font-weight: 480;
   color: var(--s-on-surface);
   background: transparent;
   border: 1px solid var(--s-hairline);
-  border-radius: 9999px;
+  border-radius: 8px;
   padding: 12px 24px;
   cursor: pointer;
   transition: background 0.15s;
@@ -477,7 +482,7 @@
 /* Slightly reduce nav spacing on medium screens */
 @media (max-width: 1100px) {
   .app-header { padding: 0 24px; }
-  .stitch-nav-link { padding: 7px 10px; font-size: 13.5px; }
+  .stitch-nav-link { padding: 7px 10px; font-size: 13px; }
 }
 
 /* Hide some nav links on smaller desktop, keep core ones */
@@ -489,7 +494,7 @@
 
 /* Mobile breakpoint: show hamburger, hide desktop nav & login */
 @media (max-width: 860px) {
-  .app-header { padding: 0 16px; min-height: 60px; }
+  .app-header { padding: 0 16px; min-height: var(--header-h); }
   .stitch-nav-desktop { display: none !important; }
   .stitch-desktop-only { display: none !important; }
   .mobile-menu-btn { display: flex !important; }

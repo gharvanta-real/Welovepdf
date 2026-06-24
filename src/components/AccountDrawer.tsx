@@ -8,9 +8,10 @@ interface AccountDrawerProps {
   onLogout: () => void;
   onSettingsClick: () => void;
   onSupportClick: () => void;
+  onDashboardClick: () => void;
 }
 
-export function AccountDrawer({ isOpen, onClose, currentUser, onLogout, onSettingsClick, onSupportClick }: AccountDrawerProps) {
+export function AccountDrawer({ isOpen, onClose, currentUser, onLogout, onSettingsClick, onSupportClick, onDashboardClick }: AccountDrawerProps) {
   const avatarUrl = localStorage.getItem("userAvatar");
   
   // Close on ESC key
@@ -34,7 +35,7 @@ export function AccountDrawer({ isOpen, onClose, currentUser, onLogout, onSettin
       <div className="drawer-backdrop" onClick={onClose}></div>
 
       {/* Drawer Box */}
-      <div className="account-drawer">
+      <div className="account-drawer theme-blue" style={{ fontFamily: "var(--v2-font-sans)", color: "var(--v2-text-main)" }}>
         {/* Header Section */}
         <div className="drawer-header">
           <h3 className="drawer-header-title">Account Details</h3>
@@ -70,6 +71,27 @@ export function AccountDrawer({ isOpen, onClose, currentUser, onLogout, onSettin
               </span>
             )}
           </div>
+        </div>
+
+        {/* Quick Workspace Action */}
+        <div style={{ padding: "0 20px 20px 20px" }}>
+          <button 
+            onClick={() => { onDashboardClick(); onClose(); }}
+            className="v2-pill-primary"
+            style={{ 
+              width: "100%", 
+              display: "flex", 
+              alignItems: "center", 
+              justifyContent: "center", 
+              gap: "8px", 
+              fontSize: "13px",
+              padding: "12px 16px",
+              cursor: "pointer",
+              border: "none"
+            }}
+          >
+            Go to My Workspace
+          </button>
         </div>
 
         {/* Services & Storage Details */}

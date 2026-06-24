@@ -93,12 +93,12 @@ class _StitchButtonState extends State<StitchButton> with SingleTickerProviderSt
           textColor = colorScheme.onPrimary;
           break;
         case StitchButtonType.secondary:
-          bgColor = colorScheme.error; // Red accent
-          textColor = colorScheme.onError;
+          bgColor = isDark ? colorScheme.secondary : colorScheme.secondaryContainer; // Neutral grey secondary
+          textColor = isDark ? colorScheme.onSecondary : colorScheme.onSecondaryContainer;
           break;
         case StitchButtonType.primaryContainer:
-          bgColor = colorScheme.primaryContainer; // Dark teal/slate
-          textColor = colorScheme.onPrimary;
+          bgColor = colorScheme.primaryContainer; // Dark teal/slate or Cambridge Blue
+          textColor = isDark ? colorScheme.onPrimary : colorScheme.onPrimaryContainer;
           break;
         case StitchButtonType.ghost:
           bgColor = isDark ? const Color(0xFF252525) : const Color(0xFFEBEBEB);

@@ -139,37 +139,68 @@ class _RecentTabState extends State<RecentTab> {
                                   ),
                                   itemBuilder: (c, index) {
                                     final doc = groupItems[index];
-                                    return StitchCard(
-                                      title: doc.title,
-                                      dateAndSize:
-                                          '${doc.addedDate} • ${doc.size}',
-                                      fileType: doc.fileType,
-                                      isFavorite: doc.isFavorite,
-                                      filePath: doc.filePath,
-                                      isProcessing: doc.isProcessing,
-                                      onTap: () {
-                                        if (doc.isProcessing) return;
-                                        state.selectDocument(doc);
-                                        if (doc.fileType.toLowerCase() ==
-                                            'pdf') {
-                                          state.setScreen(
-                                              AppScreen.pdfViewer);
-                                        } else {
-                                          state.setScreen(
-                                              AppScreen.fileDetails);
-                                        }
+                                    return Dismissible(
+                                      key: Key('recent_${doc.id}'),
+                                      direction: DismissDirection.endToStart,
+                                      background: Container(
+                                        alignment: Alignment.centerRight,
+                                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFFD32F2F),
+                                          borderRadius: BorderRadius.circular(AppTokens.radiusLg),
+                                        ),
+                                        child: const Icon(
+                                          Icons.delete_outline_rounded,
+                                          color: Colors.white,
+                                          size: 24,
+                                        ),
+                                      ),
+                                      onDismissed: (direction) {
+                                        state.deleteDocument(doc.id);
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(
+                                            content: Text('"${doc.title.replaceAll('/', '')}" deleted'),
+                                            action: SnackBarAction(
+                                              label: 'Undo',
+                                              onPressed: () {
+                                                state.restoreDocument(doc);
+                                              },
+                                            ),
+                                          ),
+                                        );
                                       },
-                                      onFavoriteToggle: doc.isProcessing
-                                          ? null
-                                          : (fav) {
-                                              state.toggleFavorite(doc.id);
-                                            },
-                                      onMoreTap: doc.isProcessing
-                                          ? () {}
-                                          : () {
-                                              showDocumentOptionsBottomSheet(
-                                                  context, doc, state);
-                                            },
+                                      child: StitchCard(
+                                        title: doc.title,
+                                        dateAndSize:
+                                            '${doc.addedDate} • ${doc.size}',
+                                        fileType: doc.fileType,
+                                        isFavorite: doc.isFavorite,
+                                        filePath: doc.filePath,
+                                        isProcessing: doc.isProcessing,
+                                        onTap: () {
+                                          if (doc.isProcessing) return;
+                                          state.selectDocument(doc);
+                                          if (doc.fileType.toLowerCase() ==
+                                              'pdf') {
+                                            state.setScreen(
+                                                AppScreen.pdfViewer);
+                                          } else {
+                                            state.setScreen(
+                                                AppScreen.fileDetails);
+                                          }
+                                        },
+                                        onFavoriteToggle: doc.isProcessing
+                                            ? null
+                                            : (fav) {
+                                                state.toggleFavorite(doc.id);
+                                              },
+                                        onMoreTap: doc.isProcessing
+                                            ? () {}
+                                            : () {
+                                                showDocumentOptionsBottomSheet(
+                                                    context, doc, state);
+                                              },
+                                      ),
                                     );
                                   },
                                 ),

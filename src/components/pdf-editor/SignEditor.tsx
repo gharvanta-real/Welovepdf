@@ -187,10 +187,10 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
         
         ctx.fillStyle = color;
         ctx.textAlign = "center";
-        ctx.font = "bold 20px 'Plus Jakarta Sans', sans-serif";
+        ctx.font = "bold 20px 'Google Sans', 'Google Sans Text', 'Plus Jakarta Sans', sans-serif";
         ctx.fillText(text1.toUpperCase() || "COMPANY STAMP", 125, 52);
         
-        ctx.font = "14px 'Plus Jakarta Sans', sans-serif";
+        ctx.font = "14px 'Google Sans', 'Google Sans Text', 'Plus Jakarta Sans', sans-serif";
         ctx.fillText(text2.toUpperCase() || "APPROVED", 125, 82);
       }
     } else if (type === "round") {
@@ -212,10 +212,10 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
         ctxRound.fillStyle = color;
         ctxRound.textAlign = "center";
         
-        ctxRound.font = "bold 14px 'Plus Jakarta Sans', sans-serif";
+        ctxRound.font = "bold 14px 'Google Sans', 'Google Sans Text', 'Plus Jakarta Sans', sans-serif";
         ctxRound.fillText(text1.toUpperCase() || "STAMP", 75, 70);
         
-        ctxRound.font = "11px 'Plus Jakarta Sans', sans-serif";
+        ctxRound.font = "11px 'Google Sans', 'Google Sans Text', 'Plus Jakarta Sans', sans-serif";
         ctxRound.fillText(text2.toUpperCase() || "APPROVED", 75, 95);
       }
     }
@@ -229,7 +229,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
     offscreen.height = 60;
     const ctx = offscreen.getContext("2d");
     if (ctx) {
-      ctx.font = "bold 24px 'Plus Jakarta Sans', sans-serif";
+      ctx.font = "bold 24px 'Google Sans', 'Google Sans Text', 'Plus Jakarta Sans', sans-serif";
       ctx.fillStyle = color;
       ctx.fillText(text || "Type text...", 10, 40);
     }
@@ -590,7 +590,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
     offscreen.height = 60;
     const ctx = offscreen.getContext("2d");
     if (ctx) {
-      ctx.font = "bold 24px 'Plus Jakarta Sans', sans-serif";
+      ctx.font = "bold 24px 'Google Sans', 'Google Sans Text', 'Plus Jakarta Sans', sans-serif";
       ctx.fillStyle = signatureDetails.color;
       ctx.fillText(text, 10, 40);
     }
@@ -616,7 +616,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
     offscreen.height = 60;
     const ctx = offscreen.getContext("2d");
     if (ctx) {
-      ctx.font = "bold 24px 'Plus Jakarta Sans', sans-serif";
+      ctx.font = "bold 24px 'Google Sans', 'Google Sans Text', 'Plus Jakarta Sans', sans-serif";
       ctx.fillStyle = signatureDetails.color;
       ctx.fillText(formatted, 10, 40);
     }
@@ -730,7 +730,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
         minHeight: "calc(100vh - 80px)",
         backgroundColor: "#f3f3f3",
         padding: "20px",
-        fontFamily: "'Plus Jakarta Sans', sans-serif"
+        fontFamily: "'Google Sans', 'Google Sans Text', 'Plus Jakarta Sans', sans-serif"
       }}>
         <div style={{
           backgroundColor: "#ffffff",
@@ -849,7 +849,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
         minHeight: "calc(100vh - 80px)",
         backgroundColor: "#f3f3f3",
         padding: "20px",
-        fontFamily: "'Plus Jakarta Sans', sans-serif"
+        fontFamily: "'Google Sans', 'Google Sans Text', 'Plus Jakarta Sans', sans-serif"
       }}>
         <div style={{ backgroundColor: "#ffffff", borderRadius: "16px", padding: "36px", boxShadow: "0 10px 30px rgba(0,0,0,0.06)", maxWidth: "500px", width: "100%", textAlign: "center", border: "1px solid #e6e6e6" }}>
           <div style={{ width: "64px", height: "64px", borderRadius: "50%", backgroundColor: "#d1fae5", color: "#059669", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px" }}>
@@ -876,7 +876,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
       height: "calc(100vh - 80px)", // minus header height
       width: "100%",
       backgroundColor: "#f3f3f3",
-      fontFamily: "'Plus Jakarta Sans', sans-serif",
+      fontFamily: "'Google Sans', 'Google Sans Text', 'Plus Jakarta Sans', sans-serif",
       overflow: "hidden"
     }}>
       {/* Left Sidebar: Pages List */}
@@ -1042,7 +1042,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                       fontSize: "14px",
                       fontWeight: "bold",
                       color: signatureDetails.color,
-                      fontFamily: "'Plus Jakarta Sans', sans-serif",
+                      fontFamily: "'Google Sans', 'Google Sans Text', 'Plus Jakarta Sans', sans-serif",
                       textAlign: "center",
                       padding: 0
                     }}

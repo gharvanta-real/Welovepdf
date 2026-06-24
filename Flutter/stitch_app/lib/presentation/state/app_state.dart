@@ -18,6 +18,8 @@ import 'package:image_picker/image_picker.dart';
 import '../../data/services/document_service.dart';
 import 'package:file_picker/file_picker.dart';
 import '../../data/services/api_service.dart';
+import '../../data/engines/offline_engine_manager.dart';
+import 'package:syncfusion_flutter_pdf/pdf.dart';
 
 class ActiveJob {
   final String id;
@@ -49,6 +51,18 @@ class AppState extends ChangeNotifier {
   final DocumentService _service = DocumentService();
   final List<ActiveJob> _activeJobs = [];
   List<ActiveJob> get activeJobs => _activeJobs;
+
+  final Map<String, List<dynamic>> _documentImageCache = {};
+  List<dynamic>? getDocumentImages(String docId) => _documentImageCache[docId];
+
+  final Map<String, List<String>> _documentTextCache = {};
+  String? getDocumentPageText(String docId, int index) {
+    final list = _documentTextCache[docId];
+    if (list != null && index >= 0 && index < list.length) {
+      return list[index];
+    }
+    return null;
+  }
 
   void clearActiveJobs() {
     _activeJobs.removeWhere((job) => job.status != 'processing');
@@ -581,6 +595,59 @@ class AppState extends ChangeNotifier {
 
   void selectDocument(Document doc) {
     _selectedDocument = doc;
+    if (doc.fileType.toLowerCase() == 'pdf' && doc.filePath != null) {
+      _extractPdfDataInBackground(doc);
+    }
+  }
+
+  Future<void> _extractPdfDataInBackground(Document doc) async {
+    if (_documentTextCache.containsKey(doc.id)) return;
+
+    try {
+      final String? path = doc.filePath;
+      if (path == null || path.isEmpty) return;
+
+      Uint8List bytes;
+      if (kIsWeb) {
+        return;
+      } else {
+        final File file = File(path);
+        if (!await file.exists()) return;
+        bytes = await file.readAsBytes();
+      }
+
+      // Extract actual text using Syncfusion PDF
+      final PdfDocument document = PdfDocument(inputBytes: bytes);
+      final int actualPageCount = document.pages.count;
+      
+      final PdfTextExtractor extractor = PdfTextExtractor(document);
+      final List<String> extractedPages = [];
+      for (int i = 0; i < actualPageCount; i++) {
+        String pageText = '';
+        try {
+          pageText = extractor.extractText(startPageIndex: i, endPageIndex: i);
+        } catch (innerEx) {
+          debugPrint('Error extracting text from page $i of PDF: $innerEx');
+        }
+        extractedPages.add(pageText);
+      }
+      document.dispose();
+
+      _documentTextCache[doc.id] = extractedPages;
+      
+      // Update page count of the document if it doesn't match
+      if (doc.pagesCount != actualPageCount) {
+        final updatedDoc = doc.copyWith(pagesCount: actualPageCount);
+        _service.updateDocument(updatedDoc);
+        if (_selectedDocument?.id == doc.id) {
+          _selectedDocument = updatedDoc;
+        }
+      }
+      
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error extracting PDF text: $e');
+    }
   }
 
   void renameDocument(String id, String newTitle) {
@@ -596,6 +663,11 @@ class AppState extends ChangeNotifier {
     if (_selectedDocument?.id == id) {
       _selectedDocument = null;
     }
+    notifyListeners();
+  }
+
+  void restoreDocument(Document doc) {
+    _service.addDocument(doc);
     notifyListeners();
   }
 
@@ -720,11 +792,20 @@ class AppState extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final result = await ApiService.runPdfTool(
-        toolId: toolId,
-        files: files,
-        options: options,
-      );
+      final Map<String, dynamic> result;
+      if (OfflineEngineManager.isOfflineCapable(toolId)) {
+        result = await OfflineEngineManager.runOfflineTool(
+          toolId: toolId,
+          files: files,
+          options: options,
+        );
+      } else {
+        result = await ApiService.runPdfTool(
+          toolId: toolId,
+          files: files,
+          options: options,
+        );
+      }
 
       // 3. Remove placeholder and active job
       _service.removeDocument(placeholderId);
@@ -746,12 +827,81 @@ class AppState extends ChangeNotifier {
         size: result['fileSize'],
         addedDate: 'Just now',
         isFavorite: false,
-        pagesCount: 1, // Default pages count
+        pagesCount: result['pagesCount'] as int? ?? 1,
         author: 'PDFmount Engine',
-        description: 'Result of processing tool $toolId.',
+        description: result['sourceImagePaths'] != null && (result['sourceImagePaths'] as List).isNotEmpty
+            ? 'image_paths:${(result['sourceImagePaths'] as List).join(',')}'
+            : 'Result of processing tool $toolId.',
         filePath: result['filePath'],
         parentFolderId: _currentFolderId,
       );
+
+      final cleanId = toolId.toLowerCase().replaceAll('_', '-').trim();
+      List<dynamic>? inheritedImages;
+
+      if (cleanId == 'merge-pdf' || cleanId == 'merge') {
+        final List<dynamic> combinedImages = [];
+        for (final file in files) {
+          final matchedDoc = _service.getAllDocuments().firstWhere(
+            (d) => d.title == file.name,
+            orElse: () => Document(id: '', title: '', fileType: '', size: '', addedDate: ''),
+          );
+          if (matchedDoc.id.isNotEmpty) {
+            final cached = getDocumentImages(matchedDoc.id);
+            if (cached != null) {
+              combinedImages.addAll(cached);
+            }
+          }
+        }
+        if (combinedImages.isNotEmpty) {
+          inheritedImages = combinedImages;
+        }
+      } else if (cleanId == 'split-pdf' || cleanId == 'split') {
+        if (files.isNotEmpty) {
+          final file = files.first;
+          final matchedDoc = _service.getAllDocuments().firstWhere(
+            (d) => d.title == file.name,
+            orElse: () => Document(id: '', title: '', fileType: '', size: '', addedDate: ''),
+          );
+          if (matchedDoc.id.isNotEmpty) {
+            final cached = getDocumentImages(matchedDoc.id);
+            if (cached != null) {
+              final rangeStr = options['pageRange'] as String? ?? '1';
+              final indices = _parsePageRange(rangeStr, cached.length);
+              final List<dynamic> splitImages = [];
+              for (final index in indices) {
+                if (index >= 0 && index < cached.length) {
+                  splitImages.add(cached[index]);
+                }
+              }
+              if (splitImages.isNotEmpty) {
+                inheritedImages = splitImages;
+              }
+            }
+          }
+        }
+      } else if (files.isNotEmpty) {
+        // Protect, Unlock, Watermark, Sign: copy the source cache
+        final file = files.first;
+        final matchedDoc = _service.getAllDocuments().firstWhere(
+          (d) => d.title == file.name,
+          orElse: () => Document(id: '', title: '', fileType: '', size: '', addedDate: ''),
+        );
+        if (matchedDoc.id.isNotEmpty) {
+          final cached = getDocumentImages(matchedDoc.id);
+          if (cached != null) {
+            inheritedImages = List.from(cached);
+          }
+        }
+      }
+
+      if (inheritedImages != null && inheritedImages.isNotEmpty) {
+        _documentImageCache[newDoc.id] = inheritedImages;
+      } else if (result['sourceImageBytes'] != null && (result['sourceImageBytes'] as List).isNotEmpty) {
+        _documentImageCache[newDoc.id] = result['sourceImageBytes'] as List;
+      } else if (result['sourceImagePaths'] != null && (result['sourceImagePaths'] as List).isNotEmpty) {
+        _documentImageCache[newDoc.id] = result['sourceImagePaths'] as List;
+      }
 
       _service.addDocument(newDoc);
       notifyListeners();
@@ -778,12 +928,14 @@ class AppState extends ChangeNotifier {
 
   static String _formatBytes(int bytes) {
     if (bytes <= 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    final i = (bytes / k).floor();
-    final index = i < sizes.length ? i : sizes.length - 1;
-    final size = bytes / (1 << (10 * index));
-    return '${size.toStringAsFixed(1)} ${sizes[index]}';
+    const suffixes = ['Bytes', 'KB', 'MB', 'GB'];
+    double size = bytes.toDouble();
+    int index = 0;
+    while (size >= 1024 && index < suffixes.length - 1) {
+      size /= 1024;
+      index++;
+    }
+    return '${size.toStringAsFixed(1)} ${suffixes[index]}';
   }
 
   Future<void> startScanFlow(BuildContext context, {bool isAddingPage = false}) async {
@@ -910,17 +1062,55 @@ class AppState extends ChangeNotifier {
   }
 
   Future<void> saveImagesToPdf(List<Uint8List> images, String name) async {
-    // Placeholder: creates a document entry with the images count
+    if (images.isEmpty) return;
+
+    final newDocId = DateTime.now().millisecondsSinceEpoch.toString();
+    final cleanTitle = name.endsWith('.pdf') ? name : '$name.pdf';
+
+    // Create temporary PlatformFiles from selected images
+    final List<PlatformFile> tempFiles = [];
+    for (int i = 0; i < images.length; i++) {
+      tempFiles.add(PlatformFile(
+        name: 'image_$i.png',
+        size: images[i].length,
+        bytes: images[i],
+      ));
+    }
+
+    String? savedFilePath;
+    try {
+      final result = await OfflineEngineManager.runOfflineTool(
+        toolId: 'jpg-to-pdf',
+        files: tempFiles,
+        options: {
+          'pageOrientation': 'portrait',
+          'pageSize': 'a4',
+          'pageMargin': 'none',
+          'outputName': cleanTitle,
+        },
+      );
+      savedFilePath = result['filePath'];
+
+      // Cache the original images for instant preview
+      _documentImageCache[newDocId] = images;
+
+    } catch (e) {
+      debugPrint("Error compiling selected images to PDF: $e");
+    }
+
     final doc = Document(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      title: name.endsWith('.pdf') ? name : '$name.pdf',
+      id: newDocId,
+      title: cleanTitle,
       fileType: 'pdf',
-      size: '${(images.length * 1.2).toStringAsFixed(1)} MB',
+      size: savedFilePath != null 
+          ? '${(images.length * 1.2).toStringAsFixed(1)} MB' 
+          : '0.0 Bytes',
       addedDate: 'Just now',
       isFavorite: false,
       pagesCount: images.length,
       author: 'StitchPDF',
       description: 'Compiled from ${images.length} image(s).',
+      filePath: savedFilePath,
       parentFolderId: _currentFolderId,
     );
     _service.addDocument(doc);
@@ -942,37 +1132,73 @@ class AppState extends ChangeNotifier {
   Future<void> saveScannedDocument() async {
     String? savedFilePath;
     int pagesCount = _scannedPages.isNotEmpty ? _scannedPages.length : 1;
+    final newDocId = DateTime.now().millisecondsSinceEpoch.toString();
+
+    // Create temporary PlatformFiles from scanned pages or captured image
+    final List<PlatformFile> tempFiles = [];
 
     if (_scannedPages.isNotEmpty) {
-      try {
-        final directory = await getApplicationDocumentsDirectory();
-        final filename = 'doc_${DateTime.now().millisecondsSinceEpoch}_0.png';
-        final file = File(p.join(directory.path, filename));
-        await file.writeAsBytes(_scannedPages.first.imageBytes);
-        savedFilePath = file.path;
-
-        for (int i = 1; i < _scannedPages.length; i++) {
-          final pageFilename = 'doc_${DateTime.now().millisecondsSinceEpoch}_$i.png';
-          final pageFile = File(p.join(directory.path, pageFilename));
-          await pageFile.writeAsBytes(_scannedPages[i].imageBytes);
-        }
-      } catch (e) {
-        debugPrint("Error saving scanned file to disk: $e");
+      for (int i = 0; i < _scannedPages.length; i++) {
+        tempFiles.add(PlatformFile(
+          name: 'scanned_page_$i.png',
+          size: _scannedPages[i].imageBytes.length,
+          bytes: _scannedPages[i].imageBytes,
+        ));
       }
     } else if (_capturedImageBytes != null) {
+      tempFiles.add(PlatformFile(
+        name: 'captured_page.png',
+        size: _capturedImageBytes!.length,
+        bytes: _capturedImageBytes,
+      ));
+    }
+
+    if (tempFiles.isNotEmpty) {
       try {
-        final directory = await getApplicationDocumentsDirectory();
-        final filename = 'doc_${DateTime.now().millisecondsSinceEpoch}.png';
-        final file = File(p.join(directory.path, filename));
-        await file.writeAsBytes(_capturedImageBytes!);
-        savedFilePath = file.path;
+        final cleanTitle = _scannedTitle.endsWith('.pdf') ? _scannedTitle : '$_scannedTitle.pdf';
+        
+        // Use OfflineEngineManager to compile to a real PDF in real-time!
+        final result = await OfflineEngineManager.runOfflineTool(
+          toolId: 'jpg-to-pdf',
+          files: tempFiles,
+          options: {
+            'pageOrientation': 'portrait',
+            'pageSize': 'a4',
+            'pageMargin': 'none',
+            'outputName': cleanTitle,
+          },
+        );
+        savedFilePath = result['filePath'];
+
+        // Store the original images in memory cache for instant preview
+        final List<Uint8List> cachedBytes = tempFiles.map((f) => f.bytes!).toList();
+        _documentImageCache[newDocId] = cachedBytes;
+
       } catch (e) {
-        debugPrint("Error saving scanned file to disk: $e");
+        debugPrint("Error creating PDF from scanned pages: $e");
+        // Fallback: save first page as image if compiler fails
+        try {
+          if (kIsWeb) {
+            savedFilePath = 'web_upload/doc_${newDocId}_fallback.png';
+          } else {
+            final directory = await getApplicationDocumentsDirectory();
+            final filename = 'doc_${newDocId}_fallback.png';
+            final file = File(p.join(directory.path, filename));
+            if (_scannedPages.isNotEmpty) {
+              await file.writeAsBytes(_scannedPages.first.imageBytes);
+            } else if (_capturedImageBytes != null) {
+              await file.writeAsBytes(_capturedImageBytes!);
+            }
+            savedFilePath = file.path;
+          }
+        } catch (innerEx) {
+          debugPrint("Fallback save failed: $innerEx");
+        }
       }
     }
 
     final newDoc = Document(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      id: newDocId,
       title: _scannedTitle.endsWith('.pdf') ? _scannedTitle : '$_scannedTitle.pdf',
       fileType: 'pdf',
       size: '${(pagesCount * 1.4).toStringAsFixed(1)} MB',
@@ -980,7 +1206,7 @@ class AppState extends ChangeNotifier {
       isFavorite: false,
       pagesCount: pagesCount,
       author: 'Scanner App',
-      description: 'Document scanned with precision mobile capture.',
+      description: 'Document scanned and compiled to PDF.',
       filePath: savedFilePath,
       parentFolderId: _currentFolderId,
     );
@@ -1019,6 +1245,39 @@ class AppState extends ChangeNotifier {
       _themeMode = _themeMode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
     }
     notifyListeners();
+  }
+
+  // Parse page range helper for cache slicing
+  List<int> _parsePageRange(String rangeStr, int totalPages) {
+    final List<int> pages = [];
+    final cleanStr = rangeStr.replaceAll(RegExp(r'\s+'), '');
+    final parts = cleanStr.split(',');
+
+    for (final part in parts) {
+      if (part.contains('-')) {
+        final subParts = part.split('-');
+        if (subParts.length == 2) {
+          final start = int.tryParse(subParts[0]);
+          final end = int.tryParse(subParts[1]);
+          if (start != null && end != null) {
+            final s = start.clamp(1, totalPages);
+            final e = end.clamp(1, totalPages);
+            final low = s < e ? s : e;
+            final high = s < e ? e : s;
+            for (int i = low; i <= high; i++) {
+              pages.add(i - 1);
+            }
+          }
+        }
+      } else {
+        final val = int.tryParse(part);
+        if (val != null) {
+          final p = val.clamp(1, totalPages);
+          pages.add(p - 1);
+        }
+      }
+    }
+    return pages.toSet().toList();
   }
 }
 

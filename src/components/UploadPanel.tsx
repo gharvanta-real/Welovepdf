@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
-import { Plus } from "lucide-react";
+import { Plus, FileText } from "lucide-react";
 import { PdfEditor } from "./PdfEditor";
 import { SignEditor } from "./pdf-editor/SignEditor";
 import { WatermarkEditor } from "./pdf-editor/WatermarkEditor";
@@ -110,6 +110,7 @@ export function UploadPanel({
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [stagedFiles, setStagedFiles] = useState<File[] | null>(null);
   const [stepIdx, setStepIdx] = useState(0);
+  const [progressPercent, setProgressPercent] = useState(0);
   const [copied, setCopied] = useState(false);
   const [previewFile, setPreviewFile] = useState<File | null>(null);
   const [previewScale, setPreviewScale] = useState(0.95);
@@ -293,10 +294,36 @@ export function UploadPanel({
   useEffect(() => {
     if (activeJob?.status === "Processing") {
       setStepIdx(0);
-      const interval = setInterval(() => {
+      setProgressPercent(0);
+      
+      const stepInterval = setInterval(() => {
         setStepIdx((prev) => (prev + 1) % processingSteps.length);
       }, 2000);
-      return () => clearInterval(interval);
+
+      const progressInterval = setInterval(() => {
+        setProgressPercent((prev) => {
+          if (prev >= 98) return 98;
+          let increment = 1;
+          if (prev < 30) {
+            increment = Math.floor(Math.random() * 4) + 4; // 4-7%
+          } else if (prev < 60) {
+            increment = Math.floor(Math.random() * 3) + 2; // 2-4%
+          } else if (prev < 85) {
+            increment = Math.floor(Math.random() * 2) + 1; // 1-2%
+          } else {
+            increment = Math.random() < 0.3 ? 1 : 0; // occasional 1%
+          }
+          const next = prev + increment;
+          return next >= 98 ? 98 : next;
+        });
+      }, 300);
+
+      return () => {
+        clearInterval(stepInterval);
+        clearInterval(progressInterval);
+      };
+    } else {
+      setProgressPercent(0);
     }
   }, [activeJob?.status]);
 
@@ -585,11 +612,69 @@ export function UploadPanel({
             onViewChange={onViewChange}
           />
         ) : (
-          /* Processing state */
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "60vh", gap: "24px", padding: "48px" }}>
-            <div style={{ width: "64px", height: "64px", borderRadius: "50%", border: `3px solid ${blockColor}`, borderTopColor: "#000000", animation: "spin 0.8s linear infinite" }}></div>
-            <h3 style={{ fontFamily: "Plus Jakarta Sans, sans-serif", fontSize: "22px", fontWeight: 540, color: "#000000", margin: 0 }}>Processing your request</h3>
-            <p style={{ fontFamily: "Plus Jakarta Sans, sans-serif", fontSize: "16px", color: "#4c4546", margin: 0, fontWeight: 320 }}>{processingSteps[stepIdx]}</p>
+          <div style={{ 
+            display: "flex", 
+            flexDirection: "column", 
+            alignItems: "center", 
+            justifyContent: "center", 
+            minHeight: "60vh", 
+            padding: "48px",
+            background: "transparent"
+          }}>
+            <div style={{
+              maxWidth: "480px",
+              width: "100%",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "stretch",
+              boxSizing: "border-box",
+              position: "relative"
+            }}>
+              <div style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                width: "100%",
+                marginBottom: "12px"
+              }}>
+                <span style={{
+                  fontFamily: "Plus Jakarta Sans, sans-serif",
+                  fontSize: "15px",
+                  fontWeight: 600,
+                  color: "var(--c-text, #1E293B)"
+                }}>
+                  {processingSteps[stepIdx]}
+                </span>
+                <span style={{
+                  fontFamily: "Plus Jakarta Sans, sans-serif",
+                  fontSize: "15px",
+                  fontWeight: 700,
+                  color: "#2563eb"
+                }}>
+                  {progressPercent}%
+                </span>
+              </div>
+
+              {/* Premium Progress Bar (Track: White, Fill: Blue) */}
+              <div style={{ 
+                width: "100%", 
+                height: "8px", 
+                backgroundColor: "#ffffff", 
+                border: "1px solid #E2E8F0",
+                borderRadius: "99px", 
+                overflow: "hidden",
+                position: "relative",
+                boxShadow: "inset 0 1px 2px rgba(0,0,0,0.02)"
+              }}>
+                <div style={{ 
+                  height: "100%", 
+                  width: `${progressPercent}%`,
+                  backgroundColor: "#2563eb", 
+                  borderRadius: "99px",
+                  transition: "width 0.3s ease-out"
+                }} />
+              </div>
+            </div>
           </div>
         )}
       </div>

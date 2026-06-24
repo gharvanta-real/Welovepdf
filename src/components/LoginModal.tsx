@@ -287,75 +287,45 @@ export function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps)
     <div className="modal-overlay">
       <div className="modal-box" style={{ maxWidth: "860px", padding: 0 }}>
         
-        {/* Left Side: Interactive Branding / Figma Lilac Color Block */}
+        {/* Left Side: Interactive Branding / Blue V2 Inspired Color Block */}
         <div className="auth-branding-panel">
           <div style={{ position: "relative", zIndex: 10 }}>
-            <span 
-              className="eyebrow" 
-              style={{ 
-                fontSize: "12px", 
-                letterSpacing: "1.5px", 
-                textTransform: "uppercase", 
-                color: "rgba(0,0,0,0.5)", 
-                marginBottom: "20px", 
-                display: "block" 
-              }}
-            >
-              Professional Tooling
-            </span>
             <h1 
               style={{ 
-                fontFamily: "'Plus Jakarta Sans', sans-serif", 
-                fontSize: "clamp(32px, 4.5vw, 48px)", 
-                fontWeight: 340, 
-                letterSpacing: "-1.5px", 
-                lineHeight: 1.05, 
-                marginBottom: "24px",
-                color: "#000000"
+                fontFamily: "'Google Sans', 'Google Sans Text', 'Plus Jakarta Sans', sans-serif", 
+                fontSize: "clamp(26px, 3.5vw, 36px)", 
+                fontWeight: 700, 
+                letterSpacing: "-1px", 
+                lineHeight: 1.15, 
+                marginBottom: "16px",
+                color: "#1B1B1B"
               }}
             >
-              Edit with<br/>precision.
+              All your PDF tools, in one place.
             </h1>
             <p 
               style={{ 
-                fontFamily: "'Plus Jakarta Sans', sans-serif", 
-                fontSize: "16px", 
-                fontWeight: 320, 
-                lineHeight: 1.5, 
-                color: "rgba(0,0,0,0.65)",
-                maxWidth: "280px"
+                fontFamily: "'Google Sans', 'Google Sans Text', 'Plus Jakarta Sans', sans-serif", 
+                fontSize: "14.5px", 
+                fontWeight: 450, 
+                lineHeight: 1.45, 
+                color: "#1B1B1B",
+                maxWidth: "280px",
+                margin: 0
               }}
             >
-              The utility-first editor designed for creators who demand high-fidelity control over their documents.
+              Log in to view your recent files and resume editing your documents.
             </p>
           </div>
           
-          {/* Decorative shapes exactly matching figma designs */}
-          <div 
-            style={{ 
-              position: "absolute", 
-              bottom: "-80px", 
-              right: "-80px", 
-              width: "240px", 
-              height: "240px", 
-              backgroundColor: "#000000", 
-              opacity: 0.04, 
-              borderRadius: "50%" 
-            }} 
-          />
-          <div 
-            style={{ 
-              position: "absolute", 
-              top: "40px", 
-              left: "-40px", 
-              width: "180px", 
-              height: "180px", 
-              border: "30px solid #000000", 
-              opacity: 0.04, 
-              borderRadius: "24px",
-              transform: "rotate(-12deg)" 
-            }} 
-          />
+          {/* Custom vector illustration matching V2 design */}
+          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", width: "100%", marginTop: "24px", position: "relative", zIndex: 5 }}>
+            <img 
+              src="/v2_login.png" 
+              alt="Secure Authentication" 
+              style={{ width: "100%", maxHeight: "250px", objectFit: "contain", borderRadius: "8px" }} 
+            />
+          </div>
         </div>
 
         {/* Right Side: Auth Form */}
@@ -373,17 +343,17 @@ export function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps)
                 </div>
                 <h2 
                   style={{ 
-                    fontFamily: "'Plus Jakarta Sans', sans-serif", 
+                    fontFamily: "'Google Sans', 'Google Sans Text', 'Plus Jakarta Sans', sans-serif", 
                     fontSize: "24px", 
                     fontWeight: 540, 
                     letterSpacing: "-0.5px", 
                     marginBottom: "6px",
-                    color: "var(--s-primary)"
+                    color: "#1B1B1B"
                   }}
                 >
                   Two-Factor Verification
                 </h2>
-                <p style={{ fontSize: "14px", fontWeight: 320, color: "var(--s-on-surface-variant)", margin: 0, lineHeight: 1.4 }}>
+                <p style={{ fontSize: "14px", fontWeight: 320, color: "#1B1B1B", margin: 0, lineHeight: 1.4 }}>
                   Enter the 6-digit verification code from your authenticator app to secure and complete your login.
                 </p>
               </div>
@@ -397,7 +367,7 @@ export function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps)
 
               <form onSubmit={handleMfaVerify} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                 <div className="form-group" style={{ display: "flex", flexDirection: "column", gap: "8px", alignItems: "center" }}>
-                  <label htmlFor="mfa-code" style={{ fontSize: "11px", fontWeight: "600", textTransform: "uppercase", letterSpacing: "0.5px", color: "rgba(0,0,0,0.4)" }}>
+                  <label htmlFor="mfa-code" style={{ fontSize: "11px", fontWeight: "600", textTransform: "uppercase", letterSpacing: "0.5px", color: "#1B1B1B" }}>
                     6-Digit Code
                   </label>
                   <input 
@@ -412,7 +382,7 @@ export function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps)
                       width: "100%", 
                       maxWidth: "240px",
                       padding: "12px 18px", 
-                      borderRadius: "9999px", 
+                      borderRadius: "8px", 
                       border: "1px solid var(--s-hairline)", 
                       backgroundColor: "#ffffff", 
                       color: "var(--s-on-surface)", 
@@ -435,7 +405,8 @@ export function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps)
                     width: "100%", 
                     padding: "12px 24px", 
                     fontSize: "15px", 
-                    marginTop: "10px"
+                    marginTop: "10px",
+                    borderRadius: "8px"
                   }}
                 >
                   {loading ? "Verifying..." : "Verify & Log In"}
@@ -472,19 +443,19 @@ export function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps)
               <div style={{ marginBottom: "28px" }}>
                 <h2 
                   style={{ 
-                    fontFamily: "'Plus Jakarta Sans', sans-serif", 
+                    fontFamily: "'Google Sans', 'Google Sans Text', 'Plus Jakarta Sans', sans-serif", 
                     fontSize: "clamp(24px, 3vw, 32px)", 
                     fontWeight: 540, 
                     letterSpacing: "-0.5px", 
                     marginBottom: "6px",
-                    color: "var(--s-primary)"
+                    color: "#1B1B1B"
                   }}
                 >
                   {authMode === "login" && "Welcome back"}
                   {authMode === "signup" && "Create account"}
                   {authMode === "forgot" && "Reset password"}
                 </h2>
-                <p style={{ fontSize: "14px", fontWeight: 320, color: "var(--s-on-surface-variant)", margin: 0 }}>
+                <p style={{ fontSize: "14px", fontWeight: 320, color: "#1B1B1B", margin: 0 }}>
                   {authMode === "login" && (
                     <>
                       New to Pdfmount.online?{" "}
@@ -527,13 +498,13 @@ export function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps)
                         flex: 1, 
                         padding: "12px 18px", 
                         border: "1px solid var(--s-hairline)", 
-                        borderRadius: "9999px", 
+                        borderRadius: "8px", 
                         backgroundColor: "#ffffff", 
                         color: "var(--s-on-surface)",
                         cursor: "pointer",
                         fontSize: "14px",
                         fontWeight: "600",
-                        fontFamily: "'Plus Jakarta Sans', sans-serif"
+                        fontFamily: "'Google Sans', 'Google Sans Text', 'Plus Jakarta Sans', sans-serif"
                       }}
                     >
                       <svg viewBox="0 0 24 24" width="18" height="18">
@@ -557,13 +528,13 @@ export function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps)
                         flex: 1, 
                         padding: "12px 18px", 
                         border: "1px solid #000000", 
-                        borderRadius: "9999px", 
+                        borderRadius: "8px", 
                         backgroundColor: "#000000", 
                         color: "#ffffff",
                         cursor: "pointer",
                         fontSize: "14px",
                         fontWeight: "600",
-                        fontFamily: "'Plus Jakarta Sans', sans-serif"
+                        fontFamily: "'Google Sans', 'Google Sans Text', 'Plus Jakarta Sans', sans-serif"
                       }}
                     >
                       <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
@@ -575,7 +546,7 @@ export function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps)
 
                   <div className="divider-row" style={{ display: "flex", alignItems: "center", gap: "10px", margin: "14px 0" }}>
                     <span className="divider-line" style={{ flex: 1, height: "1px", backgroundColor: "var(--s-hairline)" }}></span>
-                    <span className="divider-text" style={{ fontSize: "11px", fontWeight: "600", textTransform: "uppercase", color: "rgba(0,0,0,0.35)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>or use email</span>
+                    <span className="divider-text" style={{ fontSize: "11px", fontWeight: "600", textTransform: "uppercase", color: "#1B1B1B", fontFamily: "'Google Sans', 'Google Sans Text', 'Plus Jakarta Sans', sans-serif" }}>or use email</span>
                     <span className="divider-line" style={{ flex: 1, height: "1px", backgroundColor: "var(--s-hairline)" }}></span>
                   </div>
                 </div>
@@ -601,7 +572,7 @@ export function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps)
               <form onSubmit={handleEmailAuthSubmit} className="auth-form" style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                 {authMode === "signup" && (
                   <div className="form-group" style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                    <label className="form-label" htmlFor="auth-name" style={{ fontSize: "11px", fontWeight: "600", textTransform: "uppercase", letterSpacing: "0.5px", color: "rgba(0,0,0,0.4)" }}>Full Name</label>
+                    <label className="form-label" htmlFor="auth-name" style={{ fontSize: "11px", fontWeight: "600", textTransform: "uppercase", letterSpacing: "0.5px", color: "#1B1B1B" }}>Full Name</label>
                     <input 
                       type="text" 
                       id="auth-name"
@@ -613,7 +584,7 @@ export function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps)
                       style={{ 
                         width: "100%", 
                         padding: "10px 18px", 
-                        borderRadius: "9999px", 
+                        borderRadius: "8px", 
                         border: "1px solid var(--s-hairline)", 
                         backgroundColor: "#ffffff", 
                         color: "var(--s-on-surface)", 
@@ -626,7 +597,7 @@ export function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps)
                 )}
 
                 <div className="form-group" style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                  <label className="form-label" htmlFor="auth-email" style={{ fontSize: "11px", fontWeight: "600", textTransform: "uppercase", letterSpacing: "0.5px", color: "rgba(0,0,0,0.4)" }}>Email address</label>
+                  <label className="form-label" htmlFor="auth-email" style={{ fontSize: "11px", fontWeight: "600", textTransform: "uppercase", letterSpacing: "0.5px", color: "#1B1B1B" }}>Email address</label>
                   <input 
                     type="email" 
                     id="auth-email"
@@ -638,7 +609,7 @@ export function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps)
                     style={{ 
                       width: "100%", 
                       padding: "10px 18px", 
-                      borderRadius: "9999px", 
+                      borderRadius: "8px", 
                       border: "1px solid var(--s-hairline)", 
                       backgroundColor: "#ffffff", 
                       color: "var(--s-on-surface)", 
@@ -652,12 +623,12 @@ export function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps)
                 {authMode !== "forgot" && (
                   <div className="form-group" style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <label className="form-label" htmlFor="auth-password" style={{ fontSize: "11px", fontWeight: "600", textTransform: "uppercase", letterSpacing: "0.5px", color: "rgba(0,0,0,0.4)" }}>Password</label>
+                      <label className="form-label" htmlFor="auth-password" style={{ fontSize: "11px", fontWeight: "600", textTransform: "uppercase", letterSpacing: "0.5px", color: "#1B1B1B" }}>Password</label>
                       {authMode === "login" && (
                         <button 
                           type="button" 
                           onClick={() => setAuthMode("forgot")}
-                          style={{ background: "none", border: "none", padding: 0, fontSize: "12px", color: "var(--s-primary)", textDecoration: "underline", cursor: "pointer", fontWeight: "500", fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+                          style={{ background: "none", border: "none", padding: 0, fontSize: "12px", color: "var(--s-primary)", textDecoration: "underline", cursor: "pointer", fontWeight: "500", fontFamily: "'Google Sans', 'Google Sans Text', 'Plus Jakarta Sans', sans-serif" }}
                         >
                           Forgot?
                         </button>
@@ -674,7 +645,7 @@ export function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps)
                       style={{ 
                         width: "100%", 
                         padding: "10px 18px", 
-                        borderRadius: "9999px", 
+                        borderRadius: "8px", 
                         border: "1px solid var(--s-hairline)", 
                         backgroundColor: "#ffffff", 
                         color: "var(--s-on-surface)", 
@@ -688,7 +659,7 @@ export function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps)
 
                 {authMode === "signup" && (
                   <div className="form-group" style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                    <label className="form-label" htmlFor="auth-confirm-password" style={{ fontSize: "11px", fontWeight: "600", textTransform: "uppercase", letterSpacing: "0.5px", color: "rgba(0,0,0,0.4)" }}>Confirm Password</label>
+                    <label className="form-label" htmlFor="auth-confirm-password" style={{ fontSize: "11px", fontWeight: "600", textTransform: "uppercase", letterSpacing: "0.5px", color: "#1B1B1B" }}>Confirm Password</label>
                     <input 
                       type="password" 
                       id="auth-confirm-password"
@@ -700,7 +671,7 @@ export function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps)
                       style={{ 
                         width: "100%", 
                         padding: "10px 18px", 
-                        borderRadius: "9999px", 
+                        borderRadius: "8px", 
                         border: "1px solid var(--s-hairline)", 
                         backgroundColor: "#ffffff", 
                         color: "var(--s-on-surface)", 
@@ -721,7 +692,8 @@ export function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps)
                     width: "100%", 
                     padding: "12px 24px", 
                     fontSize: "15px", 
-                    marginTop: "10px"
+                    marginTop: "10px",
+                    borderRadius: "8px"
                   }}
                 >
                   {loading ? (
@@ -741,7 +713,7 @@ export function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps)
                 <div style={{ textAlign: "center", marginTop: "16px" }}>
                   <button 
                     onClick={() => setAuthMode("login")}
-                    style={{ background: "none", border: "none", padding: 0, fontSize: "14px", color: "var(--s-primary)", textDecoration: "underline", cursor: "pointer", fontWeight: "600", fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+                    style={{ background: "none", border: "none", padding: 0, fontSize: "14px", color: "var(--s-primary)", textDecoration: "underline", cursor: "pointer", fontWeight: "600", fontFamily: "'Google Sans', 'Google Sans Text', 'Plus Jakarta Sans', sans-serif" }}
                   >
                     Back to Log In
                   </button>
@@ -750,7 +722,7 @@ export function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps)
 
               {/* Legal / TOS notice */}
               <div style={{ textAlign: "center", marginTop: "24px" }}>
-                <p style={{ fontSize: "12px", color: "var(--s-on-surface-variant)", lineHeight: 1.4, margin: 0 }}>
+                <p style={{ fontSize: "12px", color: "#1B1B1B", lineHeight: 1.4, margin: 0 }}>
                   By continuing, you agree to our <a href="#terms" style={{ color: "var(--s-primary)", textDecoration: "underline" }}>Terms of Service</a> and <a href="#privacy" style={{ color: "var(--s-primary)", textDecoration: "underline" }}>Privacy Policy</a>.
                 </p>
               </div>

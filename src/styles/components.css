@@ -13,13 +13,13 @@
   justify-content: center;
   gap: 8px;
   padding: 12px 28px;
-  font-family: "Plus Jakarta Sans", sans-serif;
+  font-family: "Google Sans", "Google Sans Text", "Plus Jakarta Sans", sans-serif;
   font-size: 16px;
   font-weight: 480;
   line-height: 1.4;
   letter-spacing: -0.1px;
   border: none;
-  border-radius: 9999px;
+  border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   white-space: nowrap;
@@ -81,7 +81,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-family: "Plus Jakarta Sans", sans-serif;
+  font-family: "Google Sans", "Google Sans Text", "Plus Jakarta Sans", sans-serif;
   font-weight: 700;
   font-size: 18px;
   color: var(--s-primary);

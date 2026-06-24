@@ -238,7 +238,7 @@ interface OptionsSidebarProps {
 
 export function OptionsSidebar({
   selectedTool,
-  toolColor,
+  toolColor: _toolColor,
   runProcess,
   clearSelection,
   compressionLevel,
@@ -384,6 +384,7 @@ export function OptionsSidebar({
   outputQuality,
   setOutputQuality,
 }: OptionsSidebarProps) {
+  const toolColor = "#2563eb";
   const isCompress = selectedTool === "Compress PDF";
   const isMerge = selectedTool === "Merge PDF";
   const isJpgToPdf = selectedTool === "JPG to PDF";
@@ -805,6 +806,7 @@ export function OptionsSidebar({
         >
           {selectedTool.toUpperCase()} →
         </button>
+
         <button 
           className="cancel-sidebar-btn" 
           onClick={clearSelection}
@@ -815,7 +817,7 @@ export function OptionsSidebar({
             minHeight: "44px",
             fontSize: "14px",
             fontWeight: 500,
-            borderRadius: "9999px",
+            borderRadius: "8px",
             cursor: "pointer",
             display: "flex",
             alignItems: "center",

@@ -309,7 +309,7 @@ export function WatermarkEditor({ file, onClose, onSave }: WatermarkEditorProps)
       height: "100vh",
       width: "100%",
       backgroundColor: "#f3f3f3",
-      fontFamily: "'Plus Jakarta Sans', sans-serif",
+      fontFamily: "'Google Sans', 'Google Sans Text', 'Plus Jakarta Sans', sans-serif",
       overflow: "hidden"
     }}>
       <Header
@@ -530,7 +530,7 @@ export function WatermarkEditor({ file, onClose, onSave }: WatermarkEditorProps)
                     type="text" 
                     value={wmText}
                     onChange={e => setWmText(e.target.value)}
-                    style={{ width: "100%", padding: "8px 10px", borderRadius: "8px", border: "1px solid rgba(0,0,0,0.15)", fontSize: "0.8rem", marginTop: "4px", outline: "none", boxSizing: "border-box", fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+                    style={{ width: "100%", padding: "8px 10px", borderRadius: "8px", border: "1px solid rgba(0,0,0,0.15)", fontSize: "0.8rem", marginTop: "4px", outline: "none", boxSizing: "border-box", fontFamily: "'Google Sans', 'Google Sans Text', 'Plus Jakarta Sans', sans-serif" }}
                   />
                 </div>
 

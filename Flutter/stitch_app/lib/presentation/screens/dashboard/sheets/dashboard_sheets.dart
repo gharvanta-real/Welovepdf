@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:share_plus/share_plus.dart';
 import 'package:file_picker/file_picker.dart';
 import '../../../../core/theme/app_tokens.dart';
@@ -464,7 +465,7 @@ void showFolderPickerBottomSheet(BuildContext context, AppState state, Document 
                         ...allFolders.map((folder) {
                           final isCurrentParent = doc.parentFolderId == folder.id;
                           return ListTile(
-                            leading: const Icon(Icons.folder, color: Colors.amber),
+                            leading: Icon(Icons.folder, color: isDark ? const Color(0xFF8AB4F8) : const Color(0xFF1A73E8)),
                             title: Text(
                               folder.title,
                               style: TextStyle(
@@ -635,7 +636,7 @@ void showDocumentOptionsBottomSheet(BuildContext context, Document doc, AppState
                         label: 'Share File',
                         onTap: () async {
                           Navigator.pop(context);
-                          if (doc.filePath != null && await File(doc.filePath!).exists()) {
+                          if (doc.filePath != null && !kIsWeb && await File(doc.filePath!).exists()) {
                             await Share.shareXFiles([XFile(doc.filePath!)], text: doc.title);
                           } else {
                             await Share.share(

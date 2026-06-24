@@ -78,10 +78,6 @@ class _ProfileTabState extends State<ProfileTab> {
     );
   }
 
-  void _showStorageBreakdown(BuildContext context) {
-    showStorageBreakdown(context);
-  }
-
   void _showFAQs(BuildContext context) {
     showFAQs(context);
   }
@@ -196,70 +192,6 @@ class _ProfileTabState extends State<ProfileTab> {
           ),
         ),
         const SizedBox(height: AppTokens.stackLg * 1.5),
-  
-        // Storage details trigger card
-        GestureDetector(
-          onTap: () => _showStorageBreakdown(context),
-          child: Container(
-            padding: const EdgeInsets.all(AppTokens.gutter),
-            decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
-              borderRadius: BorderRadius.circular(AppTokens.radiusLg),
-              border: null,
-              boxShadow: const [AppTokens.shadowLevel1],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Enterprise Storage',
-                      style: theme.textTheme.labelLarge?.copyWith(
-                        color: theme.colorScheme.onSurface,
-                      ),
-                    ),
-                    Text(
-                      '15.2%',
-                      style: theme.textTheme.labelLarge?.copyWith(
-                        color: theme.colorScheme.error,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: AppTokens.stackMd),
-                LinearProgressIndicator(
-                  value: 0.152,
-                  backgroundColor: theme.colorScheme.secondaryContainer,
-                  color: theme.colorScheme.error,
-                  minHeight: 8,
-                  borderRadius: BorderRadius.circular(AppTokens.radiusFull),
-                ),
-                const SizedBox(height: AppTokens.stackMd),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      '15.2 MB of 100 GB used',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.outline,
-                      ),
-                    ),
-                    Text(
-                      'Tap for breakdown',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.error,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
-        const SizedBox(height: AppTokens.stackLg),
   
         Row(
           children: [

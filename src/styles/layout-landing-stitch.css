@@ -15,13 +15,13 @@
 
 /* ── PILL BUTTONS (landing page variants) ── */
 .stitch-pill-primary {
-  font-family: "Plus Jakarta Sans", sans-serif;
+  font-family: "Google Sans", "Google Sans Text", "Plus Jakarta Sans", sans-serif;
   font-size: 16px;
   font-weight: 480;
   background: var(--s-primary);
   color: var(--s-on-primary);
   padding: 13px 28px;
-  border-radius: 9999px;
+  border-radius: 8px;
   border: none;
   cursor: pointer;
   display: inline-flex;
@@ -36,13 +36,13 @@
 }
 
 .stitch-pill-secondary {
-  font-family: "Plus Jakarta Sans", sans-serif;
+  font-family: "Google Sans", "Google Sans Text", "Plus Jakarta Sans", sans-serif;
   font-size: 16px;
   font-weight: 480;
   background: transparent;
   color: var(--s-on-surface);
   padding: 13px 28px;
-  border-radius: 9999px;
+  border-radius: 8px;
   border: 1px solid var(--s-hairline);
   cursor: pointer;
   display: inline-flex;
@@ -56,13 +56,13 @@
 }
 
 .stitch-pill-outline {
-  font-family: "Plus Jakarta Sans", sans-serif;
+  font-family: "Google Sans", "Google Sans Text", "Plus Jakarta Sans", sans-serif;
   font-size: 14px;
   font-weight: 480;
   background: rgba(0,0,0,0.07);
   color: rgba(0,0,0,0.65);
   padding: 9px 20px;
-  border-radius: 9999px;
+  border-radius: 8px;
   border: 1px solid rgba(0,0,0,0.12);
   cursor: pointer;
   transition: background 0.15s;
@@ -111,7 +111,7 @@
 }
 
 .stitch-hero-copy h1 {
-  font-size: clamp(44px, 5vw, 72px);
+  font-size: clamp(32px, 5vw, 46px);
   font-weight: 340;
   line-height: 1.02;
   letter-spacing: -1.5px;
@@ -120,7 +120,7 @@
 }
 
 .stitch-hero-sub {
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 330;
   line-height: 1.65;
   color: rgba(0,0,0,0.55);
@@ -210,7 +210,7 @@
 }
 
 .stitch-block-heading {
-  font-size: clamp(32px, 5vw, 52px);
+  font-size: 28px;
   font-weight: 340;
   letter-spacing: -0.8px;
   line-height: 1.1;
@@ -265,7 +265,7 @@
 }
 
 .stitch-tool-name {
-  font-size: 17px;
+  font-size: 18px;
   font-weight: 540;
   color: var(--s-primary);
   letter-spacing: -0.2px;
@@ -414,7 +414,7 @@
     font-size: 16px;
   }
   .stitch-hero-copy h1 {
-    font-size: clamp(36px, 8vw, 54px);
+    font-size: clamp(32px, 5vw, 46px);
   }
   .stitch-block-section {
     padding: 56px 0;

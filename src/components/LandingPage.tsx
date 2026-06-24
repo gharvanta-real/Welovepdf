@@ -846,10 +846,10 @@ export function LandingPage({ onToolSelect, onViewChange }: LandingPageProps) {
 
             {/* Right copy */}
             <div className="stitch-split-copy">
-              <h2 style={{ fontSize: "clamp(28px, 4vw, 42px)", fontWeight: 540, letterSpacing: "-0.5px", lineHeight: 1.15, marginBottom: "20px" }}>
+              <h2 style={{ fontSize: "28px", fontWeight: 540, letterSpacing: "-0.5px", lineHeight: 1.15, marginBottom: "20px" }}>
                 Secure Enterprise Signing for Modern Teams
               </h2>
-              <p style={{ fontSize: "18px", fontWeight: 330, lineHeight: 1.6, color: "rgba(0,0,0,0.6)", marginBottom: "28px" }}>
+              <p style={{ fontSize: "14px", fontWeight: 330, lineHeight: 1.6, color: "rgba(0,0,0,0.6)", marginBottom: "28px" }}>
                 Collect legally binding signatures globally with end-to-end encryption.
                 Our enterprise suite integrates with your favourite tools to automate
                 document workflows effortlessly.
@@ -871,7 +871,7 @@ export function LandingPage({ onToolSelect, onViewChange }: LandingPageProps) {
       <section className="stitch-features-section">
         <div className="stitch-container">
           <div style={{ textAlign: "center", marginBottom: "64px" }}>
-            <h2 style={{ fontSize: "clamp(32px, 5vw, 56px)", fontWeight: 340, letterSpacing: "-0.8px" }}>
+            <h2 style={{ fontSize: "28px", fontWeight: 340, letterSpacing: "-0.8px" }}>
               Keep your simple tasks simple
             </h2>
           </div>
@@ -879,10 +879,10 @@ export function LandingPage({ onToolSelect, onViewChange }: LandingPageProps) {
           {featuresData.map((feature, idx) => (
             <div className={`stitch-feature-row ${idx % 2 !== 0 ? "reverse" : ""} ${feature.id === "signature" ? "has-large-visual" : ""}`} key={feature.title}>
               <div className="stitch-feature-copy">
-                <h3 style={{ fontSize: "clamp(24px, 3vw, 36px)", fontWeight: 540, letterSpacing: "-0.3px", marginBottom: "16px" }}>
+                <h3 style={{ fontSize: "28px", fontWeight: 540, letterSpacing: "-0.3px", marginBottom: "16px" }}>
                   {feature.title}
                 </h3>
-                <p style={{ fontSize: "18px", fontWeight: 320, lineHeight: 1.6, color: "rgba(0,0,0,0.6)", marginBottom: "24px" }}>
+                <p style={{ fontSize: "14px", fontWeight: 320, lineHeight: 1.6, color: "rgba(0,0,0,0.6)", marginBottom: "24px" }}>
                   {feature.description}
                 </p>
                 <button
@@ -908,7 +908,7 @@ export function LandingPage({ onToolSelect, onViewChange }: LandingPageProps) {
       <section className="stitch-block-section stitch-block-lilac">
         <div className="stitch-container">
           <div style={{ marginBottom: "48px" }}>
-            <h2 style={{ fontSize: "clamp(32px, 5vw, 56px)", fontWeight: 340, letterSpacing: "-0.8px" }}>
+            <h2 style={{ fontSize: "28px", fontWeight: 340, letterSpacing: "-0.8px" }}>
               Built for real workflows.
             </h2>
           </div>
@@ -921,8 +921,8 @@ export function LandingPage({ onToolSelect, onViewChange }: LandingPageProps) {
                   <div className="stitch-why-icon">
                     <Icon size={22} />
                   </div>
-                  <h3 style={{ fontSize: "20px", fontWeight: 540, marginBottom: "8px", letterSpacing: "-0.2px" }}>{prop.title}</h3>
-                  <p style={{ fontSize: "16px", fontWeight: 320, lineHeight: 1.6, color: "rgba(0,0,0,0.6)", margin: 0 }}>{prop.description}</p>
+                  <h3 style={{ fontSize: "18px", fontWeight: 540, marginBottom: "8px", letterSpacing: "-0.2px" }}>{prop.title}</h3>
+                  <p style={{ fontSize: "14px", fontWeight: 320, lineHeight: 1.6, color: "rgba(0,0,0,0.6)", margin: 0 }}>{prop.description}</p>
                 </div>
               );
             })}
@@ -933,10 +933,10 @@ export function LandingPage({ onToolSelect, onViewChange }: LandingPageProps) {
       {/* ── CTA SECTION ── */}
       <section className="stitch-cta-section">
         <div className="stitch-container" style={{ textAlign: "center" }}>
-          <h2 style={{ fontSize: "clamp(36px, 6vw, 64px)", fontWeight: 340, letterSpacing: "-0.96px", marginBottom: "20px" }}>
-            Ready to streamline<br/>your workflow?
+          <h2 style={{ fontSize: "28px", fontWeight: 340, letterSpacing: "-0.96px", marginBottom: "20px" }}>
+            Ready to get started?
           </h2>
-          <p style={{ fontSize: "20px", fontWeight: 330, color: "rgba(0,0,0,0.55)", maxWidth: "560px", margin: "0 auto 40px" }}>
+          <p style={{ fontSize: "14px", fontWeight: 330, color: "rgba(0,0,0,0.55)", maxWidth: "560px", margin: "0 auto 40px" }}>
             Join professionals, students, and creators who trust Pdfmount.online for their daily document tasks.
           </p>
           <div className="stitch-cta-actions">

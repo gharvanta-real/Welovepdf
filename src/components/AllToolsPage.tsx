@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { tools, sitemapGroups } from "../data/tools";
-import { ToolIcon, getToolColor } from "./ToolIcon";
-import { ArrowLeft, ArrowRight, CheckCircle2 } from "lucide-react";
-import { Footer } from "./Footer";
+import { ToolIcon } from "./ToolIcon";
+import { ArrowLeft, ArrowRight, Search, X } from "lucide-react";
+
 
 interface AllToolsPageProps {
   onToolSelect: (toolName: string) => void;
@@ -12,21 +12,162 @@ interface AllToolsPageProps {
   onViewChange: (view: any) => void;
 }
 
-export function AllToolsPage({ onToolSelect, onPricingClick, onContactSalesClick, onBack, onViewChange }: AllToolsPageProps) {
-  // We'll define a popular list matching the figma specs exactly:
-  // PDF to Word, Merge PDF, JPG to PDF, Sign PDF, Split PDF, Compress PDF
-  const popularTools = [
-    { name: "PDF to Word", desc: "Convert documents with OCR precision, maintaining original layouts.", cat: "Conversion" },
-    { name: "Merge PDF", desc: "Combine multiple files into a single, cohesive document.", cat: "Management" },
-    { name: "JPG to PDF", desc: "Convert image galleries into clean, high-resolution PDF portfolios.", cat: "Media" },
-    { name: "Sign PDF", desc: "Request signatures or sign documents yourself with eIDAS security.", cat: "Security" },
-    { name: "Split PDF", desc: "Extract pages or split your PDF into independent files by range.", cat: "Management" },
-    { name: "Compress PDF", desc: "Reduce file size dramatically while maintaining visual fidelity.", cat: "Optimization" }
-  ];
+// Reusable Google AdSense Ad Unit Component
+function AdSenseUnit({ slot, style = {} }: { slot: string; style?: React.CSSProperties }) {
+  useEffect(() => {
+    try {
+      // @ts-ignore
+      (window.adsbygoogle = window.adsbygoogle || []).push({});
+    } catch (err) {
+      console.warn("AdSense push failed:", err);
+    }
+  }, []);
 
   return (
-    <div className="stitch-landing" style={{ width: "100%", minHeight: "100vh", backgroundColor: "var(--s-background, #f9f9f9)" }}>
-      <div className="stitch-container" style={{ paddingTop: "60px" }}>
+    <div style={{ margin: "32px 0", textAlign: "center", width: "100%", overflow: "hidden", ...style }}>
+      <span style={{ display: "block", fontSize: "10px", color: "#94a3b8", textTransform: "uppercase", letterSpacing: "1.5px", marginBottom: "8px" }}>
+        Advertisement
+      </span>
+      <ins 
+        className="adsbygoogle"
+        style={{ display: "block" }}
+        data-ad-client="ca-pub-XXXXXXXXXXXXX" // Replace with your approved publisher ID
+        data-ad-slot={slot}
+        data-ad-format="auto"
+        data-full-width-responsive="true"
+      />
+    </div>
+  );
+}
+
+// Clean inline SVG Vector Illustrations
+const ConversionIllustration = () => (
+  <svg width="60" height="60" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginBottom: "16px" }}>
+    <rect x="6" y="10" width="30" height="40" rx="6" fill="#E5EDFF" stroke="#2563EB" strokeWidth="2"/>
+    <rect x="28" y="20" width="30" height="40" rx="6" fill="#FFFFFF" stroke="#6366F1" strokeWidth="2" strokeDasharray="4 4"/>
+    <path d="M22 28L26 28L26 24" stroke="#2563EB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M42 36L38 36L38 40" stroke="#6366F1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M25 28C30 28 34 32 38 36" stroke="#2563EB" strokeWidth="2" strokeLinecap="round"/>
+    <text x="16" y="22" fill="#2563EB" fontSize="7" fontWeight="bold" fontFamily="system-ui">DOC</text>
+    <text x="38" y="50" fill="#6366F1" fontSize="7" fontWeight="bold" fontFamily="system-ui">PDF</text>
+  </svg>
+);
+
+const OptimizationIllustration = () => (
+  <svg width="60" height="60" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginBottom: "16px" }}>
+    <rect x="10" y="8" width="44" height="20" rx="4" fill="#EBF2FF" stroke="#2563EB" strokeWidth="2"/>
+    <rect x="10" y="36" width="44" height="20" rx="4" fill="#EBF2FF" stroke="#2563EB" strokeWidth="2"/>
+    <path d="M32 20V26" stroke="#2563EB" strokeWidth="2" strokeLinecap="round"/>
+    <path d="M32 38V44" stroke="#2563EB" strokeWidth="2" strokeLinecap="round"/>
+    <path d="M28 29.5L32 25.5L36 29.5" stroke="#2563EB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M28 34.5L32 38.5L36 34.5" stroke="#2563EB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <text x="22" y="19" fill="#2563EB" fontSize="6" fontWeight="bold" fontFamily="system-ui">PAGE 1</text>
+    <text x="22" y="47" fill="#2563EB" fontSize="6" fontWeight="bold" fontFamily="system-ui">PAGE 2</text>
+  </svg>
+);
+
+const SecurityIllustration = () => (
+  <svg width="60" height="60" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginBottom: "16px" }}>
+    <path d="M32 6C32 6 48 10 48 24C48 38 32 50 32 50C32 50 16 38 16 24C16 10 32 6 32 6Z" fill="#E5EDFF" stroke="#2563EB" strokeWidth="2" strokeLinejoin="round"/>
+    <rect x="24" y="22" width="16" height="12" rx="2" fill="#FFFFFF" stroke="#2563EB" strokeWidth="2"/>
+    <path d="M27 22V17C27 14.5 29 12.5 32 12.5C35 12.5 37 14.5 37 17V22" stroke="#2563EB" strokeWidth="2" strokeLinecap="round"/>
+    <circle cx="32" cy="28" r="1.5" fill="#2563EB"/>
+  </svg>
+);
+
+const BrowserIllustration = () => (
+  <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="8" y="12" width="64" height="48" rx="6" fill="#FFFFFF" stroke="#2563EB" strokeWidth="2.5"/>
+    <line x1="8" y1="24" x2="72" y2="24" stroke="#2563EB" strokeWidth="2"/>
+    <circle cx="16" cy="18" r="3" fill="#6366F1"/>
+    <circle cx="24" cy="18" r="3" fill="#a855f7"/>
+    <circle cx="32" cy="18" r="3" fill="#ec4899"/>
+    <path d="M28 42C28 42 32 46 40 46C48 46 52 42 52 42" stroke="#2563EB" strokeWidth="2" strokeLinecap="round"/>
+    <rect x="30" y="32" width="20" height="14" rx="2" fill="#E5EDFF" stroke="#2563EB" strokeWidth="1.5"/>
+    <circle cx="40" cy="39" r="1.5" fill="#2563EB"/>
+  </svg>
+);
+
+export function AllToolsPage({ onToolSelect, onPricingClick, onContactSalesClick, onBack, onViewChange }: AllToolsPageProps) {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All");
+
+  // Exclude coming-soon tools and filter based on search and category
+  const filteredTools = tools.filter(tool => {
+    if (tool.status === "coming-soon") return false;
+
+    // Filter by selected category tab
+    if (selectedCategory !== "All" && tool.sitemapGroup !== selectedCategory) {
+      return false;
+    }
+
+    // Filter by search query
+    if (searchQuery.trim() !== "") {
+      const query = searchQuery.toLowerCase();
+      return (
+        tool.name.toLowerCase().includes(query) ||
+        tool.description.toLowerCase().includes(query)
+      );
+    }
+
+    return true;
+  });
+
+  return (
+    <div className="stitch-landing" style={{ width: "100%", minHeight: "100vh", backgroundColor: "#ffffff" }}>
+      {/* Scope custom classes and styles for this clean page */}
+      <style>{`
+        .all-tools-clean-card {
+          background-color: #ffffff;
+          border: 1px solid #e2e8f0;
+          border-radius: 16px;
+          padding: 24px;
+          cursor: pointer;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.2s ease, box-shadow 0.2s ease;
+          min-height: 180px;
+          position: relative;
+        }
+        .all-tools-clean-card:hover {
+          transform: translateY(-4px);
+          border-color: #2563eb !important;
+          box-shadow: 0 12px 30px rgba(37, 99, 235, 0.08);
+        }
+        .all-tools-clean-card:hover .card-arrow {
+          transform: translateX(4px);
+        }
+        .card-arrow {
+          transition: transform 0.2s ease;
+        }
+        @media (min-width: 1024px) {
+          .all-tools-grid-desktop {
+            grid-template-columns: repeat(5, 1fr) !important;
+          }
+        }
+        @media (min-width: 768px) and (max-width: 1023px) {
+          .all-tools-grid-desktop {
+            grid-template-columns: repeat(3, 1fr) !important;
+          }
+        }
+        @media (max-width: 767px) {
+          .all-tools-grid-desktop {
+            grid-template-columns: repeat(1, 1fr) !important;
+          }
+        }
+        
+        /* Custom scrollbar styling for category list on mobile */
+        .category-tabs-container::-webkit-scrollbar {
+          height: 4px;
+        }
+        .category-tabs-container::-webkit-scrollbar-thumb {
+          background: #e2e8f0;
+          border-radius: 2px;
+        }
+      `}</style>
+
+      <div className="stitch-container" style={{ paddingTop: "64px", paddingBottom: "100px" }}>
         
         {/* Back Button */}
         <button 
@@ -38,99 +179,235 @@ export function AllToolsPage({ onToolSelect, onPricingClick, onContactSalesClick
             gap: "8px", 
             padding: "8px 20px", 
             fontSize: "14px", 
-            marginBottom: "40px"
+            marginBottom: "20px",
+            border: "1px solid #e2e8f0",
+            borderRadius: "9999px",
+            backgroundColor: "#ffffff",
+            color: "#4b5563",
+            cursor: "pointer",
+            transition: "all 0.2s ease"
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.borderColor = "#2563eb";
+            e.currentTarget.style.color = "#2563eb";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.borderColor = "#e2e8f0";
+            e.currentTarget.style.color = "#4b5563";
           }}
         >
           <ArrowLeft size={16} /> Back to Home
         </button>
 
         {/* Hero Section */}
-        <div style={{ marginBottom: "64px", maxWidth: "900px" }}>
-          <h1 style={{ fontSize: "clamp(36px, 7vw, 76px)", fontWeight: 340, letterSpacing: "-1.50px", lineHeight: 1.05, marginBottom: "24px", color: "var(--s-primary)" }}>
+        <div style={{ marginBottom: "48px", maxWidth: "900px" }}>
+          <h1 style={{ 
+            fontSize: "clamp(28px, 3.5vw, 40px)", 
+            fontWeight: 700, 
+            letterSpacing: "-1px", 
+            lineHeight: 1.15, 
+            marginBottom: "16px", 
+            color: "#0F172A" 
+          }}>
             All PDF tools at your fingertips.
           </h1>
-          <p style={{ color: "var(--s-on-surface-variant)", fontSize: "22px", fontWeight: 320, lineHeight: 1.5, margin: 0, maxWidth: "700px" }}>
+          <p style={{ 
+            color: "#4B5563", 
+            fontSize: "14px", 
+            fontWeight: 400, 
+            lineHeight: 1.5, 
+            margin: 0, 
+            maxWidth: "700px" 
+          }}>
             Edit, convert, merge, and sign PDF documents in seconds. Professional-grade utilities wrapped in a minimalist, high-fidelity workspace.
           </p>
         </div>
 
-        {/* Popular Utilities Block (Mint Block) */}
-        <div 
-          style={{ 
-            backgroundColor: "var(--s-block-mint, #ADEFD1)", 
-            borderRadius: "24px", 
-            padding: "clamp(32px, 5vw, 64px)", 
-            marginBottom: "64px",
-            border: "1px solid var(--s-hairline)"
-          }}
-        >
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "40px", flexWrap: "wrap", gap: "20px" }}>
-            <div style={{ flex: 1, minWidth: "250px" }}>
-              <h2 style={{ fontSize: "clamp(28px, 4vw, 42px)", fontWeight: 540, letterSpacing: "-0.5px", margin: 0, color: "var(--s-primary)" }}>
-                Popular Utilities
-              </h2>
-            </div>
-            <a 
-              href="#sitemap" 
-              className="stitch-pill-outline" 
-              style={{ backgroundColor: "rgba(255,255,255,0.4)", borderColor: "var(--s-hairline)", color: "var(--s-primary)", fontSize: "14px" }}
-            >
-              See All {tools.filter(t => t.status !== "coming-soon").length} Tools
-            </a>
+        {/* AdSense Unit (Top) */}
+        <AdSenseUnit slot="top-responsive-ad" style={{ marginBottom: "40px" }} />
+
+        {/* Search & Categories Bar */}
+        <div style={{ 
+          display: "flex", 
+          flexDirection: "column", 
+          gap: "24px", 
+          marginBottom: "40px",
+          paddingBottom: "24px",
+          borderBottom: "1px solid #f1f5f9"
+        }}>
+          {/* Search Input */}
+          <div style={{ position: "relative", maxWidth: "480px", width: "100%" }}>
+            <Search size={18} style={{ position: "absolute", left: "16px", top: "50%", transform: "translateY(-50%)", color: "#94a3b8" }} />
+            <input 
+              type="text" 
+              placeholder="Search tools..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "12px 16px 12px 48px",
+                fontSize: "14px",
+                border: "1px solid #e2e8f0",
+                borderRadius: "12px",
+                outline: "none",
+                transition: "border-color 0.2s, box-shadow 0.2s",
+                backgroundColor: "#ffffff",
+                color: "#0F172A",
+                boxSizing: "border-box"
+              }}
+              onFocus={(e) => {
+                e.target.style.borderColor = "#2563eb";
+                e.target.style.boxShadow = "0 0 0 3px rgba(37, 99, 235, 0.1)";
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = "#e2e8f0";
+                e.target.style.boxShadow = "none";
+              }}
+            />
+            {searchQuery && (
+              <button 
+                onClick={() => setSearchQuery("")}
+                style={{
+                  position: "absolute",
+                  right: "16px",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  color: "#94a3b8",
+                  display: "flex",
+                  alignItems: "center"
+                }}
+              >
+                <X size={16} />
+              </button>
+            )}
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "20px" }}>
-            {popularTools.map((pop) => {
-              const matchedTool = tools.find(t => t.name === pop.name);
-              const toolColor = matchedTool ? getToolColor(matchedTool.name) : "var(--s-primary)";
+          {/* Category Filter Tabs */}
+          <div 
+            className="category-tabs-container"
+            style={{ 
+              display: "flex", 
+              gap: "8px", 
+              flexWrap: "nowrap",
+              overflowX: "auto",
+              paddingBottom: "8px",
+              width: "100%"
+            }}
+          >
+            {["All", ...sitemapGroups].map(category => (
+              <button
+                key={category}
+                onClick={() => setSelectedCategory(category)}
+                style={{
+                  padding: "8px 18px",
+                  fontSize: "14px",
+                  fontWeight: 500,
+                  borderRadius: "9999px",
+                  border: "1px solid",
+                  borderColor: selectedCategory === category ? "#2563eb" : "#e2e8f0",
+                  backgroundColor: selectedCategory === category ? "#2563eb" : "#ffffff",
+                  color: selectedCategory === category ? "#ffffff" : "#4b5563",
+                  cursor: "pointer",
+                  transition: "all 0.2s ease",
+                  whiteSpace: "nowrap"
+                }}
+              >
+                {category}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Tools Grid */}
+        {filteredTools.length === 0 ? (
+          <div style={{ textAlign: "center", padding: "64px 0", color: "#64748B" }}>
+            <p style={{ fontSize: "16px", margin: 0 }}>No tools found matching "{searchQuery}"</p>
+          </div>
+        ) : (
+          <div 
+            style={{ 
+              display: "grid", 
+              gridTemplateColumns: "repeat(5, 1fr)", 
+              gap: "20px",
+              marginBottom: "40px"
+            }}
+            className="all-tools-grid-desktop"
+          >
+            {filteredTools.map(tool => {
+              const isBeta = tool.status === "beta";
               return (
                 <div 
-                  key={pop.name} 
-                  className="stitch-why-card" 
-                  onClick={() => onToolSelect(pop.name)}
-                  style={{ 
-                    backgroundColor: "rgba(255, 255, 255, 0.8)", 
-                    backdropFilter: "blur(8px)", 
-                    cursor: "pointer", 
-                    display: "flex", 
-                    flexDirection: "column", 
-                    justifyContent: "space-between", 
-                    minHeight: "220px", 
-                    padding: "32px", 
-                    transition: "transform 0.2s, background-color 0.2s"
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = "translateY(-4px)";
-                    e.currentTarget.style.backgroundColor = "#ffffff";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = "translateY(0)";
-                    e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.8)";
-                  }}
+                  key={tool.id}
+                  onClick={() => onToolSelect(tool.name)}
+                  className="all-tools-clean-card"
                 >
                   <div>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "24px" }}>
+                    {/* Icon & Status Banner */}
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "16px" }}>
                       <div 
                         style={{ 
-                          width: "56px", 
-                          height: "56px", 
-                          borderRadius: "12px", 
-                          backgroundColor: "#ffffff", 
+                          width: "40px", 
+                          height: "40px", 
+                          borderRadius: "10px", 
+                          overflow: "hidden",
                           display: "flex", 
                           alignItems: "center", 
-                          justifyContent: "center", 
-                          border: "1px solid var(--s-hairline)",
-                          color: toolColor
+                          justifyContent: "center"
                         }}
                       >
-                        <ToolIcon toolNameOrId={pop.name} size={20} style={{ width: "36px", height: "36px", borderRadius: "8px" }} />
+                        <ToolIcon toolNameOrId={tool.name} size={22} style={{ width: "36px", height: "36px", borderRadius: "8px" }} />
                       </div>
-                      <span className="eyebrow" style={{ fontSize: "11px", color: "rgba(0,0,0,0.4)", textTransform: "uppercase", fontWeight: "600" }}>{pop.cat}</span>
+                      {isBeta && (
+                        <span style={{ 
+                          fontSize: "10px", 
+                          padding: "2px 6px", 
+                          borderRadius: "4px", 
+                          backgroundColor: "#fef3c7", 
+                          color: "#d97706", 
+                          fontWeight: "bold" 
+                        }}>
+                          Beta
+                        </span>
+                      )}
                     </div>
-                    <h3 style={{ fontSize: "20px", fontWeight: 540, marginBottom: "8px", color: "var(--s-primary)", letterSpacing: "-0.2px" }}>{pop.name}</h3>
-                    <p style={{ fontSize: "14px", fontWeight: 320, color: "var(--s-on-surface-variant)", lineHeight: 1.5, margin: 0 }}>{pop.desc}</p>
+
+                    {/* Title */}
+                    <h3 style={{ 
+                      fontSize: "18px", 
+                      fontWeight: 600, 
+                      color: "#0F172A", 
+                      margin: "0 0 6px 0",
+                      lineHeight: 1.3
+                    }}>
+                      {tool.name}
+                    </h3>
+
+                    {/* Description */}
+                    <p style={{ 
+                      fontSize: "14px", 
+                      fontWeight: 400, 
+                      color: "#64748B", 
+                      lineHeight: 1.4, 
+                      margin: 0 
+                    }}>
+                      {tool.description}
+                    </p>
                   </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "var(--s-primary)", fontWeight: "600", fontSize: "14px", marginTop: "24px" }}>
+
+                  {/* Clean CTA Link */}
+                  <div className="card-arrow" style={{ 
+                    alignSelf: "flex-start", 
+                    display: "flex", 
+                    alignItems: "center", 
+                    gap: "6px",
+                    color: "#2563eb", 
+                    fontSize: "13px", 
+                    fontWeight: 600,
+                    marginTop: "20px"
+                  }}>
                     <span>Open Tool</span>
                     <ArrowRight size={14} />
                   </div>
@@ -138,173 +415,168 @@ export function AllToolsPage({ onToolSelect, onPricingClick, onContactSalesClick
               );
             })}
           </div>
-        </div>
+        )}
 
-        {/* Enterprise Signing Banner (Block Lime) */}
-        <div 
-          style={{ 
-            backgroundColor: "var(--s-block-lime, #D3F57B)", 
-            borderRadius: "24px", 
-            padding: "clamp(32px, 5vw, 64px)", 
-            marginBottom: "84px",
-            display: "flex",
-            flexDirection: "row",
-            flexWrap: "wrap",
-            gap: "48px",
+        {/* SEO & Resource Guide Section (At the Bottom, Well Organized, Non-Robotic, with Vector Illustrations) */}
+        <div style={{ marginTop: "80px", paddingTop: "60px", borderTop: "1px solid #f1f5f9" }}>
+          
+          {/* Article Header */}
+          <div style={{ maxWidth: "900px", marginBottom: "48px" }}>
+            <h2 style={{ fontSize: "28px", fontWeight: 700, color: "#0F172A", marginBottom: "16px" }}>
+              The Evolution of Document Formats: Why PDF Reigns Supreme
+            </h2>
+            <p style={{ fontSize: "14px", color: "#4B5563", lineHeight: 1.6, margin: 0 }}>
+              Welcome to the Pdfmount.online help center and resource guide. As digital documents form the backbone of modern business communication, academic research, and legal transactions, managing them efficiently is a fundamental skill. Portable Document Format (PDF) files have become the universal standard because they preserve formatting, fonts, and layouts across all operating systems and devices. However, modifying or converting these static documents has historically required expensive software licenses or slow desktop installations. Our browser-based suite solves this challenge by delivering high-fidelity, secure, and fast tools directly in your browser. This comprehensive guide explains the core categories of document utilities and outlines best practices to protect your data during digital workflows.
+            </p>
+          </div>
+
+          {/* Three-Column Utility Guide */}
+          <div style={{ 
+            display: "grid", 
+            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", 
+            gap: "24px", 
+            marginBottom: "64px" 
+          }}>
+            {/* Card 1: Conversion */}
+            <div style={{ backgroundColor: "#ffffff", border: "1px solid #e2e8f0", borderRadius: "16px", padding: "32px", display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+              <ConversionIllustration />
+              <h3 style={{ fontSize: "18px", fontWeight: 600, color: "#0F172A", marginBottom: "12px" }}>
+                Seamless Format Conversion
+              </h3>
+              <p style={{ fontSize: "14px", color: "#64748B", lineHeight: 1.5, margin: 0 }}>
+                Transforming file formats shouldn't corrupt your spacing, tables, or fonts. When converting from formats like Microsoft Word, Excel, or PowerPoint into PDF, our engine runs deep layout parsing to ensure that elements look exactly as they did in their source application. Conversely, exporting a PDF back to an editable Word document or spreadsheet requires advanced optical character recognition (OCR) and paragraph clustering. This ensures that text segments are editable rather than flattened as random characters. Image-based conversions, such as transforming a gallery of JPGs or PNGs into a single PDF portfolio, are optimized to maintain high resolution while adjusting margins and page dimensions automatically. Clean format translations prevent communication errors and maintain professionalism in all files.
+              </p>
+            </div>
+
+            {/* Card 2: Optimization */}
+            <div style={{ backgroundColor: "#ffffff", border: "1px solid #e2e8f0", borderRadius: "16px", padding: "32px", display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+              <OptimizationIllustration />
+              <h3 style={{ fontSize: "18px", fontWeight: 600, color: "#0F172A", marginBottom: "12px" }}>
+                Layout & Size Optimization
+              </h3>
+              <p style={{ fontSize: "14px", color: "#64748B", lineHeight: 1.5, margin: 0 }}>
+                Government portals, academic admissions, and corporate emails frequently impose strict size limits on PDF attachments. Simply shrinking images makes text illegible. Our compression utility analyzes the internal structure of your document, removing redundant metadata, compacting embedded font objects, and downsampling images using clean spatial compression without rendering the text blurry. For file management, merging multiple files gathers pages into a single document, while splitting extracts specific page ranges into independent sheets. Page-level organization tools enable you to rotate individual pages that were scanned sideways, delete blank sheets, crop custom borders, and insert page numbers in headers or footers, giving you total control over the document's structure.
+              </p>
+            </div>
+
+            {/* Card 3: Security */}
+            <div style={{ backgroundColor: "#ffffff", border: "1px solid #e2e8f0", borderRadius: "16px", padding: "32px", display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+              <SecurityIllustration />
+              <h3 style={{ fontSize: "18px", fontWeight: 600, color: "#0F172A", marginBottom: "12px" }}>
+                Secure Signatures & Protection
+              </h3>
+              <p style={{ fontSize: "14px", color: "#64748B", lineHeight: 1.5, margin: 0 }}>
+                Digital document safety requires modern cryptographic protocols. When you draw, type, or upload an electronic signature onto a PDF contract, it is embedded directly into the document layer. For sensitive materials, applying an owner password with AES-256 bit encryption restricts copying, editing, or printing, preventing unauthorized tampering. If you need to access a restricted file, our unlock tool decrypts it, provided you have the legal right or passcode. For legal and corporate indexing, Bates numbering applies unique sequential alphanumeric keys to each page, ensuring audit-trail tracking. Additionally, editing metadata fields removes hidden author profiles, save history, and creation dates, securing your corporate privacy before documents are shared with the public.
+              </p>
+            </div>
+          </div>
+
+          {/* AdSense Unit (Middle) */}
+          <AdSenseUnit slot="middle-responsive-ad" />
+
+          {/* Two-Column Security & Local Processing Detail */}
+          <div style={{ 
+            display: "grid", 
+            gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", 
+            gap: "40px",
             alignItems: "center",
-            border: "1px solid var(--s-hairline)"
-          }}
-        >
-          <div style={{ flex: "1 1 350px", display: "flex", justifyContent: "center" }}>
-            <div 
-              style={{ 
-                backgroundColor: "#ffffff", 
-                borderRadius: "16px", 
-                padding: "24px", 
-                boxShadow: "0 10px 30px rgba(0,0,0,0.04)", 
-                border: "1px solid var(--s-hairline)",
-                width: "100%",
-                maxWidth: "400px" 
-              }}
-            >
-              <div style={{ display: "flex", gap: "6px", marginBottom: "16px" }}>
-                <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#ef4444" }}></span>
-                <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#eab308" }}></span>
-                <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#22c55e" }}></span>
+            marginBottom: "64px",
+            padding: "40px",
+            backgroundColor: "#f8fafc",
+            borderRadius: "24px",
+            border: "1px solid #e2e8f0"
+          }}>
+            <div>
+              <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "20px" }}>
+                <BrowserIllustration />
+                <h3 style={{ fontSize: "20px", fontWeight: 600, color: "#0F172A", margin: 0 }}>
+                  Browser-Based Processing vs. Desktop Software
+                </h3>
               </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                <div style={{ height: "12px", width: "35%", backgroundColor: "var(--s-surface-low)", borderRadius: "4px" }}></div>
-                <div style={{ height: "8px", width: "80%", backgroundColor: "var(--s-surface-low)", borderRadius: "4px" }}></div>
-                <div style={{ height: "1px", backgroundColor: "var(--s-hairline-soft)", margin: "8px 0" }}></div>
-                <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-                  <div style={{ width: "24px", height: "24px", borderRadius: "50%", backgroundColor: "var(--s-block-mint)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <span style={{ fontSize: "10px", fontWeight: "bold" }}>✓</span>
-                  </div>
-                  <div style={{ flex: 1, height: "8px", backgroundColor: "var(--s-surface-low)", borderRadius: "4px" }}></div>
-                </div>
+              <p style={{ fontSize: "14px", color: "#4B5563", lineHeight: 1.6, margin: 0 }}>
+                Historically, editing PDFs meant purchasing resource-heavy desktop software that required administrative access and system installations. Desktop installations carry security risks and clutter local storage. Operating directly in your web browser changes this dynamic. By utilizing modern web technologies like WebAssembly, file operations can run locally in a sandboxed browser context. This means your private files don't need to be uploaded to an unverified remote server to complete simple tasks like rotations or merging, maintaining strict local privacy. Even when files are processed on cloud servers for intensive tasks like OCR, they are processed in secure, temporary storage environments and permanently deleted immediately after task completion. The browser-based approach is cross-platform, meaning you get the exact same high-speed utility whether you are working on a Chromebook, a Windows workstation, an iPad, or a Linux laptop, without ever needing an install button.
+              </p>
+            </div>
+            
+            <div style={{ backgroundColor: "#ffffff", padding: "32px", borderRadius: "16px", border: "1px solid #e2e8f0" }}>
+              <h4 style={{ fontSize: "18px", fontWeight: 600, color: "#0F172A", marginTop: 0, marginBottom: "20px" }}>
+                Best Practices for Document Security
+              </h4>
+              <ul style={{ paddingLeft: "20px", margin: 0, display: "flex", flexDirection: "column", gap: "16px", fontSize: "14px", color: "#4B5563", lineHeight: 1.5 }}>
+                <li>
+                  <strong style={{ color: "#0F172A" }}>Encrypt Sensitive Attachments</strong>: Apply robust password protection with AES-256 algorithms before sending files containing financial or personal data via email.
+                </li>
+                <li>
+                  <strong style={{ color: "#0F172A" }}>Clean Document Metadata</strong>: Strip hidden properties, edit logs, and author profiles before publishing legal drafts or company memos publicly.
+                </li>
+                <li>
+                  <strong style={{ color: "#0F172A" }}>Verify Recipient Identity</strong>: Before requesting legally binding e-signatures, double-check email addresses to avoid sending business agreements to the wrong signers.
+                </li>
+                <li>
+                  <strong style={{ color: "#0F172A" }}>Use Local Sandbox Tools</strong>: Whenever possible, perform operations like page reordering, splitting, and merging within secure client-side browser modules.
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Interactive FAQ Grid */}
+          <div style={{ marginBottom: "40px" }}>
+            <h2 style={{ fontSize: "28px", fontWeight: 700, color: "#0F172A", marginBottom: "32px", textAlign: "center" }}>
+              Frequently Asked Questions & Answers
+            </h2>
+            
+            <div style={{ 
+              display: "grid", 
+              gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", 
+              gap: "24px" 
+            }}>
+              {/* FAQ 1 */}
+              <div style={{ backgroundColor: "#ffffff", border: "1px solid #e2e8f0", borderRadius: "16px", padding: "24px" }}>
+                <h4 style={{ fontSize: "18px", fontWeight: 600, color: "#0F172A", marginTop: 0, marginBottom: "10px" }}>
+                  Are my private files safe on Pdfmount.online?
+                </h4>
+                <p style={{ fontSize: "14px", color: "#64748B", lineHeight: 1.5, margin: 0 }}>
+                  Yes. Security is our primary architecture. All file uploads are fully encrypted in transit using secure HTTPS protocols. Files are processed in isolated sandboxed containers and are automatically and permanently deleted from our servers within a short processing window. We do not inspect, share, or store your document contents.
+                </p>
+              </div>
+
+              {/* FAQ 2 */}
+              <div style={{ backgroundColor: "#ffffff", border: "1px solid #e2e8f0", borderRadius: "16px", padding: "24px" }}>
+                <h4 style={{ fontSize: "18px", fontWeight: 600, color: "#0F172A", marginTop: 0, marginBottom: "10px" }}>
+                  How does PDF compression reduce size without losing quality?
+                </h4>
+                <p style={{ fontSize: "14px", color: "#64748B", lineHeight: 1.5, margin: 0 }}>
+                  Our compression algorithms optimize the underlying PDF code. It targets resource-heavy elements like duplicate font profiles and metadata, and compresses images using balanced vector settings. This reduces the footprint while keeping text and graphics crisp.
+                </p>
+              </div>
+
+              {/* FAQ 3 */}
+              <div style={{ backgroundColor: "#ffffff", border: "1px solid #e2e8f0", borderRadius: "16px", padding: "24px" }}>
+                <h4 style={{ fontSize: "18px", fontWeight: 600, color: "#0F172A", marginTop: 0, marginBottom: "10px" }}>
+                  Can I add signatures or text comments to a document directly?
+                </h4>
+                <p style={{ fontSize: "14px", color: "#64748B", lineHeight: 1.5, margin: 0 }}>
+                  Yes. The PDF Annotator and Sign PDF tools allow you to draw, type, or import electronic signatures, write text notes, highlight key sentences, and draw shapes directly onto the document layers, which can then be saved and downloaded as a standard PDF.
+                </p>
+              </div>
+
+              {/* FAQ 4 */}
+              <div style={{ backgroundColor: "#ffffff", border: "1px solid #e2e8f0", borderRadius: "16px", padding: "24px" }}>
+                <h4 style={{ fontSize: "18px", fontWeight: 600, color: "#0F172A", marginTop: 0, marginBottom: "10px" }}>
+                  What is the advantage of browser-based processing over desktop apps?
+                </h4>
+                <p style={{ fontSize: "14px", color: "#64748B", lineHeight: 1.5, margin: 0 }}>
+                  It is instant, requires no installation, works on any operating system, and is completely free. Running sandboxed tasks also ensures that local software exploits are avoided, providing a clean, isolated environment to view and organize your files.
+                </p>
               </div>
             </div>
           </div>
 
-          <div style={{ flex: "1 1 400px" }}>
-            <h2 style={{ fontSize: "clamp(26px, 3.5vw, 38px)", fontWeight: 540, letterSpacing: "-0.5px", lineHeight: 1.15, marginBottom: "20px", color: "var(--s-primary)" }}>
-              Secure Enterprise Signing for Modern Teams
-            </h2>
-            <p style={{ color: "var(--s-on-surface-variant)", fontSize: "16px", fontWeight: 320, lineHeight: 1.6, marginBottom: "28px" }}>
-              Collect legally binding signatures globally with end-to-end encryption. Our enterprise suite integrates with your favorite tools to automate document workflows effortlessly.
-            </p>
-            <ul style={{ listStyle: "none", padding: 0, margin: "0 0 32px 0", display: "flex", flexDirection: "column", gap: "12px" }}>
-              {["AES-256 Bit Encryption", "Unlimited Signers & Requests", "Audit Trail Documentation"].map(feat => (
-                <li key={feat} style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "15px", fontWeight: "500" }}>
-                  <CheckCircle2 size={18} style={{ color: "var(--s-primary)" }} />
-                  <span>{feat}</span>
-                </li>
-              ))}
-            </ul>
-            <button 
-              onClick={onContactSalesClick}
-              className="stitch-pill-primary" 
-              style={{ padding: "14px 36px", fontSize: "16px" }}
-            >
-              Go Enterprise
-            </button>
-          </div>
+          {/* AdSense Unit (Bottom) */}
+          <AdSenseUnit slot="bottom-responsive-ad" />
+
         </div>
-
-        {/* Structured Sitemap Directory */}
-        <div id="sitemap" style={{ borderTop: "1px solid var(--s-hairline)", paddingTop: "64px", marginBottom: "80px" }}>
-          <div style={{ marginBottom: "40px" }}>
-            <h2 style={{ fontSize: "32px", fontWeight: 540, letterSpacing: "-0.5px", margin: 0, color: "var(--s-primary)" }}>
-              Browse all {tools.filter(t => t.status !== "coming-soon").length} available tools
-            </h2>
-          </div>
-
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "40px 30px" }}>
-            {sitemapGroups.map(group => {
-              const groupTools = tools.filter(t => t.sitemapGroup === group && t.status !== "coming-soon");
-              return (
-                <div key={group} style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-                  <h4 style={{ fontSize: "14px", fontWeight: "700", textTransform: "uppercase", letterSpacing: "0.5px", color: "var(--s-secondary)", borderBottom: "1px solid var(--s-hairline)", paddingBottom: "10px", margin: 0 }}>
-                    {group}
-                  </h4>
-                  <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "10px" }}>
-                    {groupTools.map(tool => {
-                      const toolColor = getToolColor(tool.name);
-                      const isBeta = tool.status === "beta";
-                      return (
-                        <li key={tool.id}>
-                          <a 
-                            href={`#${tool.id}`} 
-                            onClick={(e) => { e.preventDefault(); onToolSelect(tool.name); }}
-                            style={{ 
-                              display: "flex", 
-                              alignItems: "center", 
-                              gap: "8px", 
-                              textDecoration: "none", 
-                              color: "var(--s-on-surface)", 
-                              fontSize: "14px", 
-                              fontWeight: "450", 
-                              padding: "4px 0",
-                              transition: "color 0.2s"
-                            }}
-                            onMouseEnter={(e) => e.currentTarget.style.color = toolColor}
-                            onMouseLeave={(e) => e.currentTarget.style.color = "var(--s-on-surface)"}
-                          >
-                            <ToolIcon toolNameOrId={tool.name} size={14} style={{ width: "22px", height: "22px", borderRadius: "5px" }} />
-                            <span>{tool.name}</span>
-                            {isBeta && (
-                              <span style={{ fontSize: "10px", padding: "1px 5px", borderRadius: "4px", backgroundColor: "#fef3c7", color: "#d97706", fontWeight: "bold", marginLeft: "4px" }}>Beta</span>
-                            )}
-                          </a>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Bottom CTA Block */}
-        <div 
-          style={{ 
-            backgroundColor: "var(--s-primary)", 
-            color: "var(--s-on-primary)", 
-            borderRadius: "24px", 
-            padding: "clamp(48px, 6vw, 96px)", 
-            textAlign: "center",
-            marginBottom: "80px"
-          }}
-        >
-          <h2 style={{ fontSize: "clamp(32px, 5vw, 56px)", fontWeight: 340, letterSpacing: "-1px", lineHeight: 1.1, marginBottom: "24px" }}>
-            Ready to streamline your workflow?
-          </h2>
-          <p style={{ opacity: 0.7, fontSize: "18px", fontWeight: 320, maxWidth: "600px", margin: "0 auto 40px", lineHeight: 1.5 }}>
-            Join professionals, students, and creators who trust Pdfmount.online for their daily document tasks.
-          </p>
-          <div style={{ display: "flex", gap: "16px", justifyContent: "center", flexWrap: "wrap" }}>
-            <button 
-              onClick={() => onToolSelect("Merge PDF")} 
-              className="stitch-pill-outline" 
-              style={{ backgroundColor: "#ffffff", borderColor: "#ffffff", color: "var(--s-primary)", padding: "16px 40px", fontSize: "16px" }}
-            >
-              Get Started for Free
-            </button>
-            <button 
-              onClick={onContactSalesClick}
-              className="stitch-pill-outline" 
-              style={{ borderColor: "rgba(255,255,255,0.3)", color: "#ffffff", padding: "16px 40px", fontSize: "16px" }}
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.1)"}
-              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
-            >
-              Contact Sales
-            </button>
-          </div>
-        </div>
-
       </div>
-      <Footer onToolSelect={onToolSelect} onViewChange={onViewChange} />
     </div>
   );
 }

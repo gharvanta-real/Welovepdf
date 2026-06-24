@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:camera/camera.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
 import '../../../../core/theme/app_tokens.dart';
 import '../../../components/stitch_button.dart';
 import 'sheet_header.dart';
@@ -24,9 +24,7 @@ class _StatefulScanQRSheet extends StatefulWidget {
 }
 
 class _StatefulScanQRSheetState extends State<_StatefulScanQRSheet> with SingleTickerProviderStateMixin {
-  CameraController? _cameraController;
-  List<CameraDescription>? _cameras;
-  bool _isInitializing = true;
+  final MobileScannerController _scannerController = MobileScannerController();
   bool _isScanning = false;
   String? _scannedData;
   late AnimationController _scanAnimationController;
@@ -34,65 +32,27 @@ class _StatefulScanQRSheetState extends State<_StatefulScanQRSheet> with SingleT
   @override
   void initState() {
     super.initState();
-    _initCamera();
     _scanAnimationController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 2),
     )..repeat(reverse: true);
   }
 
-  Future<void> _initCamera() async {
-    try {
-      _cameras = await availableCameras();
-      if (_cameras != null && _cameras!.isNotEmpty) {
-        // Try to find the back camera
-        final backCamera = _cameras!.firstWhere(
-          (camera) => camera.lensDirection == CameraLensDirection.back,
-          orElse: () => _cameras!.first,
-        );
-
-        _cameraController = CameraController(
-          backCamera,
-          ResolutionPreset.medium,
-          enableAudio: false,
-        );
-
-        await _cameraController!.initialize();
-      }
-    } catch (e) {
-      debugPrint('Camera initialization error: $e');
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isInitializing = false;
-        });
-      }
-    }
-  }
-
   @override
   void dispose() {
     _scanAnimationController.dispose();
-    _cameraController?.dispose();
+    _scannerController.dispose();
     super.dispose();
   }
 
   void _triggerScan() {
-    if (_isScanning) return;
-    HapticFeedback.mediumImpact();
-    setState(() {
-      _isScanning = true;
-    });
-
-    // Simulate real image frame decoding
-    Future.delayed(const Duration(milliseconds: 1200), () {
-      if (mounted) {
-        setState(() {
-          _isScanning = false;
-          _scannedData = 'https://pdfmount.online/verify/doc-894726-valid';
-        });
-      }
-    });
+    // MobileScanner automatically scans. This manual button can toggle scanner state or restart it.
+    if (_scannedData != null) {
+      setState(() {
+        _scannedData = null;
+      });
+      _scannerController.start();
+    }
   }
 
   @override
@@ -141,23 +101,18 @@ class _StatefulScanQRSheetState extends State<_StatefulScanQRSheet> with SingleT
                     children: [
                       // Camera Preview or Fallback
                       Positioned.fill(
-                        child: _isInitializing
-                            ? const Center(child: CircularProgressIndicator())
-                            : (_cameraController != null && _cameraController!.value.isInitialized)
-                                ? CameraPreview(_cameraController!)
-                                : Container(
-                                    color: Colors.grey[900],
-                                    child: const Center(
-                                      child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          Icon(Icons.videocam_off, color: Colors.white54, size: 36),
-                                          SizedBox(height: 8),
-                                          Text('Camera Access Unavailable', style: TextStyle(color: Colors.white54, fontSize: 11)),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
+                        child: MobileScanner(
+                          controller: _scannerController,
+                          onDetect: (capture) {
+                            final List<Barcode> barcodes = capture.barcodes;
+                            if (barcodes.isNotEmpty && _scannedData == null) {
+                              HapticFeedback.heavyImpact();
+                              setState(() {
+                                _scannedData = barcodes.first.rawValue;
+                              });
+                            }
+                          },
+                        ),
                       ),
                       // Viewfinder Overlay Grid
                       Positioned.fill(
@@ -215,9 +170,13 @@ class _StatefulScanQRSheetState extends State<_StatefulScanQRSheet> with SingleT
               ),
             ),
             const SizedBox(height: AppTokens.stackLg * 1.5),
-            StitchButton(
-              text: 'Scan Code',
-              onPressed: _isInitializing ? null : _triggerScan,
+            Text(
+              'Scanning is active. Point camera at a QR code.',
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.outline,
+                fontStyle: FontStyle.italic,
+              ),
             ),
           ] else ...[
             Icon(Icons.check_circle_outline_rounded, color: theme.colorScheme.primary, size: 54),

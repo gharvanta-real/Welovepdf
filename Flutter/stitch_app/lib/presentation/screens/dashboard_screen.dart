@@ -15,6 +15,7 @@ import 'dashboard/profile_tab.dart';
 import 'dashboard/operations_tab.dart';
 import 'dashboard/dashboard_drawer.dart';
 import 'dashboard/sheets/dashboard_sheets.dart';
+import 'dashboard/sheets/image_to_pdf_sheet.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -76,13 +77,13 @@ class _DashboardScreenState extends State<DashboardScreen>
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    final Color topAreaColor = isDark ? theme.colorScheme.error : const Color(0xFFD5E8F4); // Mono in dark mode, Cambridge Blue in light mode
+    const Color topAreaColor = Color(0xFF1A73E8);
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle(
         statusBarColor: topAreaColor,
-        statusBarIconBrightness: Brightness.dark, // Dark status bar icons on light blue / white header
-        statusBarBrightness: Brightness.light,
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.dark,
         systemNavigationBarColor: theme.colorScheme.surface,
         systemNavigationBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
       ),
@@ -133,17 +134,27 @@ class _DashboardScreenState extends State<DashboardScreen>
                       children: [
                         _buildSproutItem(
                           context,
-                          'Images to PDF',
-                          Icons.photo_library_rounded,
+                          'Create Folder',
+                          Icons.create_new_folder_rounded,
                           () {
                             _toggleMenu();
-                            state.startImageToPdfFlow(context);
+                            showCreateFolderBottomSheet(context, state);
                           },
                         ),
                         const SizedBox(height: AppTokens.gutter),
                         _buildSproutItem(
                           context,
-                          'ML Camera',
+                          'Images to PDF',
+                          Icons.photo_library_rounded,
+                          () {
+                            _toggleMenu();
+                            showImageToPdfSheet(context);
+                          },
+                        ),
+                        const SizedBox(height: AppTokens.gutter),
+                        _buildSproutItem(
+                          context,
+                          'Scan Document',
                           Icons.camera_alt_rounded,
                           () {
                             _toggleMenu();
@@ -172,7 +183,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                         width: 80, // 60 + 20 (spread of 10.0 on both sides)
                         height: 80,
                         decoration: BoxDecoration(
-                          color: isDark ? const Color(0xFF121212) : const Color(0xFFE2EDF5),
+                          color: isDark ? const Color(0xFF121212) : const Color(0xFFF0F0F0),
                           shape: BoxShape.circle,
                         ),
                       ),
@@ -212,22 +223,17 @@ class _DashboardScreenState extends State<DashboardScreen>
   Widget _buildAdaptiveHeader(BuildContext context) {
     final theme = Theme.of(context);
     final state = Provider.of<AppState>(context);
-    final isDark = theme.brightness == Brightness.dark;
 
     final double statusBarHeight = MediaQuery.of(context).padding.top;
     final double topPadding = kIsWeb
         ? 8.0
         : (statusBarHeight > 0 ? statusBarHeight + 4.0 : 12.0);
 
-    // Dynamic header colors (Mono in dark mode, Cam Blue in light mode)
-    final Color headerColor = isDark ? theme.colorScheme.error : const Color(0xFFD5E8F4);
-    final Color headerFgColor = isDark ? Colors.black : const Color(0xFF1B355A);
-    final Color headerButtonBgColor = isDark
-        ? Colors.black.withOpacity(0.08)
-        : const Color(0xFF1B355A).withOpacity(0.08);
-    final Color headerMenuButtonBgColor = isDark
-        ? Colors.black.withOpacity(0.06)
-        : const Color(0xFF1B355A).withOpacity(0.06);
+    // Global topnav colors
+    const Color headerColor = Color(0xFF1A73E8); // Same Cobalt Blue in both themes
+    const Color headerFgColor = Colors.white; // White text/icons on the blue background
+    final Color headerButtonBgColor = Colors.white.withOpacity(0.15);
+    final Color headerMenuButtonBgColor = Colors.white.withOpacity(0.12);
 
     // Per-tab config
     String title = 'My Documents';

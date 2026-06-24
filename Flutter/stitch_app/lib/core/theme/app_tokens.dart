@@ -42,11 +42,11 @@ class AppTokens {
     offset: Offset(0, 4),
   );
 
-  // Light Mode Colors (Clean Monochrome - Black / White / Neutral)
-  static const Color primaryLight = Color(0xFF1A1A1A); // Near-black text/primary
+  // Light Mode Colors (Clean Cambridge Blue / Cobalt Blue Theme)
+  static const Color primaryLight = Color(0xFF1A73E8); // Rich Google Blue / Brand primary
   static const Color onPrimaryLight = Color(0xFFFFFFFF);
-  static const Color primaryContainerLight = Color(0xFF1A1A1A); // Black container
-  static const Color onPrimaryContainerLight = Color(0xFFFFFFFF);
+  static const Color primaryContainerLight = Color(0xFFD5E8F4); // Cambridge Blue light container
+  static const Color onPrimaryContainerLight = Color(0xFF1B355A); // Dark navy text
 
   static const Color secondaryLight = Color(0xFF555555); // Neutral grey secondary
   static const Color onSecondaryLight = Color(0xFFFFFFFF);
@@ -56,12 +56,12 @@ class AppTokens {
   static const Color tertiaryLight = Color(0xFF555555); // Grey tertiary
   static const Color onTertiaryLight = Color(0xFFFFFFFF);
   static const Color tertiaryContainerLight = Color(0xFFF0F0F0);
-  static const Color onTertiaryContainerLight = Color(0xFF1A1A1A);
+  static const Color onTertiaryContainerLight = Color(0xFF1B355A);
 
-  static const Color errorLight = Color(0xFF1A1A1A); // Black for core accents/errors in monochrome
+  static const Color errorLight = Color(0xFF1A73E8); // Brand blue for core accents/errors
   static const Color onErrorLight = Color(0xFFFFFFFF);
   static const Color errorContainerLight = Color(0xFFF0F0F0);
-  static const Color onErrorContainerLight = Color(0xFF1A1A1A);
+  static const Color onErrorContainerLight = Color(0xFF1A73E8);
 
   static const Color backgroundLight = Color(0xFFF5F5F5); // Clean light grey
   static const Color onBackgroundLight = Color(0xFF1A1A1A);
@@ -85,8 +85,8 @@ class AppTokens {
   static const Color inverseOnSurfaceLight = Color(0xFFF5F5F5);
 
   // Dark Mode Colors (Premium Charcoal / Dark Monochrome Mapping)
-  static const Color primaryDark = Color(0xFFFFFFFF); // White Accent
-  static const Color onPrimaryDark = Color(0xFF121212);
+  static const Color primaryDark = Color(0xFF1A73E8); // Brand blue accent in dark mode too
+  static const Color onPrimaryDark = Color(0xFFFFFFFF);
   static const Color primaryContainerDark = Color(0xFF2C2C2C); // Charcoal container
   static const Color onPrimaryContainerDark = Color(0xFFFFFFFF);
 
@@ -100,8 +100,8 @@ class AppTokens {
   static const Color tertiaryContainerDark = Color(0xFF2C2C2C);
   static const Color onTertiaryContainerDark = Color(0xFFFFFFFF);
 
-  static const Color errorDark = Color(0xFFFFFFFF); // White for core accents in dark mode
-  static const Color onErrorDark = Color(0xFF121212);
+  static const Color errorDark = Color(0xFF1A73E8); // Brand blue for core accents/errors in dark mode
+  static const Color onErrorDark = Color(0xFFFFFFFF);
   static const Color errorContainerDark = Color(0xFF2C2C2C);
   static const Color onErrorContainerDark = Color(0xFFFFFFFF);
 
