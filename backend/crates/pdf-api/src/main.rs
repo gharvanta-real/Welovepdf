@@ -862,8 +862,8 @@ async fn upload_generic(
 
                 let job_id = workspace.id().to_string();
 
-                // Determine expected file extension based on tool id
-                let extension = match tool_id.as_str() {
+                // Determine expected file extension based on tool id and input count
+                let mut extension = match tool_id.as_str() {
                     "pdf-to-word" | "pdf-word" => "docx",
                     "pdf-to-excel" | "pdf-excel" => "xlsx",
                     "pdf-to-ppt" | "pdf-ppt" => "pptx",
@@ -872,6 +872,11 @@ async fn upload_generic(
                     "pdf-to-png" | "pdf-png" | "split-pdf" | "split" => "zip",
                     _ => "pdf",
                 };
+
+                // If bulk operation (multiple input files) and not a merge tool, output as ZIP
+                if inputs.len() > 1 && tool_id != "merge-pdf" && tool_id != "merge" {
+                    extension = "zip";
+                }
 
                 let output = workspace.output_dir().join(format!("output.{}", extension));
 
