@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, lazy, Suspense } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
 import { Header } from "./components/Header";
 import { RecentJobs } from "./components/RecentJobs";
 import { UploadPanel } from "./components/UploadPanel";
@@ -10,24 +10,25 @@ import { CookieBanner } from "./components/CookieBanner";
 import { supabase } from "./utils/supabase";
 import { tools } from "./data/tools";
 import { seoPages, indianSeoRoutes } from "./data/seoPages";
+import { lazyWithRetry } from "./utils/lazyWithRetry";
 
 // Lazy-loaded auxiliary pages to decrease initial bundle size and boost page load times
-const PricingPage = lazy(() => import("./components/PricingPage").then(m => ({ default: m.PricingPage })));
-const PrivacyPage = lazy(() => import("./components/PrivacyPage").then(m => ({ default: m.PrivacyPage })));
-const TermsPage = lazy(() => import("./components/TermsPage").then(m => ({ default: m.TermsPage })));
-const FaqPage = lazy(() => import("./components/FaqPage").then(m => ({ default: m.FaqPage })));
-const ContactPage = lazy(() => import("./components/ContactPage").then(m => ({ default: m.ContactPage })));
-const AllToolsPage = lazy(() => import("./components/AllToolsPage").then(m => ({ default: m.AllToolsPage })));
-const AboutPage = lazy(() => import("./components/AboutPage").then(m => ({ default: m.AboutPage })));
-const ContactSalesPage = lazy(() => import("./components/ContactSalesPage").then(m => ({ default: m.ContactSalesPage })));
-const AccountSettingsPage = lazy(() => import("./components/AccountSettingsPage").then(m => ({ default: m.AccountSettingsPage })));
-const UserDashboardPage = lazy(() => import("./components/UserDashboardPage").then(m => ({ default: m.UserDashboardPage })));
-const SecurityPage = lazy(() => import("./components/TrustPages").then(m => ({ default: m.SecurityPage })));
-const FilePrivacyPage = lazy(() => import("./components/TrustPages").then(m => ({ default: m.FilePrivacyPage })));
-const DataDeletionPage = lazy(() => import("./components/TrustPages").then(m => ({ default: m.DataDeletionPage })));
-const AdminDashboard = lazy(() => import("./admin/AdminDashboard").then(m => ({ default: m.AdminDashboard })));
-const LandingPageV2 = lazy(() => import("./components/landing-v2/LandingPageV2").then(m => ({ default: m.LandingPageV2 })));
-const FooterV2 = lazy(() => import("./components/landing-v2/FooterV2").then(m => ({ default: m.FooterV2 })));
+const PricingPage = lazyWithRetry(() => import("./components/PricingPage").then(m => ({ default: m.PricingPage })));
+const PrivacyPage = lazyWithRetry(() => import("./components/PrivacyPage").then(m => ({ default: m.PrivacyPage })));
+const TermsPage = lazyWithRetry(() => import("./components/TermsPage").then(m => ({ default: m.TermsPage })));
+const FaqPage = lazyWithRetry(() => import("./components/FaqPage").then(m => ({ default: m.FaqPage })));
+const ContactPage = lazyWithRetry(() => import("./components/ContactPage").then(m => ({ default: m.ContactPage })));
+const AllToolsPage = lazyWithRetry(() => import("./components/AllToolsPage").then(m => ({ default: m.AllToolsPage })));
+const AboutPage = lazyWithRetry(() => import("./components/AboutPage").then(m => ({ default: m.AboutPage })));
+const ContactSalesPage = lazyWithRetry(() => import("./components/ContactSalesPage").then(m => ({ default: m.ContactSalesPage })));
+const AccountSettingsPage = lazyWithRetry(() => import("./components/AccountSettingsPage").then(m => ({ default: m.AccountSettingsPage })));
+const UserDashboardPage = lazyWithRetry(() => import("./components/UserDashboardPage").then(m => ({ default: m.UserDashboardPage })));
+const SecurityPage = lazyWithRetry(() => import("./components/TrustPages").then(m => ({ default: m.SecurityPage })));
+const FilePrivacyPage = lazyWithRetry(() => import("./components/TrustPages").then(m => ({ default: m.FilePrivacyPage })));
+const DataDeletionPage = lazyWithRetry(() => import("./components/TrustPages").then(m => ({ default: m.DataDeletionPage })));
+const AdminDashboard = lazyWithRetry(() => import("./admin/AdminDashboard").then(m => ({ default: m.AdminDashboard })));
+const LandingPageV2 = lazyWithRetry(() => import("./components/landing-v2/LandingPageV2").then(m => ({ default: m.LandingPageV2 })));
+const FooterV2 = lazyWithRetry(() => import("./components/landing-v2/FooterV2").then(m => ({ default: m.FooterV2 })));
 
 const pathMap: Record<string, { view: "home" | "workspace" | "pricing" | "privacy" | "terms" | "faq" | "contact" | "tools" | "about" | "contact-sales" | "settings" | "dashboard" | "security" | "file-privacy" | "data-deletion" | "admin" | "beta-workspace"; tool?: string }> = {
   "/": { view: "home" },
