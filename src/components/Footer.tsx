@@ -392,7 +392,6 @@ export function Footer({ onToolSelect, onViewChange }: FooterProps) {
               <h4>Discover</h4>
               <ul>
                 <li><a href="#tools" className="v2-footer-corp-link" onClick={(e) => handleLink(e, "tools")}>All PDF Tools</a></li>
-                <li><a href="#pricing" className="v2-footer-corp-link" onClick={(e) => handleLink(e, "pricing")}>Pricing Plans</a></li>
               </ul>
             </div>
 

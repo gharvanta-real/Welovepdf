@@ -239,13 +239,6 @@ export function Header({
         <div className="stitch-header-actions">
           {/* Workspace & Pricing Links (Desktop Only) */}
           <div className="stitch-desktop-only" style={{ display: "flex", alignItems: "center", gap: "20px", marginRight: "8px" }}>
-            <a 
-              className="stitch-nav-link" 
-              href="#pricing" 
-              onClick={(e) => { e.preventDefault(); setIsDropdownOpen(false); onPricingClick(); }}
-            >
-              Pricing
-            </a>
             {currentUser && (
               <a 
                 className="stitch-nav-link" 

@@ -449,19 +449,12 @@ export function AccountSettingsPage({ onBack, currentUser, onLogout, onUpdateUse
                         </div>
                       </div>
                     ) : (
-                      <div style={{ border: "1px solid var(--v2-border)", backgroundColor: "#ffffff", padding: "28px", borderRadius: "12px", display: "flex", flexDirection: "column", justifyContent: "space-between", minHeight: "220px" }}>
+                      <div style={{ border: "1px solid var(--v2-border)", backgroundColor: "#ffffff", padding: "28px", borderRadius: "12px", display: "flex", flexDirection: "column", justifyContent: "space-between", minHeight: "150px" }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "12px" }}>
-                          <span style={{ backgroundColor: "var(--v2-border-light)", color: "var(--v2-primary)", padding: "4px 10px", borderRadius: "4px", fontSize: "11px", fontWeight: "700", textTransform: "uppercase" }}>FREE PLAN</span>
-                          <span style={{ fontSize: "26px", fontWeight: "700", color: "var(--v2-text-main)" }}>$0<span style={{ fontSize: "13px", opacity: 0.55 }}>/mo</span></span>
+                          <span style={{ backgroundColor: "rgba(37,99,235,0.08)", color: "var(--v2-primary)", padding: "4px 10px", borderRadius: "4px", fontSize: "11px", fontWeight: "700", textTransform: "uppercase" }}>FREE PLAN</span>
+                          <span style={{ fontSize: "26px", fontWeight: "700", color: "var(--v2-text-main)" }}>$0</span>
                         </div>
-                        <p style={{ fontSize: "13px", color: "var(--v2-text-muted)", lineHeight: 1.5, margin: "0 0 20px" }}>50 MB file limit · 10 jobs/day. Upgrade to Pro for 500MB, 100 jobs/day, and priority processing.</p>
-                        <button
-                          onClick={() => onPricingClick ? onPricingClick() : onBack()}
-                          className="v2-pill-primary"
-                          style={{ padding: "10px 20px", fontSize: "13px", display: "inline-flex", alignItems: "center", gap: "8px", alignSelf: "flex-start" }}
-                        >
-                          <Crown size={14} /> Upgrade to Pro — $19/mo
-                        </button>
+                        <p style={{ fontSize: "13px", color: "var(--v2-text-muted)", lineHeight: 1.5, margin: "0" }}>500 MB file limit · 100 jobs/day. Priority processing and tools are free for everyone.</p>
                       </div>
                     )}
 
@@ -475,9 +468,9 @@ export function AccountSettingsPage({ onBack, currentUser, onLogout, onUpdateUse
                           </div>
                         ))
                       ) : (
-                        ["50 MB per file", "10 jobs per day", "Standard processing", "Community support"].map(f => (
+                        ["500 MB per file", "100 jobs per day", "Standard processing", "Priority support (24/5)"].map(f => (
                           <div key={f} style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "14px", color: "var(--v2-text-muted)" }}>
-                            <CheckCircle2 size={14} style={{ color: "#d1d5db", flexShrink: 0 }} />{f}
+                            <CheckCircle2 size={14} style={{ color: "#10b981", flexShrink: 0 }} />{f}
                           </div>
                         ))
                       )}

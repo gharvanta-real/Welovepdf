@@ -711,10 +711,10 @@ async fn check_limits_and_authenticate(
             if active_plan == "Pro" {
                 (500 * 1024 * 1024, 100) // 500 MB, 100 jobs/day per tool
             } else {
-                (50 * 1024 * 1024, 10) // 50 MB, 10 jobs/day per tool (free registered)
+                (500 * 1024 * 1024, 100) // All free registered users get Pro limits (500 MB, 100 jobs/day)
             }
         }
-        None => (25 * 1024 * 1024, 10), // 25 MB, 10 jobs/day overall (anonymous)
+        None => (500 * 1024 * 1024, 100), // Anonymous users also get high limits
     };
 
     let user_id = user.as_ref().map(|u| u.id.as_str());
@@ -725,7 +725,7 @@ async fn check_limits_and_authenticate(
 
     if current_jobs >= max_jobs {
         // Signal whether this is an anonymous user (no auth token) so the frontend
-        // can show the login wall vs the upgrade/pricing page.
+        // can show the login wall. Since upgrade is disabled, registered users get a simple limit message.
         let is_anon = user.is_none();
         return Err(format!(
             "DAILY_LIMIT_REACHED:{}:Daily limit of {} tool uses reached. {}.",
@@ -734,7 +734,7 @@ async fn check_limits_and_authenticate(
             if is_anon {
                 "Please log in to continue using PDFMount"
             } else {
-                "Upgrade to Pro for 100 jobs per day and 500 MB file size"
+                "Daily limit of 100 tool uses reached. Please try again tomorrow."
             }
         ));
     }
