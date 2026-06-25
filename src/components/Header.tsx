@@ -281,11 +281,12 @@ export function Header({
               aria-label="Open account menu"
               style={{ background: "transparent", border: "none", padding: 0, cursor: "pointer" }}
             >
-              <div className="user-avatar dynamic-avatar-gradient" style={{ color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: "55%", height: "55%" }}>
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                  <circle cx="12" cy="7" r="4" />
-                </svg>
+              <div className="user-avatar" style={{ overflow: "hidden" }}>
+                <img
+                  src={localStorage.getItem("userAvatar") || "/Avatar-1.webp"}
+                  alt="Avatar"
+                  style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%" }}
+                />
               </div>
             </button>
           )}

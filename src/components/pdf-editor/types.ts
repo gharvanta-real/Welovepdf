@@ -54,4 +54,4 @@ export const PRESET_COLORS = [
   "#bbf7d0", "#a5f3fc", "#bfdbfe", "#ddd6fe", "#fbcfe8"
 ];
 
-export const STAMP_TYPES = ["APPROVED", "DRAFT", "CONFIDENTIAL", "REVIEWED", "VOID", "CERTIFIED", "URGENT"];
+export const STAMP_TYPES = ["Approved", "Draft", "Confidential", "Reviewed", "Void", "Certified", "Urgent"];

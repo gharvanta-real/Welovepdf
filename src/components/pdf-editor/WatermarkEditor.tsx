@@ -27,7 +27,7 @@ export function WatermarkEditor({ file, onClose, onSave }: WatermarkEditorProps)
   const [mode, setMode] = useState<"text" | "image">("text");
   
   // Text Watermark Options
-  const [wmText, setWmText] = useState("CONFIDENTIAL");
+  const [wmText, setWmText] = useState("Confidential");
   const [fontSize, setFontSize] = useState(48);
   const [textColor, setTextColor] = useState("#dc2626");
   const [opacity, setOpacity] = useState(0.3);
@@ -336,7 +336,7 @@ export function WatermarkEditor({ file, onClose, onSave }: WatermarkEditorProps)
         height: "100%"
       }}>
         <div style={{ padding: "14px 16px", borderBottom: "1px solid #f0f0f0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <span style={{ fontSize: "0.78rem", fontWeight: "700", color: "#1b1b1b", letterSpacing: "0.03em" }}>PAGES</span>
+          <span style={{ fontSize: "0.78rem", fontWeight: "700", color: "#1b1b1b", letterSpacing: "0.03em" }}>Pages</span>
           <span style={{ fontSize: "0.72rem", color: "#5d5f5f" }}>{currentPage} / {totalPages || 1}</span>
         </div>
         <div style={{ flex: 1, overflowY: "auto", padding: "12px", display: "flex", flexDirection: "column", gap: "12px" }}>
@@ -525,7 +525,7 @@ export function WatermarkEditor({ file, onClose, onSave }: WatermarkEditorProps)
               <>
                 {/* Text Input */}
                 <div>
-                  <label style={{ fontSize: "0.68rem", fontWeight: "800", color: "rgba(0,0,0,0.6)" }}>WATERMARK TEXT</label>
+                  <label style={{ fontSize: "0.68rem", fontWeight: "800", color: "rgba(0,0,0,0.6)" }}>Watermark Text</label>
                   <input 
                     type="text" 
                     value={wmText}
@@ -536,7 +536,7 @@ export function WatermarkEditor({ file, onClose, onSave }: WatermarkEditorProps)
 
                 {/* Position presets 3x3 Grid */}
                 <div>
-                  <label style={{ fontSize: "0.68rem", fontWeight: "800", color: "rgba(0,0,0,0.6)", letterSpacing: "0.03em" }}>PLACEMENT POSITION</label>
+                  <label style={{ fontSize: "0.68rem", fontWeight: "800", color: "rgba(0,0,0,0.6)", letterSpacing: "0.03em" }}>Placement Position</label>
                   <div style={{
                     border: "1px solid rgba(0,0,0,0.15)",
                     borderRadius: "8px",
@@ -571,7 +571,7 @@ export function WatermarkEditor({ file, onClose, onSave }: WatermarkEditorProps)
                 {/* Font Size slider */}
                 <div>
                   <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.68rem", fontWeight: "800", color: "rgba(0,0,0,0.6)" }}>
-                    <span>FONT SIZE</span>
+                    <span>Font Size</span>
                     <span>{fontSize}px</span>
                   </div>
                   <input 
@@ -586,7 +586,7 @@ export function WatermarkEditor({ file, onClose, onSave }: WatermarkEditorProps)
 
                 {/* Text Color Picker */}
                 <div>
-                  <label style={{ fontSize: "0.68rem", fontWeight: "800", color: "rgba(0,0,0,0.6)" }}>TEXT COLOR</label>
+                  <label style={{ fontSize: "0.68rem", fontWeight: "800", color: "rgba(0,0,0,0.6)" }}>Text Color</label>
                   <div style={{ display: "flex", gap: "8px", marginTop: "4px", alignItems: "center" }}>
                     <input 
                       type="color" 
@@ -613,7 +613,7 @@ export function WatermarkEditor({ file, onClose, onSave }: WatermarkEditorProps)
                 {/* Opacity slider */}
                 <div>
                   <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.68rem", fontWeight: "800", color: "rgba(0,0,0,0.6)" }}>
-                    <span>OPACITY / TRANSPARENCY</span>
+                    <span>Opacity / Transparency</span>
                     <span>{Math.round(opacity * 100)}%</span>
                   </div>
                   <input 
@@ -629,7 +629,7 @@ export function WatermarkEditor({ file, onClose, onSave }: WatermarkEditorProps)
                 {/* Rotation slider */}
                 <div>
                   <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.68rem", fontWeight: "800", color: "rgba(0,0,0,0.6)" }}>
-                    <span>ROTATION</span>
+                    <span>Rotation</span>
                     <span>{rotation}°</span>
                   </div>
                   <input 
@@ -646,7 +646,7 @@ export function WatermarkEditor({ file, onClose, onSave }: WatermarkEditorProps)
               <>
                 {/* Image upload */}
                 <div>
-                  <label style={{ fontSize: "0.68rem", fontWeight: "800", color: "rgba(0,0,0,0.6)", display: "block", marginBottom: "4px" }}>WATERMARK IMAGE</label>
+                  <label style={{ fontSize: "0.68rem", fontWeight: "800", color: "rgba(0,0,0,0.6)", display: "block", marginBottom: "4px" }}>Watermark Image</label>
                   <div style={{
                     border: "1.5px dashed rgba(0,0,0,0.2)",
                     borderRadius: "8px",
@@ -666,7 +666,7 @@ export function WatermarkEditor({ file, onClose, onSave }: WatermarkEditorProps)
 
                 {/* Image positions 3x3 Grid */}
                 <div>
-                  <label style={{ fontSize: "0.68rem", fontWeight: "800", color: "rgba(0,0,0,0.6)", letterSpacing: "0.03em" }}>PLACEMENT POSITION</label>
+                  <label style={{ fontSize: "0.68rem", fontWeight: "800", color: "rgba(0,0,0,0.6)", letterSpacing: "0.03em" }}>Placement Position</label>
                   <div style={{
                     border: "1px solid rgba(0,0,0,0.15)",
                     borderRadius: "8px",
@@ -701,7 +701,7 @@ export function WatermarkEditor({ file, onClose, onSave }: WatermarkEditorProps)
                 {/* Image scale slider */}
                 <div>
                   <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.68rem", fontWeight: "800", color: "rgba(0,0,0,0.6)" }}>
-                    <span>IMAGE SCALE / SIZE</span>
+                    <span>Image Scale / Size</span>
                     <span>{imgScale}%</span>
                   </div>
                   <input 
@@ -717,7 +717,7 @@ export function WatermarkEditor({ file, onClose, onSave }: WatermarkEditorProps)
                 {/* Image Opacity */}
                 <div>
                   <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.68rem", fontWeight: "800", color: "rgba(0,0,0,0.6)" }}>
-                    <span>OPACITY</span>
+                    <span>Opacity</span>
                     <span>{Math.round(imgOpacity * 100)}%</span>
                   </div>
                   <input 
@@ -734,7 +734,7 @@ export function WatermarkEditor({ file, onClose, onSave }: WatermarkEditorProps)
 
             {/* Page range selections */}
             <div>
-              <label style={{ fontSize: "0.68rem", fontWeight: "800", color: "rgba(0,0,0,0.6)" }}>PAGE RANGE</label>
+              <label style={{ fontSize: "0.68rem", fontWeight: "800", color: "rgba(0,0,0,0.6)" }}>Page Range</label>
               <select 
                 value={pageRange}
                 onChange={e => setPageRange(e.target.value as any)}

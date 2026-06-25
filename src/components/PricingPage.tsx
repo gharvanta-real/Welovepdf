@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ArrowLeft, CheckCircle2, Tag, X, Loader2, Crown, Zap } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Tag, X, Loader2, Crown } from "lucide-react";
 
 
 interface PricingPageProps {
@@ -208,8 +208,8 @@ export function PricingPage({ currentUser, onUpgradeSuccess, onLoginRequired, on
         
         .pricing-hero-sec {
           text-align: left;
-          padding: 32px 0 40px 0;
-          margin-bottom: 40px;
+          padding: 12px 0 8px 0;
+          margin-bottom: 20px;
         }
         .pricing-hero-chip {
           display: inline-block;
@@ -230,12 +230,12 @@ export function PricingPage({ currentUser, onUpgradeSuccess, onLoginRequired, on
         }
         .pricing-hero-sec h1 {
           font-family: "Google Sans", "Google Sans Text", "Plus Jakarta Sans", sans-serif;
-          font-size: clamp(28px, 3.5vw, 40px);
+          font-size: 28px;
           font-weight: 700;
-          line-height: 1.18;
-          letter-spacing: -1px;
+          line-height: 1.2;
+          letter-spacing: -0.5px;
           color: #0F172A;
-          margin: 0 0 16px;
+          margin: 0 0 12px;
         }
         .theme-dark .pricing-hero-sec h1 {
           color: #F8FAFC;
@@ -263,7 +263,7 @@ export function PricingPage({ currentUser, onUpgradeSuccess, onLoginRequired, on
           background-color: #FFFFFF;
           border: 1px solid #E2E8F0;
           border-radius: 16px;
-          padding: 40px 32px;
+          padding: 24px;
           display: flex;
           flex-direction: column;
           position: relative;
@@ -324,7 +324,7 @@ export function PricingPage({ currentUser, onUpgradeSuccess, onLoginRequired, on
           font-size: 14px;
           color: #64748B;
           line-height: 1.5;
-          margin: 0 0 28px 0;
+          margin: 0;
         }
         .theme-dark .pricing-desc {
           color: #94A3B8;
@@ -333,13 +333,13 @@ export function PricingPage({ currentUser, onUpgradeSuccess, onLoginRequired, on
         .price-wrap {
           display: flex;
           align-items: baseline;
-          margin-bottom: 28px;
+          margin-bottom: 16px;
         }
         .price-val {
-          font-size: 42px;
+          font-size: 28px;
           font-weight: 800;
           color: #0F172A;
-          letter-spacing: -1.5px;
+          letter-spacing: -0.5px;
         }
         .theme-dark .price-val {
           color: #F8FAFC;
@@ -356,10 +356,10 @@ export function PricingPage({ currentUser, onUpgradeSuccess, onLoginRequired, on
         .features-list {
           list-style: none;
           padding: 0;
-          margin: 0 0 36px 0;
+          margin: 0 0 20px 0;
           display: flex;
           flex-direction: column;
-          gap: 14px;
+          gap: 10px;
           flex-grow: 1;
         }
         .feature-item {
@@ -475,16 +475,16 @@ export function PricingPage({ currentUser, onUpgradeSuccess, onLoginRequired, on
         }
         
         .promo-banner {
-          background-color: #F8FAFC;
-          border: 1px solid #E2E8F0;
+          background-color: #F4F4F4;
+          border: none;
           border-radius: 16px;
           padding: 60px 40px;
           text-align: center;
           margin-bottom: 64px;
         }
         .theme-dark .promo-banner {
-          background-color: #0F172A;
-          border-color: #1E293B;
+          background-color: #1E293B;
+          border: none;
         }
         .promo-banner h2 {
           font-family: "Google Sans", "Google Sans Text", "Plus Jakarta Sans", sans-serif;
@@ -510,18 +510,18 @@ export function PricingPage({ currentUser, onUpgradeSuccess, onLoginRequired, on
         }
         
         .promo-modal-box {
-          background-color: #FFFFFF;
+          background-color: #F4F4F4;
           border-radius: 16px;
           padding: 40px;
           max-width: 440px;
           width: 100%;
           position: relative;
-          box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
-          border: 1px solid #E2E8F0;
+          box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08);
+          border: none;
         }
         .theme-dark .promo-modal-box {
-          background-color: #0F172A;
-          border-color: #1E293B;
+          background-color: #1E293B;
+          border: none;
           box-shadow: none;
         }
       `}</style>
@@ -546,14 +546,9 @@ export function PricingPage({ currentUser, onUpgradeSuccess, onLoginRequired, on
               </div>
             ) : (
               <>
-                <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "28px" }}>
-                  <div style={{ width: "44px", height: "44px", borderRadius: "8px", backgroundColor: "rgba(37,99,235,0.08)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                    <Tag size={20} color="#2563EB" />
-                  </div>
-                  <div>
-                    <h3 style={{ fontSize: "18px", fontWeight: 700, margin: "0 0 2px" }}>Enter Promo Code</h3>
-                    <p style={{ fontSize: "12.5px", color: "#64748B", margin: 0 }}>Activate Pro for 1 full year</p>
-                  </div>
+                <div style={{ marginBottom: "24px" }}>
+                  <h3 style={{ fontSize: "18px", fontWeight: 700, margin: "0 0 4px" }}>Enter Promo Code</h3>
+                  <p style={{ fontSize: "13px", color: "#64748B", margin: 0 }}>Activate Pro for 1 full year</p>
                 </div>
 
                 <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
@@ -568,8 +563,8 @@ export function PricingPage({ currentUser, onUpgradeSuccess, onLoginRequired, on
                       padding: "13px 16px",
                       borderRadius: "8px",
                       border: promoError ? "1.5px solid #ef4444" : "1.5px solid #e2e8f0",
-                      backgroundColor: "transparent",
-                      color: "inherit",
+                      backgroundColor: "#ffffff",
+                      color: "#0F172A",
                       outline: "none",
                       fontSize: "15px",
                       fontFamily: "JetBrains Mono, monospace",
@@ -598,7 +593,7 @@ export function PricingPage({ currentUser, onUpgradeSuccess, onLoginRequired, on
                       opacity: promoLoading ? 0.75 : 1
                     }}
                   >
-                    {promoLoading ? <><Loader2 size={16} style={{ animation: "spin 1s linear infinite" }} /> Activating...</> : <><Zap size={15} /> Activate Pro Plan</>}
+                    {promoLoading ? <><Loader2 size={16} style={{ animation: "spin 1s linear infinite" }} /> Activating...</> : "Activate Pro Plan"}
                   </button>
 
                   <p style={{ margin: "8px 0 0", fontSize: "12px", color: "#94A3B8", textAlign: "center", lineHeight: 1.5 }}>
@@ -612,7 +607,7 @@ export function PricingPage({ currentUser, onUpgradeSuccess, onLoginRequired, on
         </div>
       )}
 
-      <div className="stitch-container" style={{ paddingTop: "32px" }}>
+      <div className="stitch-container" style={{ paddingTop: "12px" }}>
 
         {/* Hero Section */}
         <div className="pricing-hero-sec">
@@ -645,9 +640,9 @@ export function PricingPage({ currentUser, onUpgradeSuccess, onLoginRequired, on
                 </div>
               )}
 
-              <div style={{ marginBottom: "20px" }}>
+              <div style={{ marginBottom: "12px" }}>
                 <h3>{tier.name}</h3>
-                <p className="pricing-desc">{tier.desc}</p>
+                <p className="pricing-desc" style={{ margin: 0 }}>{tier.desc}</p>
               </div>
 
               <div className="price-wrap">

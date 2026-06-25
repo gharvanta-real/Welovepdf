@@ -12,7 +12,7 @@ interface AccountDrawerProps {
 }
 
 export function AccountDrawer({ isOpen, onClose, currentUser, onLogout, onSettingsClick, onSupportClick, onDashboardClick }: AccountDrawerProps) {
-  const avatarUrl = localStorage.getItem("userAvatar");
+  const avatarUrl = localStorage.getItem("userAvatar") || "/Avatar-1.webp";
   
   // Close on ESC key
   useEffect(() => {
@@ -26,8 +26,6 @@ export function AccountDrawer({ isOpen, onClose, currentUser, onLogout, onSettin
   }, [isOpen, onClose]);
 
   if (!isOpen || !currentUser) return null;
-
-  const storagePercentage = 12; // 1.2 GB of 10 GB
 
   return (
     <>
@@ -63,11 +61,11 @@ export function AccountDrawer({ isOpen, onClose, currentUser, onLogout, onSettin
             <span className="drawer-user-email">{currentUser.email}</span>
             {currentUser.plan && currentUser.plan !== "Free" ? (
               <span className="pro-badge">
-                <UserCheck size={12} /> {currentUser.plan.toUpperCase()}
+                <UserCheck size={12} /> {currentUser.plan.charAt(0).toUpperCase() + currentUser.plan.slice(1)}
               </span>
             ) : (
               <span className="free-badge">
-                FREE MEMBER
+                Free Member
               </span>
             )}
           </div>
@@ -97,30 +95,28 @@ export function AccountDrawer({ isOpen, onClose, currentUser, onLogout, onSettin
         {/* Services & Storage Details */}
         <div className="drawer-section">
           <div className="section-header">
-            <div className="settings-icon-wrapper storage-color">
-              <HardDrive size={14} />
+            <div className="settings-icon-wrapper storage-color" style={{ color: "var(--v2-primary)", background: "var(--v2-bg-badge)" }}>
+              <Shield size={14} />
             </div>
-            <span>Cloud Storage & Services</span>
+            <span>File Privacy & Retention</span>
           </div>
           
-          <div className="storage-status-box">
-            <div className="storage-labels">
-              <span>Storage Used</span>
-              <strong>1.2 GB / 10 GB</strong>
-            </div>
-            <div className="progress-bar-bg">
-              <div className="progress-bar-fill dynamic-progress-gradient" style={{ width: `${storagePercentage}%` }}></div>
-            </div>
-            <span className="storage-subtext">Automatic files auto-delete: 7 days backup active.</span>
+          <div className="storage-status-box" style={{ background: "rgba(16, 185, 129, 0.05)", border: "1px solid rgba(16, 185, 129, 0.1)", borderRadius: "6px", padding: "12px" }}>
+            <span style={{ fontSize: "13px", fontWeight: "600", color: "var(--v2-text-main)", display: "block", marginBottom: "4px" }}>
+              Transient Local Processing
+            </span>
+            <span style={{ fontSize: "12px", color: "var(--v2-text-muted)", display: "block", lineHeight: "1.4" }}>
+              No cloud storage is provided. All uploaded files are processed transiently and automatically purged from memory after 1 hour.
+            </span>
           </div>
 
           <ul className="services-list">
             <li className="service-item">
-              <span>Fast Layout Conversions</span>
+              <span>Local Conversions</span>
               <span className="status-dot green">Active</span>
             </li>
             <li className="service-item">
-              <span>Digital E-Signatures</span>
+              <span>Browser Signatures</span>
               <span className="status-dot green">Active</span>
             </li>
           </ul>

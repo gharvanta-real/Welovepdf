@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Play, CheckCircle2, Download, Share2, RotateCcw, File, ChevronDown, ChevronUp, Check, Printer, Trash2, ChevronRight } from "lucide-react";
+import { Play, CheckCircle2, Download, Share2, RotateCcw, File, ChevronDown, ChevronUp, Check, Printer, Trash2, ChevronRight, Type, Highlighter, PenTool, Layers, Settings2, Paintbrush, Square, Circle, Bold, Italic, Underline, AlignLeft, AlignCenter, AlignRight, Undo, Redo } from "lucide-react";
 import { ToolIcon } from "../ToolIcon";
 
 interface WorkspaceOptionsProps {
@@ -34,6 +34,66 @@ interface WorkspaceOptionsProps {
   // AI
   translateLang: string;
   setTranslateLang: (val: string) => void;
+
+  // Hoisted annotation props
+  activeCategory: "text" | "draw" | "shape" | "processing";
+  setActiveCategory: (val: "text" | "draw" | "shape" | "processing") => void;
+  annotFont: string;
+  setAnnotFont: (val: string) => void;
+  annotFontSize: string;
+  setAnnotFontSize: (val: string) => void;
+  annotTextColor: string;
+  setAnnotTextColor: (val: string) => void;
+  annotBold: boolean;
+  setAnnotBold: (val: boolean) => void;
+  annotItalic: boolean;
+  setAnnotItalic: (val: boolean) => void;
+  annotUnderline: boolean;
+  setAnnotUnderline: (val: boolean) => void;
+  annotAlign: "left" | "center" | "right";
+  setAnnotAlign: (val: "left" | "center" | "right") => void;
+  activeDrawTool: "pen" | "highlighter";
+  setActiveDrawTool: (val: "pen" | "highlighter") => void;
+  annotHlColor: string;
+  setAnnotHlColor: (val: string) => void;
+  annotHlOpacity: number;
+  setAnnotHlOpacity: (val: number) => void;
+  annotPenColor: string;
+  setAnnotPenColor: (val: string) => void;
+  annotPenSize: number;
+  setAnnotPenSize: (val: number) => void;
+  annotPenOpacity: number;
+  setAnnotPenOpacity: (val: number) => void;
+  annotPenStyle: "solid" | "dashed" | "dotted";
+  setAnnotPenStyle: (val: "solid" | "dashed" | "dotted") => void;
+  annotShapeType: string;
+  setAnnotShapeType: (val: string) => void;
+  annotShapeFill: string;
+  setAnnotShapeFill: (val: string) => void;
+  annotShapeColor: string;
+  setAnnotShapeColor: (val: string) => void;
+  annotShapeBorderWidth: number;
+  setAnnotShapeBorderWidth: (val: number) => void;
+  annotShapeStrokeStyle: "solid" | "dashed" | "dotted";
+  setAnnotShapeStrokeStyle: (val: "solid" | "dashed" | "dotted") => void;
+  annotShapeCornerRadius: number;
+  setAnnotShapeCornerRadius: (val: number) => void;
+  annotShapeShadow: boolean;
+  setAnnotShapeShadow: (val: boolean) => void;
+
+  // Settings props
+  removeMetadata: boolean;
+  setRemoveMetadata: (val: boolean) => void;
+  flattenAnnotations: boolean;
+  setFlattenAnnotations: (val: boolean) => void;
+  allowCopy: boolean;
+  setAllowCopy: (val: boolean) => void;
+
+  // Undo/Redo props
+  undo: () => void;
+  redo: () => void;
+  canUndo: boolean;
+  canRedo: boolean;
 }
 
 // ----------- Small reusable UI helpers -----------
@@ -183,6 +243,86 @@ const StyledSelect = ({
   </select>
 );
 
+const ColorPickerRow = ({
+  selectedColor,
+  onChange
+}: {
+  selectedColor: string;
+  onChange: (color: string) => void;
+}) => {
+  const presets = ["#111111", "#EF4444", "#3B82F6", "#22C55E", "#EAB308", "#8B5CF6", "#FFE83B", "#FFFFFF"];
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap", marginTop: "4px" }}>
+      {presets.map(c => (
+        <button
+          key={c}
+          type="button"
+          onClick={() => onChange(c)}
+          style={{
+            width: "20px",
+            height: "20px",
+            borderRadius: "50%",
+            backgroundColor: c,
+            border: selectedColor === c ? "2px solid #2563eb" : "1px solid #cbd5e1",
+            cursor: "pointer",
+            padding: 0
+          }}
+        />
+      ))}
+      <input
+        type="color"
+        value={selectedColor}
+        onChange={e => onChange(e.target.value)}
+        style={{
+          width: "22px",
+          height: "22px",
+          border: "none",
+          padding: 0,
+          background: "none",
+          cursor: "pointer"
+        }}
+      />
+    </div>
+  );
+};
+
+const CategoryHeader = ({
+  icon: Icon,
+  title,
+  isOpen,
+  onClick
+}: {
+  icon: any;
+  title: string;
+  isOpen: boolean;
+  onClick: () => void;
+}) => (
+  <button
+    type="button"
+    onClick={onClick}
+    style={{
+      width: "100%",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      padding: "12px 14px",
+      background: isOpen ? "#f1f5f9" : "#f8fafc",
+      border: "1px solid #e2e8f0",
+      borderRadius: "6px",
+      cursor: "pointer",
+      marginBottom: "8px",
+      outline: "none",
+      transition: "background 0.2s"
+    }}
+  >
+    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+      <Icon size={16} style={{ color: "#475569" }} />
+      <span style={{ fontSize: "13.5px", fontWeight: 600, color: "#1e293b" }}>{title}</span>
+    </div>
+    {isOpen ? <ChevronUp size={16} style={{ color: "#64748b" }} /> : <ChevronDown size={16} style={{ color: "#64748b" }} />}
+  </button>
+);
+
 // ----------- Main Component -----------
 export function WorkspaceOptions({
   activeTool,
@@ -206,13 +346,65 @@ export function WorkspaceOptions({
   setWatermarkText,
   translateLang,
   setTranslateLang,
+  activeCategory,
+  setActiveCategory,
+  annotFont,
+  setAnnotFont,
+  annotFontSize,
+  setAnnotFontSize,
+  annotTextColor,
+  setAnnotTextColor,
+  annotBold,
+  setAnnotBold,
+  annotItalic,
+  setAnnotItalic,
+  annotUnderline,
+  setAnnotUnderline,
+  annotAlign,
+  setAnnotAlign,
+  activeDrawTool,
+  setActiveDrawTool,
+  annotHlColor,
+  setAnnotHlColor,
+  annotHlOpacity,
+  setAnnotHlOpacity,
+  annotPenColor,
+  setAnnotPenColor,
+  annotPenSize,
+  setAnnotPenSize,
+  annotPenOpacity,
+  setAnnotPenOpacity,
+  annotPenStyle,
+  setAnnotPenStyle,
+  annotShapeType,
+  setAnnotShapeType,
+  annotShapeFill,
+  setAnnotShapeFill,
+  annotShapeColor,
+  setAnnotShapeColor,
+  annotShapeBorderWidth,
+  setAnnotShapeBorderWidth,
+  annotShapeStrokeStyle,
+  setAnnotShapeStrokeStyle,
+  annotShapeCornerRadius,
+  setAnnotShapeCornerRadius,
+  annotShapeShadow,
+  setAnnotShapeShadow,
+  removeMetadata,
+  setRemoveMetadata,
+  flattenAnnotations,
+  setFlattenAnnotations,
+  allowCopy,
+  setAllowCopy,
+  undo,
+  redo,
+  canUndo,
+  canRedo,
 }: WorkspaceOptionsProps) {
   const hasFiles = stagedFiles && stagedFiles.length > 0;
 
-  // Local state for advanced options
+  // Local state for advanced options (Settings options now hoisted)
   const [imageColorMode, setImageColorMode] = useState<"color" | "grayscale">("color");
-  const [removeMetadata, setRemoveMetadata] = useState(true);
-  const [flattenAnnotations, setFlattenAnnotations] = useState(false);
   const [jpgQuality, setJpgQuality] = useState(85);
   const [imageDpi, setImageDpi] = useState<"72" | "150" | "300">("150");
   const [splitMode, setSplitMode] = useState<"range" | "every" | "size">("range");
@@ -228,7 +420,6 @@ export function WorkspaceOptions({
   const [ocrOutput, setOcrOutput] = useState<"pdf" | "text">("pdf");
   const [summaryLength, setSummaryLength] = useState<"short" | "medium" | "detailed">("medium");
   const [allowPrint, setAllowPrint] = useState(true);
-  const [allowCopy, setAllowCopy] = useState(false);
   const [watermarkOpacity, setWatermarkOpacity] = useState(40);
   const [watermarkPosition, setWatermarkPosition] = useState<"center" | "top-left" | "top-right" | "bottom-left" | "bottom-right">("center");
   const [watermarkAngle, setWatermarkAngle] = useState(45);
@@ -237,6 +428,9 @@ export function WorkspaceOptions({
   const [optimizeFor, setOptimizeFor] = useState<"web" | "print" | "mobile">("web");
   const [grayscaleMode, setGrayscaleMode] = useState<"all" | "images">("all");
   const [flattenMode, setFlattenMode] = useState<"all" | "forms" | "annotations">("all");
+
+  // Collapsible category states
+  // Annotation defaults states (now hoisted to UnifiedWorkspace)
 
   const renderToolOptions = () => {
     switch (activeTool) {
@@ -1040,56 +1234,404 @@ export function WorkspaceOptions({
         );
 
       case "Edit PDF":
-        return (
-          <>
-            <Section label="Edit Options">
-              <ToggleRow
-                label="Optimize PDF for Web"
-                desc="Linearize and rebuild document structure for fast online viewing"
-                checked={allowPrint}
-                onChange={setAllowPrint}
-              />
-              <ToggleRow
-                label="Strip Document Metadata"
-                desc="Remove author, title, and creator details from document tags"
-                checked={removeMetadata}
-                onChange={setRemoveMetadata}
-              />
-              <ToggleRow
-                label="Flatten Transparent Elements"
-                desc="Merge page overlapping layers to improve reader compatibility"
-                checked={flattenAnnotations}
-                onChange={setFlattenAnnotations}
-              />
-            </Section>
-          </>
-        );
-
       case "PDF Annotator":
         return (
-          <>
-            <Section label="Annotation Options">
-              <ToggleRow
-                label="Flatten All Annotations"
-                desc="Render and lock comments/markup directly onto page graphics"
-                checked={flattenAnnotations}
-                onChange={setFlattenAnnotations}
-              />
-              <ToggleRow
-                label="Compress Text & Vector Streams"
-                desc="Minimize raw stream data sizes without affecting visual layout"
-                checked={removeMetadata}
-                onChange={setRemoveMetadata}
-              />
-              <ToggleRow
-                label="Strip Sticky Note Comments"
-                desc="Completely delete popup text comment fields and labels"
-                checked={allowCopy}
-                onChange={setAllowCopy}
-              />
-            </Section>
-          </>
+          <div>
+            {/* Simple Spacious Tab Bar */}
+            <div style={{ display: "flex", borderBottom: "1px solid #e2e8f0", marginBottom: "24px" }}>
+              {[
+                { id: "text", label: "Text" },
+                { id: "draw", label: "Pen & Brush" },
+                { id: "shape", label: "Shapes" },
+                { id: "processing", label: "Settings" }
+              ].map(t => {
+                const isActive = activeCategory === t.id;
+                return (
+                  <button
+                    key={t.id}
+                    type="button"
+                    onClick={() => setActiveCategory(t.id as any)}
+                    style={{
+                      flex: 1,
+                      padding: "14px 4px",
+                      border: "none",
+                      borderBottom: isActive ? "2.5px solid #2563eb" : "2.5px solid transparent",
+                      background: "transparent",
+                      color: isActive ? "#2563eb" : "#64748b",
+                      fontWeight: isActive ? 600 : 500,
+                      fontSize: "12px",
+                      letterSpacing: "0.5px",
+                      cursor: "pointer",
+                      transition: "all 0.15s ease",
+                      outline: "none",
+                    }}
+                  >
+                    {t.label}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Tab Content with generous vertical spacing */}
+            <div style={{ background: "#ffffff", display: "flex", flexDirection: "column", gap: "20px" }}>
+              {activeCategory === "text" && (
+                <>
+                  <div>
+                    <label style={{ fontSize: "11px", fontWeight: 700, color: "#475569", display: "block", marginBottom: "6px", fontFamily: "Plus Jakarta Sans, sans-serif" }}>Font Family</label>
+                    <StyledSelect
+                      value={annotFont}
+                      onChange={setAnnotFont}
+                      options={[
+                        { value: "Inter", label: "Inter (Premium Web Font)" },
+                        { value: "Poppins", label: "Poppins (Modern Sans)" },
+                        { value: "Montserrat", label: "Montserrat (Classic Geo)" },
+                        { value: "Outfit", label: "Outfit (Brand Font)" },
+                        { value: "Roboto", label: "Roboto (Clean Sans)" },
+                        { value: "Playfair Display", label: "Playfair Display (Elegant Serif)" },
+                        { value: "Merriweather", label: "Merriweather (Book Serif)" },
+                        { value: "Oswald", label: "Oswald (Condensed Bold)" },
+                        { value: "Raleway", label: "Raleway (Light Sans)" },
+                        { value: "Nunito", label: "Nunito (Rounded Sans)" },
+                        { value: "Ubuntu", label: "Ubuntu (Tech Sans)" },
+                        { value: "Open Sans", label: "Open Sans (Standard Sans)" },
+                        { value: "Lato", label: "Lato (Warm Sans)" },
+                        { value: "Helvetica", label: "Helvetica (System)" },
+                        { value: "Arial", label: "Arial" },
+                        { value: "Times New Roman", label: "Times New Roman" },
+                        { value: "Courier New", label: "Courier New (Monospace)" },
+                        { value: "Georgia", label: "Georgia" },
+                        { value: "Verdana", label: "Verdana" },
+                        { value: "Garamond", label: "Garamond (Vintage)" },
+                        { value: "Impact", label: "Impact (Bold Headline)" }
+                      ]}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: "11px", fontWeight: 700, color: "#475569", display: "block", marginBottom: "6px", fontFamily: "Plus Jakarta Sans, sans-serif" }}>Font Size</label>
+                    <StyledSelect
+                      value={annotFontSize}
+                      onChange={setAnnotFontSize}
+                      options={[
+                        { value: "8", label: "8 px" },
+                        { value: "10", label: "10 px" },
+                        { value: "12", label: "12 px" },
+                        { value: "14", label: "14 px" },
+                        { value: "16", label: "16 px" },
+                        { value: "18", label: "18 px" },
+                        { value: "24", label: "24 px" },
+                        { value: "36", label: "36 px" }
+                      ]}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: "11px", fontWeight: 700, color: "#475569", display: "block", marginBottom: "6px", fontFamily: "Plus Jakarta Sans, sans-serif" }}>Text Color</label>
+                    <ColorPickerRow selectedColor={annotTextColor} onChange={setAnnotTextColor} />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: "11px", fontWeight: 700, color: "#475569", display: "block", marginBottom: "6px", fontFamily: "Plus Jakarta Sans, sans-serif" }}>Text Style</label>
+                    <div style={{ display: "flex", gap: "8px" }}>
+                      {[
+                        { id: "bold", icon: Bold, active: annotBold, toggle: () => setAnnotBold(!annotBold) },
+                        { id: "italic", icon: Italic, active: annotItalic, toggle: () => setAnnotItalic(!annotItalic) },
+                        { id: "underline", icon: Underline, active: annotUnderline, toggle: () => setAnnotUnderline(!annotUnderline) }
+                      ].map(b => {
+                        const Icon = b.icon;
+                        return (
+                          <button
+                            key={b.id}
+                            type="button"
+                            onClick={b.toggle}
+                            style={{
+                              flex: 1,
+                              padding: "10px 0",
+                              border: "1px solid #cbd5e1",
+                              background: b.active ? "#F2F6FF" : "#ffffff",
+                              color: b.active ? "#2563eb" : "#475569",
+                              borderColor: b.active ? "#2563eb" : "#cbd5e1",
+                              borderRadius: "6px",
+                              cursor: "pointer",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              transition: "all 0.15s ease",
+                              outline: "none"
+                            }}
+                          >
+                            <Icon size={15} />
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                  <div>
+                    <label style={{ fontSize: "11px", fontWeight: 700, color: "#475569", display: "block", marginBottom: "6px", fontFamily: "Plus Jakarta Sans, sans-serif" }}>Alignment</label>
+                    <div style={{ display: "flex", gap: "8px" }}>
+                      {[
+                        { id: "left", icon: AlignLeft },
+                        { id: "center", icon: AlignCenter },
+                        { id: "right", icon: AlignRight }
+                      ].map(b => {
+                        const Icon = b.icon;
+                        const isActive = annotAlign === b.id;
+                        return (
+                          <button
+                            key={b.id}
+                            type="button"
+                            onClick={() => setAnnotAlign(b.id as any)}
+                            style={{
+                              flex: 1,
+                              padding: "10px 0",
+                              border: "1px solid #cbd5e1",
+                              background: isActive ? "#F2F6FF" : "#ffffff",
+                              color: isActive ? "#2563eb" : "#475569",
+                              borderColor: isActive ? "#2563eb" : "#cbd5e1",
+                              borderRadius: "6px",
+                              cursor: "pointer",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              transition: "all 0.15s ease",
+                              outline: "none"
+                            }}
+                          >
+                            <Icon size={15} />
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {activeCategory === "draw" && (
+                <>
+                  <div>
+                    <label style={{ fontSize: "11px", fontWeight: 700, color: "#475569", display: "block", marginBottom: "6px", fontFamily: "Plus Jakarta Sans, sans-serif" }}>Active Drawing Tool</label>
+                    <div style={{ display: "flex", gap: "8px", marginBottom: "12px" }}>
+                      {[
+                        { id: "pen", label: "Pen (पेन)", icon: PenTool },
+                        { id: "highlighter", label: "Highlighter (हाइलाइटर)", icon: Highlighter }
+                      ].map(t => {
+                        const Icon = t.icon;
+                        const isActive = activeDrawTool === t.id;
+                        return (
+                          <button
+                            key={t.id}
+                            type="button"
+                            onClick={() => setActiveDrawTool(t.id as any)}
+                            style={{
+                              flex: 1,
+                              padding: "10px",
+                              border: "1px solid #cbd5e1",
+                              background: isActive ? "#F2F6FF" : "#ffffff",
+                              color: isActive ? "#2563eb" : "#475569",
+                              borderColor: isActive ? "#2563eb" : "#cbd5e1",
+                              borderRadius: "6px",
+                              cursor: "pointer",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              gap: "6px",
+                              fontSize: "12px",
+                              fontWeight: 600,
+                              transition: "all 0.15s ease",
+                              outline: "none"
+                            }}
+                          >
+                            <Icon size={14} />
+                            <span>{t.label}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                  <div>
+                    <label style={{ fontSize: "11px", fontWeight: 700, color: "#475569", display: "block", marginBottom: "6px", fontFamily: "Plus Jakarta Sans, sans-serif" }}>Pen Color</label>
+                    <ColorPickerRow selectedColor={annotPenColor} onChange={setAnnotPenColor} />
+                  </div>
+                  <div>
+                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px" }}>
+                      <label style={{ fontSize: "11px", fontWeight: 700, color: "#475569", fontFamily: "Plus Jakarta Sans, sans-serif" }}>Pen Size</label>
+                      <span style={{ fontSize: "11px", fontWeight: 700, color: "#2563eb" }}>{annotPenSize}px</span>
+                    </div>
+                    <input
+                      type="range"
+                      min={1}
+                      max={12}
+                      value={annotPenSize}
+                      onChange={e => setAnnotPenSize(Number(e.target.value))}
+                      style={{ width: "100%", accentColor: "#2563eb", cursor: "pointer" }}
+                    />
+                  </div>
+                  <div>
+                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px" }}>
+                      <label style={{ fontSize: "11px", fontWeight: 700, color: "#475569", fontFamily: "Plus Jakarta Sans, sans-serif" }}>Pen Opacity</label>
+                      <span style={{ fontSize: "11px", fontWeight: 700, color: "#2563eb" }}>{annotPenOpacity}%</span>
+                    </div>
+                    <input
+                      type="range"
+                      min={10}
+                      max={100}
+                      value={annotPenOpacity}
+                      onChange={e => setAnnotPenOpacity(Number(e.target.value))}
+                      style={{ width: "100%", accentColor: "#2563eb", cursor: "pointer" }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: "11px", fontWeight: 700, color: "#475569", display: "block", marginBottom: "6px", fontFamily: "Plus Jakarta Sans, sans-serif" }}>Pen Brush Style</label>
+                    <StyledSelect
+                      value={annotPenStyle}
+                      onChange={setAnnotPenStyle as any}
+                      options={[
+                        { value: "solid", label: "Solid Line" },
+                        { value: "dashed", label: "Dashed Line" },
+                        { value: "dotted", label: "Dotted Line" }
+                      ]}
+                    />
+                  </div>
+                  <hr style={{ border: "none", borderTop: "1px solid #e2e8f0", margin: "8px 0" }} />
+                  <div>
+                    <label style={{ fontSize: "11px", fontWeight: 700, color: "#475569", display: "block", marginBottom: "6px", fontFamily: "Plus Jakarta Sans, sans-serif" }}>Highlighter Color</label>
+                    <ColorPickerRow selectedColor={annotHlColor} onChange={setAnnotHlColor} />
+                  </div>
+                  <div>
+                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px" }}>
+                      <label style={{ fontSize: "11px", fontWeight: 700, color: "#475569", fontFamily: "Plus Jakarta Sans, sans-serif" }}>Opacity</label>
+                      <span style={{ fontSize: "11px", fontWeight: 700, color: "#2563eb" }}>{annotHlOpacity}%</span>
+                    </div>
+                    <input
+                      type="range"
+                      min={10}
+                      max={100}
+                      value={annotHlOpacity}
+                      onChange={e => setAnnotHlOpacity(Number(e.target.value))}
+                      style={{ width: "100%", accentColor: "#2563eb", cursor: "pointer" }}
+                    />
+                  </div>
+                </>
+              )}
+
+              {activeCategory === "shape" && (
+                <>
+                  <div>
+                    <label style={{ fontSize: "11px", fontWeight: 700, color: "#475569", display: "block", marginBottom: "6px", fontFamily: "Plus Jakarta Sans, sans-serif" }}>Shape Type</label>
+                    <StyledSelect
+                      value={annotShapeType}
+                      onChange={setAnnotShapeType}
+                      options={[
+                        { value: "Rectangle", label: "Rectangle (आयत)" },
+                        { value: "Rounded Rectangle", label: "Rounded Rectangle (गोल कोनों वाला आयत)" },
+                        { value: "Circle", label: "Circle (गोलाकार)" },
+                        { value: "Ellipse", label: "Ellipse (अंडाकार)" },
+                        { value: "Triangle", label: "Triangle (त्रिकोण)" },
+                        { value: "Right Triangle", label: "Right Triangle (समकोण त्रिकोण)" },
+                        { value: "Star 4", label: "4-Point Star (4-कोणीय तारा)" },
+                        { value: "Star 5", label: "5-Point Star (5-कोणीय तारा)" },
+                        { value: "Pentagon", label: "Pentagon (पंचकोण)" },
+                        { value: "Hexagon", label: "Hexagon (षट्कोण)" },
+                        { value: "Line", label: "Single Line (सीधी रेखा)" },
+                        { value: "Arrow", label: "Arrow (एकतरफा तीर)" },
+                        { value: "Double Arrow", label: "Double Arrow (दोनों तरफ तीर)" },
+                        { value: "Speech Bubble", label: "Speech Bubble (कमेंट बॉक्स)" },
+                        { value: "Heart", label: "Heart (दिल)" },
+                        { value: "Cloud", label: "Cloud (बादल)" },
+                        { value: "Cross", label: "Cross/Plus (जोड़ का निशान)" }
+                      ]}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: "11px", fontWeight: 700, color: "#475569", display: "block", marginBottom: "6px", fontFamily: "Plus Jakarta Sans, sans-serif" }}>Stroke Color</label>
+                    <ColorPickerRow selectedColor={annotShapeColor} onChange={setAnnotShapeColor} />
+                  </div>
+                  <div>
+                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px" }}>
+                      <label style={{ fontSize: "11px", fontWeight: 700, color: "#475569", fontFamily: "Plus Jakarta Sans, sans-serif" }}>Stroke Thickness</label>
+                      <span style={{ fontSize: "11px", fontWeight: 700, color: "#2563eb" }}>{annotShapeBorderWidth}px</span>
+                    </div>
+                    <input
+                      type="range"
+                      min={1}
+                      max={10}
+                      value={annotShapeBorderWidth}
+                      onChange={e => setAnnotShapeBorderWidth(Number(e.target.value))}
+                      style={{ width: "100%", accentColor: "#2563eb", cursor: "pointer" }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: "11px", fontWeight: 700, color: "#475569", display: "block", marginBottom: "6px", fontFamily: "Plus Jakarta Sans, sans-serif" }}>Border Style</label>
+                    <StyledSelect
+                      value={annotShapeStrokeStyle}
+                      onChange={setAnnotShapeStrokeStyle as any}
+                      options={[
+                        { value: "solid", label: "Solid Outline" },
+                        { value: "dashed", label: "Dashed Outline" },
+                        { value: "dotted", label: "Dotted Outline" }
+                      ]}
+                    />
+                  </div>
+                  <div>
+                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px" }}>
+                      <label style={{ fontSize: "11px", fontWeight: 700, color: "#475569", fontFamily: "Plus Jakarta Sans, sans-serif" }}>Corner Rounding</label>
+                      <span style={{ fontSize: "11px", fontWeight: 700, color: "#2563eb" }}>{annotShapeCornerRadius}px</span>
+                    </div>
+                    <input
+                      type="range"
+                      min={0}
+                      max={24}
+                      value={annotShapeCornerRadius}
+                      onChange={e => setAnnotShapeCornerRadius(Number(e.target.value))}
+                      style={{ width: "100%", accentColor: "#2563eb", cursor: "pointer" }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: "11px", fontWeight: 700, color: "#475569", display: "block", marginBottom: "6px", fontFamily: "Plus Jakarta Sans, sans-serif" }}>Fill Type</label>
+                    <StyledSelect
+                      value={annotShapeFill}
+                      onChange={setAnnotShapeFill}
+                      options={[
+                        { value: "transparent", label: "Transparent" },
+                        { value: "semi-transparent", label: "Semi-Transparent" },
+                        { value: "solid", label: "Solid Color" }
+                      ]}
+                    />
+                  </div>
+                  <div style={{ marginTop: "4px" }}>
+                    <ToggleRow
+                      label="Enable Drop Shadow"
+                      desc="Apply soft outer shadow to the shape"
+                      checked={annotShapeShadow}
+                      onChange={setAnnotShapeShadow}
+                    />
+                  </div>
+                </>
+              )}
+
+              {activeCategory === "processing" && (
+                <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                  <ToggleRow
+                    label="Flatten All Annotations"
+                    desc="Lock markup directly onto page graphics"
+                    checked={flattenAnnotations}
+                    onChange={setFlattenAnnotations}
+                  />
+                  <ToggleRow
+                    label="Compress Text & Vectors"
+                    desc="Minimize raw vector data sizes"
+                    checked={removeMetadata}
+                    onChange={setRemoveMetadata}
+                  />
+                  <ToggleRow
+                    label="Strip Sticky Notes"
+                    desc="Completely delete popup comment fields"
+                    checked={allowCopy}
+                    onChange={setAllowCopy}
+                  />
+                </div>
+              )}
+            </div>
+          </div>
         );
+
 
       default:
         return (
@@ -1306,14 +1848,68 @@ export function WorkspaceOptions({
   }
 
   // =========== Default Options Panel ===========
+  const isEditor = activeTool === "PDF Annotator" || activeTool === "Edit PDF";
+
   return (
     <aside className="uw-options-panel">
       <div className="uw-options-scroll">
-        <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "6px" }}>
-          <ToolIcon toolNameOrId={activeTool} size={22} style={{ borderRadius: "5px" }} />
-          <h2 className="uw-options-header" style={{ margin: 0, fontSize: "18px" }}>
-            {activeTool}
-          </h2>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <ToolIcon toolNameOrId={activeTool} size={22} style={{ borderRadius: "5px" }} />
+            <h2 className="uw-options-header" style={{ margin: 0, fontSize: "18px" }}>
+              {activeTool}
+            </h2>
+          </div>
+          {isEditor && hasFiles && (
+            <div style={{ display: "flex", gap: "4px" }}>
+              <button
+                type="button"
+                onClick={undo}
+                disabled={!canUndo}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: "28px",
+                  height: "28px",
+                  border: "1px solid #cbd5e1",
+                  borderRadius: "6px",
+                  background: "#ffffff",
+                  color: canUndo ? "#475569" : "#cbd5e1",
+                  cursor: canUndo ? "pointer" : "not-allowed",
+                  outline: "none",
+                  transition: "all 0.15s ease",
+                  padding: 0
+                }}
+                title="Undo"
+              >
+                <Undo size={14} />
+              </button>
+              <button
+                type="button"
+                onClick={redo}
+                disabled={!canRedo}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: "28px",
+                  height: "28px",
+                  border: "1px solid #cbd5e1",
+                  borderRadius: "6px",
+                  background: "#ffffff",
+                  color: canRedo ? "#475569" : "#cbd5e1",
+                  cursor: canRedo ? "pointer" : "not-allowed",
+                  outline: "none",
+                  transition: "all 0.15s ease",
+                  padding: 0
+                }}
+                title="Redo"
+              >
+                <Redo size={14} />
+              </button>
+            </div>
+          )}
         </div>
         <span className="uw-options-subtitle">
           {hasFiles ? "Configure settings before processing" : "Please select files to continue"}

@@ -14,7 +14,7 @@ type SettingsTab = "profile" | "billing" | "security" | "notifications";
 export function AccountSettingsPage({ onBack, currentUser, onLogout, onUpdateUser, onPricingClick }: AccountSettingsPageProps) {
   const [activeTab, setActiveTab] = useState<SettingsTab>("profile");
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(() => localStorage.getItem("userAvatar"));
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(() => localStorage.getItem("userAvatar") || "/Avatar-1.webp");
   const [toastMsg, setToastMsg] = useState("");
   const [loading, setLoading] = useState(false);
   

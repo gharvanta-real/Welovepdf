@@ -24,7 +24,10 @@
   font-weight: 700;
   font-size: 0.8rem;
   letter-spacing: 0.5px;
-  box-shadow: 0 2px 4px rgba(0, 116, 240, 0.2);
+  box-shadow: none !important;
+  border: none !important;
+  outline: none !important;
+  background: transparent !important;
 }
 
 .user-name-label {

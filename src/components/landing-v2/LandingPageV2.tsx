@@ -3,6 +3,8 @@ import { HeroSection } from "./HeroSection";
 import { DailyToolsSection } from "./DailyToolsSection";
 import { CreativeWorkflowsSection } from "./CreativeWorkflowsSection";
 import { TestimonialsSection } from "./TestimonialsSection";
+import { CtaBannerSection } from "./CtaBannerSection";
+import { RatingSection } from "./RatingSection";
 import { ContactSection } from "./ContactSection";
 import { FooterV2 } from "./FooterV2";
 
@@ -31,6 +33,10 @@ export function LandingPageV2({ onToolSelect, onViewChange, onLogoClick }: Landi
       <CreativeWorkflowsSection />
       
       <TestimonialsSection />
+      
+      <CtaBannerSection onScrollToTools={scrollToTools} />
+      
+      <RatingSection />
       
       <ContactSection />
       

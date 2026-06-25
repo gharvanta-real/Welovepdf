@@ -271,6 +271,18 @@
 .mega-dropdown-footer-link:hover svg { transform: translateX(4px); }
 
 /* ── Avatar ── */
+.header-avatar-btn {
+  border: none !important;
+  outline: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
 .user-avatar {
   width: 32px;
   height: 32px;
@@ -281,6 +293,10 @@
   font-size: 14px;
   font-weight: 700;
   color: #fff;
+  border: none !important;
+  outline: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
 }
 
 /* ════════════════════════════════════════════════════════════════════

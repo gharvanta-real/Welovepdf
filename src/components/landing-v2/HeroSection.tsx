@@ -10,6 +10,15 @@ export function HeroSection({ onScrollToTools }: HeroSectionProps) {
     <section className="v2-hero">
       <div className="v2-container v2-hero-inner">
         <div className="v2-hero-copy">
+          <div className="v2-hero-trust-bar">
+            <div className="v2-hero-stars-row">
+              <span className="v2-hero-stars">★★★★★</span>
+              <span className="v2-hero-rating-score">4.9 / 5.0 Rating</span>
+            </div>
+            <div className="v2-hero-counter-row">
+              Over <span className="v2-hero-counter-number">128,540+</span> PDFs processed successfully today
+            </div>
+          </div>
           <h1>All Types of PDF Operations.</h1>
           <p>
             Merge, split, convert, and sign PDFs online. Fast, secure, and running directly inside your browser.

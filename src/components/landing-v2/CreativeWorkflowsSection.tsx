@@ -127,11 +127,11 @@ export function CreativeWorkflowsSection() {
         {/* 3 Creative Cards Grid */}
         <div style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+          gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
           gap: "32px"
         }}>
           {/* Workflow Card 1 */}
-          <div style={{ padding: "32px 28px", border: "1px solid var(--v2-border)", borderRadius: "16px", backgroundColor: "var(--v2-bg-card)", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+          <div style={{ padding: "32px 28px", border: "1px solid var(--v2-border)", borderRadius: "8px", backgroundColor: "var(--v2-bg-card)", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
             <ScanEditSVG />
             <div style={{ marginTop: "12px" }}>
               <h3 style={{ fontSize: "17px", fontWeight: "600", color: "var(--v2-text-main)", marginBottom: "12px" }}>
@@ -148,7 +148,7 @@ export function CreativeWorkflowsSection() {
           </div>
 
           {/* Workflow Card 2 */}
-          <div style={{ padding: "32px 28px", border: "1px solid var(--v2-border)", borderRadius: "16px", backgroundColor: "var(--v2-bg-card)", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+          <div style={{ padding: "32px 28px", border: "1px solid var(--v2-border)", borderRadius: "8px", backgroundColor: "var(--v2-bg-card)", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
             <SignContractSVG />
             <div style={{ marginTop: "12px" }}>
               <h3 style={{ fontSize: "17px", fontWeight: "600", color: "var(--v2-text-main)", marginBottom: "12px" }}>
@@ -165,7 +165,7 @@ export function CreativeWorkflowsSection() {
           </div>
 
           {/* Workflow Card 3 */}
-          <div style={{ padding: "32px 28px", border: "1px solid var(--v2-border)", borderRadius: "16px", backgroundColor: "var(--v2-bg-card)", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+          <div style={{ padding: "32px 28px", border: "1px solid var(--v2-border)", borderRadius: "8px", backgroundColor: "var(--v2-bg-card)", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
             <PortalCompressSVG />
             <div style={{ marginTop: "12px" }}>
               <h3 style={{ fontSize: "17px", fontWeight: "600", color: "var(--v2-text-main)", marginBottom: "12px" }}>

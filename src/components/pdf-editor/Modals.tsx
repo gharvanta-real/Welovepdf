@@ -306,7 +306,7 @@ interface WatermarkModalProps {
 }
 
 export function WatermarkModal({ onClose, onApplyWatermark, toolColor }: WatermarkModalProps) {
-  const [watermarkText, setWatermarkText] = useState("CONFIDENTIAL");
+  const [watermarkText, setWatermarkText] = useState("Confidential");
   const [watermarkOpacity, setWatermarkOpacity] = useState(0.15);
 
   return (
@@ -322,7 +322,7 @@ export function WatermarkModal({ onClose, onApplyWatermark, toolColor }: Waterma
               value={watermarkText}
               onChange={e => setWatermarkText(e.target.value)}
               style={modalInput}
-              placeholder="CONFIDENTIAL"
+              placeholder="Confidential"
             />
           </div>
           <div>

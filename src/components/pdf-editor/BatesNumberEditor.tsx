@@ -24,7 +24,7 @@ export function BatesNumberEditor({ file, onClose, onSave }: BatesNumberEditorPr
   const [thumbnails, setThumbnails] = useState<string[]>([]);
 
   // Bates settings
-  const [prefix, setPrefix] = useState("BATES-");
+  const [prefix, setPrefix] = useState("Bates-");
   const [suffix, setSuffix] = useState("");
   const [paddingWidth, setPaddingWidth] = useState(6);
   const [startIndex, setStartIndex] = useState(1);
@@ -205,7 +205,7 @@ export function BatesNumberEditor({ file, onClose, onSave }: BatesNumberEditorPr
         height: "100%"
       }}>
         <div style={{ padding: "14px 16px", borderBottom: "1px solid #f0f0f0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <span style={{ fontSize: "0.78rem", fontWeight: "700", color: "#1b1b1b", letterSpacing: "0.03em" }}>PAGES</span>
+          <span style={{ fontSize: "0.78rem", fontWeight: "700", color: "#1b1b1b", letterSpacing: "0.03em" }}>Pages</span>
           <span style={{ fontSize: "0.72rem", color: "#5d5f5f" }}>{currentPage} / {totalPages || 1}</span>
         </div>
         <div style={{ flex: 1, overflowY: "auto", padding: "12px", display: "flex", flexDirection: "column", gap: "12px" }}>
@@ -328,7 +328,7 @@ export function BatesNumberEditor({ file, onClose, onSave }: BatesNumberEditorPr
             
             {/* Prefix */}
             <div>
-              <label style={{ fontSize: "0.68rem", fontWeight: "800", color: "rgba(0,0,0,0.6)" }}>INDEX PREFIX</label>
+              <label style={{ fontSize: "0.68rem", fontWeight: "800", color: "rgba(0,0,0,0.6)" }}>Index Prefix</label>
               <input 
                 type="text"
                 value={prefix}
@@ -340,7 +340,7 @@ export function BatesNumberEditor({ file, onClose, onSave }: BatesNumberEditorPr
 
             {/* Suffix */}
             <div>
-              <label style={{ fontSize: "0.68rem", fontWeight: "800", color: "rgba(0,0,0,0.6)" }}>INDEX SUFFIX</label>
+              <label style={{ fontSize: "0.68rem", fontWeight: "800", color: "rgba(0,0,0,0.6)" }}>Index Suffix</label>
               <input 
                 type="text"
                 value={suffix}
@@ -352,7 +352,7 @@ export function BatesNumberEditor({ file, onClose, onSave }: BatesNumberEditorPr
 
             {/* Padding selector */}
             <div>
-              <label style={{ fontSize: "0.68rem", fontWeight: "800", color: "rgba(0,0,0,0.6)" }}>SERIAL DIGIT WIDTH</label>
+              <label style={{ fontSize: "0.68rem", fontWeight: "800", color: "rgba(0,0,0,0.6)" }}>Serial Digit Width</label>
               <select
                 value={paddingWidth}
                 onChange={e => setPaddingWidth(parseInt(e.target.value))}
@@ -368,7 +368,7 @@ export function BatesNumberEditor({ file, onClose, onSave }: BatesNumberEditorPr
 
             {/* Start index */}
             <div>
-              <label style={{ fontSize: "0.68rem", fontWeight: "800", color: "rgba(0,0,0,0.6)" }}>START SERIAL NUMBER</label>
+              <label style={{ fontSize: "0.68rem", fontWeight: "800", color: "rgba(0,0,0,0.6)" }}>Start Serial Number</label>
               <input 
                 type="number"
                 min="1"
@@ -380,7 +380,7 @@ export function BatesNumberEditor({ file, onClose, onSave }: BatesNumberEditorPr
 
             {/* Placement */}
             <div>
-              <label style={{ fontSize: "0.68rem", fontWeight: "800", color: "rgba(0,0,0,0.6)" }}>PLACEMENT POSITION</label>
+              <label style={{ fontSize: "0.68rem", fontWeight: "800", color: "rgba(0,0,0,0.6)" }}>Placement Position</label>
               <select
                 value={position}
                 onChange={e => setPosition(e.target.value as any)}
@@ -397,7 +397,7 @@ export function BatesNumberEditor({ file, onClose, onSave }: BatesNumberEditorPr
 
             {/* Color preset */}
             <div>
-              <label style={{ fontSize: "0.68rem", fontWeight: "800", color: "rgba(0,0,0,0.6)", display: "block" }}>STAMP COLOR</label>
+              <label style={{ fontSize: "0.68rem", fontWeight: "800", color: "rgba(0,0,0,0.6)", display: "block" }}>Stamp Color</label>
               <div style={{ display: "flex", gap: "6px", marginTop: "4px" }}>
                 {["#ef4444", "#000000", "#2563eb", "#16a34a", "#475569"].map(c => (
                   <button 
@@ -419,7 +419,7 @@ export function BatesNumberEditor({ file, onClose, onSave }: BatesNumberEditorPr
             {/* Font Size slider */}
             <div>
               <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.68rem", fontWeight: "800", color: "rgba(0,0,0,0.6)" }}>
-                <span>FONT SIZE</span>
+                <span>Font Size</span>
                 <span>{fontSize}px</span>
               </div>
               <input 

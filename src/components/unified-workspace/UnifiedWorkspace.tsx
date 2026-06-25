@@ -7,6 +7,7 @@ import { WorkspaceOptions } from "./WorkspaceOptions";
 import { SuccessState } from "../upload/SuccessState";
 import { SignEditor } from "../pdf-editor/SignEditor";
 import { CropEditor } from "../pdf-editor/CropEditor";
+import { OverlayElement } from "../pdf-editor/types";
 import "../../styles/layout-unified-workspace.css";
 
 type UnifiedWorkspaceProps = {
@@ -53,9 +54,73 @@ export function UnifiedWorkspace({
   const [conversionMode, setConversionMode] = useState<"page" | "extract">("page");
   const [outputQuality, setOutputQuality] = useState<"normal" | "high" | "compact">("normal");
   const [pdfPassword, setPdfPassword] = useState("pdfmount");
-  const [watermarkText, setWatermarkText] = useState("CONFIDENTIAL");
+  const [watermarkText, setWatermarkText] = useState("Confidential");
   const [translateLang, setTranslateLang] = useState("hi");
   const [copied, setCopied] = useState(false);
+
+  // Hoisted annotation settings and elements
+  const [annotCategory, setAnnotCategory] = useState<"text" | "draw" | "shape" | "processing">("text");
+  const [annotFont, setAnnotFont] = useState("Helvetica");
+  const [annotFontSize, setAnnotFontSize] = useState("14");
+  const [annotTextColor, setAnnotTextColor] = useState("#111111");
+  const [annotBold, setAnnotBold] = useState(false);
+  const [annotItalic, setAnnotItalic] = useState(false);
+  const [annotUnderline, setAnnotUnderline] = useState(false);
+  const [annotAlign, setAnnotAlign] = useState<"left" | "center" | "right">("left");
+  
+  const [activeDrawTool, setActiveDrawTool] = useState<"pen" | "highlighter">("pen");
+  const [annotHlColor, setAnnotHlColor] = useState("#FFE83B");
+  const [annotHlOpacity, setAnnotHlOpacity] = useState(40);
+  const [annotPenColor, setAnnotPenColor] = useState("#EF4444");
+  const [annotPenSize, setAnnotPenSize] = useState(3);
+  const [annotPenOpacity, setAnnotPenOpacity] = useState(100);
+  const [annotPenStyle, setAnnotPenStyle] = useState<"solid" | "dashed" | "dotted">("solid");
+
+  const [annotShapeType, setAnnotShapeType] = useState("Rectangle");
+  const [annotShapeFill, setAnnotShapeFill] = useState("transparent");
+  const [annotShapeColor, setAnnotShapeColor] = useState("#2563EB");
+  const [annotShapeBorderWidth, setAnnotShapeBorderWidth] = useState(2);
+  const [annotShapeStrokeStyle, setAnnotShapeStrokeStyle] = useState<"solid" | "dashed" | "dotted">("solid");
+  const [annotShapeCornerRadius, setAnnotShapeCornerRadius] = useState(4);
+  const [annotShapeShadow, setAnnotShapeShadow] = useState(false);
+
+  const [annotElements, setAnnotElements] = useState<OverlayElement[]>([]);
+
+  // Hoisted Settings states
+  const [removeMetadata, setRemoveMetadata] = useState(true);
+  const [flattenAnnotations, setFlattenAnnotations] = useState(false);
+  const [allowCopy, setAllowCopy] = useState(false);
+
+  // Undo/Redo stack states
+  const [undoStack, setUndoStack] = useState<OverlayElement[][]>([]);
+  const [redoStack, setRedoStack] = useState<OverlayElement[][]>([]);
+
+  const undo = () => {
+    if (undoStack.length === 0) return;
+    const prev = undoStack[undoStack.length - 1];
+    setUndoStack(s => s.slice(0, -1));
+    setRedoStack(s => [...s, annotElements]);
+    setAnnotElements(prev);
+  };
+
+  const redo = () => {
+    if (redoStack.length === 0) return;
+    const next = redoStack[redoStack.length - 1];
+    setRedoStack(s => s.slice(0, -1));
+    setUndoStack(s => [...s, annotElements]);
+    setAnnotElements(next);
+  };
+
+  const pushUndo = (elementsBeforeChange: OverlayElement[]) => {
+    setUndoStack(s => [...s, elementsBeforeChange]);
+    setRedoStack([]);
+  };
+
+  // Clear history on tool or staged file change
+  useEffect(() => {
+    setUndoStack([]);
+    setRedoStack([]);
+  }, [stagedFiles, activeTool]);
 
   // Progress Bar states & effect (3 second rules sync)
   const [progressPercent, setProgressPercent] = useState(0);
@@ -178,8 +243,16 @@ export function UnifiedWorkspace({
       outputQuality,
       pdfPassword,
       watermarkText,
-      translateLang
+      translateLang,
+      flatten: flattenAnnotations,
+      compress: removeMetadata,
+      stripComments: allowCopy
     };
+
+    // For interactive annotations, pass the elements stringified
+    if (activeTool === "PDF Annotator" || activeTool === "Edit PDF") {
+      options.editorOverlays = JSON.stringify(annotElements);
+    }
 
     // Create FileList using DataTransfer API
     const dataTransfer = new DataTransfer();
@@ -284,6 +357,39 @@ export function UnifiedWorkspace({
                 isCompleted={isCompleted}
                 activeJob={activeJob}
                 progressPercent={progressPercent}
+                // Hoisted annotation props
+                annotCategory={annotCategory}
+                setAnnotCategory={setAnnotCategory}
+                annotFont={annotFont}
+                annotFontSize={annotFontSize}
+                annotTextColor={annotTextColor}
+                annotBold={annotBold}
+                annotItalic={annotItalic}
+                annotUnderline={annotUnderline}
+                annotAlign={annotAlign}
+                activeDrawTool={activeDrawTool}
+                setActiveDrawTool={setActiveDrawTool}
+                annotHlColor={annotHlColor}
+                annotHlOpacity={annotHlOpacity}
+                annotPenColor={annotPenColor}
+                annotPenSize={annotPenSize}
+                annotPenOpacity={annotPenOpacity}
+                annotPenStyle={annotPenStyle}
+                annotShapeType={annotShapeType}
+                annotShapeFill={annotShapeFill}
+                annotShapeColor={annotShapeColor}
+                annotShapeBorderWidth={annotShapeBorderWidth}
+                annotShapeStrokeStyle={annotShapeStrokeStyle}
+                annotShapeCornerRadius={annotShapeCornerRadius}
+                annotShapeShadow={annotShapeShadow}
+                annotElements={annotElements}
+                setAnnotElements={setAnnotElements}
+                // Undo/Redo props
+                undo={undo}
+                redo={redo}
+                canUndo={undoStack.length > 0}
+                canRedo={redoStack.length > 0}
+                pushUndo={pushUndo}
               />
 
               {/* Right Options Sidebar Panel */}
@@ -313,6 +419,63 @@ export function UnifiedWorkspace({
                   setWatermarkText={setWatermarkText}
                   translateLang={translateLang}
                   setTranslateLang={setTranslateLang}
+                  // Hoisted annotation props
+                  activeCategory={annotCategory}
+                  setActiveCategory={setAnnotCategory}
+                  annotFont={annotFont}
+                  setAnnotFont={setAnnotFont}
+                  annotFontSize={annotFontSize}
+                  setAnnotFontSize={setAnnotFontSize}
+                  annotTextColor={annotTextColor}
+                  setAnnotTextColor={setAnnotTextColor}
+                  annotBold={annotBold}
+                  setAnnotBold={setAnnotBold}
+                  annotItalic={annotItalic}
+                  setAnnotItalic={setAnnotItalic}
+                  annotUnderline={annotUnderline}
+                  setAnnotUnderline={setAnnotUnderline}
+                  annotAlign={annotAlign}
+                  setAnnotAlign={setAnnotAlign}
+                  activeDrawTool={activeDrawTool}
+                  setActiveDrawTool={setActiveDrawTool}
+                  annotHlColor={annotHlColor}
+                  setAnnotHlColor={setAnnotHlColor}
+                  annotHlOpacity={annotHlOpacity}
+                  setAnnotHlOpacity={setAnnotHlOpacity}
+                  annotPenColor={annotPenColor}
+                  setAnnotPenColor={setAnnotPenColor}
+                  annotPenSize={annotPenSize}
+                  setAnnotPenSize={setAnnotPenSize}
+                  annotPenOpacity={annotPenOpacity}
+                  setAnnotPenOpacity={setAnnotPenOpacity}
+                  annotPenStyle={annotPenStyle}
+                  setAnnotPenStyle={setAnnotPenStyle}
+                  annotShapeType={annotShapeType}
+                  setAnnotShapeType={setAnnotShapeType}
+                  annotShapeFill={annotShapeFill}
+                  setAnnotShapeFill={setAnnotShapeFill}
+                  annotShapeColor={annotShapeColor}
+                  setAnnotShapeColor={setAnnotShapeColor}
+                  annotShapeBorderWidth={annotShapeBorderWidth}
+                  setAnnotShapeBorderWidth={setAnnotShapeBorderWidth}
+                  annotShapeStrokeStyle={annotShapeStrokeStyle}
+                  setAnnotShapeStrokeStyle={setAnnotShapeStrokeStyle}
+                  annotShapeCornerRadius={annotShapeCornerRadius}
+                  setAnnotShapeCornerRadius={setAnnotShapeCornerRadius}
+                  annotShapeShadow={annotShapeShadow}
+                  setAnnotShapeShadow={setAnnotShapeShadow}
+                  // Settings props
+                  removeMetadata={removeMetadata}
+                  setRemoveMetadata={setRemoveMetadata}
+                  flattenAnnotations={flattenAnnotations}
+                  setFlattenAnnotations={setFlattenAnnotations}
+                  allowCopy={allowCopy}
+                  setAllowCopy={setAllowCopy}
+                  // Undo/Redo props
+                  undo={undo}
+                  redo={redo}
+                  canUndo={undoStack.length > 0}
+                  canRedo={redoStack.length > 0}
                 />
               )}
             </>

@@ -709,10 +709,19 @@ export function HeaderMenu({
               userSelect: 'none',
               flexShrink: 0,
               marginLeft: 2,
+              overflow: 'hidden',
             }}
             title="Account"
           >
-            <User size={15} />
+            {localStorage.getItem("authToken") ? (
+              <img
+                src={localStorage.getItem("userAvatar") || "/Avatar-1.webp"}
+                alt="Avatar"
+                style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
+              />
+            ) : (
+              <User size={15} />
+            )}
           </div>
 
           {/* Expand Toggle Button (only shown when collapsed) */}

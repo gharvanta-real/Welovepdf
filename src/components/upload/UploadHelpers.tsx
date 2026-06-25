@@ -84,18 +84,18 @@ export function getToolHeroDescription(tool: string): string {
 export function getToolEyebrow(tool: string): string {
   const t = tool.toLowerCase();
   if (t.includes("merge") || t.includes("split") || t.includes("compress") || t.includes("rotate") || t.includes("organize") || t.includes("extract") || t.includes("remove")) {
-    return "PDF TOOLS / " + tool.replace(" PDF", "").replace("PDF ", "").toUpperCase();
+    return "PDF Tools / " + tool.replace(" PDF", "").replace("PDF ", "");
   }
   if (t.includes("word") || t.includes("excel") || t.includes("ppt") || t.includes("jpg") || t.includes("html") || t.includes("txt")) {
-    return "CONVERT / " + tool.toUpperCase();
+    return "Convert / " + tool;
   }
   if (t.includes("sign") || t.includes("protect") || t.includes("unlock") || t.includes("watermark")) {
-    return "SECURITY / " + tool.replace(" PDF", "").toUpperCase();
+    return "Security / " + tool.replace(" PDF", "");
   }
   if (t.includes("ocr") || t.includes("translate") || t.includes("summarize") || t.includes("copilot") || t.includes("annotate")) {
-    return "AI TOOLS / " + tool.replace(" PDF", "").toUpperCase();
+    return "AI Tools / " + tool.replace(" PDF", "");
   }
-  return "PDF TOOLS / " + tool.replace(" PDF", "").toUpperCase();
+  return "PDF Tools / " + tool.replace(" PDF", "");
 }
 
 export function getToolFeatures(tool: string): { icon: string; title: string; desc: string; color: string }[] {

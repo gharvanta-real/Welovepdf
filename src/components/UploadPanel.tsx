@@ -131,7 +131,7 @@ export function UploadPanel({
   const [fileNameStamps, setFileNameStamps] = useState(false);
 
   // Extended Tool Configuration States
-  const [watermarkText, setWatermarkText] = useState("CONFIDENTIAL");
+  const [watermarkText, setWatermarkText] = useState("Confidential");
   const [watermarkColor, setWatermarkColor] = useState("#e2e8f0");
   const [watermarkOpacity, setWatermarkOpacity] = useState("0.2");
   const [signatureText, setSignatureText] = useState("Digitally Signed");
@@ -139,7 +139,7 @@ export function UploadPanel({
   const [pdfPassword, setPdfPassword] = useState("pdfmount");
   const [translateLang, setTranslateLang] = useState("hi");
   const [summarizeLength, setSummarizeLength] = useState<"short" | "medium" | "long">("medium");
-  const [batesPrefix, setBatesPrefix] = useState("BATES-");
+  const [batesPrefix, setBatesPrefix] = useState("Bates-");
   const [batesStart, setBatesStart] = useState("1");
   const [pageNumberPos, setPageNumberPos] = useState("bottom-center");
   const [pageNumberSize, setPageNumberSize] = useState("10");
@@ -784,7 +784,7 @@ export function UploadPanel({
                             fontFamily: "Plus Jakarta Sans, sans-serif"
                           }}
                         >
-                          {size.toUpperCase()}
+                          {size.charAt(0).toUpperCase() + size.slice(1)}
                         </button>
                       ))}
                     </div>

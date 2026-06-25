@@ -523,8 +523,8 @@ export function CanvasViewport({
 
               // Watermarks & stamps
               if (el.type === "stamp") {
-                const isWatermark = el.stampType === "WATERMARK";
-                const isApproved = el.stampType === "APPROVED";
+                const isWatermark = el.stampType === "WATERMARK" || el.stampType === "Watermark";
+                const isApproved = el.stampType === "APPROVED" || el.stampType === "Approved";
                 return (
                   <div key={el.id} onClick={e => { e.stopPropagation(); setSelectedElementId(el.id); }}
                     style={{
@@ -549,10 +549,10 @@ export function CanvasViewport({
                       fontWeight: "900", 
                       letterSpacing: isWatermark ? "0.15em" : "0.05em",
                       fontFamily: isApproved ? "'Caveat', 'Segoe Script', cursive, sans-serif" : "Arial, sans-serif",
-                      textTransform: isWatermark ? "uppercase" : "none",
+                      textTransform: "none",
                       pointerEvents: "none"
                     }}>
-                      {isWatermark ? (el.content || "CONFIDENTIAL") : (isApproved ? "Approved" : el.stampType)}
+                      {isWatermark ? (el.content || "Confidential") : (isApproved ? "Approved" : el.stampType)}
                     </span>
                     {resizeNodes}
                   </div>

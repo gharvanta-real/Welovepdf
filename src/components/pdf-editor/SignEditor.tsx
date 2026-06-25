@@ -96,8 +96,8 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
   const drawingCanvasContextRef = useRef<CanvasRenderingContext2D | null>(null);
   const [isDrawingFreehand, setIsDrawingFreehand] = useState(false);
   const [stampText, setStampText] = useState({
-    text1: "COMPANY STAMP",
-    text2: "APPROVED",
+    text1: "Company Stamp",
+    text2: "Approved",
     type: "rectangle" as "rectangle" | "round" | "none"
   });
 
@@ -188,10 +188,10 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
         ctx.fillStyle = color;
         ctx.textAlign = "center";
         ctx.font = "bold 20px 'Google Sans', 'Google Sans Text', 'Plus Jakarta Sans', sans-serif";
-        ctx.fillText(text1.toUpperCase() || "COMPANY STAMP", 125, 52);
+        ctx.fillText(text1 || "Company Stamp", 125, 52);
         
         ctx.font = "14px 'Google Sans', 'Google Sans Text', 'Plus Jakarta Sans', sans-serif";
-        ctx.fillText(text2.toUpperCase() || "APPROVED", 125, 82);
+        ctx.fillText(text2 || "Approved", 125, 82);
       }
     } else if (type === "round") {
       canvas.width = 150;
@@ -213,10 +213,10 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
         ctxRound.textAlign = "center";
         
         ctxRound.font = "bold 14px 'Google Sans', 'Google Sans Text', 'Plus Jakarta Sans', sans-serif";
-        ctxRound.fillText(text1.toUpperCase() || "STAMP", 75, 70);
+        ctxRound.fillText(text1 || "Stamp", 75, 70);
         
         ctxRound.font = "11px 'Google Sans', 'Google Sans Text', 'Plus Jakarta Sans', sans-serif";
-        ctxRound.fillText(text2.toUpperCase() || "APPROVED", 75, 95);
+        ctxRound.fillText(text2 || "Approved", 75, 95);
       }
     }
     return canvas.toDataURL();

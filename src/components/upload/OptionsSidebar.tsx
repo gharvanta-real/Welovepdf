@@ -804,7 +804,7 @@ export function OptionsSidebar({
           className="primary-button process-sidebar-btn" 
           onClick={runProcess}
         >
-          {selectedTool.toUpperCase()} →
+          {selectedTool} →
         </button>
 
         <button 
