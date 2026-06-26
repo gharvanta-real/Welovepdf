@@ -75,18 +75,7 @@ const SecurityIllustration = () => (
   </svg>
 );
 
-const BrowserIllustration = () => (
-  <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect x="8" y="12" width="64" height="48" rx="6" fill="#FFFFFF" stroke="#2563EB" strokeWidth="2.5"/>
-    <line x1="8" y1="24" x2="72" y2="24" stroke="#2563EB" strokeWidth="2"/>
-    <circle cx="16" cy="18" r="3" fill="#6366F1"/>
-    <circle cx="24" cy="18" r="3" fill="#a855f7"/>
-    <circle cx="32" cy="18" r="3" fill="#ec4899"/>
-    <path d="M28 42C28 42 32 46 40 46C48 46 52 42 52 42" stroke="#2563EB" strokeWidth="2" strokeLinecap="round"/>
-    <rect x="30" y="32" width="20" height="14" rx="2" fill="#E5EDFF" stroke="#2563EB" strokeWidth="1.5"/>
-    <circle cx="40" cy="39" r="1.5" fill="#2563EB"/>
-  </svg>
-);
+
 
 export function AllToolsPage({ onToolSelect, onPricingClick, onContactSalesClick, onBack, onViewChange }: AllToolsPageProps) {
   const [searchQuery, setSearchQuery] = useState("");
@@ -474,49 +463,24 @@ export function AllToolsPage({ onToolSelect, onPricingClick, onContactSalesClick
           {/* AdSense Unit (Middle) */}
           <AdSenseUnit slot="middle-responsive-ad" />
 
-          {/* Two-Column Security & Local Processing Detail */}
-          <div style={{ 
-            display: "grid", 
-            gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", 
-            gap: "40px",
-            alignItems: "center",
-            marginBottom: "64px",
-            padding: "40px",
-            backgroundColor: "#f8fafc",
-            borderRadius: "24px",
-            border: "1px solid #e2e8f0"
-          }}>
-            <div>
-              <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "20px" }}>
-                <BrowserIllustration />
-                <h3 style={{ fontSize: "20px", fontWeight: 600, color: "#0F172A", margin: 0 }}>
-                  Browser-Based Processing vs. Desktop Software
-                </h3>
-              </div>
-              <p style={{ fontSize: "14px", color: "#4B5563", lineHeight: 1.6, margin: 0 }}>
-                Historically, editing PDFs meant purchasing resource-heavy desktop software that required administrative access and system installations. Desktop installations carry security risks and clutter local storage. Operating directly in your web browser changes this dynamic. By utilizing modern web technologies like WebAssembly, file operations can run locally in a sandboxed browser context. This means your private files don't need to be uploaded to an unverified remote server to complete simple tasks like rotations or merging, maintaining strict local privacy. Even when files are processed on cloud servers for intensive tasks like OCR, they are processed in secure, temporary storage environments and permanently deleted immediately after task completion. The browser-based approach is cross-platform, meaning you get the exact same high-speed utility whether you are working on a Chromebook, a Windows workstation, an iPad, or a Linux laptop, without ever needing an install button.
-              </p>
-            </div>
-            
-            <div style={{ backgroundColor: "#ffffff", padding: "32px", borderRadius: "16px", border: "1px solid #e2e8f0" }}>
-              <h4 style={{ fontSize: "18px", fontWeight: 600, color: "#0F172A", marginTop: 0, marginBottom: "20px" }}>
-                Best Practices for Document Security
-              </h4>
-              <ul style={{ paddingLeft: "20px", margin: 0, display: "flex", flexDirection: "column", gap: "16px", fontSize: "14px", color: "#4B5563", lineHeight: 1.5 }}>
-                <li>
-                  <strong style={{ color: "#0F172A" }}>Encrypt Sensitive Attachments</strong>: Apply robust password protection with AES-256 algorithms before sending files containing financial or personal data via email.
-                </li>
-                <li>
-                  <strong style={{ color: "#0F172A" }}>Clean Document Metadata</strong>: Strip hidden properties, edit logs, and author profiles before publishing legal drafts or company memos publicly.
-                </li>
-                <li>
-                  <strong style={{ color: "#0F172A" }}>Verify Recipient Identity</strong>: Before requesting legally binding e-signatures, double-check email addresses to avoid sending business agreements to the wrong signers.
-                </li>
-                <li>
-                  <strong style={{ color: "#0F172A" }}>Use Local Sandbox Tools</strong>: Whenever possible, perform operations like page reordering, splitting, and merging within secure client-side browser modules.
-                </li>
-              </ul>
-            </div>
+          {/* How to Use — Full Width Image, No Card, No Badge */}
+          <div style={{ marginBottom: "64px" }}>
+            <h3 style={{ fontSize: "22px", fontWeight: 700, color: "#0F172A", marginBottom: "12px" }}>
+              How to Use Any Tool
+            </h3>
+            <p style={{ fontSize: "14px", color: "#4B5563", lineHeight: 1.6, marginBottom: "28px", maxWidth: "680px" }}>
+              Every tool on Pdfmount.online follows the same simple three-step flow — upload your file, choose your settings, and download the result instantly. No software installation, no account required for basic tasks.
+            </p>
+            <img
+              src="/How-to-use-any-tools.png"
+              alt="How to use any PDF tool — upload, process, download"
+              style={{
+                width: "100%",
+                height: "auto",
+                display: "block",
+                borderRadius: "0px"
+              }}
+            />
           </div>
 
           {/* Interactive FAQ Grid */}

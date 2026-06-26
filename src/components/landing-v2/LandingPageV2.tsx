@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { HeroSection } from "./HeroSection";
+import { TrustStrip } from "./TrustStrip";
 import { DailyToolsSection } from "./DailyToolsSection";
 import { CreativeWorkflowsSection } from "./CreativeWorkflowsSection";
 import { TestimonialsSection } from "./TestimonialsSection";
@@ -28,9 +29,11 @@ export function LandingPageV2({ onToolSelect, onViewChange, onLogoClick }: Landi
       {/* ── Subcomponents/Sections (Dedicated & Modular) ── */}
       <HeroSection onScrollToTools={scrollToTools} />
       
+      <TrustStrip />
+      
       <DailyToolsSection onToolSelect={onToolSelect} />
       
-      <CreativeWorkflowsSection />
+      <CreativeWorkflowsSection onToolSelect={onToolSelect} />
       
       <TestimonialsSection />
       

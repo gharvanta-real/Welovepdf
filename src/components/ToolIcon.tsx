@@ -54,46 +54,33 @@ export function getToolIconSVG(identifier: string, size = 20): React.ReactElemen
   // 1. Microsoft Word
   if (key.includes("word")) {
     return (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-        <path d="M13.5 5.5H19a1.5 1.5 0 011.5 1.5v10a1.5 1.5 0 01-1.5 1.5h-5.5v-13z" fill="currentColor" fillOpacity="0.25" />
-        <rect x="15.5" y="8" width="3.5" height="1.2" rx="0.6" fill="currentColor" />
-        <rect x="15.5" y="11.2" width="3.5" height="1.2" rx="0.6" fill="currentColor" />
-        <rect x="15.5" y="14.4" width="2.5" height="1.2" rx="0.6" fill="currentColor" />
-        <rect x="3.5" y="6" width="9" height="12" rx="1.5" fill="currentColor" />
-        <text x="8" y="12.5" fill={toolColor} fontSize="9.5px" fontWeight="900" fontFamily="'Segoe UI', system-ui, -apple-system, sans-serif" textAnchor="middle" dominantBaseline="central">W</text>
-      </svg>
+      <img
+        src="/microsoft-word.svg"
+        alt="Microsoft Word"
+        style={{ width: `${size}px`, height: `${size}px`, objectFit: "contain", display: "block" }}
+      />
     );
   }
 
   // 2. Microsoft Excel
   if (key.includes("excel")) {
     return (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-        <path d="M13.5 5.5H19a1.5 1.5 0 011.5 1.5v10a1.5 1.5 0 01-1.5 1.5h-5.5v-13z" fill="currentColor" fillOpacity="0.25" />
-        <rect x="15.5" y="8" width="1.5" height="1.5" rx="0.3" fill="currentColor" />
-        <rect x="17.5" y="8" width="1.5" height="1.5" rx="0.3" fill="currentColor" />
-        <rect x="15.5" y="10.5" width="1.5" height="1.5" rx="0.3" fill="currentColor" />
-        <rect x="17.5" y="10.5" width="1.5" height="1.5" rx="0.3" fill="currentColor" />
-        <rect x="15.5" y="13" width="1.5" height="1.5" rx="0.3" fill="currentColor" />
-        <rect x="17.5" y="13" width="1.5" height="1.5" rx="0.3" fill="currentColor" />
-        <rect x="15.5" y="15.5" width="1.5" height="1.5" rx="0.3" fill="currentColor" />
-        <rect x="17.5" y="15.5" width="1.5" height="1.5" rx="0.3" fill="currentColor" />
-        <rect x="3.5" y="6" width="9" height="12" rx="1.5" fill="currentColor" />
-        <text x="8" y="12.5" fill={toolColor} fontSize="9.5px" fontWeight="900" fontFamily="'Segoe UI', system-ui, -apple-system, sans-serif" textAnchor="middle" dominantBaseline="central">X</text>
-      </svg>
+      <img
+        src="/microsoft-excel.svg"
+        alt="Microsoft Excel"
+        style={{ width: `${size}px`, height: `${size}px`, objectFit: "contain", display: "block" }}
+      />
     );
   }
 
   // 3. Microsoft PowerPoint
   if (key.includes("ppt") || key.includes("powerpoint")) {
     return (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-        <path d="M13.5 5.5H19a1.5 1.5 0 011.5 1.5v10a1.5 1.5 0 01-1.5 1.5h-5.5v-13z" fill="currentColor" fillOpacity="0.25" />
-        <circle cx="17" cy="11.5" r="2.2" stroke="currentColor" strokeWidth="1" fill="none" />
-        <path d="M17 11.5l1.2 1.2M17 11.5v-2" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
-        <rect x="3.5" y="6" width="9" height="12" rx="1.5" fill="currentColor" />
-        <text x="8" y="12.5" fill={toolColor} fontSize="9.5px" fontWeight="900" fontFamily="'Segoe UI', system-ui, -apple-system, sans-serif" textAnchor="middle" dominantBaseline="central">P</text>
-      </svg>
+      <img
+        src="/microsoft-powerpoint.svg"
+        alt="Microsoft PowerPoint"
+        style={{ width: `${size}px`, height: `${size}px`, objectFit: "contain", display: "block" }}
+      />
     );
   }
 
@@ -265,6 +252,11 @@ export function getToolIconSVG(identifier: string, size = 20): React.ReactElemen
   );
 }
 
+export function isMsOfficeTool(toolNameOrId: string): boolean {
+  const key = toolNameOrId.toLowerCase().replace(/ pdf|pdf /g, "").replace("-", " ").trim();
+  return key.includes("word") || key.includes("excel") || key.includes("ppt") || key.includes("powerpoint");
+}
+
 type ToolIconProps = {
   toolNameOrId: string;
   size?: number;
@@ -274,6 +266,7 @@ type ToolIconProps = {
 
 export function ToolIcon({ toolNameOrId, size = 22, className = "", style = {} }: ToolIconProps) {
   const toolColor = getToolColor(toolNameOrId);
+  const isMsOffice = isMsOfficeTool(toolNameOrId);
 
   return (
     <div 
@@ -285,13 +278,13 @@ export function ToolIcon({ toolNameOrId, size = 22, className = "", style = {} }
         width: `${size * 2}px`,
         height: `${size * 2}px`,
         borderRadius: "10px",
-        backgroundColor: toolColor,
+        backgroundColor: isMsOffice ? "transparent" : toolColor,
         color: "#ffffff",
         flexShrink: 0,
         ...style
       }}
     >
-      {getToolIconSVG(toolNameOrId, size * 1.6)}
+      {getToolIconSVG(toolNameOrId, isMsOffice ? size * 1.8 : size * 1.6)}
     </div>
   );
 }

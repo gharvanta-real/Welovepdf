@@ -10,19 +10,18 @@ import {
 
 export function AdminSupport() {
   const [messages, setMessages] = useState<any[]>([]);
-  const [resolvedIds, setResolvedIds] = useState<string[]>([]);
   const [selectedMsgId, setSelectedMsgId] = useState<string | null>(null);
   const [replyText, setReplyText] = useState("");
   const [toast, setToast] = useState("");
   const [loading, setLoading] = useState(true);
+  const [isSending, setIsSending] = useState(false);
+  const [isResolving, setIsResolving] = useState(false);
 
   const fetchSupport = async () => {
     try {
       const token = localStorage.getItem("authToken");
       const res = await fetch("/api/admin/support", {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+        headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
         const data = await res.json();
@@ -47,18 +46,70 @@ export function AdminSupport() {
     setTimeout(() => setToast(""), 3000);
   };
 
-  const handleSendReply = () => {
+  // ── Real reply API — persists reply + marks resolved in DB ───────────────
+  const handleSendReply = async () => {
     if (!replyText.trim() || !selectedMsgId) return;
-
     const message = messages.find(m => m.id === selectedMsgId);
-    triggerToast(`Email reply successfully dispatched to ${message?.email}!`);
-    setReplyText("");
-    setResolvedIds(prev => [...prev, selectedMsgId]);
+    if (!message) return;
+
+    setIsSending(true);
+    try {
+      const token = localStorage.getItem("authToken");
+      const res = await fetch("/api/admin/support/reply", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ id: selectedMsgId, reply_text: replyText })
+      });
+
+      if (res.ok) {
+        // Update local state immediately (optimistic)
+        setMessages(prev => prev.map(m =>
+          m.id === selectedMsgId
+            ? { ...m, status: "resolved", reply: replyText }
+            : m
+        ));
+        setReplyText("");
+        triggerToast(`Reply saved & ${message.email} marked resolved.`);
+      } else {
+        triggerToast("Failed to save reply. Please try again.");
+      }
+    } catch (err) {
+      triggerToast("Network error. Reply not sent.");
+    } finally {
+      setIsSending(false);
+    }
   };
 
-  const handleMarkResolved = (id: string) => {
-    setResolvedIds(prev => [...prev, id]);
-    triggerToast("Inquiry marked as resolved.");
+  // ── Persist resolved status in DB ────────────────────────────────────────
+  const handleMarkResolved = async (id: string) => {
+    setIsResolving(true);
+    try {
+      const token = localStorage.getItem("authToken");
+      const res = await fetch("/api/admin/support/reply", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ id, reply_text: "" })
+      });
+
+      if (res.ok) {
+        setMessages(prev => prev.map(m =>
+          m.id === id ? { ...m, status: "resolved" } : m
+        ));
+        triggerToast("Inquiry marked as resolved.");
+      } else {
+        triggerToast("Failed to mark as resolved.");
+      }
+    } catch (err) {
+      triggerToast("Network error.");
+    } finally {
+      setIsResolving(false);
+    }
   };
 
   const formatDate = (iso: string) => {
@@ -70,22 +121,38 @@ export function AdminSupport() {
     }
   };
 
+  // Status comes from DB now — fallback to "open" if null
   const messagesWithStatus = messages.map(m => ({
     ...m,
-    status: resolvedIds.includes(m.id) ? "Resolved" : "Open"
+    status: m.status || "open"
   }));
 
   const activeMessage = messagesWithStatus.find(m => m.id === selectedMsgId);
-  const openCount = messagesWithStatus.filter(m => m.status !== "Resolved").length;
+  const openCount = messagesWithStatus.filter(m => m.status !== "resolved").length;
+
+  if (loading) {
+    return (
+      <div className="admin-support-page">
+        <div className="admin-metrics-grid">
+          {[1, 2].map(i => (
+            <div key={i} style={{ height: "100px", borderRadius: "10px", backgroundColor: "var(--admin-surface-low)", animation: "pulse 1.5s infinite" }} />
+          ))}
+        </div>
+        <div style={{ textAlign: "center", padding: "48px", color: "var(--admin-text-secondary)", fontSize: "13px" }}>
+          Loading support inbox...
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="admin-support-page">
       {/* Toast */}
       {toast && (
-        <div 
+        <div
           style={{
             position: "fixed",
-            bottom: "24px",
+            bottom: "84px",
             right: "24px",
             backgroundColor: "var(--admin-primary)",
             color: "var(--admin-surface)",
@@ -102,19 +169,19 @@ export function AdminSupport() {
 
       {/* Metrics Row */}
       <div className="admin-metrics-grid">
-        <MetricCard 
-          title="Open Inquiries" 
-          value={openCount} 
-          icon={Mail01Icon} 
-          change={{ value: "All queries assigned", isPositive: true }}
+        <MetricCard
+          title="Open Inquiries"
+          value={openCount}
+          icon={Mail01Icon}
+          change={{ value: "Awaiting admin response", isPositive: openCount === 0 }}
           period="Awaiting reply"
         />
-        <MetricCard 
-          title="Average Response Time" 
-          value="42 mins" 
-          icon={Clock01Icon} 
-          change={{ value: "-12 mins from yesterday", isPositive: true }}
-          period="Performance index"
+        <MetricCard
+          title="Total Messages"
+          value={messages.length}
+          icon={Clock01Icon}
+          change={{ value: `${messages.length - openCount} resolved`, isPositive: true }}
+          period="All time"
         />
       </div>
 
@@ -137,42 +204,48 @@ export function AdminSupport() {
                 </tr>
               </thead>
               <tbody>
-                {messagesWithStatus.map(msg => (
-                  <tr 
-                    key={msg.id} 
-                    onClick={() => setSelectedMsgId(msg.id)}
-                    style={{ 
-                      cursor: "pointer", 
-                      backgroundColor: selectedMsgId === msg.id ? "var(--admin-surface-low)" : "" 
-                    }}
-                  >
-                    <td style={{ fontWeight: 500 }}>
-                      <div style={{ display: "flex", flexDirection: "column" }}>
-                        <span>{msg.name}</span>
-                        <span style={{ fontSize: "11px", color: "var(--admin-text-secondary)", fontWeight: 400 }}>{msg.email}</span>
-                      </div>
-                    </td>
-                    <td style={{ maxWidth: "200px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                      {msg.subject || "No Subject"}
-                    </td>
-                    <td>
-                      <span 
-                        style={{
-                          fontSize: "11px",
-                          fontWeight: 500,
-                          color: msg.status === "Resolved" 
-                            ? "var(--admin-success)" 
-                            : msg.status === "In Progress" 
-                              ? "var(--admin-warning)" 
+                {messagesWithStatus.length > 0 ? (
+                  messagesWithStatus.map(msg => (
+                    <tr
+                      key={msg.id}
+                      onClick={() => setSelectedMsgId(msg.id)}
+                      style={{
+                        cursor: "pointer",
+                        backgroundColor: selectedMsgId === msg.id ? "var(--admin-surface-low)" : ""
+                      }}
+                    >
+                      <td style={{ fontWeight: 500 }}>
+                        <div style={{ display: "flex", flexDirection: "column" }}>
+                          <span>{msg.name}</span>
+                          <span style={{ fontSize: "11px", color: "var(--admin-text-secondary)", fontWeight: 400 }}>{msg.email}</span>
+                        </div>
+                      </td>
+                      <td style={{ maxWidth: "200px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        {msg.subject || "No Subject"}
+                      </td>
+                      <td>
+                        <span
+                          style={{
+                            fontSize: "11px",
+                            fontWeight: 500,
+                            color: msg.status === "resolved"
+                              ? "var(--admin-success)"
                               : "var(--admin-danger)"
-                        }}
-                      >
-                        {msg.status.toUpperCase()}
-                      </span>
+                          }}
+                        >
+                          {(msg.status || "OPEN").toUpperCase()}
+                        </span>
+                      </td>
+                      <td className="text-secondary">{formatDate(msg.created_at)}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={4} style={{ textAlign: "center", padding: "32px", color: "var(--admin-text-muted)" }}>
+                      No support messages yet.
                     </td>
-                    <td className="text-secondary">{formatDate(msg.created_at)}</td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </table>
           </div>
@@ -190,8 +263,8 @@ export function AdminSupport() {
                 <div style={{ marginTop: "8px", display: "flex", gap: "10px", alignItems: "center" }}>
                   <span className="text-xs text-secondary">{formatDate(activeMessage.created_at)}</span>
                   <span style={{ fontSize: "11px", fontWeight: "bold" }}>•</span>
-                  <span style={{ fontSize: "11px", color: activeMessage.status === "Resolved" ? "var(--admin-success)" : "var(--admin-danger)" }}>
-                    {activeMessage.status}
+                  <span style={{ fontSize: "11px", color: activeMessage.status === "resolved" ? "var(--admin-success)" : "var(--admin-danger)" }}>
+                    {(activeMessage.status || "open").toUpperCase()}
                   </span>
                 </div>
               </div>
@@ -200,44 +273,64 @@ export function AdminSupport() {
                 {activeMessage.message}
               </div>
 
-              {activeMessage.status !== "Resolved" ? (
+              {/* Show previous reply if exists */}
+              {activeMessage.reply && (
+                <div style={{
+                  backgroundColor: "var(--admin-surface-low)",
+                  padding: "12px 16px",
+                  borderRadius: "8px",
+                  marginBottom: "12px",
+                  borderLeft: "3px solid var(--admin-success)"
+                }}>
+                  <span style={{ fontSize: "11px", color: "var(--admin-success)", fontWeight: 600, display: "block", marginBottom: "4px" }}>
+                    Admin Reply (saved):
+                  </span>
+                  <span style={{ fontSize: "12px", color: "var(--admin-text-secondary)" }}>{activeMessage.reply}</span>
+                </div>
+              )}
+
+              {activeMessage.status !== "resolved" ? (
                 <div className="admin-message-reply-box">
                   <textarea
-                    placeholder={`Compose email response to ${activeMessage.email}...`}
+                    placeholder={`Compose reply to ${activeMessage.email}... (will be saved to DB)`}
                     value={replyText}
                     onChange={(e) => setReplyText(e.target.value)}
                     className="admin-reply-textarea"
                   />
                   <div style={{ display: "flex", gap: "12px", justifyContent: "flex-end" }}>
-                    <button 
-                      onClick={() => handleMarkResolved(activeMessage.id)} 
+                    <button
+                      onClick={() => handleMarkResolved(activeMessage.id)}
                       className="admin-btn admin-btn-secondary"
+                      disabled={isResolving}
+                      style={{ opacity: isResolving ? 0.6 : 1 }}
                     >
-                      Mark Resolved
+                      {isResolving ? "Saving..." : "Mark Resolved"}
                     </button>
-                    <button 
-                      onClick={handleSendReply} 
+                    <button
+                      onClick={handleSendReply}
                       className="admin-btn admin-btn-primary"
+                      disabled={isSending || !replyText.trim()}
+                      style={{ opacity: isSending || !replyText.trim() ? 0.6 : 1 }}
                     >
                       <HugeiconsIcon icon={ArrowRight01Icon} size={15} />
-                      Send Reply
+                      {isSending ? "Saving..." : "Save Reply & Resolve"}
                     </button>
                   </div>
                 </div>
               ) : (
-                <div 
-                  style={{ 
-                    backgroundColor: "var(--admin-surface-low)", 
-                    padding: "16px", 
-                    borderRadius: "8px", 
-                    display: "flex", 
-                    alignItems: "center", 
-                    gap: "8px" 
+                <div
+                  style={{
+                    backgroundColor: "var(--admin-surface-low)",
+                    padding: "16px",
+                    borderRadius: "8px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px"
                   }}
                 >
                   <HugeiconsIcon icon={CheckCircle} size={18} color="var(--admin-success)" />
                   <span style={{ fontSize: "12px", color: "var(--admin-text-secondary)" }}>
-                    This inquiry has been marked as resolved.
+                    This inquiry has been resolved and persisted in the database.
                   </span>
                 </div>
               )}

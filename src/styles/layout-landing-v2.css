@@ -33,13 +33,13 @@
   align-items: center;
   gap: 8px;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.2);
+  box-shadow: none;
 }
 
 .v2-pill-primary:hover {
   background-color: var(--v2-primary-hover);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3);
+  box-shadow: none;
 }
 
 .v2-pill-outline {
@@ -61,12 +61,12 @@
 }
 
 .v2-hero {
-  min-height: 100vh;
+  min-height: calc(100vh - var(--header-h, 60px));
   display: flex;
   flex-direction: column;
   justify-content: center;
   box-sizing: border-box;
-  padding: 80px 0;
+  padding: 30px 0 60px 0;
   background-color: #ffffff;
   position: relative;
   overflow: hidden;
@@ -82,7 +82,7 @@
   align-items: center;
   position: relative;
   z-index: 2;
-  margin-top: -40px; /* Shift entire hero section slightly upward to reduce top gap */
+  margin-top: -30px; /* Shift entire hero section slightly upward to reduce top gap */
 }
 
 .v2-hero-trust-bar {
@@ -602,10 +602,15 @@
 
 /* ── RESPONSIVE MEDIA QUERIES ── */
 @media (max-width: 960px) {
+  .v2-hero {
+    min-height: auto;
+    padding: 40px 0;
+  }
   .v2-hero-inner {
     grid-template-columns: 1fr;
     text-align: center;
     gap: 32px;
+    margin-top: 0;
   }
   .v2-hero-copy p {
     margin: 0 auto 36px;
@@ -958,5 +963,100 @@
     align-items: stretch;
   }
 }
+
+/* ── TRUST STRIP SECTION ── */
+.v2-trust-strip {
+  padding: 32px 0;
+  background-color: var(--v2-bg-surface);
+  border-top: 1px solid var(--v2-border-light);
+  border-bottom: 1px solid var(--v2-border-light);
+  position: relative;
+  z-index: 10;
+}
+
+.v2-trust-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+}
+
+.v2-trust-item {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.v2-trust-icon-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background-color: var(--v2-bg-badge);
+  color: var(--v2-primary);
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.v2-trust-icon-box-large {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+}
+
+.v2-trust-icon-svg-large {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.v2-trust-item:hover .v2-trust-icon-box {
+  transform: translateY(-2px);
+  background-color: var(--v2-primary);
+  color: var(--v2-text-on-primary);
+  box-shadow: 0 4px 12px var(--v2-primary-soft);
+}
+
+.v2-trust-text h4 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--v2-text-main);
+  margin: 0 0 6px 0;
+  font-family: var(--v2-font-sans);
+}
+
+.v2-trust-text p {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--v2-text-muted);
+  margin: 0;
+  font-family: var(--v2-font-sans);
+}
+
+@media (max-width: 960px) {
+  .v2-trust-strip {
+    padding: 24px 0;
+  }
+  .v2-trust-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .v2-trust-item {
+    max-width: 500px;
+    margin: 0 auto;
+  }
+}
+
+/* ── WORKFLOW CARDS ── */
+.v2-workflow-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+
+
 
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { tools } from "../../data/tools";
-import { ToolIcon } from "../ToolIcon";
+import { ToolIcon, isMsOfficeTool } from "../ToolIcon";
 import { ArrowRight, ChevronDown, ChevronUp } from "lucide-react";
 
 interface DailyToolsSectionProps {
@@ -121,7 +121,10 @@ export function DailyToolsSection({ onToolSelect }: DailyToolsSectionProps) {
                     onToolSelect(tool.name);
                   }}
                 >
-                  <div className="v2-tool-icon-wrapper">
+                  <div 
+                    className="v2-tool-icon-wrapper"
+                    style={isMsOfficeTool(tool.id) ? { backgroundColor: "transparent", background: "none", border: "none", boxShadow: "none" } : {}}
+                  >
                     <ToolIcon toolNameOrId={tool.id} size={24} />
                   </div>
                   <h3>{tool.name}</h3>
@@ -226,7 +229,10 @@ export function DailyToolsSection({ onToolSelect }: DailyToolsSectionProps) {
                     onToolSelect(tool.name);
                   }}
                 >
-                  <div className="v2-tool-icon-wrapper">
+                  <div 
+                    className="v2-tool-icon-wrapper"
+                    style={isMsOfficeTool(tool.id) ? { backgroundColor: "transparent", background: "none", border: "none", boxShadow: "none" } : {}}
+                  >
                     <ToolIcon toolNameOrId={tool.id} size={24} />
                   </div>
                   <h3>{tool.name}</h3>

@@ -2,7 +2,7 @@
 import { tools, sitemapGroups } from "../data/tools";
 import { FileUp, ShieldCheck, Check, ArrowRight, ChevronRight, Award, Users, Star, Headset, FolderPlus, Download, Type, PenTool, Trash2, MessageSquare, Image, FileText, Square, Circle, Minimize2, Edit2 } from "lucide-react";
 import React from "react";
-import { ToolIcon, getToolColor } from "./ToolIcon";
+import { ToolIcon, getToolColor, isMsOfficeTool } from "./ToolIcon";
 import { Footer } from "./Footer";
 
 type LandingPageProps = {
@@ -810,7 +810,10 @@ export function LandingPage({ onToolSelect, onViewChange }: LandingPageProps) {
                   style={{ "--tool-color": toolColor } as React.CSSProperties}
                 >
                   <div className="stitch-tool-card-top">
-                    <div className="stitch-tool-icon">
+                    <div 
+                      className="stitch-tool-icon"
+                      style={isMsOfficeTool(tool.id) ? { backgroundColor: "transparent", background: "none", border: "none" } : {}}
+                    >
                       <ToolIcon toolNameOrId={tool.id} size={28} />
                     </div>
                     <span className="stitch-tool-category eyebrow" style={{ fontSize: "11px", marginBottom: 0, color: "rgba(0,0,0,0.35)" }}>

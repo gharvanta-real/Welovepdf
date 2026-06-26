@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import { tools } from "../data/tools";
+import { ToolIcon } from "./ToolIcon";
 
 interface FooterProps {
   onToolSelect: (toolName: string) => void;
@@ -7,7 +8,6 @@ interface FooterProps {
 }
 
 export function Footer({ onToolSelect, onViewChange }: FooterProps) {
-  const [activeTab, setActiveTab] = useState("popular");
 
   const handleLink = (e: React.MouseEvent, view: string) => {
     e.preventDefault();
@@ -91,7 +91,7 @@ export function Footer({ onToolSelect, onViewChange }: FooterProps) {
     }
   ];
 
-  const activeTabObj = footerTabs.find(t => t.id === activeTab) || footerTabs[0];
+
 
   return (
     <footer className="v2-footer-wrapper">
@@ -100,11 +100,10 @@ export function Footer({ onToolSelect, onViewChange }: FooterProps) {
         .v2-footer-wrapper {
           font-family: "Google Sans", "Google Sans Text", "Plus Jakarta Sans", sans-serif;
           width: 100%;
-          border-top: 1px solid #E2E8F0;
+          border-top: none;
           background-color: #FFFFFF;
         }
         .theme-dark .v2-footer-wrapper {
-          border-top-color: #1E293B;
           background-color: #0F172A;
         }
         .v2-footer-top-section {
@@ -170,23 +169,43 @@ export function Footer({ onToolSelect, onViewChange }: FooterProps) {
         }
         .v2-footer-links-grid {
           display: grid;
-          grid-template-columns: repeat(5, 1fr);
-          gap: 16px 12px;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 32px 24px;
           margin-bottom: 12px;
+          align-items: start;
+        }
+        .v2-footer-links-col {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+        .v2-footer-links-col h3 {
+          font-size: 14px;
+          font-weight: 700;
+          color: #1A1A1A;
+          margin: 0 0 4px;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+        .theme-dark .v2-footer-links-col h3 {
+          color: #F8FAFC;
         }
         .v2-footer-grid-link {
+          display: flex;
+          align-items: center;
+          gap: 8px;
           font-size: 13px;
-          color: #1A1A1A;
+          color: #474747;
           text-decoration: none;
           line-height: 1.4;
-          transition: color 0.15s;
+          transition: all 0.15s ease;
         }
         .theme-dark .v2-footer-grid-link {
           color: #94A3B8;
         }
         .v2-footer-grid-link:hover {
           color: #006CE4;
-          text-decoration: underline;
+          text-decoration: none;
         }
         .theme-dark .v2-footer-grid-link:hover {
           color: #3B82F6;
@@ -194,11 +213,10 @@ export function Footer({ onToolSelect, onViewChange }: FooterProps) {
         .v2-footer-corporate-section {
           background-color: #F5F5F5;
           padding: 48px 0 40px;
-          border-top: 1px solid #E0E0E0;
+          border-top: none;
         }
         .theme-dark .v2-footer-corporate-section {
           background-color: #0B0F19;
-          border-top-color: #1E293B;
         }
         .v2-footer-columns-grid {
           display: grid;
@@ -269,15 +287,15 @@ export function Footer({ onToolSelect, onViewChange }: FooterProps) {
           line-height: 1;
         }
         .v2-footer-bottom {
-          border-top: 1px solid #E0E0E0;
+          border-top: none;
           padding-top: 24px;
           display: flex;
-          flex-direction: column;
-          gap: 20px;
+          flex-direction: row;
+          justify-content: space-between;
           align-items: center;
         }
         .theme-dark .v2-footer-bottom {
-          border-top-color: #1E293B;
+          border-top: none;
         }
         .v2-footer-logo-row {
           display: flex;
@@ -305,7 +323,7 @@ export function Footer({ onToolSelect, onViewChange }: FooterProps) {
         
         @media (max-width: 1024px) {
           .v2-footer-links-grid {
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(2, 1fr);
           }
           .v2-footer-columns-grid {
             grid-template-columns: repeat(3, 1fr);
@@ -317,6 +335,11 @@ export function Footer({ onToolSelect, onViewChange }: FooterProps) {
           }
           .v2-footer-columns-grid {
             grid-template-columns: repeat(2, 1fr);
+          }
+          .v2-footer-bottom {
+            flex-direction: column;
+            gap: 16px;
+            text-align: center;
           }
         }
         @media (max-width: 480px) {
@@ -332,43 +355,45 @@ export function Footer({ onToolSelect, onViewChange }: FooterProps) {
         }
       `}</style>
 
-      {/* Top Part: Tabbed Popular Utilities Grid */}
+      {/* Top Part: Grid of all tools categories with icons */}
       <div className="v2-footer-top-section">
         <div className="stitch-container">
           <h2 className="v2-footer-tabs-title">Popular with users from India</h2>
           
-          {/* Tabs header row */}
-          <div className="v2-footer-tabs-row">
-            {footerTabs.map(tab => (
-              <button
-                key={tab.id}
-                className={`v2-footer-tab-btn ${activeTab === tab.id ? "active" : ""}`}
-                onClick={() => setActiveTab(tab.id)}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
-
-          {/* Links Grid */}
+          {/* Links Grid without tab switching, organized in columns */}
           <div className="v2-footer-links-grid">
-            {activeTabObj.links.map((link: any, index) => (
-              <a
-                key={index}
-                href={link.route || `#${link.name.toLowerCase().replace(/\\s+/g, "-")}`}
-                className="v2-footer-grid-link"
-                onClick={(e) => {
-                  e.preventDefault();
-                  if (link.route) {
-                    window.history.pushState({}, "", link.route);
-                    window.dispatchEvent(new Event("popstate"));
-                  } else {
-                    onToolSelect(link.action);
-                  }
-                }}
-              >
-                {link.name}
-              </a>
+            {footerTabs.map((tab) => (
+              <div key={tab.id} className="v2-footer-links-col">
+                <h3>{tab.label}</h3>
+                {tab.links.map((link: any, index) => (
+                  <a
+                    key={index}
+                    href={link.route || `#${link.name.toLowerCase().replace(/\s+/g, "-")}`}
+                    className="v2-footer-grid-link"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (link.route) {
+                        window.history.pushState({}, "", link.route);
+                        window.dispatchEvent(new Event("popstate"));
+                      } else {
+                        onToolSelect(link.action);
+                      }
+                    }}
+                  >
+                    <ToolIcon 
+                      toolNameOrId={link.action} 
+                      size={10} 
+                      style={{ 
+                        width: "20px", 
+                        height: "20px", 
+                        borderRadius: "4px",
+                        flexShrink: 0
+                      }} 
+                    />
+                    <span>{link.name}</span>
+                  </a>
+                ))}
+              </div>
             ))}
           </div>
         </div>
@@ -416,7 +441,7 @@ export function Footer({ onToolSelect, onViewChange }: FooterProps) {
             {/* Column 5: About */}
             <div className="v2-footer-col">
               <h4>About</h4>
-              <ul>
+              <ul style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "12px 16px" }}>
                 <li><a href="#about" className="v2-footer-corp-link" onClick={(e) => handleLink(e, "about")}>About Us</a></li>
                 <li><a href="#security" className="v2-footer-corp-link" onClick={(e) => handleLink(e, "security")}>Security Policy</a></li>
                 <li><a href="#file-privacy" className="v2-footer-corp-link" onClick={(e) => handleLink(e, "file-privacy")}>File Privacy</a></li>
@@ -428,7 +453,9 @@ export function Footer({ onToolSelect, onViewChange }: FooterProps) {
           {/* Flag & Currency Indicator */}
           <div style={{ display: "flex", width: "100%", justifyContent: "flex-start", marginBottom: "24px" }}>
             <span className="v2-footer-flag-indicator">
-              <span className="v2-footer-flag-icon">🇮🇳</span>
+              <span className="v2-footer-flag-icon" style={{ display: "flex", alignItems: "center" }}>
+                <img src="/India.svg" alt="India Flag" style={{ width: "24px", height: "auto", borderRadius: "2px" }} />
+              </span>
               <span className="v2-footer-flag-text">INR</span>
             </span>
           </div>
@@ -436,7 +463,7 @@ export function Footer({ onToolSelect, onViewChange }: FooterProps) {
           {/* Bottom Bar: Copyright, Brand Row */}
           <div className="v2-footer-bottom">
             {/* Copyright */}
-            <div style={{ width: "100%", textAlign: "center" }}>
+            <div>
               <p style={{ margin: 0, color: "#8C8C8C", fontSize: "12px" }}>
                 Copyright © 2026 Pdfmount.online™. All rights reserved.
               </p>
@@ -444,7 +471,7 @@ export function Footer({ onToolSelect, onViewChange }: FooterProps) {
 
             {/* Partner Brand Logos Row */}
             <div className="v2-footer-logo-row">
-              <a href="#home" className="v2-footer-brand-logo pdfmount" style={{ fontWeight: "800" }}>PDFMount</a>
+              <a href="#home" className="v2-footer-brand-logo pdfmount" style={{ fontWeight: "800" }} onClick={(e) => { e.preventDefault(); onViewChange("home"); }}>PDFMount</a>
             </div>
           </div>
         </div>

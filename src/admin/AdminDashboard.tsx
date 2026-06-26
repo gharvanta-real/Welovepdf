@@ -23,6 +23,18 @@ interface AdminDashboardProps {
   onLoginClick?: () => void;
 }
 
+// Relative time formatter
+function getRelativeTime(createdAt: number): string {
+  const diffMs = Date.now() - createdAt;
+  const secs = Math.floor(diffMs / 1000);
+  if (secs < 60) return "Just now";
+  const mins = Math.floor(secs / 60);
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  return `${Math.floor(hrs / 24)}d ago`;
+}
+
 export function AdminDashboard({ onBack, currentUser, onLoginClick }: AdminDashboardProps) {
   const [activePage, setActivePage] = useState("overview");
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -33,7 +45,7 @@ export function AdminDashboard({ onBack, currentUser, onLoginClick }: AdminDashb
   // Charcoal theme state
   const [themeMode, setThemeMode] = useState<"light" | "dark">("light");
 
-  // Notifications state
+  // Notifications state — now with createdAt timestamp
   const [notifications, setNotifications] = useState<NotificationItem[]>([
     {
       id: "notif-1",
@@ -41,6 +53,7 @@ export function AdminDashboard({ onBack, currentUser, onLoginClick }: AdminDashb
       title: "Stripe Webhook Failure",
       message: "invoice.payment_failed returned 502 Bad Gateway response from endpoint /api/stripe-webhook.",
       time: "5 mins ago",
+      createdAt: Date.now() - 5 * 60 * 1000,
       isRead: false,
       linkPage: "billing",
       source: "Stripe Webhook"
@@ -51,6 +64,7 @@ export function AdminDashboard({ onBack, currentUser, onLoginClick }: AdminDashb
       title: "Promo Code Usage Alert",
       message: "WELOVEPDF30 coupon has reached 95% usage capacity. Recommend seeding new batch.",
       time: "2 hours ago",
+      createdAt: Date.now() - 2 * 60 * 60 * 1000,
       isRead: false,
       linkPage: "promocodes",
       source: "Promo Campaigns"
@@ -61,6 +75,7 @@ export function AdminDashboard({ onBack, currentUser, onLoginClick }: AdminDashb
       title: "New High-Priority Inquiry",
       message: "Jessica Taylor submitted a support inquiry: 'Need high volume custom plan for enterprise PDF OCR'.",
       time: "4 hours ago",
+      createdAt: Date.now() - 4 * 60 * 60 * 1000,
       isRead: true,
       linkPage: "support",
       source: "Support Center"
@@ -71,6 +86,7 @@ export function AdminDashboard({ onBack, currentUser, onLoginClick }: AdminDashb
       title: "CPU Threshold Exceeded",
       message: "Volatile subprocess pool (qpdf wrapper) reached 92% CPU load limit during heavy batch merge.",
       time: "6 hours ago",
+      createdAt: Date.now() - 6 * 60 * 60 * 1000,
       isRead: true,
       linkPage: "overview",
       source: "System Monitor"
@@ -173,6 +189,7 @@ export function AdminDashboard({ onBack, currentUser, onLoginClick }: AdminDashb
         title: template.title,
         message: template.message,
         time: "Just now",
+        createdAt: Date.now(),
         isRead: false,
         linkPage: template.linkPage,
         source: template.source
@@ -183,6 +200,17 @@ export function AdminDashboard({ onBack, currentUser, onLoginClick }: AdminDashb
     }, 45000); // 45 seconds
 
     return () => clearInterval(interval);
+  }, []);
+
+  // Refresh relative timestamps every 60 seconds
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setNotifications(prev => prev.map(n => ({
+        ...n,
+        time: n.createdAt ? getRelativeTime(n.createdAt) : n.time
+      })));
+    }, 60000);
+    return () => clearInterval(timer);
   }, []);
 
   useEffect(() => {

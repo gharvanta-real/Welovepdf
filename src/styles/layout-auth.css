@@ -83,7 +83,7 @@
 .modal-box {
   background: var(--c-bg);
   border: none;
-  border-radius: 24px;
+  border-radius: 12px;
   box-shadow: 0 24px 48px -12px rgba(15, 23, 42, 0.18), 0 0 0 1px rgba(15, 23, 42, 0.02);
   width: 100%;
   max-width: 840px;

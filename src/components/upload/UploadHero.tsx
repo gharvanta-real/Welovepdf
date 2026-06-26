@@ -383,41 +383,39 @@ export function UploadHero({
             marginBottom: "60px"
           }} />
 
-          {/* Intro & Detailed Content */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "60px", marginBottom: "80px" }}>
-            <div>
-              <span style={{
-                fontFamily: "JetBrains Mono, monospace",
-                fontSize: "12px",
-                letterSpacing: "1px",
-                color: "var(--s-primary, #2563eb)",
-                display: "block",
-                fontWeight: "600",
-                marginBottom: "12px",
-                textTransform: "uppercase"
-              }}>Overview</span>
+          {/* Intro & Detailed Content — Magazine Layout */}
+          <div style={{ marginBottom: "80px" }}>
+            {/* Full-width header block */}
+            <div style={{ marginBottom: "36px", maxWidth: "780px" }}>
               <h2 style={{
                 fontFamily: "Plus Jakarta Sans, sans-serif",
                 fontSize: "clamp(26px, 3vw, 36px)",
                 fontWeight: "700",
                 lineHeight: 1.2,
                 color: "#000000",
-                margin: "0 0 20px",
+                margin: "0 0 18px",
                 letterSpacing: "-0.5px"
               }}>{seoData.h1}</h2>
               <p style={{
-                fontSize: "16.5px",
-                lineHeight: "1.65",
+                fontSize: "17px",
+                lineHeight: "1.7",
                 color: "#1B1B1B",
                 fontWeight: 450,
                 margin: 0
               }}>{seoData.intro}</p>
             </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: "20px", justifyContent: "center" }}>
+            {/* 2-column detail paragraphs */}
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+              gap: "24px 48px",
+              borderTop: "1px solid #F1F5F9",
+              paddingTop: "32px"
+            }}>
               {seoData.detailedContent.map((para, idx) => (
                 <p key={idx} style={{
                   fontSize: "15px",
-                  lineHeight: "1.6",
+                  lineHeight: "1.7",
                   color: "#4B5563",
                   margin: 0,
                   fontWeight: 400
@@ -431,30 +429,21 @@ export function UploadHero({
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "48px", marginBottom: "80px", alignItems: "center" }}>
               {/* Left side: Illustration */}
               <div style={{
-                background: "#f4f4f4",
-                borderRadius: "16px",
-                height: "320px",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                overflow: "hidden",
-                border: "none"
+                overflow: "hidden"
               }}>
-                {heroIllustration}
+                <img 
+                  src="/How-to-use-any-tools.png" 
+                  alt="How to use our tools" 
+                  style={{ width: "100%", maxWidth: "280px", height: "auto", display: "block" }} 
+                />
               </div>
 
               {/* Right side: Steps ordered list */}
               <div>
-                <span style={{
-                  fontFamily: "JetBrains Mono, monospace",
-                  fontSize: "12px",
-                  letterSpacing: "1px",
-                  color: "var(--s-primary, #2563eb)",
-                  display: "block",
-                  fontWeight: "600",
-                  marginBottom: "12px",
-                  textTransform: "uppercase"
-                }}>Step-by-Step Guide</span>
+
                 <h3 style={{
                   fontFamily: "Plus Jakarta Sans, sans-serif",
                   fontSize: "28px",
@@ -498,16 +487,7 @@ export function UploadHero({
           {seoData.faqs && seoData.faqs.length > 0 && (
             <div style={{ marginBottom: "80px", paddingTop: "20px" }}>
               <div style={{ textAlign: "center", marginBottom: "40px" }}>
-                <span style={{
-                  fontFamily: "JetBrains Mono, monospace",
-                  fontSize: "12px",
-                  letterSpacing: "1px",
-                  color: "var(--s-primary, #2563eb)",
-                  display: "block",
-                  fontWeight: "600",
-                  marginBottom: "12px",
-                  textTransform: "uppercase"
-                }}>FAQ</span>
+
                 <h3 style={{
                   fontFamily: "Plus Jakarta Sans, sans-serif",
                   fontSize: "28px",

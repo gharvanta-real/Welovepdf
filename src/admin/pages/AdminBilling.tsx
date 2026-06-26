@@ -5,38 +5,30 @@ import {
   Coins01Icon,
   CreditCardIcon,
   CheckCircle,
-  Calendar01Icon,
   AlertCircleIcon
 } from "@hugeicons/core-free-icons";
 
 export function AdminBilling() {
   const [subscriptions, setSubscriptions] = useState<any[]>([]);
-  const [webhookLogs] = useState([
-    { event: "checkout.session.completed", id: "evt_101", status: "success", time: "Just now" },
-    { event: "invoice.payment_succeeded", id: "evt_102", status: "success", time: "5 mins ago" },
-    { event: "customer.subscription.updated", id: "evt_103", status: "success", time: "1 hour ago" },
-    { event: "customer.subscription.deleted", id: "evt_104", status: "warning", time: "3 hours ago" },
-    { event: "invoice.payment_failed", id: "evt_105", status: "failed", time: "Yesterday" }
-  ]);
-
   const [toast, setToast] = useState("");
   const [loading, setLoading] = useState(true);
+  const [isSyncing, setIsSyncing] = useState(false);
   const [estimatedMRR, setEstimatedMRR] = useState(0);
   const [activeSubsCount, setActiveSubsCount] = useState(0);
+  const [stripeWebhookHealth, setStripeWebhookHealth] = useState(100.0);
 
   const fetchBilling = async () => {
     try {
       const token = localStorage.getItem("authToken");
       const res = await fetch("/api/admin/billing", {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+        headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
         const data = await res.json();
         setSubscriptions(data.subscriptions || []);
         setEstimatedMRR(data.estimated_mrr || 0);
         setActiveSubsCount(data.active_subscriptions || 0);
+        setStripeWebhookHealth(data.stripe_webhook_health ?? 100.0);
         setLoading(false);
       }
     } catch (err) {
@@ -53,12 +45,15 @@ export function AdminBilling() {
     setTimeout(() => setToast(""), 3000);
   };
 
-  const handleSyncStripe = () => {
+  const handleSyncStripe = async () => {
+    setIsSyncing(true);
     triggerToast("Initiating live Stripe subscription database synchronization...");
-    setTimeout(() => {
-      fetchBilling();
+    try {
+      await fetchBilling();
       triggerToast("Synchronization finished. Billing status database is up to date.");
-    }, 1200);
+    } finally {
+      setIsSyncing(false);
+    }
   };
 
   const formatDate = (iso: string) => {
@@ -73,14 +68,29 @@ export function AdminBilling() {
   const activePro = subscriptions.filter(s => s.plan === "Pro").length;
   const activeEnt = subscriptions.filter(s => s.plan === "Enterprise").length;
 
+  if (loading) {
+    return (
+      <div className="admin-billing-page">
+        <div className="admin-metrics-grid">
+          {[1, 2, 3].map(i => (
+            <div key={i} style={{ height: "100px", borderRadius: "10px", backgroundColor: "var(--admin-surface-low)", animation: "pulse 1.5s infinite" }} />
+          ))}
+        </div>
+        <div style={{ textAlign: "center", padding: "48px", color: "var(--admin-text-secondary)", fontSize: "13px" }}>
+          Loading billing data...
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="admin-billing-page">
       {/* Toast popup */}
       {toast && (
-        <div 
+        <div
           style={{
             position: "fixed",
-            bottom: "24px",
+            bottom: "84px",
             right: "24px",
             backgroundColor: "var(--admin-primary)",
             color: "var(--admin-surface)",
@@ -97,33 +107,38 @@ export function AdminBilling() {
 
       {/* Header controls */}
       <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "24px" }}>
-        <button onClick={handleSyncStripe} className="admin-btn admin-btn-secondary">
-          Sync Stripe Database Status
+        <button
+          onClick={handleSyncStripe}
+          className="admin-btn admin-btn-secondary"
+          disabled={isSyncing}
+          style={{ opacity: isSyncing ? 0.7 : 1 }}
+        >
+          {isSyncing ? "Syncing..." : "Sync Stripe Database Status"}
         </button>
       </div>
 
       {/* Billing metric row */}
       <div className="admin-metrics-grid">
-        <MetricCard 
-          title="Projected MRR" 
-          value={`$${estimatedMRR.toFixed(2)}`} 
-          icon={Coins01Icon} 
-          change={{ value: "+12% this month", isPositive: true }}
-          period="Calculated"
+        <MetricCard
+          title="Projected MRR"
+          value={`$${estimatedMRR.toFixed(2)}`}
+          icon={Coins01Icon}
+          change={{ value: `${activePro} Pro × $19 + ${activeEnt} Ent × $29`, isPositive: estimatedMRR > 0 }}
+          period="Calculated from DB"
         />
-        <MetricCard 
-          title="Active Paid Subscriptions" 
-          value={activeSubsCount} 
-          icon={CreditCardIcon} 
-          change={{ value: `${activePro} Pro, ${activeEnt} Enterprise`, isPositive: true }}
+        <MetricCard
+          title="Active Paid Subscriptions"
+          value={activeSubsCount}
+          icon={CreditCardIcon}
+          change={{ value: `${activePro} Pro, ${activeEnt} Enterprise`, isPositive: activeSubsCount > 0 }}
           period="Stripe sync"
         />
-        <MetricCard 
-          title="Webhook Delivery Success" 
-          value="98.4%" 
-          icon={CheckCircle} 
-          change={{ value: "5 events processed today", isPositive: true }}
-          period="Last 48 hours"
+        <MetricCard
+          title="Webhook Delivery Health"
+          value={`${stripeWebhookHealth.toFixed(1)}%`}
+          icon={stripeWebhookHealth > 95 ? CheckCircle : AlertCircleIcon}
+          change={{ value: stripeWebhookHealth > 95 ? "All events processed" : "Check Stripe logs", isPositive: stripeWebhookHealth > 95 }}
+          period="Stripe health"
         />
       </div>
 
@@ -144,70 +159,127 @@ export function AdminBilling() {
                 </tr>
               </thead>
               <tbody>
-                {subscriptions.map(sub => (
-                  <tr key={sub.id}>
-                    <td className="text-xs" style={{ fontFamily: "monospace" }}>{sub.id.substring(0, 8)}...</td>
-                    <td style={{ fontWeight: 500 }}>{sub.email}</td>
-                    <td>
-                      <span 
-                        style={{
-                          fontSize: "11px",
-                          fontWeight: 500,
-                          padding: "2px 6px",
-                          borderRadius: "4px",
-                          backgroundColor: sub.plan === "Enterprise" ? "var(--admin-accent-soft)" : "var(--admin-surface-low)",
-                          color: sub.plan === "Enterprise" ? "var(--admin-accent)" : "var(--admin-text-primary)"
-                        }}
-                      >
-                        {sub.plan}
-                      </span>
+                {subscriptions.length > 0 ? (
+                  subscriptions.map(sub => (
+                    <tr key={sub.id}>
+                      <td className="text-xs" style={{ fontFamily: "monospace" }}>{sub.id.substring(0, 8)}...</td>
+                      <td style={{ fontWeight: 500 }}>{sub.email}</td>
+                      <td>
+                        <span
+                          style={{
+                            fontSize: "11px",
+                            fontWeight: 500,
+                            padding: "2px 6px",
+                            borderRadius: "4px",
+                            backgroundColor: sub.plan === "Enterprise" ? "var(--admin-accent-soft)" : "var(--admin-surface-low)",
+                            color: sub.plan === "Enterprise" ? "var(--admin-accent)" : "var(--admin-text-primary)"
+                          }}
+                        >
+                          {sub.plan}
+                        </span>
+                      </td>
+                      <td>{formatDate(sub.activated_at)}</td>
+                      <td>{formatDate(sub.expires_at)}</td>
+                      <td className="text-secondary">{sub.promo_code_used || "None"}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={6} style={{ textAlign: "center", padding: "32px", color: "var(--admin-text-muted)" }}>
+                      No active subscriptions found.
                     </td>
-                    <td>{formatDate(sub.activated_at)}</td>
-                    <td>{formatDate(sub.expires_at)}</td>
-                    <td className="text-secondary">{sub.promo_code_used || "None"}</td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </table>
           </div>
         </div>
 
-        {/* Right column: Webhook event tracer log */}
+        {/* Right column: Pricing breakdown info */}
         <div className="admin-card-section">
-          <h2>Stripe Webhook Logs</h2>
-          <div className="admin-table-container">
-            <table className="admin-table">
-              <thead>
-                <tr>
-                  <th>Event Type</th>
-                  <th>Status</th>
-                  <th>Time</th>
-                </tr>
-              </thead>
-              <tbody>
-                {webhookLogs.map((log, idx) => (
-                  <tr key={idx}>
-                    <td className="text-xs" style={{ fontFamily: "monospace", fontWeight: 500 }}>{log.event}</td>
-                    <td>
-                      <span 
-                        style={{
-                          fontSize: "11px",
-                          fontWeight: 500,
-                          color: log.status === "success" 
-                            ? "var(--admin-success)" 
-                            : log.status === "warning" 
-                              ? "var(--admin-warning)" 
-                              : "var(--admin-danger)"
-                        }}
-                      >
-                        {log.status.toUpperCase()}
-                      </span>
-                    </td>
-                    <td className="text-secondary">{log.time}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <h2>Revenue Breakdown</h2>
+          <span className="text-xs text-secondary" style={{ display: "block", marginBottom: "16px" }}>
+            Current plan pricing and revenue distribution
+          </span>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+            {/* Pro plan breakdown */}
+            <div style={{
+              backgroundColor: "var(--admin-surface-low)",
+              padding: "16px",
+              borderRadius: "8px",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center"
+            }}>
+              <div>
+                <div style={{ fontWeight: 600, fontSize: "14px" }}>Pro Plan</div>
+                <div style={{ fontSize: "12px", color: "var(--admin-text-secondary)" }}>{activePro} active subscribers</div>
+              </div>
+              <div style={{ textAlign: "right" }}>
+                <div style={{ fontWeight: 700, fontSize: "18px", color: "var(--admin-accent)" }}>
+                  ${(activePro * 19).toFixed(2)}
+                </div>
+                <div style={{ fontSize: "11px", color: "var(--admin-text-secondary)" }}>$19/mo × {activePro}</div>
+              </div>
+            </div>
+
+            {/* Enterprise plan breakdown */}
+            <div style={{
+              backgroundColor: "var(--admin-surface-low)",
+              padding: "16px",
+              borderRadius: "8px",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center"
+            }}>
+              <div>
+                <div style={{ fontWeight: 600, fontSize: "14px" }}>Enterprise Plan</div>
+                <div style={{ fontSize: "12px", color: "var(--admin-text-secondary)" }}>{activeEnt} active subscribers</div>
+              </div>
+              <div style={{ textAlign: "right" }}>
+                <div style={{ fontWeight: 700, fontSize: "18px", color: "var(--admin-accent)" }}>
+                  ${(activeEnt * 29).toFixed(2)}
+                </div>
+                <div style={{ fontSize: "11px", color: "var(--admin-text-secondary)" }}>$29/mo × {activeEnt}</div>
+              </div>
+            </div>
+
+            {/* Total MRR */}
+            <div style={{
+              backgroundColor: "var(--admin-accent-soft, rgba(37, 99, 235, 0.08))",
+              padding: "16px",
+              borderRadius: "8px",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              borderLeft: "3px solid var(--admin-accent)"
+            }}>
+              <div style={{ fontWeight: 600, fontSize: "14px" }}>Total MRR</div>
+              <div style={{ fontWeight: 700, fontSize: "22px", color: "var(--admin-accent)" }}>
+                ${estimatedMRR.toFixed(2)}
+              </div>
+            </div>
+
+            <div style={{
+              padding: "12px 16px",
+              backgroundColor: "var(--admin-surface-low)",
+              borderRadius: "8px",
+              fontSize: "12px",
+              color: "var(--admin-text-secondary)"
+            }}>
+              <strong style={{ display: "block", marginBottom: "4px" }}>Note:</strong>
+              MRR is calculated directly from active subscriptions in the database.
+              To view Stripe webhook events, visit your{" "}
+              <a
+                href="https://dashboard.stripe.com/events"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: "var(--admin-accent)" }}
+              >
+                Stripe Dashboard
+              </a>.
+            </div>
           </div>
         </div>
       </div>

@@ -119,6 +119,21 @@ export function AdminPromoCodes() {
 
   const totalRedeemed = promoCodes.reduce((sum, p) => sum + (p.uses_so_far || 0), 0);
 
+  if (loading) {
+    return (
+      <div className="admin-promocodes-page">
+        <div className="admin-metrics-grid">
+          {[1, 2].map(i => (
+            <div key={i} style={{ height: "100px", borderRadius: "10px", backgroundColor: "var(--admin-surface-low)", animation: "pulse 1.5s infinite" }} />
+          ))}
+        </div>
+        <div style={{ textAlign: "center", padding: "48px", color: "var(--admin-text-secondary)", fontSize: "13px" }}>
+          Loading promo codes...
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="admin-promocodes-page">
       {/* Toast */}
@@ -126,7 +141,7 @@ export function AdminPromoCodes() {
         <div 
           style={{
             position: "fixed",
-            bottom: "24px",
+            bottom: "84px",
             right: "24px",
             backgroundColor: "var(--admin-primary)",
             color: "var(--admin-surface)",

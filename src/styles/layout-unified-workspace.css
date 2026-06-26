@@ -357,14 +357,14 @@
   color: #ffffff;
   border-radius: 6px;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+  box-shadow: none;
   margin-bottom: 16px;
   transition: all 0.2s ease;
 }
 
 .uw-select-btn-group:hover {
   background-color: #1d4ed8;
-  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
+  box-shadow: none;
 }
 
 .uw-select-btn {
@@ -645,7 +645,7 @@
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+  box-shadow: none;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -655,7 +655,7 @@
 
 .uw-action-btn:hover {
   background-color: #1d4ed8;
-  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
+  box-shadow: none;
 }
 
 .uw-action-btn:disabled {

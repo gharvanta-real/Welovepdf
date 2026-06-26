@@ -22,6 +22,8 @@ export function AdminOverview() {
   const [loading, setLoading] = useState(true);
   const [isMaintenance, setIsMaintenance] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
+  const [isClearing, setIsClearing] = useState(false);
+  const [isTogglingMaintenance, setIsTogglingMaintenance] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -29,19 +31,18 @@ export function AdminOverview() {
       try {
         const token = localStorage.getItem("authToken");
         const res = await fetch("/api/admin/overview", {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
+          headers: { Authorization: `Bearer ${token}` }
         });
         if (res.ok) {
           const data = await res.json();
           if (active) {
-            setCpuLoad(data.cpu_load);
-            setRamLoad(data.ram_load);
-            setDiskUsage(data.disk_usage);
-            setActiveJobsCount(data.active_jobs_count);
-            setAvgProcessingTime(data.avg_processing_time);
-            setRecentJobs(data.recent_jobs);
+            setCpuLoad(data.cpu_load ?? 0);
+            setRamLoad(data.ram_load ?? 0);
+            setDiskUsage(data.disk_usage ?? 0);
+            setActiveJobsCount(data.active_jobs_count ?? 0);
+            setAvgProcessingTime(data.avg_processing_time ?? "N/A");
+            setRecentJobs(data.recent_jobs ?? []);
+            setIsMaintenance(data.is_maintenance ?? false);
             setLoading(false);
           }
         }
@@ -77,31 +78,94 @@ export function AdminOverview() {
 
   const triggerToast = (msg: string) => {
     setToastMessage(msg);
-    setTimeout(() => setToastMessage(""), 3000);
+    setTimeout(() => setToastMessage(""), 3500);
   };
 
-  const handleClearWorkspace = () => {
+  // ── Real workspace clear via API ────────────────────────────────────────
+  const handleClearWorkspace = async () => {
+    setIsClearing(true);
     triggerToast("Initiating volatile workspace cleanup...");
-    // Simulate cleanup
-    setTimeout(() => {
-      setDiskUsage(0.4); // Cleans down to baseline config files
-      triggerToast("Volatile workspace successfully purged! 7.8 GB cleared.");
-    }, 1500);
+    try {
+      const token = localStorage.getItem("authToken");
+      const res = await fetch("/api/admin/system/clear-workspace", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const gb = (data.cleared_gb as number).toFixed(2);
+        const files = data.cleared_files;
+        triggerToast(`Workspace purged! ${files} files (${gb} GB) cleared.`);
+        setDiskUsage(0);
+      } else {
+        triggerToast("Error: Could not clear workspace.");
+      }
+    } catch (err) {
+      triggerToast("Network error clearing workspace.");
+    } finally {
+      setIsClearing(false);
+    }
   };
 
-  const handleToggleMaintenance = () => {
-    setIsMaintenance(!isMaintenance);
-    triggerToast(isMaintenance ? "Maintenance Mode deactivated." : "Maintenance Mode active. Queue paused.");
+  // ── Real maintenance mode toggle via API ────────────────────────────────
+  const handleToggleMaintenance = async () => {
+    const newState = !isMaintenance;
+    setIsTogglingMaintenance(true);
+    try {
+      const token = localStorage.getItem("authToken");
+      const res = await fetch("/api/admin/system/maintenance", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ enabled: newState })
+      });
+      if (res.ok) {
+        setIsMaintenance(newState);
+        triggerToast(
+          newState
+            ? "Maintenance Mode activated. Public uploads will receive 503."
+            : "Maintenance Mode deactivated. All systems operational."
+        );
+      } else {
+        triggerToast("Failed to toggle maintenance mode.");
+      }
+    } catch (err) {
+      triggerToast("Network error toggling maintenance mode.");
+    } finally {
+      setIsTogglingMaintenance(false);
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="admin-overview-page">
+        <div className="admin-metrics-grid">
+          {[1, 2, 3, 4].map(i => (
+            <div key={i} style={{
+              height: "100px",
+              borderRadius: "10px",
+              backgroundColor: "var(--admin-surface-low)",
+              animation: "pulse 1.5s infinite"
+            }} />
+          ))}
+        </div>
+        <div style={{ textAlign: "center", padding: "48px", color: "var(--admin-text-secondary)", fontSize: "13px" }}>
+          Loading system metrics...
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="admin-overview-page">
       {/* Toast Alert */}
       {toastMessage && (
-        <div 
+        <div
           style={{
             position: "fixed",
-            bottom: "24px",
+            bottom: "84px",
             right: "24px",
             backgroundColor: "var(--admin-primary)",
             color: "var(--admin-surface)",
@@ -118,31 +182,31 @@ export function AdminOverview() {
 
       {/* Overview Metric Row */}
       <div className="admin-metrics-grid">
-        <MetricCard 
-          title="CPU Core Load" 
-          value={`${cpuLoad.toFixed(0)}%`} 
-          icon={CpuIcon} 
-          change={{ value: "4 cores active", isPositive: true }}
+        <MetricCard
+          title="CPU Core Load"
+          value={`${cpuLoad.toFixed(1)}%`}
+          icon={CpuIcon}
+          change={{ value: "Live system data", isPositive: cpuLoad < 80 }}
           period="Real-time"
         />
-        <MetricCard 
-          title="Temp Disk Workspace" 
-          value={`${diskUsage.toFixed(1)} GB / 20 GB`} 
-          icon={DatabaseIcon} 
-          change={{ value: `${((diskUsage / 20) * 100).toFixed(0)}% space utilized`, isPositive: diskUsage < 15 }}
-          period="Auto-purges in 60m"
+        <MetricCard
+          title="Temp Disk Workspace"
+          value={`${diskUsage.toFixed(2)} GB`}
+          icon={DatabaseIcon}
+          change={{ value: `Temp output files`, isPositive: diskUsage < 15 }}
+          period="Work directory"
         />
-        <MetricCard 
-          title="Concurrent Active Jobs" 
-          value={activeJobsCount} 
-          icon={Clock01Icon} 
+        <MetricCard
+          title="Concurrent Active Jobs"
+          value={activeJobsCount}
+          icon={Clock01Icon}
           change={{ value: "Queue status healthy", isPositive: true }}
           period="Current moment"
         />
-        <MetricCard 
-          title="Avg Processing Time" 
-          value={avgProcessingTime} 
-          icon={HourglassIcon} 
+        <MetricCard
+          title="Avg Processing Time"
+          value={avgProcessingTime}
+          icon={HourglassIcon}
           change={{ value: "CLI engine optimized", isPositive: true }}
           period="Last 24 hours"
         />
@@ -168,18 +232,18 @@ export function AdminOverview() {
                 {recentJobs.map(job => (
                   <tr key={job.id}>
                     <td className="text-xs" style={{ fontFamily: "monospace" }}>{job.id.substring(0, 8)}...</td>
-                    <td style={{ fontWeight: 500 }}>{job.tool_id.toUpperCase().replace("_", " ")}</td>
+                    <td style={{ fontWeight: 500 }}>{job.tool_id.toUpperCase().replace(/_/g, " ")}</td>
                     <td>{job.user_email}</td>
                     <td>{formatBytes(job.bytes)}</td>
                     <td>
-                      <span 
+                      <span
                         style={{
                           fontSize: "11px",
                           fontWeight: 500,
-                          color: job.status === "completed" 
-                            ? "var(--admin-success)" 
-                            : job.status === "processing" 
-                              ? "var(--admin-accent)" 
+                          color: job.status === "completed"
+                            ? "var(--admin-success)"
+                            : job.status === "processing"
+                              ? "var(--admin-accent)"
                               : "var(--admin-danger)"
                         }}
                       >
@@ -204,71 +268,85 @@ export function AdminOverview() {
         {/* Right Side: System Controls & Health Status */}
         <div className="admin-card-section" style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
           <h2>System Infrastructure</h2>
-          
+
           <div className="admin-system-health">
             <div className="admin-health-stat">
               <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <span>Memory Allocation (RAM)</span>
-                <strong>{ramLoad}% (3.8 GB / 8 GB)</strong>
+                <strong>{ramLoad.toFixed(1)}%</strong>
               </div>
               <div className="admin-progress-track">
-                <div className="admin-progress-fill" style={{ width: `${ramLoad}%` }}></div>
+                <div
+                  className={`admin-progress-fill ${ramLoad > 85 ? "danger" : ramLoad > 65 ? "warning" : ""}`}
+                  style={{ width: `${Math.min(ramLoad, 100)}%` }}
+                />
               </div>
             </div>
 
             <div className="admin-health-stat">
               <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <span>Temp Directory Load</span>
-                <strong>{((diskUsage / 20) * 100).toFixed(0)}% of limit</strong>
+                <span>CPU Utilization</span>
+                <strong>{cpuLoad.toFixed(1)}%</strong>
               </div>
               <div className="admin-progress-track">
-                <div 
-                  className={`admin-progress-fill ${diskUsage > 15 ? "danger" : diskUsage > 10 ? "warning" : "success"}`} 
-                  style={{ width: `${(diskUsage / 20) * 100}%` }}
-                ></div>
+                <div
+                  className={`admin-progress-fill ${cpuLoad > 90 ? "danger" : cpuLoad > 70 ? "warning" : "success"}`}
+                  style={{ width: `${Math.min(cpuLoad, 100)}%` }}
+                />
               </div>
             </div>
           </div>
 
           <div style={{ borderTop: "1px solid var(--admin-border-subtle)", paddingTop: "20px", display: "flex", flexDirection: "column", gap: "12px" }}>
             <h3>Administrative Commands</h3>
-            
-            <button 
-              onClick={handleClearWorkspace} 
-              className="admin-btn admin-btn-secondary" 
-              style={{ width: "100%", justifyContent: "flex-start" }}
+
+            <button
+              onClick={handleClearWorkspace}
+              disabled={isClearing}
+              className="admin-btn admin-btn-secondary"
+              style={{ width: "100%", justifyContent: "flex-start", opacity: isClearing ? 0.7 : 1 }}
             >
               <HugeiconsIcon icon={Delete01Icon} size={18} />
-              Clear Volatile Workspace Directory
+              {isClearing ? "Clearing..." : "Clear Volatile Workspace Directory"}
             </button>
 
-            <button 
-              onClick={handleToggleMaintenance} 
+            <button
+              onClick={handleToggleMaintenance}
+              disabled={isTogglingMaintenance}
               className={`admin-btn ${isMaintenance ? "admin-btn-primary" : "admin-btn-secondary"}`}
-              style={{ width: "100%", justifyContent: "flex-start", backgroundColor: isMaintenance ? "var(--admin-danger)" : "" }}
+              style={{
+                width: "100%",
+                justifyContent: "flex-start",
+                backgroundColor: isMaintenance ? "var(--admin-danger)" : "",
+                opacity: isTogglingMaintenance ? 0.7 : 1
+              }}
             >
               <HugeiconsIcon icon={Settings01Icon} size={18} />
-              {isMaintenance ? "Disable Maintenance Mode" : "Activate Maintenance Mode"}
+              {isTogglingMaintenance
+                ? "Updating..."
+                : isMaintenance
+                  ? "Disable Maintenance Mode"
+                  : "Activate Maintenance Mode"}
             </button>
           </div>
 
-          <div 
-            style={{ 
-              backgroundColor: "var(--admin-surface-low)", 
-              padding: "16px", 
-              borderRadius: "8px", 
-              display: "flex", 
-              alignItems: "center", 
-              gap: "12px" 
+          <div
+            style={{
+              backgroundColor: "var(--admin-surface-low)",
+              padding: "16px",
+              borderRadius: "8px",
+              display: "flex",
+              alignItems: "center",
+              gap: "12px"
             }}
           >
-            <HugeiconsIcon 
-              icon={isMaintenance ? AlertCircleIcon : CheckCircle} 
-              size={20} 
-              color={isMaintenance ? "var(--admin-warning)" : "var(--admin-success)"} 
+            <HugeiconsIcon
+              icon={isMaintenance ? AlertCircleIcon : CheckCircle}
+              size={20}
+              color={isMaintenance ? "var(--admin-warning)" : "var(--admin-success)"}
             />
             <span style={{ fontSize: "12px", color: "var(--admin-text-secondary)" }}>
-              {isMaintenance 
+              {isMaintenance
                 ? "Maintenance is active. Public uploads will receive a 503 Service Unavailable code."
                 : "Engine status normal. All systems functional. CLI tools (qpdf, poppler) are fully operational."}
             </span>

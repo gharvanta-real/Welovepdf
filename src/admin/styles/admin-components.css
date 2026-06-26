@@ -1,5 +1,12 @@
 /* Layer 2: Components */
 
+/* Loading skeleton pulse animation */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+
 /* Custom Sleek Scrollbar styling for all admin elements */
 .admin-panel-root *::-webkit-scrollbar {
   width: 6px;

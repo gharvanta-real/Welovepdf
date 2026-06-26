@@ -21,6 +21,7 @@ export function AdminUsers() {
   const [planFilter, setPlanFilter] = useState("all");
   const [toast, setToast] = useState("");
   const [loading, setLoading] = useState(true);
+  const [revokingId, setRevokingId] = useState<string | null>(null);
 
   const fetchUsers = async () => {
     try {
@@ -80,8 +81,29 @@ export function AdminUsers() {
     }
   };
 
-  const handleRevokeSessions = (userId: string, email: string) => {
-    triggerToast(`Revoked active sessions for ${email}.`);
+  const handleRevokeSessions = async (userId: string, email: string) => {
+    setRevokingId(userId);
+    try {
+      const token = localStorage.getItem("authToken");
+      const res = await fetch("/api/admin/users/revoke-sessions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ id: userId })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        triggerToast(`Revoked ${data.revoked} session(s) for ${email}.`);
+      } else {
+        triggerToast(`Failed to revoke sessions for ${email}.`);
+      }
+    } catch (err) {
+      triggerToast("Network error revoking sessions.");
+    } finally {
+      setRevokingId(null);
+    }
   };
 
   const handleBanUser = async (userId: string, email: string) => {
@@ -133,6 +155,21 @@ export function AdminUsers() {
     return matchesSearch && matchesPlan;
   });
 
+  if (loading) {
+    return (
+      <div className="admin-users-page">
+        <div className="admin-metrics-grid">
+          {[1, 2, 3].map(i => (
+            <div key={i} style={{ height: "100px", borderRadius: "10px", backgroundColor: "var(--admin-surface-low)", animation: "pulse 1.5s infinite" }} />
+          ))}
+        </div>
+        <div style={{ textAlign: "center", padding: "48px", color: "var(--admin-text-secondary)", fontSize: "13px" }}>
+          Loading user directory...
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="admin-users-page">
       {/* Toast notifications */}
@@ -140,7 +177,7 @@ export function AdminUsers() {
         <div 
           style={{
             position: "fixed",
-            bottom: "24px",
+            bottom: "84px",
             right: "24px",
             backgroundColor: "var(--admin-primary)",
             color: "var(--admin-surface)",
@@ -262,11 +299,12 @@ export function AdminUsers() {
                     <td style={{ fontWeight: 500 }}>{user.jobs_count}</td>
                     <td style={{ textAlign: "right" }}>
                       <div style={{ display: "inline-flex", gap: "8px" }}>
-                        <button 
+                        <button
                           onClick={() => handleRevokeSessions(user.id, user.email)}
                           className="admin-btn admin-btn-secondary"
-                          style={{ padding: "6px" }}
-                          title="Revoke session tokens"
+                          style={{ padding: "6px", opacity: revokingId === user.id ? 0.5 : 1 }}
+                          title={revokingId === user.id ? "Revoking..." : "Revoke all session tokens"}
+                          disabled={revokingId === user.id}
                         >
                           <HugeiconsIcon icon={LockKeyIcon} size={15} />
                         </button>

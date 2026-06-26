@@ -39,7 +39,7 @@ const pathMap: Record<string, { view: "home" | "workspace" | "pricing" | "privac
   "/faq": { view: "faq" },
   "/contact": { view: "contact" },
   "/about": { view: "about" },
-  "/contact-sales": { view: "contact-sales" },
+  "/contact-sales": { view: "contact" },
   "/settings": { view: "settings" },
   "/dashboard": { view: "dashboard" },
   "/tools": { view: "tools" },
@@ -148,7 +148,7 @@ function getPathForState(view: string, tool?: string): string {
     case "faq": return "/faq";
     case "contact": return "/contact";
     case "about": return "/about";
-    case "contact-sales": return "/contact-sales";
+    case "contact-sales": return "/contact";
     case "settings": return "/settings";
     case "dashboard": return "/dashboard";
     case "tools": return "/tools";
@@ -253,7 +253,14 @@ export function App() {
   const [selectedTool, setSelectedTool] = useState(_initial.tool);
   const [toast, setToast] = useState("");
   const [jobs, setJobs] = useState<any[]>([]);
-  const [currentView, setCurrentView] = useState<"home" | "workspace" | "pricing" | "privacy" | "terms" | "faq" | "contact" | "tools" | "about" | "contact-sales" | "settings" | "dashboard" | "security" | "file-privacy" | "data-deletion" | "admin" | "beta-workspace">(_initial.view);
+  const [currentView, _setCurrentView] = useState<"home" | "workspace" | "pricing" | "privacy" | "terms" | "faq" | "contact" | "tools" | "about" | "contact-sales" | "settings" | "dashboard" | "security" | "file-privacy" | "data-deletion" | "admin" | "beta-workspace">(_initial.view);
+  const setCurrentView = (view: typeof currentView) => {
+    if (view === "contact-sales") {
+      _setCurrentView("contact");
+    } else {
+      _setCurrentView(view);
+    }
+  };
   const [activeJobId, setActiveJobId] = useState<string | null>(null);
   const [hasStagedFiles, setHasStagedFiles] = useState(false);
   const [workspaceInitialFiles, setWorkspaceInitialFiles] = useState<File[] | null>(null);
@@ -877,11 +884,11 @@ export function App() {
       
       const lowerMsg = rawMsg.toLowerCase();
       if (lowerMsg.includes("uploaded file exceeds max size")) {
-        friendlyMsg = "File size exceeds your plan's upload limits. Please compress your file or upgrade your plan.";
+        friendlyMsg = "File size exceeds maximum upload limits. Please compress your file.";
       } else if (lowerMsg.includes("failed to launch python") || lowerMsg.includes("python")) {
         friendlyMsg = "Internal processing error on the server. Our development team has been notified.";
       } else if (lowerMsg.includes("limit") || lowerMsg.includes("rate limit") || lowerMsg.includes("quota")) {
-        friendlyMsg = "Daily request quota reached. Please log in or upgrade to Pro for higher limits.";
+        friendlyMsg = "Daily request limit reached. Please check back tomorrow!";
       } else if (lowerMsg.includes("password") || lowerMsg.includes("encrypt")) {
         friendlyMsg = "Password-protected file. Please unlock it or enter the correct password.";
       } else if (lowerMsg.includes("corrupted") || lowerMsg.includes("invalid pdf")) {
@@ -1003,7 +1010,13 @@ export function App() {
           />
         </Suspense>
       ) : (
-        <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+        <div style={{ 
+          display: "flex", 
+          flexDirection: "column", 
+          height: (currentView === "dashboard" || currentView === "settings") ? "100vh" : "auto", 
+          minHeight: "100vh",
+          overflow: (currentView === "dashboard" || currentView === "settings") ? "hidden" : "visible"
+        }}>
           {!isVisualEditorActive && currentView !== "beta-workspace" && (
             <Header
               onLogoClick={() => {
@@ -1035,7 +1048,13 @@ export function App() {
             />
           )}
           
-          <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+          <div style={{ 
+            flex: 1, 
+            display: "flex", 
+            flexDirection: "column", 
+            minHeight: 0,
+            overflow: (currentView === "dashboard" || currentView === "settings") ? "hidden" : "visible"
+          }}>
             <Suspense fallback={
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "60vh", color: "var(--text-muted)", fontSize: "15px", fontFamily: "sans-serif" }}>
                 <div style={{ width: "28px", height: "28px", border: "2.5px solid var(--border)", borderTopColor: "var(--c-accent, #0074f0)", borderRadius: "50%", animation: "spinnerRotate 0.8s linear infinite", marginBottom: "12px" }}></div>
@@ -1215,7 +1234,7 @@ export function App() {
             </Suspense>
           </div>
           
-          {!isVisualEditorActive && ["pricing", "privacy", "terms", "faq", "contact", "about", "contact-sales", "security", "file-privacy", "data-deletion", "tools", "dashboard", "settings"].includes(currentView) && (
+          {!isVisualEditorActive && ["pricing", "privacy", "terms", "faq", "contact", "about", "contact-sales", "security", "file-privacy", "data-deletion", "tools"].includes(currentView) && (
             <FooterV2
               onToolSelect={handleToolSelect}
               onViewChange={(view) => {

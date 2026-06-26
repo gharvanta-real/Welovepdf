@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Play, CheckCircle2, Download, Share2, RotateCcw, File, ChevronDown, ChevronUp, Check, Printer, Trash2, ChevronRight, Type, Highlighter, PenTool, Layers, Settings2, Paintbrush, Square, Circle, Bold, Italic, Underline, AlignLeft, AlignCenter, AlignRight, Undo, Redo } from "lucide-react";
+import { Play, CheckCircle2, Download, Share2, RotateCcw, File, ChevronDown, ChevronUp, Check, Printer, Trash2, ChevronRight, Type, Highlighter, PenTool, Layers, Settings2, Paintbrush, Square, Circle, Bold, Italic, Underline, AlignLeft, AlignCenter, AlignRight, Undo, Redo, Star } from "lucide-react";
 import { ToolIcon } from "../ToolIcon";
 
 interface WorkspaceOptionsProps {
@@ -402,6 +402,24 @@ export function WorkspaceOptions({
   canRedo,
 }: WorkspaceOptionsProps) {
   const hasFiles = stagedFiles && stagedFiles.length > 0;
+
+  const [panelRating, setPanelRating] = useState<number | null>(null);
+  const [panelHoverRating, setPanelHoverRating] = useState<number | null>(null);
+  const [panelRatingSubmitted, setPanelRatingSubmitted] = useState(false);
+
+  const handleRatingSubmit = async (val: number) => {
+    setPanelRating(val);
+    setPanelRatingSubmitted(true);
+    try {
+      await fetch("/api/ratings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ rating: val }),
+      });
+    } catch (err) {
+      console.error("Error submitting workspace rating:", err);
+    }
+  };
 
   // Local state for advanced options (Settings options now hoisted)
   const [imageColorMode, setImageColorMode] = useState<"color" | "grayscale">("color");
@@ -1811,6 +1829,41 @@ export function WorkspaceOptions({
 
         {/* Primary Footer Actions (same as default options panel) */}
         <div className="uw-options-footer" style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+          <div style={{ 
+            display: "flex", 
+            flexDirection: "column", 
+            alignItems: "center", 
+            gap: "6px", 
+            margin: "0 0 8px 0",
+            padding: "8px 0",
+            borderBottom: "1px solid #e2e8f0"
+          }}>
+            <span style={{ fontSize: "12px", color: "#64748b", fontWeight: 500 }}>
+              {panelRatingSubmitted ? "Thanks for your feedback!" : "Enjoyed this tool? Rate us:"}
+            </span>
+            <div style={{ display: "flex", gap: "6px" }}>
+              {[1, 2, 3, 4, 5].map((star) => (
+                <button
+                  key={star}
+                  onClick={() => !panelRatingSubmitted && handleRatingSubmit(star)}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    padding: 0,
+                    cursor: panelRatingSubmitted ? "default" : "pointer",
+                    color: star <= (panelHoverRating ?? panelRating ?? 0) ? "#eab308" : "#cbd5e1",
+                    transition: "color 0.15s ease",
+                  }}
+                  onMouseEnter={() => !panelRatingSubmitted && setPanelHoverRating(star)}
+                  onMouseLeave={() => !panelRatingSubmitted && setPanelHoverRating(null)}
+                  disabled={panelRatingSubmitted}
+                >
+                  <Star size={20} fill={star <= (panelHoverRating ?? panelRating ?? 0) ? "currentColor" : "transparent"} />
+                </button>
+              ))}
+            </div>
+          </div>
+
           <a
             href={activeJob.downloadUrl}
             download={activeJob.file}

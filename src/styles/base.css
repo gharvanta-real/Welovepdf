@@ -73,8 +73,47 @@ p {
   margin-bottom: 16px;
 }
 
-/* ── Selection highlight ── */
+/* Selection highlight */
 ::selection {
   background: var(--s-block-mint);
   color: var(--s-primary);
+}
+
+/* Custom narrow scrollbar */
+.narrow-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.narrow-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.narrow-scrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+.narrow-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+.narrow-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+/* Pulse animation for temporary session indicator */
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+.pulse-dot {
+  animation: pulse 2s infinite;
 }

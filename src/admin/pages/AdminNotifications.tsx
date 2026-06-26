@@ -15,6 +15,7 @@ export interface NotificationItem {
   title: string;
   message: string;
   time: string;
+  createdAt?: number; // Unix ms timestamp for relative time
   isRead: boolean;
   linkPage: string;
   source: string;

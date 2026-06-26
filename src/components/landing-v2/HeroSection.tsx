@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { ArrowRight } from "lucide-react";
 
 interface HeroSectionProps {
@@ -6,6 +6,29 @@ interface HeroSectionProps {
 }
 
 export function HeroSection({ onScrollToTools }: HeroSectionProps) {
+  const [stats, setStats] = useState({
+    total_pdfs_processed: 128540,
+    avg_rating: 4.9,
+  });
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const res = await fetch("/api/public-stats");
+        if (res.ok) {
+          const data = await res.json();
+          setStats({
+            total_pdfs_processed: data.total_pdfs_processed,
+            avg_rating: data.avg_rating,
+          });
+        }
+      } catch (err) {
+        console.error("Error fetching hero stats:", err);
+      }
+    };
+    fetchStats();
+  }, []);
+
   return (
     <section className="v2-hero">
       <div className="v2-container v2-hero-inner">
@@ -13,10 +36,10 @@ export function HeroSection({ onScrollToTools }: HeroSectionProps) {
           <div className="v2-hero-trust-bar">
             <div className="v2-hero-stars-row">
               <span className="v2-hero-stars">★★★★★</span>
-              <span className="v2-hero-rating-score">4.9 / 5.0 Rating</span>
+              <span className="v2-hero-rating-score">{stats.avg_rating.toFixed(1)} / 5.0 Rating</span>
             </div>
             <div className="v2-hero-counter-row">
-              Over <span className="v2-hero-counter-number">128,540+</span> PDFs processed successfully today
+              Over <span className="v2-hero-counter-number">{stats.total_pdfs_processed.toLocaleString()}+</span> PDFs processed successfully today
             </div>
           </div>
           <h1>All Types of PDF Operations.</h1>
