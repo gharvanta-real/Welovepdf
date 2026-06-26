@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { 
-  ChevronLeft, ChevronRight, FileText, Plus, Check, X, 
+  ChevronLeft, ChevronRight, FileText, Plus, Check, X, ArrowLeft,
   Users, Edit2, Trash2, Calendar, Type, HelpCircle, PenTool,
   User, Stamp, GripVertical, Image, ChevronDown, Download, FolderKanban,
   Hand, MousePointer, Undo, Redo, Crown, Lock, Database, Zap
@@ -2578,7 +2578,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
         }}>
           <div style={{
             backgroundColor: "#ffffff",
-            borderRadius: "16px",
+            borderRadius: "8px",
             boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
             border: "1px solid rgba(0, 0, 0, 0.05)",
             width: "100%",
@@ -2966,20 +2966,23 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                       onClick={() => setOnboardingModal("who-signs")}
                       style={{
                         marginTop: "24px",
-                        background: "none",
-                        border: "none",
-                        color: "#64748b",
+                        background: "transparent",
+                        border: "1px solid #cbd5e1",
+                        borderRadius: "8px",
+                        color: "#475569",
                         fontSize: "0.8rem",
                         fontWeight: "600",
                         cursor: "pointer",
                         display: "flex",
                         alignItems: "center",
                         gap: "6px",
+                        padding: "8px 16px",
                         marginRight: "auto",
-                        padding: 0
+                        transition: "all 0.15s ease"
                       }}
                     >
-                      &larr; Back to sign options
+                      <ArrowLeft size={13} strokeWidth={2.5} />
+                      Back to sign options
                     </button>
                   </>
                 )}
