@@ -2567,7 +2567,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                             flexDirection: "column",
                             alignItems: "stretch",
                             border: "1.5px solid #e2e8f0",
-                            borderRadius: "12px",
+                            borderRadius: "8px",
                             cursor: "pointer",
                             transition: "all 0.2s ease-in-out",
                             backgroundColor: "#ffffff",
@@ -2607,7 +2607,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                               Sign myself
                             </h3>
                             <p style={{ fontSize: "0.78rem", color: "#64748b", margin: 0, lineHeight: "1.45" }}>
-                              I want to place my own signatures, text, dates, or checkboxes on the document.
+                              I want to place my own signatures, text, dates, or checkboxes.
                             </p>
                           </div>
                         </div>
@@ -2620,7 +2620,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                             flexDirection: "column",
                             alignItems: "stretch",
                             border: "1.5px solid #e2e8f0",
-                            borderRadius: "12px",
+                            borderRadius: "8px",
                             cursor: "pointer",
                             transition: "all 0.2s ease-in-out",
                             backgroundColor: "#ffffff",
@@ -2660,7 +2660,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                               Get signatures from others
                             </h3>
                             <p style={{ fontSize: "0.78rem", color: "#64748b", margin: 0, lineHeight: "1.45" }}>
-                              Send email invitation requests to other users to review and sign this document.
+                              Send invitation requests to other users to sign via email.
                             </p>
                           </div>
                         </div>
