@@ -38,6 +38,8 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
   const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const [isResizing, setIsResizing] = useState(false);
+  const [resizeStart, setResizeStart] = useState({ startX: 0, startY: 0, startWidth: 22, startHeight: 10 });
   
   // Signature settings
   const [signatureDetails, setSignatureDetails] = useState<{
@@ -672,6 +674,21 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
     }
   }
 
+  // Handle Resizing
+  function handleResizeStart(e: React.MouseEvent, el: OverlayElement) {
+    e.stopPropagation();
+    e.preventDefault();
+    const { x, y } = getCanvasCoords(e);
+    setIsResizing(true);
+    setResizeStart({
+      startX: x,
+      startY: y,
+      startWidth: el.width || 22,
+      startHeight: el.height || 10
+    });
+    setSelectedElementId(el.id);
+  }
+
   function handleMouseMove(e: React.MouseEvent) {
     if (isDragging && selectedElementId) {
       const { x, y } = getCanvasCoords(e);
@@ -686,12 +703,31 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
         return el;
       });
       setElements(updated);
+    } else if (isResizing && selectedElementId) {
+      const { x, y } = getCanvasCoords(e);
+      const dx = x - resizeStart.startX;
+      const dy = y - resizeStart.startY;
+      
+      const updated = elements.map(el => {
+        if (el.id === selectedElementId) {
+          const newWidth = Math.max(5, resizeStart.startWidth + dx);
+          const newHeight = Math.max(2, resizeStart.startHeight + dy);
+          return {
+            ...el,
+            width: Math.min(newWidth, 100 - el.x),
+            height: Math.min(newHeight, 100 - el.y)
+          };
+        }
+        return el;
+      });
+      setElements(updated);
     }
   }
 
   // Mouse up event
   function handleMouseUp() {
     setIsDragging(false);
+    setIsResizing(false);
   }
 
   // Element modifiers
@@ -1263,26 +1299,47 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                     <span style={{ fontSize: "12px", color: "#777777" }}>Signature</span>
                   )}
                   {isSel && (
-                    <button 
-                      onClick={e => { e.stopPropagation(); deleteElement(el.id); }}
-                      style={{
-                        position: "absolute",
-                        top: "-24px",
-                        right: "0",
-                        backgroundColor: "#0f172a",
-                        color: "#ffffff",
-                        border: "none",
-                        borderRadius: "4px",
-                        padding: "2px 6px",
-                        fontSize: "10px",
-                        cursor: "pointer",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "4px"
-                      }}
-                    >
-                      <Trash2 size={10} /> Delete
-                    </button>
+                    <>
+                      <button 
+                        onClick={e => { e.stopPropagation(); deleteElement(el.id); }}
+                        style={{
+                          position: "absolute",
+                          top: "-24px",
+                          right: "0",
+                          backgroundColor: "#0f172a",
+                          color: "#ffffff",
+                          border: "none",
+                          borderRadius: "4px",
+                          padding: "2px 6px",
+                          fontSize: "10px",
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "4px",
+                          zIndex: 20
+                        }}
+                      >
+                        <Trash2 size={10} /> Delete
+                      </button>
+                      
+                      {/* Resize Handle */}
+                      <div
+                        onMouseDown={e => handleResizeStart(e, el)}
+                        style={{
+                          position: "absolute",
+                          bottom: "-4px",
+                          right: "-4px",
+                          width: "8px",
+                          height: "8px",
+                          backgroundColor: "var(--c-accent, #2563eb)",
+                          border: "1.5px solid #ffffff",
+                          borderRadius: "50%",
+                          cursor: "se-resize",
+                          zIndex: 20,
+                          boxShadow: "0 2px 4px rgba(0,0,0,0.15)"
+                        }}
+                      />
+                    </>
                   )}
                 </div>
               );
