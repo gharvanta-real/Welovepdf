@@ -1298,34 +1298,35 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
             display: "flex",
             alignItems: "center",
             gap: "4px",
-            background: "rgba(15,23,42,0.82)",
-            backdropFilter: "blur(10px)",
-            WebkitBackdropFilter: "blur(10px)",
+            background: "rgba(235, 242, 255, 0.78)",
+            backdropFilter: "blur(12px)",
+            WebkitBackdropFilter: "blur(12px)",
+            border: "1px solid rgba(37, 99, 235, 0.15)",
             borderRadius: "20px",
             padding: "5px 8px",
-            boxShadow: "0 4px 20px rgba(0,0,0,0.25)",
+            boxShadow: "0 8px 32px rgba(0,0,0,0.08)",
             userSelect: "none",
             zIndex: 10
           }}>
             <button
               onClick={() => setZoom(z => Math.max(30, z - 10))}
-              style={{ width: "26px", height: "26px", borderRadius: "50%", border: "none", background: "rgba(255,255,255,0.12)", color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "16px", fontWeight: "300" }}
+              style={{ width: "26px", height: "26px", borderRadius: "50%", border: "none", background: "rgba(37, 99, 235, 0.08)", color: "var(--c-text, #1e293b)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "16px", fontWeight: "500" }}
               title="Zoom Out"
             >−</button>
             <button
               onClick={fitPageToViewport}
-              style={{ padding: "3px 10px", borderRadius: "12px", border: "none", background: "transparent", color: "rgba(255,255,255,0.9)", cursor: "pointer", fontSize: "12px", fontWeight: "500", minWidth: "46px", textAlign: "center" }}
+              style={{ padding: "3px 10px", borderRadius: "12px", border: "none", background: "transparent", color: "var(--c-accent, #2563eb)", cursor: "pointer", fontSize: "12px", fontWeight: "600", minWidth: "46px", textAlign: "center" }}
               title="Click to fit page"
             >{zoom}%</button>
             <button
               onClick={() => setZoom(z => Math.min(200, z + 10))}
-              style={{ width: "26px", height: "26px", borderRadius: "50%", border: "none", background: "rgba(255,255,255,0.12)", color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "16px", fontWeight: "300" }}
+              style={{ width: "26px", height: "26px", borderRadius: "50%", border: "none", background: "rgba(37, 99, 235, 0.08)", color: "var(--c-text, #1e293b)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "16px", fontWeight: "500" }}
               title="Zoom In"
             >+</button>
-            <div style={{ width: "1px", height: "16px", background: "rgba(255,255,255,0.2)", margin: "0 2px" }} />
+            <div style={{ width: "1px", height: "16px", background: "rgba(37, 99, 235, 0.2)", margin: "0 2px" }} />
             <button
               onClick={fitPageToViewport}
-              style={{ padding: "3px 8px", borderRadius: "12px", border: "none", background: "rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.85)", cursor: "pointer", fontSize: "11px", fontWeight: "500" }}
+              style={{ padding: "3px 8px", borderRadius: "12px", border: "none", background: "rgba(37, 99, 235, 0.1)", color: "var(--c-accent, #2563eb)", cursor: "pointer", fontSize: "11px", fontWeight: "600" }}
               title="Fit to width"
             >Fit</button>
           </div>
