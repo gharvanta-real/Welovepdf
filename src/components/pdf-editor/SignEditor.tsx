@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { 
   ChevronLeft, ChevronRight, FileText, Plus, Check, X, 
   Users, Edit2, Trash2, Calendar, Type, HelpCircle, PenTool,
-  User, Stamp, GripVertical, Image
+  User, Stamp, GripVertical, Image, ChevronDown, Download, FolderKanban
 } from "lucide-react";
 import { getPdfjsLib } from "../../utils/pdfjs";
 import { OverlayElement, ActiveTool } from "./types";
@@ -14,7 +14,15 @@ interface SignEditorProps {
 }
 
 export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
-  const [step, setStep] = useState<"who-signs" | "editor" | "invite-sent">("who-signs");
+  const [step, setStep] = useState<"editor" | "invite-sent">("editor");
+  const [onboardingModal, setOnboardingModal] = useState<"who-signs" | "sealing-type" | null>("who-signs");
+  const [showLeftSidebar, setShowLeftSidebar] = useState(true);
+  const [activeCursorTool, setActiveCursorTool] = useState<"pointer" | "hand">("pointer");
+
+  // History stack for Undo/Redo
+  const [history, setHistory] = useState<OverlayElement[][]>([[]]);
+  const [historyIndex, setHistoryIndex] = useState(0);
+  const isUndoingRedoing = useRef(false);
   
   // PDF State
   const [pdfDoc, setPdfDoc] = useState<any>(null);
@@ -54,6 +62,9 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
   // Modals state
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [emailInvites, setEmailInvites] = useState<string[]>([""]);
+  const [showPremiumWarning, setShowPremiumWarning] = useState(false);
+  const [emailInputMode, setEmailInputMode] = useState(false);
+  const [inviteEmail, setInviteEmail] = useState("");
   
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const overlayContainerRef = useRef<HTMLDivElement>(null);
@@ -481,6 +492,41 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
     }
   }, [pdfDoc, currentPage, zoom, pageOrder, step]);
 
+  // Track history for undo/redo
+  useEffect(() => {
+    if (isUndoingRedoing.current) {
+      isUndoingRedoing.current = false;
+      return;
+    }
+    const nextHistory = history.slice(0, historyIndex + 1);
+    const currentElementsStr = JSON.stringify(elements);
+    const lastHistoryStr = nextHistory.length > 0 ? JSON.stringify(nextHistory[nextHistory.length - 1]) : "";
+    if (currentElementsStr !== lastHistoryStr) {
+      nextHistory.push(elements);
+      setHistory(nextHistory);
+      setHistoryIndex(nextHistory.length - 1);
+    }
+  }, [elements]);
+
+  const undo = () => {
+    if (historyIndex > 0) {
+      isUndoingRedoing.current = true;
+      setHistoryIndex(historyIndex - 1);
+      setElements(history[historyIndex - 1]);
+    }
+  };
+
+  const redo = () => {
+    if (historyIndex < history.length - 1) {
+      isUndoingRedoing.current = true;
+      setHistoryIndex(historyIndex + 1);
+      setElements(history[historyIndex + 1]);
+    }
+  };
+
+  const canUndo = historyIndex > 0;
+  const canRedo = historyIndex < history.length - 1;
+
   // Coordinate math
   function getCanvasCoords(e: React.MouseEvent) {
     const container = overlayContainerRef.current;
@@ -494,6 +540,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
 
   // Handle Dragging
   function handleMouseDown(e: React.MouseEvent) {
+    if (activeCursorTool === "hand") return; // Hand tool ignores element manipulation
     const { x, y } = getCanvasCoords(e);
     const clickedEl = elements.find(el => {
       if (el.page !== currentPage) return false;
@@ -673,6 +720,30 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
     setSelectedElementId(newEl.id);
   }
 
+  function addCheckmarkToPage() {
+    const offscreen = document.createElement("canvas");
+    offscreen.width = 60;
+    offscreen.height = 60;
+    const ctx = offscreen.getContext("2d");
+    if (ctx) {
+      ctx.font = "bold 44px 'Google Sans', 'Google Sans Text', 'Plus Jakarta Sans', sans-serif";
+      ctx.fillStyle = signatureDetails.color;
+      ctx.fillText("✓", 10, 48);
+    }
+    const newEl: OverlayElement = {
+      id: "check-" + Date.now(),
+      type: "signature",
+      page: currentPage,
+      x: 45,
+      y: 45,
+      width: 6,
+      height: 6,
+      dataUrl: offscreen.toDataURL()
+    };
+    setElements(prev => [...prev, newEl]);
+    setSelectedElementId(newEl.id);
+  }
+
   function handleApplyDetails() {
     if (modalSection === "signature") {
       let finalUrl = "";
@@ -719,124 +790,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
     onSave(dataTransfer.files, options);
   }
 
-  // ── Step 1: Who signs popup ──
-  if (step === "who-signs") {
-    return (
-      <div style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        height: "100%",
-        minHeight: "calc(100vh - 80px)",
-        backgroundColor: "#f3f3f3",
-        padding: "20px",
-        fontFamily: "'Google Sans', 'Google Sans Text', 'Plus Jakarta Sans', sans-serif"
-      }}>
-        <div style={{
-          backgroundColor: "#ffffff",
-          borderRadius: "16px",
-          padding: "36px",
-          boxShadow: "0 10px 30px rgba(0,0,0,0.06)",
-          maxWidth: "760px",
-          width: "100%",
-          textAlign: "center",
-          border: "1px solid #e6e6e6"
-        }}>
-          <h2 style={{ fontSize: "1.35rem", fontWeight: "750", color: "#1b1b1b", marginBottom: "32px" }}>
-            Who will sign this document?
-          </h2>
-          
-          <div style={{ display: "flex", gap: "24px", justifyContent: "center", flexWrap: "wrap", marginBottom: "36px" }}>
-            {/* Option A: Only me */}
-            <div style={{
-              flex: 1,
-              minWidth: "250px",
-              border: "1px solid #e6e6e6",
-              borderRadius: "12px",
-              padding: "28px 20px",
-              backgroundColor: "#fcfcfc",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: "16px"
-            }}>
-              <div style={{
-                width: "72px",
-                height: "72px",
-                borderRadius: "50%",
-                backgroundColor: "#e0f2fe",
-                color: "#0284c7",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center"
-              }}>
-                <FileText size={32} />
-              </div>
-              <button 
-                onClick={() => setStep("editor")}
-                className="primary-button"
-                style={{
-                  width: "100%",
-                  boxSizing: "border-box"
-                }}
-              >
-                Only me
-              </button>
-              <span style={{ fontSize: "0.74rem", color: "#5d5f5f", fontWeight: "500" }}>Sign this document</span>
-            </div>
-
-            {/* Option B: Several people */}
-            <div style={{
-              flex: 1,
-              minWidth: "250px",
-              border: "1px solid #e6e6e6",
-              borderRadius: "12px",
-              padding: "28px 20px",
-              backgroundColor: "#fcfcfc",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: "16px"
-            }}>
-              <div style={{
-                width: "72px",
-                height: "72px",
-                borderRadius: "50%",
-                backgroundColor: "#fef3c7",
-                color: "#d97706",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center"
-              }}>
-                <Users size={32} />
-              </div>
-              <button 
-                onClick={() => {
-                  const email = prompt("Enter signer email address:");
-                  if (email) {
-                    setEmailInvites([email]);
-                    setStep("invite-sent");
-                  }
-                }}
-                className="quiet-button"
-                style={{
-                  width: "100%",
-                  boxSizing: "border-box"
-                }}
-              >
-                Several people
-              </button>
-              <span style={{ fontSize: "0.74rem", color: "#5d5f5f", fontWeight: "500" }}>Invite others to sign</span>
-            </div>
-          </div>
-
-          <div style={{ fontSize: "0.76rem", color: "#5d5f5f" }}>
-            Uploaded documents: <strong>{file.name}</strong>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // Who-signs onboarding modal is now rendered as an overlay inside the main editor view
 
   // ── Step 1.5: Invite Sent Success view ──
   if (step === "invite-sent") {
@@ -870,651 +824,847 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
   }
 
   // ── Step 2: Main Editor Workspace View ──
+  const toolbarButtonStyle = {
+    width: "32px",
+    height: "32px",
+    borderRadius: "6px",
+    border: "1px solid var(--border, #cbd5e1)",
+    background: "var(--c-bg, #ffffff)",
+    color: "var(--c-text, #1e293b)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    cursor: "pointer",
+    transition: "all 0.15s ease",
+    padding: 0
+  };
+
+  const zoomButtonStyle = {
+    width: "28px",
+    height: "28px",
+    borderRadius: "4px",
+    border: "1px solid var(--border, #cbd5e1)",
+    background: "var(--c-bg, #ffffff)",
+    color: "var(--c-text, #1e293b)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    cursor: "pointer",
+    fontSize: "14px",
+    fontWeight: "bold" as const,
+    padding: 0
+  };
+
   return (
     <div style={{
       display: "flex",
-      height: "calc(100vh - 80px)", // minus header height
+      flexDirection: "column",
+      height: "100%",
       width: "100%",
-      backgroundColor: "#f3f3f3",
+      backgroundColor: "var(--c-bg, #ffffff)",
       fontFamily: "'Google Sans', 'Google Sans Text', 'Plus Jakarta Sans', sans-serif",
-      overflow: "hidden"
+      overflow: "hidden",
+      position: "relative"
     }}>
-      {/* Left Sidebar: Pages List */}
+      {/* ── TOP TOOLBAR ── */}
       <div style={{
-        width: "180px",
-        backgroundColor: "#ffffff",
-        borderRight: "1px solid #e6e6e6",
-        display: "flex",
-        flexDirection: "column",
-        height: "100%"
-      }}>
-        <div style={{ padding: "14px 16px", borderBottom: "1px solid #f0f0f0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <span style={{ fontSize: "0.78rem", fontWeight: "700", color: "#1b1b1b", letterSpacing: "0.03em" }}>PAGES</span>
-          <span style={{ fontSize: "0.72rem", color: "#5d5f5f" }}>{currentPage} / {totalPages || 1}</span>
-        </div>
-        <div style={{ flex: 1, overflowY: "auto", padding: "12px", display: "flex", flexDirection: "column", gap: "12px" }}>
-          {pageOrder.map((pageNum, idx) => {
-            const isActive = currentPage === idx + 1;
-            return (
-              <div 
-                key={pageNum}
-                onClick={() => setCurrentPage(idx + 1)}
-                style={{
-                  borderRadius: "6px",
-                  border: `2px solid ${isActive ? "#000000" : "transparent"}`,
-                  padding: "4px",
-                  cursor: "pointer",
-                  backgroundColor: isActive ? "#f9f9f9" : "transparent",
-                  transition: "all 0.15s ease"
-                }}
-              >
-                <div style={{
-                  width: "100%",
-                  aspectRatio: "0.75",
-                  background: "#ffffff",
-                  border: "1px solid #e6e6e6",
-                  borderRadius: "4px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  overflow: "hidden"
-                }}>
-                  {thumbnails[pageNum - 1] ? (
-                    <img src={thumbnails[pageNum - 1]} style={{ width: "90%", height: "90%", objectFit: "contain" }} alt={`Page ${pageNum}`} />
-                  ) : (
-                    <FileText size={20} style={{ color: "#94a3b8" }} />
-                  )}
-                </div>
-                <div style={{ textAlign: "center", fontSize: "0.68rem", fontWeight: "600", color: "#5d5f5f", marginTop: "4px" }}>Page {pageNum}</div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Center Canvas Workspace Viewport */}
-      <div style={{
-        flex: 1,
-        overflow: "auto",
+        height: "56px",
+        width: "100%",
+        backgroundColor: "var(--c-bg, #ffffff)",
+        borderBottom: "1px solid var(--border, #cbd5e1)",
         display: "flex",
         alignItems: "center",
-        justifyContent: "center",
-        padding: "32px",
-        position: "relative"
+        justifyContent: "space-between",
+        padding: "0 16px",
+        boxSizing: "border-box",
+        flexShrink: 0
       }}>
-        {/* Floating Toolbar on Left */}
-        <div style={{
-          position: "absolute",
-          left: "24px",
-          top: "24px",
-          backgroundColor: "#ffffff",
-          borderRadius: "8px",
-          border: "1px solid #e6e6e6",
-          padding: "6px",
-          display: "flex",
-          flexDirection: "column",
-          gap: "6px",
-          boxShadow: "0 4px 12px rgba(0,0,0,0.03)",
-          zIndex: 10
-        }}>
-          {[
-            { icon: <Type size={14} />, label: "Text", action: addNameToPage },
-            { icon: <PenTool size={14} />, label: "Signature", action: addSignatureToPage },
-            { icon: <Calendar size={14} />, label: "Date", action: addDateToPage }
-          ].map((btn, idx) => (
-            <button 
-              key={idx}
-              onClick={btn.action}
-              className="editor-tooltip editor-tooltip-right"
-              data-tooltip={btn.label}
-              style={{
-                width: "28px",
-                height: "28px",
-                borderRadius: "4px",
-                border: "none",
-                background: "transparent",
-                color: "#1b1b1b",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                cursor: "pointer",
-                transition: "background 0.15s"
-              }}
-              onMouseEnter={e => e.currentTarget.style.backgroundColor = "#f5f5f5"}
-              onMouseLeave={e => e.currentTarget.style.backgroundColor = "transparent"}
-            >
-              {btn.icon}
-            </button>
-          ))}
-        </div>
-
-        {/* PDF Page Canvas Frame wrapper */}
-        <div 
-          ref={overlayContainerRef}
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-          style={{
-            position: "relative",
-            boxShadow: "0 8px 30px rgba(0,0,0,0.06)",
-            backgroundColor: "#ffffff",
-            borderRadius: "4px",
-            border: "1px solid #e6e6e6"
-          }}
-        >
-          <canvas ref={canvasRef} style={{ display: "block" }} />
-          
-          {/* Elements overlay layer */}
-          {elements.filter(el => el.page === currentPage).map(el => {
-            const isSel = selectedElementId === el.id;
-            return (
-              <div 
-                key={el.id}
-                style={{
-                  position: "absolute",
-                  left: `${el.x}%`,
-                  top: `${el.y}%`,
-                  width: `${el.width || 22}%`,
-                  height: `${el.height || 10}%`,
-                  border: isSel ? "1.5px dashed #2563eb" : "1.5px solid transparent",
-                  cursor: "move",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center"
-                }}
-                onClick={e => { e.stopPropagation(); setSelectedElementId(el.id); }}
-              >
-                {el.id.startsWith("text-") ? (
-                  <input
-                    type="text"
-                    value={el.content || ""}
-                    onChange={e => {
-                      const text = e.target.value;
-                      const dataUrl = generateTextDataUrl(text, signatureDetails.color);
-                      setElements(prev => prev.map(item => item.id === el.id ? { ...item, content: text, dataUrl } : item));
-                    }}
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      background: "transparent",
-                      border: "none",
-                      outline: "none",
-                      fontSize: "14px",
-                      fontWeight: "bold",
-                      color: signatureDetails.color,
-                      fontFamily: "'Google Sans', 'Google Sans Text', 'Plus Jakarta Sans', sans-serif",
-                      textAlign: "center",
-                      padding: 0
-                    }}
-                    onClick={e => e.stopPropagation()}
-                  />
-                ) : el.dataUrl ? (
-                  <img src={el.dataUrl} style={{ width: "100%", height: "100%", objectFit: "contain", pointerEvents: "none", mixBlendMode: "multiply" }} alt="sig" />
-                ) : (
-                  <span style={{ fontSize: "12px", color: "#777777" }}>Signature</span>
-                )}
-                {isSel && (
-                  <button 
-                    onClick={e => { e.stopPropagation(); deleteElement(el.id); }}
-                    style={{
-                      position: "absolute",
-                      top: "-24px",
-                      right: "0",
-                      backgroundColor: "#0f172a",
-                      color: "#ffffff",
-                      border: "none",
-                      borderRadius: "4px",
-                      padding: "2px 6px",
-                      fontSize: "10px",
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "4px"
-                    }}
-                  >
-                    <Trash2 size={10} /> Delete
-                  </button>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Right Sidebar: Signing options panel */}
-      <div 
-        className="workspace-sidebar"
-        style={{
-          width: "320px",
-          background: "var(--c-surface, #f5f5f5)",
-          borderLeft: "1px solid var(--border)",
-          display: "flex",
-          flexDirection: "column",
-          height: "100%",
-          boxSizing: "border-box"
-        }}
-      >
-        {/* Header section with back button */}
-        <div style={{ padding: "24px 24px 12px" }}>
+        {/* Left Actions */}
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           <button 
-            onClick={onClose}
+            onClick={() => setShowLeftSidebar(!showLeftSidebar)}
             style={{
-              background: "none",
-              border: "none",
-              color: "var(--text-muted)",
-              fontSize: "12px",
-              fontWeight: "600",
+              padding: "8px",
+              borderRadius: "6px",
+              border: "1px solid var(--border, #cbd5e1)",
+              backgroundColor: showLeftSidebar ? "var(--c-surface, #f1f5f9)" : "var(--c-bg, #ffffff)",
+              color: "var(--c-text, #1e293b)",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center"
+            }}
+            title="Toggle Sidebar Pages"
+          >
+            <FolderKanban size={16} />
+          </button>
+          
+          <div style={{ display: "flex", borderRadius: "6px", border: "1px solid var(--border, #cbd5e1)", overflow: "hidden" }}>
+            <button 
+              onClick={() => setActiveCursorTool("hand")}
+              style={{
+                padding: "8px 12px",
+                border: "none",
+                backgroundColor: activeCursorTool === "hand" ? "var(--c-surface, #f1f5f9)" : "var(--c-bg, #ffffff)",
+                color: "var(--c-text, #1e293b)",
+                cursor: "pointer"
+              }}
+              title="Pan Hand Tool"
+            >
+              <span style={{ fontSize: "14px" }}>✋</span>
+            </button>
+            <button 
+              onClick={() => setActiveCursorTool("pointer")}
+              style={{
+                padding: "8px 12px",
+                border: "none",
+                backgroundColor: activeCursorTool === "pointer" ? "var(--c-surface, #f1f5f9)" : "var(--c-bg, #ffffff)",
+                color: "var(--c-text, #1e293b)",
+                cursor: "pointer",
+                borderLeft: "1px solid var(--border, #cbd5e1)"
+              }}
+              title="Select / Drag Tool"
+            >
+              <span style={{ fontSize: "14px" }}>🖱️</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Center Quick Insertion Actions */}
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <button 
+            onClick={() => { setModalSection("signature"); setSigMethod("type"); setShowDetailsModal(true); }}
+            style={{
+              padding: "8px 14px",
+              borderRadius: "6px",
+              border: "1px solid var(--border, #cbd5e1)",
+              backgroundColor: "var(--c-bg, #ffffff)",
+              color: "var(--c-text, #1e293b)",
               cursor: "pointer",
               display: "flex",
               alignItems: "center",
-              gap: "4px",
-              padding: "0",
-              marginBottom: "8px",
-              textAlign: "left",
-              fontFamily: "inherit"
+              gap: "6px",
+              fontWeight: "600",
+              fontSize: "13px"
             }}
           >
-            <ChevronLeft size={12} /> Sign PDF
+            <PenTool size={14} />
+            <span>Signatures</span>
+            <ChevronDown size={12} />
           </button>
-          <h3 className="sidebar-heading" style={{ padding: 0, margin: 0 }}>
-            Signing options
-          </h3>
-        </div>
 
-        {/* Section: Type */}
-        <div className="options-group" style={{ marginBottom: "20px" }}>
-          <label className="options-label">Type</label>
-          <div style={{ display: "flex", gap: "8px", marginTop: "4px" }}>
-            <div style={{
-              flex: 1,
+          <button 
+            onClick={() => {
+              const email = prompt("Enter signer email address:");
+              if (email) {
+                setEmailInvites([email]);
+                setStep("invite-sent");
+              }
+            }}
+            style={{
+              padding: "8px 14px",
+              borderRadius: "6px",
+              border: "1px solid var(--border, #cbd5e1)",
               backgroundColor: "var(--c-bg, #ffffff)",
-              border: "2px solid var(--c-accent, #000000)",
-              borderRadius: "8px",
-              padding: "10px 6px",
-              textAlign: "center",
-              cursor: "pointer"
-            }}>
-              <span style={{ display: "block", fontSize: "0.78rem", fontWeight: "600", color: "var(--c-text)" }}>Simple</span>
-              <span style={{ display: "block", fontSize: "0.6rem", color: "var(--text-muted)", marginTop: "2px" }}>Signature</span>
-            </div>
-            <div style={{
-              flex: 1,
-              backgroundColor: "rgba(255, 255, 255, 0.4)",
-              border: "1px solid var(--border)",
-              borderRadius: "8px",
-              padding: "10px 6px",
-              textAlign: "center",
-              opacity: 0.6,
-              cursor: "not-allowed"
-            }}>
-              <span style={{ display: "block", fontSize: "0.78rem", fontWeight: "600", color: "var(--c-text)" }}>Digital 👑</span>
-              <span style={{ display: "block", fontSize: "0.6rem", color: "var(--text-muted)", marginTop: "2px" }}>Cryptographic</span>
-            </div>
-          </div>
+              color: "var(--c-text, #1e293b)",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              fontWeight: "600",
+              fontSize: "13px"
+            }}
+          >
+            <Users size={14} />
+            <span>Add signees</span>
+          </button>
+
+          <div style={{ width: "1px", height: "24px", backgroundColor: "var(--border, #cbd5e1)" }} />
+
+          <button onClick={addDateToPage} style={toolbarButtonStyle} title="Add Date Stamp"><Calendar size={15} /></button>
+          <button onClick={addTextToPage} style={toolbarButtonStyle} title="Add Text"><Type size={15} /></button>
+          <button onClick={addCheckmarkToPage} style={toolbarButtonStyle} title="Add Checkmark"><span style={{ fontWeight: "bold" }}>✓</span></button>
+
+          <div style={{ width: "1px", height: "24px", backgroundColor: "var(--border, #cbd5e1)" }} />
+
+          <button onClick={undo} disabled={!canUndo} style={{ ...toolbarButtonStyle, opacity: canUndo ? 1 : 0.4, cursor: canUndo ? "pointer" : "not-allowed" }} title="Undo">↩️</button>
+          <button onClick={redo} disabled={!canRedo} style={{ ...toolbarButtonStyle, opacity: canRedo ? 1 : 0.4, cursor: canRedo ? "pointer" : "not-allowed" }} title="Redo">↪️</button>
         </div>
 
-        {/* Section: Required fields */}
-        <div className="options-group" style={{ marginBottom: "20px" }}>
-          <label className="options-label">Required Fields</label>
-          <div className="options-vertical-list" style={{ marginTop: "4px" }}>
-            <div 
-              onClick={addSignatureToPage}
-              className="option-card"
-              style={{
-                padding: "10px 12px",
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                gap: "8px",
-                backgroundColor: "var(--c-bg, #ffffff)",
-                border: "1px solid var(--border, #cbd5e1)",
-                borderRadius: "8px",
-                cursor: "pointer",
-                width: "100%",
-                boxSizing: "border-box"
-              }}
-            >
-              {/* Drag handles */}
-              <GripVertical size={14} style={{ color: "#94a3b8", cursor: "grab" }} />
-              
-              {/* Left icon wrapper */}
-              <div style={{
-                width: "28px",
-                height: "28px",
-                borderRadius: "6px",
-                backgroundColor: "#2563eb",
-                color: "#ffffff",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                flexShrink: 0
-              }}>
-                <PenTool size={14} />
-              </div>
-              
-              {/* Preview Box */}
-              <div style={{
-                flex: 1,
-                border: "1px dashed var(--border, #cbd5e1)",
-                borderRadius: "4px",
-                height: "36px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                backgroundColor: "var(--c-surface, #f8fafc)",
-                overflow: "hidden",
-                padding: "2px"
-              }}>
-                {signatureDetails.signatureDataUrl ? (
-                  <img src={signatureDetails.signatureDataUrl} style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain" }} alt="Signature" />
-                ) : (
-                  <span style={{ fontSize: "0.72rem", color: "var(--text-muted)" }}>Set signature</span>
-                )}
-              </div>
-
-              {/* Edit button */}
-              <button 
-                onClick={e => { e.stopPropagation(); setModalSection("signature"); setSigMethod("type"); setShowDetailsModal(true); }}
-                style={{
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  color: "var(--text-muted)",
-                  padding: "6px",
-                  borderRadius: "4px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center"
-                }}
-                onMouseEnter={e => e.currentTarget.style.backgroundColor = "var(--accent-soft, rgba(0,0,0,0.05))"}
-                onMouseLeave={e => e.currentTarget.style.backgroundColor = "transparent"}
-              >
-                <Edit2 size={13} />
-              </button>
-            </div>
+        {/* Right Zoom and Completion Actions */}
+        <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <button onClick={() => setZoom(z => Math.max(50, z - 10))} style={zoomButtonStyle}>-</button>
+            <span style={{ fontSize: "12px", minWidth: "36px", textAlign: "center", color: "var(--c-text)" }}>{zoom}%</span>
+            <button onClick={() => setZoom(z => Math.min(200, z + 10))} style={zoomButtonStyle}>+</button>
           </div>
-        </div>
 
-        {/* Section: Optional fields */}
-        <div className="options-group" style={{ flex: 1, overflowY: "auto", marginBottom: "20px" }}>
-          <label className="options-label">Optional Fields</label>
-          <div className="options-vertical-list" style={{ marginTop: "4px" }}>
-            
-            {/* 1. Initials Card */}
-            <div 
-              onClick={addInitialsToPage}
-              className="option-card"
-              style={{
-                padding: "10px 12px",
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                gap: "8px",
-                backgroundColor: "var(--c-bg, #ffffff)",
-                border: "1px solid var(--border, #cbd5e1)",
-                borderRadius: "8px",
-                cursor: "pointer",
-                width: "100%",
-                boxSizing: "border-box"
-              }}
-            >
-              <GripVertical size={14} style={{ color: "#94a3b8", cursor: "grab" }} />
-              <div style={{
-                width: "28px",
-                height: "28px",
-                borderRadius: "6px",
-                backgroundColor: "#0ea5e9",
-                color: "#ffffff",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontWeight: "bold",
-                fontSize: "0.74rem",
-                flexShrink: 0
-              }}>
-                AC
-              </div>
-              <div style={{
-                flex: 1,
-                border: "1px dashed var(--border, #cbd5e1)",
-                borderRadius: "4px",
-                height: "36px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                backgroundColor: "var(--c-surface, #f8fafc)",
-                overflow: "hidden",
-                padding: "2px"
-              }}>
-                {signatureDetails.initialsDataUrl ? (
-                  <img src={signatureDetails.initialsDataUrl} style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain" }} alt="Initials" />
-                ) : (
-                  <span style={{ fontSize: "0.72rem", color: "var(--text-muted)" }}>Set initials</span>
-                )}
-              </div>
-              <button 
-                onClick={e => { e.stopPropagation(); setModalSection("initials"); setInitMethod("type"); setShowDetailsModal(true); }}
-                style={{
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  color: "var(--text-muted)",
-                  padding: "6px",
-                  borderRadius: "4px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center"
-                }}
-                onMouseEnter={e => e.currentTarget.style.backgroundColor = "var(--accent-soft, rgba(0,0,0,0.05))"}
-                onMouseLeave={e => e.currentTarget.style.backgroundColor = "transparent"}
-              >
-                <Edit2 size={13} />
-              </button>
-            </div>
-
-            {/* 2. Full Name Card */}
-            <div 
-              onClick={addNameToPage}
-              className="option-card"
-              style={{
-                padding: "10px 12px",
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                gap: "8px",
-                backgroundColor: "var(--c-bg, #ffffff)",
-                border: "1px solid var(--border, #cbd5e1)",
-                borderRadius: "8px",
-                cursor: "pointer",
-                width: "100%",
-                boxSizing: "border-box"
-              }}
-            >
-              <GripVertical size={14} style={{ color: "#94a3b8", cursor: "grab" }} />
-              <div style={{
-                width: "28px",
-                height: "28px",
-                borderRadius: "6px",
-                backgroundColor: "#6366f1",
-                color: "#ffffff",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                flexShrink: 0
-              }}>
-                <User size={14} />
-              </div>
-              <div style={{ flex: 1, fontSize: "0.82rem", fontWeight: "600", color: "var(--c-text)" }}>
-                Full Name
-              </div>
-              <span style={{ fontSize: "14px", color: "var(--text-muted)", paddingRight: "4px" }}>+</span>
-            </div>
-
-            {/* 3. Date Stamp Card */}
-            <div 
-              onClick={addDateToPage}
-              className="option-card"
-              style={{
-                padding: "10px 12px",
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                gap: "8px",
-                backgroundColor: "var(--c-bg, #ffffff)",
-                border: "1px solid var(--border, #cbd5e1)",
-                borderRadius: "8px",
-                cursor: "pointer",
-                width: "100%",
-                boxSizing: "border-box"
-              }}
-            >
-              <GripVertical size={14} style={{ color: "#94a3b8", cursor: "grab" }} />
-              <div style={{
-                width: "28px",
-                height: "28px",
-                borderRadius: "6px",
-                backgroundColor: "#14b8a6",
-                color: "#ffffff",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                flexShrink: 0
-              }}>
-                <Calendar size={14} />
-              </div>
-              <div style={{ flex: 1, fontSize: "0.82rem", fontWeight: "600", color: "var(--c-text)" }}>
-                Date Stamp
-              </div>
-              <span style={{ fontSize: "14px", color: "var(--text-muted)", paddingRight: "4px" }}>+</span>
-            </div>
-
-            {/* 4. Text Card */}
-            <div 
-              onClick={addTextToPage}
-              className="option-card"
-              style={{
-                padding: "10px 12px",
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                gap: "8px",
-                backgroundColor: "var(--c-bg, #ffffff)",
-                border: "1px solid var(--border, #cbd5e1)",
-                borderRadius: "8px",
-                cursor: "pointer",
-                width: "100%",
-                boxSizing: "border-box"
-              }}
-            >
-              <GripVertical size={14} style={{ color: "#94a3b8", cursor: "grab" }} />
-              <div style={{
-                width: "28px",
-                height: "28px",
-                borderRadius: "6px",
-                backgroundColor: "#f59e0b",
-                color: "#ffffff",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                flexShrink: 0
-              }}>
-                <Type size={14} />
-              </div>
-              <div style={{ flex: 1, fontSize: "0.82rem", fontWeight: "600", color: "var(--c-text)" }}>
-                Text
-              </div>
-              <span style={{ fontSize: "14px", color: "var(--text-muted)", paddingRight: "4px" }}>+</span>
-            </div>
-
-            {/* 5. Company Stamp Card */}
-            <div 
-              onClick={addStampToPage}
-              className="option-card"
-              style={{
-                padding: "10px 12px",
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                gap: "8px",
-                backgroundColor: "var(--c-bg, #ffffff)",
-                border: "1px solid var(--border, #cbd5e1)",
-                borderRadius: "8px",
-                cursor: "pointer",
-                width: "100%",
-                boxSizing: "border-box"
-              }}
-            >
-              <GripVertical size={14} style={{ color: "#94a3b8", cursor: "grab" }} />
-              <div style={{
-                width: "28px",
-                height: "28px",
-                borderRadius: "6px",
-                backgroundColor: "#ec4899",
-                color: "#ffffff",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                flexShrink: 0
-              }}>
-                <Stamp size={14} />
-              </div>
-              <div style={{
-                flex: 1,
-                border: signatureDetails.stampDataUrl ? "1px dashed var(--border, #cbd5e1)" : "none",
-                borderRadius: "4px",
-                height: signatureDetails.stampDataUrl ? "36px" : "auto",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                backgroundColor: signatureDetails.stampDataUrl ? "var(--c-surface, #f8fafc)" : "transparent",
-                overflow: "hidden",
-                padding: signatureDetails.stampDataUrl ? "2px" : "0",
-                fontSize: "0.82rem",
-                fontWeight: "600",
-                color: "var(--c-text)",
-                textAlign: "left"
-              }}>
-                {signatureDetails.stampDataUrl ? (
-                  <img src={signatureDetails.stampDataUrl} style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain" }} alt="Stamp" />
-                ) : (
-                  "Company Stamp"
-                )}
-              </div>
-              <button 
-                onClick={e => { e.stopPropagation(); setModalSection("stamp"); setStampMethod("generate"); setShowDetailsModal(true); }}
-                style={{
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  color: "var(--text-muted)",
-                  padding: "6px",
-                  borderRadius: "4px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center"
-                }}
-                onMouseEnter={e => e.currentTarget.style.backgroundColor = "var(--accent-soft, rgba(0,0,0,0.05))"}
-                onMouseLeave={e => e.currentTarget.style.backgroundColor = "transparent"}
-              >
-                <Edit2 size={13} />
-              </button>
-            </div>
-            
-          </div>
-        </div>
-
-        {/* Sign Bottom Button */}
-        <div style={{ padding: "16px 24px 24px", flexShrink: 0 }}>
           <button 
             onClick={handleSignComplete}
-            className="primary-button"
+            className="v2-pill-primary"
             style={{
-              width: "100%",
-              boxSizing: "border-box"
+              padding: "8px 16px",
+              fontSize: "13px",
+              fontWeight: "600"
             }}
           >
-            Sign PDF &rarr;
+            Finish &rarr;
           </button>
+        </div>
+      </div>
+
+      {/* ── MAIN WORKSPACE BODY ── */}
+      <div style={{
+        display: "flex",
+        flex: 1,
+        width: "100%",
+        height: "calc(100% - 56px)",
+        overflow: "hidden"
+      }}>
+        {/* Left Sidebar: Pages List */}
+        {showLeftSidebar && (
+          <div style={{
+            width: "180px",
+            backgroundColor: "var(--c-bg, #ffffff)",
+            borderRight: "1px solid var(--border, #cbd5e1)",
+            display: "flex",
+            flexDirection: "column",
+            height: "100%",
+            flexShrink: 0
+          }}>
+            <div style={{ padding: "14px 16px", borderBottom: "1px solid var(--border, #cbd5e1)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <span style={{ fontSize: "0.78rem", fontWeight: "700", color: "var(--c-text)", letterSpacing: "0.03em" }}>PAGES</span>
+              <span style={{ fontSize: "0.72rem", color: "var(--text-muted)" }}>{currentPage} / {totalPages || 1}</span>
+            </div>
+            <div style={{ flex: 1, overflowY: "auto", padding: "12px", display: "flex", flexDirection: "column", gap: "12px" }}>
+              {pageOrder.map((pageNum, idx) => {
+                const isActive = currentPage === idx + 1;
+                return (
+                  <div 
+                    key={pageNum}
+                    onClick={() => setCurrentPage(idx + 1)}
+                    style={{
+                      borderRadius: "6px",
+                      border: `2px solid ${isActive ? "var(--c-accent, #2563eb)" : "transparent"}`,
+                      padding: "4px",
+                      cursor: "pointer",
+                      backgroundColor: isActive ? "var(--c-surface-soft, #f8fafc)" : "transparent",
+                      transition: "all 0.15s ease"
+                    }}
+                  >
+                    <div style={{
+                      width: "100%",
+                      aspectRatio: "0.75",
+                      background: "#ffffff",
+                      border: "1px solid var(--border, #cbd5e1)",
+                      borderRadius: "4px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      overflow: "hidden"
+                    }}>
+                      {thumbnails[pageNum - 1] ? (
+                        <img src={thumbnails[pageNum - 1]} style={{ width: "90%", height: "90%", objectFit: "contain" }} alt={`Page ${pageNum}`} />
+                      ) : (
+                        <FileText size={20} style={{ color: "var(--text-muted, #94a3b8)" }} />
+                      )}
+                    </div>
+                    <div style={{ textAlign: "center", fontSize: "0.68rem", fontWeight: "600", color: "var(--c-text)", marginTop: "4px" }}>Page {pageNum}</div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Center Canvas Workspace Viewport */}
+        <div style={{
+          flex: 1,
+          overflow: "auto",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "32px",
+          position: "relative",
+          backgroundColor: "var(--c-bg-page, #f8fafc)",
+          cursor: activeCursorTool === "hand" ? "grab" : "default"
+        }}>
+          {/* PDF Page Canvas Frame wrapper */}
+          <div 
+            ref={overlayContainerRef}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            style={{
+              position: "relative",
+              boxShadow: "0 8px 30px rgba(0,0,0,0.06)",
+              backgroundColor: "#ffffff",
+              borderRadius: "4px",
+              border: "1px solid var(--border, #cbd5e1)"
+            }}
+          >
+            <canvas ref={canvasRef} style={{ display: "block" }} />
+            
+            {/* Elements overlay layer */}
+            {elements.filter(el => el.page === currentPage).map(el => {
+              const isSel = selectedElementId === el.id;
+              return (
+                <div 
+                  key={el.id}
+                  style={{
+                    position: "absolute",
+                    left: `${el.x}%`,
+                    top: `${el.y}%`,
+                    width: `${el.width || 22}%`,
+                    height: `${el.height || 10}%`,
+                    border: isSel ? "1.5px dashed var(--c-accent, #2563eb)" : "1.5px solid transparent",
+                    cursor: activeCursorTool === "hand" ? "grab" : "move",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center"
+                  }}
+                  onClick={e => { e.stopPropagation(); if (activeCursorTool !== "hand") setSelectedElementId(el.id); }}
+                >
+                  {el.id.startsWith("text-") ? (
+                    <input
+                      type="text"
+                      value={el.content || ""}
+                      onChange={e => {
+                        const text = e.target.value;
+                        const dataUrl = generateTextDataUrl(text, signatureDetails.color);
+                        setElements(prev => prev.map(item => item.id === el.id ? { ...item, content: text, dataUrl } : item));
+                      }}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        background: "transparent",
+                        border: "none",
+                        outline: "none",
+                        fontSize: "14px",
+                        fontWeight: "bold",
+                        color: signatureDetails.color,
+                        fontFamily: "'Google Sans', 'Google Sans Text', 'Plus Jakarta Sans', sans-serif",
+                        textAlign: "center",
+                        padding: 0
+                      }}
+                      onClick={e => e.stopPropagation()}
+                    />
+                  ) : el.dataUrl ? (
+                    <img src={el.dataUrl} style={{ width: "100%", height: "100%", objectFit: "contain", pointerEvents: "none", mixBlendMode: "multiply" }} alt="sig" />
+                  ) : (
+                    <span style={{ fontSize: "12px", color: "#777777" }}>Signature</span>
+                  )}
+                  {isSel && (
+                    <button 
+                      onClick={e => { e.stopPropagation(); deleteElement(el.id); }}
+                      style={{
+                        position: "absolute",
+                        top: "-24px",
+                        right: "0",
+                        backgroundColor: "#0f172a",
+                        color: "#ffffff",
+                        border: "none",
+                        borderRadius: "4px",
+                        padding: "2px 6px",
+                        fontSize: "10px",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "4px"
+                      }}
+                    >
+                      <Trash2 size={10} /> Delete
+                    </button>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Right Sidebar: Signing options panel */}
+        <div 
+          className="workspace-sidebar"
+          style={{
+            width: "320px",
+            background: "var(--c-surface, #f8fafc)",
+            borderLeft: "1px solid var(--border, #cbd5e1)",
+            display: "flex",
+            flexDirection: "column",
+            height: "100%",
+            boxSizing: "border-box",
+            flexShrink: 0
+          }}
+        >
+          {/* Header section with back button */}
+          <div style={{ padding: "24px 24px 12px" }}>
+            <button 
+              onClick={onClose}
+              style={{
+                background: "none",
+                border: "none",
+                color: "var(--text-muted)",
+                fontSize: "12px",
+                fontWeight: "600",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: "4px",
+                padding: "0",
+                marginBottom: "8px",
+                textAlign: "left",
+                fontFamily: "inherit"
+              }}
+            >
+              <ChevronLeft size={12} /> Sign PDF
+            </button>
+            <h3 className="sidebar-heading" style={{ padding: 0, margin: 0, color: "var(--c-text)" }}>
+              Signing options
+            </h3>
+          </div>
+
+          {/* Section: Type */}
+          <div className="options-group" style={{ marginBottom: "20px", padding: "0 24px" }}>
+            <label className="options-label" style={{ color: "var(--c-text)", fontWeight: "600" }}>Type</label>
+            <div style={{ display: "flex", gap: "8px", marginTop: "4px" }}>
+              <div style={{
+                flex: 1,
+                backgroundColor: "var(--c-bg, #ffffff)",
+                border: "2px solid var(--c-accent, #2563eb)",
+                borderRadius: "8px",
+                padding: "10px 6px",
+                textAlign: "center",
+                cursor: "pointer"
+              }}>
+                <span style={{ display: "block", fontSize: "0.78rem", fontWeight: "600", color: "var(--c-text)" }}>Simple</span>
+                <span style={{ display: "block", fontSize: "0.6rem", color: "var(--text-muted)", marginTop: "2px" }}>Signature</span>
+              </div>
+              <div style={{
+                flex: 1,
+                backgroundColor: "rgba(255, 255, 255, 0.4)",
+                border: "1px solid var(--border, #cbd5e1)",
+                borderRadius: "8px",
+                padding: "10px 6px",
+                textAlign: "center",
+                opacity: 0.6,
+                cursor: "not-allowed"
+              }}>
+                <span style={{ display: "block", fontSize: "0.78rem", fontWeight: "600", color: "var(--c-text)" }}>Digital 👑</span>
+                <span style={{ display: "block", fontSize: "0.6rem", color: "var(--text-muted)", marginTop: "2px" }}>Cryptographic</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Section: Required fields */}
+          <div className="options-group" style={{ marginBottom: "20px", padding: "0 24px" }}>
+            <label className="options-label" style={{ color: "var(--c-text)", fontWeight: "600" }}>Required Fields</label>
+            <div className="options-vertical-list" style={{ marginTop: "4px" }}>
+              <div 
+                onClick={addSignatureToPage}
+                className="option-card"
+                style={{
+                  padding: "10px 12px",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: "8px",
+                  backgroundColor: "var(--c-bg, #ffffff)",
+                  border: "1px solid var(--border, #cbd5e1)",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                  width: "100%",
+                  boxSizing: "border-box"
+                }}
+              >
+                {/* Drag handles */}
+                <GripVertical size={14} style={{ color: "#94a3b8", cursor: "grab" }} />
+                
+                {/* Left icon wrapper */}
+                <div style={{
+                  width: "28px",
+                  height: "28px",
+                  borderRadius: "6px",
+                  backgroundColor: "var(--c-accent, #2563eb)",
+                  color: "#ffffff",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0
+                }}>
+                  <PenTool size={14} />
+                </div>
+                
+                {/* Preview Box */}
+                <div style={{
+                  flex: 1,
+                  border: "1px dashed var(--border, #cbd5e1)",
+                  borderRadius: "4px",
+                  height: "36px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  backgroundColor: "var(--c-surface, #f8fafc)",
+                  overflow: "hidden",
+                  padding: "2px"
+                }}>
+                  {signatureDetails.signatureDataUrl ? (
+                    <img src={signatureDetails.signatureDataUrl} style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain" }} alt="Signature" />
+                  ) : (
+                    <span style={{ fontSize: "0.72rem", color: "var(--text-muted)" }}>Set signature</span>
+                  )}
+                </div>
+
+                {/* Edit button */}
+                <button 
+                  onClick={e => { e.stopPropagation(); setModalSection("signature"); setSigMethod("type"); setShowDetailsModal(true); }}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    color: "var(--text-muted)",
+                    padding: "6px",
+                    borderRadius: "4px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center"
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.backgroundColor = "var(--accent-soft, rgba(0,0,0,0.05))"}
+                  onMouseLeave={e => e.currentTarget.style.backgroundColor = "transparent"}
+                >
+                  <Edit2 size={13} />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Section: Optional fields */}
+          <div className="options-group" style={{ flex: 1, overflowY: "auto", marginBottom: "20px", padding: "0 24px" }}>
+            <label className="options-label" style={{ color: "var(--c-text)", fontWeight: "600" }}>Optional Fields</label>
+            <div className="options-vertical-list" style={{ marginTop: "4px", display: "flex", flexDirection: "column", gap: "8px" }}>
+              
+              {/* 1. Initials Card */}
+              <div 
+                onClick={addInitialsToPage}
+                className="option-card"
+                style={{
+                  padding: "10px 12px",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: "8px",
+                  backgroundColor: "var(--c-bg, #ffffff)",
+                  border: "1px solid var(--border, #cbd5e1)",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                  width: "100%",
+                  boxSizing: "border-box"
+                }}
+              >
+                <GripVertical size={14} style={{ color: "#94a3b8", cursor: "grab" }} />
+                <div style={{
+                  width: "28px",
+                  height: "28px",
+                  borderRadius: "6px",
+                  backgroundColor: "#0ea5e9",
+                  color: "#ffffff",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontWeight: "bold",
+                  fontSize: "0.74rem",
+                  flexShrink: 0
+                }}>
+                  AC
+                </div>
+                <div style={{
+                  flex: 1,
+                  border: "1px dashed var(--border, #cbd5e1)",
+                  borderRadius: "4px",
+                  height: "36px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  backgroundColor: "var(--c-surface, #f8fafc)",
+                  overflow: "hidden",
+                  padding: "2px"
+                }}>
+                  {signatureDetails.initialsDataUrl ? (
+                    <img src={signatureDetails.initialsDataUrl} style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain" }} alt="Initials" />
+                  ) : (
+                    <span style={{ fontSize: "0.72rem", color: "var(--text-muted)" }}>Set initials</span>
+                  )}
+                </div>
+                <button 
+                  onClick={e => { e.stopPropagation(); setModalSection("initials"); setInitMethod("type"); setShowDetailsModal(true); }}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    color: "var(--text-muted)",
+                    padding: "6px",
+                    borderRadius: "4px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center"
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.backgroundColor = "var(--accent-soft, rgba(0,0,0,0.05))"}
+                  onMouseLeave={e => e.currentTarget.style.backgroundColor = "transparent"}
+                >
+                  <Edit2 size={13} />
+                </button>
+              </div>
+
+              {/* 2. Full Name Card */}
+              <div 
+                onClick={addNameToPage}
+                className="option-card"
+                style={{
+                  padding: "10px 12px",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: "8px",
+                  backgroundColor: "var(--c-bg, #ffffff)",
+                  border: "1px solid var(--border, #cbd5e1)",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                  width: "100%",
+                  boxSizing: "border-box"
+                }}
+              >
+                <GripVertical size={14} style={{ color: "#94a3b8", cursor: "grab" }} />
+                <div style={{
+                  width: "28px",
+                  height: "28px",
+                  borderRadius: "6px",
+                  backgroundColor: "#6366f1",
+                  color: "#ffffff",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0
+                }}>
+                  <User size={14} />
+                </div>
+                <div style={{ flex: 1, fontSize: "0.82rem", fontWeight: "600", color: "var(--c-text)" }}>
+                  Full Name
+                </div>
+                <span style={{ fontSize: "14px", color: "var(--text-muted)", paddingRight: "4px" }}>+</span>
+              </div>
+
+              {/* 3. Date Stamp Card */}
+              <div 
+                onClick={addDateToPage}
+                className="option-card"
+                style={{
+                  padding: "10px 12px",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: "8px",
+                  backgroundColor: "var(--c-bg, #ffffff)",
+                  border: "1px solid var(--border, #cbd5e1)",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                  width: "100%",
+                  boxSizing: "border-box"
+                }}
+              >
+                <GripVertical size={14} style={{ color: "#94a3b8", cursor: "grab" }} />
+                <div style={{
+                  width: "28px",
+                  height: "28px",
+                  borderRadius: "6px",
+                  backgroundColor: "#14b8a6",
+                  color: "#ffffff",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0
+                }}>
+                  <Calendar size={14} />
+                </div>
+                <div style={{ flex: 1, fontSize: "0.82rem", fontWeight: "600", color: "var(--c-text)" }}>
+                  Date Stamp
+                </div>
+                <span style={{ fontSize: "14px", color: "var(--text-muted)", paddingRight: "4px" }}>+</span>
+              </div>
+
+              {/* 4. Text Card */}
+              <div 
+                onClick={addTextToPage}
+                className="option-card"
+                style={{
+                  padding: "10px 12px",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: "8px",
+                  backgroundColor: "var(--c-bg, #ffffff)",
+                  border: "1px solid var(--border, #cbd5e1)",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                  width: "100%",
+                  boxSizing: "border-box"
+                }}
+              >
+                <GripVertical size={14} style={{ color: "#94a3b8", cursor: "grab" }} />
+                <div style={{
+                  width: "28px",
+                  height: "28px",
+                  borderRadius: "6px",
+                  backgroundColor: "#f59e0b",
+                  color: "#ffffff",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0
+                }}>
+                  <Type size={14} />
+                </div>
+                <div style={{ flex: 1, fontSize: "0.82rem", fontWeight: "600", color: "var(--c-text)" }}>
+                  Text
+                </div>
+                <span style={{ fontSize: "14px", color: "var(--text-muted)", paddingRight: "4px" }}>+</span>
+              </div>
+
+              {/* 5. Company Stamp Card */}
+              <div 
+                onClick={addStampToPage}
+                className="option-card"
+                style={{
+                  padding: "10px 12px",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: "8px",
+                  backgroundColor: "var(--c-bg, #ffffff)",
+                  border: "1px solid var(--border, #cbd5e1)",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                  width: "100%",
+                  boxSizing: "border-box"
+                }}
+              >
+                <GripVertical size={14} style={{ color: "#94a3b8", cursor: "grab" }} />
+                <div style={{
+                  width: "28px",
+                  height: "28px",
+                  borderRadius: "6px",
+                  backgroundColor: "#ec4899",
+                  color: "#ffffff",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0
+                }}>
+                  <Stamp size={14} />
+                </div>
+                <div style={{
+                  flex: 1,
+                  border: signatureDetails.stampDataUrl ? "1px dashed var(--border, #cbd5e1)" : "none",
+                  borderRadius: "4px",
+                  height: signatureDetails.stampDataUrl ? "36px" : "auto",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  backgroundColor: signatureDetails.stampDataUrl ? "var(--c-surface, #f8fafc)" : "transparent",
+                  overflow: "hidden",
+                  padding: signatureDetails.stampDataUrl ? "2px" : "0",
+                  fontSize: "0.82rem",
+                  fontWeight: "600",
+                  color: "var(--c-text)",
+                  textAlign: "left"
+                }}>
+                  {signatureDetails.stampDataUrl ? (
+                    <img src={signatureDetails.stampDataUrl} style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain" }} alt="Stamp" />
+                  ) : (
+                    "Company Stamp"
+                  )}
+                </div>
+                <button 
+                  onClick={e => { e.stopPropagation(); setModalSection("stamp"); setStampMethod("generate"); setShowDetailsModal(true); }}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    color: "var(--text-muted)",
+                    padding: "6px",
+                    borderRadius: "4px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center"
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.backgroundColor = "var(--accent-soft, rgba(0,0,0,0.05))"}
+                  onMouseLeave={e => e.currentTarget.style.backgroundColor = "transparent"}
+                >
+                  <Edit2 size={13} />
+                </button>
+              </div>
+
+              {/* 6. Checkbox Card */}
+              <div 
+                onClick={addCheckmarkToPage}
+                className="option-card"
+                style={{
+                  padding: "10px 12px",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: "8px",
+                  backgroundColor: "var(--c-bg, #ffffff)",
+                  border: "1px solid var(--border, #cbd5e1)",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                  width: "100%",
+                  boxSizing: "border-box"
+                }}
+              >
+                <GripVertical size={14} style={{ color: "#94a3b8", cursor: "grab" }} />
+                <div style={{
+                  width: "28px",
+                  height: "28px",
+                  borderRadius: "6px",
+                  backgroundColor: "#10b981",
+                  color: "#ffffff",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "14px",
+                  fontWeight: "bold",
+                  flexShrink: 0
+                }}>
+                  ✓
+                </div>
+                <div style={{ flex: 1, fontSize: "0.82rem", fontWeight: "600", color: "var(--c-text)" }}>
+                  Checkbox / Tick
+                </div>
+                <span style={{ fontSize: "14px", color: "var(--text-muted)", paddingRight: "4px" }}>+</span>
+              </div>
+
+            </div>
+          </div>
+
+          {/* Sign Bottom Button */}
+          <div style={{ padding: "16px 24px 24px", flexShrink: 0 }}>
+            <button 
+              onClick={handleSignComplete}
+              className="v2-pill-primary"
+              style={{
+                width: "100%",
+                boxSizing: "border-box",
+                padding: "12px",
+                fontSize: "14px",
+                fontWeight: "600",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "8px"
+              }}
+            >
+              <span>Sign PDF</span>
+              <span>&rarr;</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -2243,6 +2393,491 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                   </button>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── ONBOARDING OVERLAY MODAL ── */}
+      {onboardingModal && (
+        <div style={{
+          position: "fixed",
+          inset: 0,
+          backgroundColor: "rgba(15, 23, 42, 0.4)",
+          backdropFilter: "blur(6px)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          zIndex: 9999,
+          padding: "24px",
+          boxSizing: "border-box"
+        }}>
+          <div style={{
+            backgroundColor: "#ffffff",
+            borderRadius: "16px",
+            boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+            border: "1px solid rgba(0, 0, 0, 0.05)",
+            width: "100%",
+            maxWidth: "580px",
+            position: "relative",
+            overflow: "hidden",
+            display: "flex",
+            flexDirection: "column"
+          }}>
+            {/* Close Button */}
+            <button
+              onClick={() => setOnboardingModal(null)}
+              style={{
+                position: "absolute",
+                top: "20px",
+                right: "20px",
+                background: "rgba(241, 245, 249, 0.8)",
+                border: "none",
+                cursor: "pointer",
+                color: "#64748b",
+                width: "28px",
+                height: "28px",
+                borderRadius: "50%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                transition: "all 0.2s"
+              }}
+              onMouseEnter={e => e.currentTarget.style.backgroundColor = "#e2e8f0"}
+              onMouseLeave={e => e.currentTarget.style.backgroundColor = "rgba(241, 245, 249, 0.8)"}
+              title="Skip and go to editor"
+            >
+              <X size={15} />
+            </button>
+
+            {/* Email Invite input mode vs Main Option cards Selection mode */}
+            {emailInputMode ? (
+              <div style={{ padding: "40px" }}>
+                <div style={{ textAlign: "center", marginBottom: "28px" }}>
+                  <div style={{ width: "56px", height: "56px", borderRadius: "50%", backgroundColor: "#ecfdf5", color: "#10b981", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}>
+                    <Users size={24} />
+                  </div>
+                  <h2 style={{ fontSize: "1.35rem", fontWeight: "800", color: "#0f172a", margin: "0 0 8px 0" }}>
+                    Get Signatures from Others
+                  </h2>
+                  <p style={{ fontSize: "0.85rem", color: "#64748b", margin: 0 }}>
+                    Enter the email address of the person you'd like to request a signature from.
+                  </p>
+                </div>
+
+                <form onSubmit={(e) => {
+                  e.preventDefault();
+                  if (inviteEmail.trim()) {
+                    setEmailInvites([inviteEmail.trim()]);
+                    setStep("invite-sent");
+                    setEmailInputMode(false);
+                    setOnboardingModal(null);
+                  }
+                }}>
+                  <div style={{ marginBottom: "20px" }}>
+                    <label style={{ fontSize: "0.74rem", fontWeight: "700", color: "#475569", display: "block", marginBottom: "6px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                      Signer Email Address
+                    </label>
+                    <input
+                      type="email"
+                      required
+                      placeholder="e.g., signer@company.com"
+                      value={inviteEmail}
+                      onChange={(e) => setInviteEmail(e.target.value)}
+                      style={{
+                        width: "100%",
+                        padding: "12px 14px",
+                        borderRadius: "8px",
+                        border: "1px solid #cbd5e1",
+                        fontSize: "0.9rem",
+                        color: "#0f172a",
+                        boxSizing: "border-box",
+                        outline: "none",
+                        transition: "all 0.2s"
+                      }}
+                      onFocus={e => e.currentTarget.style.borderColor = "var(--c-accent, #2563eb)"}
+                      onBlur={e => e.currentTarget.style.borderColor = "#cbd5e1"}
+                    />
+                  </div>
+
+                  <div style={{ display: "flex", gap: "12px" }}>
+                    <button
+                      type="button"
+                      onClick={() => setEmailInputMode(false)}
+                      style={{
+                        flex: 1,
+                        padding: "12px",
+                        borderRadius: "9999px",
+                        border: "1px solid #cbd5e1",
+                        background: "transparent",
+                        color: "#475569",
+                        fontSize: "0.85rem",
+                        fontWeight: "600",
+                        cursor: "pointer"
+                      }}
+                    >
+                      Back
+                    </button>
+                    <button
+                      type="submit"
+                      style={{
+                        flex: 2,
+                        padding: "12px",
+                        borderRadius: "9999px",
+                        border: "none",
+                        background: "var(--c-accent, #2563eb)",
+                        color: "#ffffff",
+                        fontSize: "0.85rem",
+                        fontWeight: "700",
+                        cursor: "pointer"
+                      }}
+                    >
+                      Send Signature Invite
+                    </button>
+                  </div>
+                </form>
+              </div>
+            ) : (
+              <div style={{ padding: "40px" }}>
+                {onboardingModal === "who-signs" ? (
+                  <>
+                    <div style={{ textAlign: "center", marginBottom: "32px" }}>
+                      <h2 style={{ fontSize: "1.45rem", fontWeight: "800", color: "#0f172a", margin: "0 0 8px 0" }}>
+                        Choose who's signing
+                      </h2>
+                      <p style={{ fontSize: "0.85rem", color: "#64748b", margin: 0 }}>
+                        Select the signing option that fits your document needs.
+                      </p>
+                    </div>
+
+                    <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                      {/* Option 1: Sign myself */}
+                      <div
+                        onClick={() => setOnboardingModal("sealing-type")}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "20px",
+                          padding: "20px",
+                          border: "1.5px solid #e2e8f0",
+                          borderRadius: "12px",
+                          cursor: "pointer",
+                          transition: "all 0.2s ease-in-out",
+                          backgroundColor: "#ffffff"
+                        }}
+                        onMouseEnter={e => {
+                          e.currentTarget.style.borderColor = "var(--c-accent, #2563eb)";
+                          e.currentTarget.style.backgroundColor = "var(--c-surface-soft, #f8fafc)";
+                          e.currentTarget.style.transform = "translateY(-1px)";
+                        }}
+                        onMouseLeave={e => {
+                          e.currentTarget.style.borderColor = "#e2e8f0";
+                          e.currentTarget.style.backgroundColor = "#ffffff";
+                          e.currentTarget.style.transform = "none";
+                        }}
+                      >
+                        <div style={{ flexShrink: 0 }}>
+                          <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="48" height="48" rx="12" fill="#eff6ff"/>
+                            <path d="M14 34V14C14 12.8954 14.8954 12 16 12H26L34 20V34C34 35.1046 33.1046 36 32 36H16C14.8954 36 14 35.1046 14 34Z" stroke="#2563eb" strokeWidth="2.5" strokeLinejoin="round"/>
+                            <path d="M26 12V20H34" stroke="#2563eb" strokeWidth="2" strokeLinejoin="round"/>
+                            <path d="M18 28C19.5 25.5 23.5 25.5 25 28C26.5 30.5 28.5 30.5 30 28" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        </div>
+                        <div>
+                          <h3 style={{ fontSize: "0.95rem", fontWeight: "750", color: "#0f172a", margin: "0 0 4px 0" }}>
+                            Sign myself
+                          </h3>
+                          <p style={{ fontSize: "0.8rem", color: "#64748b", margin: 0, lineHeight: "1.4" }}>
+                            I want to place my own signatures, text, dates, or checkboxes on the document.
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Option 2: Get signatures from others */}
+                      <div
+                        onClick={() => setEmailInputMode(true)}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "20px",
+                          padding: "20px",
+                          border: "1.5px solid #e2e8f0",
+                          borderRadius: "12px",
+                          cursor: "pointer",
+                          transition: "all 0.2s ease-in-out",
+                          backgroundColor: "#ffffff"
+                        }}
+                        onMouseEnter={e => {
+                          e.currentTarget.style.borderColor = "var(--c-accent, #2563eb)";
+                          e.currentTarget.style.backgroundColor = "var(--c-surface-soft, #f8fafc)";
+                          e.currentTarget.style.transform = "translateY(-1px)";
+                        }}
+                        onMouseLeave={e => {
+                          e.currentTarget.style.borderColor = "#e2e8f0";
+                          e.currentTarget.style.backgroundColor = "#ffffff";
+                          e.currentTarget.style.transform = "none";
+                        }}
+                      >
+                        <div style={{ flexShrink: 0 }}>
+                          <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="48" height="48" rx="12" fill="#ecfdf5"/>
+                            <circle cx="20" cy="20" r="5" stroke="#10b981" strokeWidth="2.5"/>
+                            <path d="M12 32C12 28.5 15.5 26 20 26C24.5 26 28 28.5 28 32" stroke="#10b981" strokeWidth="2.5" strokeLinecap="round"/>
+                            <circle cx="32" cy="27" r="3.5" stroke="#10b981" strokeWidth="2"/>
+                            <path d="M28 34C28 32 30 30.5 32.5 30.5C35 30.5 37 32 37 34" stroke="#10b981" strokeWidth="2" strokeLinecap="round"/>
+                          </svg>
+                        </div>
+                        <div>
+                          <h3 style={{ fontSize: "0.95rem", fontWeight: "750", color: "#0f172a", margin: "0 0 4px 0" }}>
+                            Get signatures from others
+                          </h3>
+                          <p style={{ fontSize: "0.8rem", color: "#64748b", margin: 0, lineHeight: "1.4" }}>
+                            Send email invitation requests to other users to review and sign this document.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div style={{ textAlign: "center", marginBottom: "32px" }}>
+                      <h2 style={{ fontSize: "1.45rem", fontWeight: "800", color: "#0f172a", margin: "0 0 8px 0" }}>
+                        Choose sealing type
+                      </h2>
+                      <p style={{ fontSize: "0.85rem", color: "#64748b", margin: 0 }}>
+                        Select the type of seal or verification you'd like to apply.
+                      </p>
+                    </div>
+
+                    <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                      {/* Option 1: Simple seal */}
+                      <div
+                        onClick={() => setOnboardingModal(null)}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "20px",
+                          padding: "20px",
+                          border: "1.5px solid #e2e8f0",
+                          borderRadius: "12px",
+                          cursor: "pointer",
+                          transition: "all 0.2s ease-in-out",
+                          backgroundColor: "#ffffff"
+                        }}
+                        onMouseEnter={e => {
+                          e.currentTarget.style.borderColor = "var(--c-accent, #2563eb)";
+                          e.currentTarget.style.backgroundColor = "var(--c-surface-soft, #f8fafc)";
+                          e.currentTarget.style.transform = "translateY(-1px)";
+                        }}
+                        onMouseLeave={e => {
+                          e.currentTarget.style.borderColor = "#e2e8f0";
+                          e.currentTarget.style.backgroundColor = "#ffffff";
+                          e.currentTarget.style.transform = "none";
+                        }}
+                      >
+                        <div style={{ flexShrink: 0 }}>
+                          <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="48" height="48" rx="12" fill="#f0fdf4"/>
+                            <rect x="15" y="11" width="18" height="26" rx="3" stroke="#22c55e" strokeWidth="2.5"/>
+                            <path d="M20 24L23 27L28 21" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        </div>
+                        <div>
+                          <h3 style={{ fontSize: "0.95rem", fontWeight: "750", color: "#0f172a", margin: "0 0 4px 0" }}>
+                            Sign without a seal
+                          </h3>
+                          <p style={{ fontSize: "0.8rem", color: "#64748b", margin: 0, lineHeight: "1.4" }}>
+                            Apply a standard, non-certified electronic signature. Ideal for quick approvals.
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Option 2: Digital seal (Premium) */}
+                      <div
+                        onClick={() => setShowPremiumWarning(true)}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "20px",
+                          padding: "20px",
+                          border: "1.5px solid #e2e8f0",
+                          borderRadius: "12px",
+                          cursor: "pointer",
+                          transition: "all 0.2s ease-in-out",
+                          backgroundColor: "#ffffff",
+                          position: "relative"
+                        }}
+                        onMouseEnter={e => {
+                          e.currentTarget.style.borderColor = "#f59e0b";
+                          e.currentTarget.style.backgroundColor = "#fffde6";
+                          e.currentTarget.style.transform = "translateY(-1px)";
+                        }}
+                        onMouseLeave={e => {
+                          e.currentTarget.style.borderColor = "#e2e8f0";
+                          e.currentTarget.style.backgroundColor = "#ffffff";
+                          e.currentTarget.style.transform = "none";
+                        }}
+                      >
+                        <span style={{
+                          position: "absolute",
+                          top: "14px",
+                          right: "14px",
+                          backgroundColor: "#fff3c4",
+                          color: "#b45309",
+                          fontSize: "0.62rem",
+                          fontWeight: "800",
+                          padding: "3px 8px",
+                          borderRadius: "9999px",
+                          border: "1px solid #fcd34d",
+                          textTransform: "uppercase",
+                          letterSpacing: "0.04em"
+                        }}>
+                          Premium 👑
+                        </span>
+                        
+                        <div style={{ flexShrink: 0 }}>
+                          <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="48" height="48" rx="12" fill="#fffbeb"/>
+                            <circle cx="24" cy="19" r="7" stroke="#f59e0b" strokeWidth="2.5"/>
+                            <path d="M19 25L17 35L24 32L31 35L29 25" stroke="#f59e0b" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                            <path d="M21 18L23 20L27 16" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        </div>
+                        <div style={{ paddingRight: "70px" }}>
+                          <h3 style={{ fontSize: "0.95rem", fontWeight: "750", color: "#0f172a", margin: "0 0 4px 0" }}>
+                            Sign with digital seal
+                          </h3>
+                          <p style={{ fontSize: "0.8rem", color: "#64748b", margin: 0, lineHeight: "1.4" }}>
+                            Add a cryptographic, tamper-proof seal containing verification certificates.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={() => setOnboardingModal("who-signs")}
+                      style={{
+                        marginTop: "24px",
+                        background: "none",
+                        border: "none",
+                        color: "#64748b",
+                        fontSize: "0.8rem",
+                        fontWeight: "600",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "6px",
+                        marginRight: "auto",
+                        padding: 0
+                      }}
+                    >
+                      &larr; Back to sign options
+                    </button>
+                  </>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ── PREMIUM UPSELL WARNING OVERLAY ── */}
+      {showPremiumWarning && (
+        <div style={{
+          position: "fixed",
+          inset: 0,
+          backgroundColor: "rgba(15, 23, 42, 0.4)",
+          backdropFilter: "blur(6px)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          zIndex: 10000,
+          padding: "24px",
+          boxSizing: "border-box"
+        }}>
+          <div style={{
+            backgroundColor: "#ffffff",
+            borderRadius: "16px",
+            boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+            border: "1px solid rgba(0, 0, 0, 0.05)",
+            width: "100%",
+            maxWidth: "500px",
+            padding: "40px",
+            textAlign: "center",
+            boxSizing: "border-box",
+            position: "relative"
+          }}>
+            <div style={{ width: "64px", height: "64px", borderRadius: "50%", backgroundColor: "#fffbeb", color: "#d97706", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px" }}>
+              <span style={{ fontSize: "28px" }}>👑</span>
+            </div>
+
+            <h3 style={{ fontSize: "1.35rem", fontWeight: "800", color: "#0f172a", marginBottom: "12px" }}>
+              Unlock Digital Seals with Premium
+            </h3>
+            
+            <p style={{ fontSize: "0.85rem", color: "#64748b", lineHeight: "1.5", marginBottom: "24px" }}>
+              Cryptographic digital seals are legally-binding certificates that ensure your document cannot be altered after signing. Secure your workflows with professional credentials.
+            </p>
+
+            <div style={{
+              textAlign: "left",
+              backgroundColor: "var(--c-surface-soft, #f8fafc)",
+              borderRadius: "8px",
+              padding: "16px 20px",
+              marginBottom: "28px",
+              border: "1px solid #e2e8f0"
+            }}>
+              <h4 style={{ fontSize: "0.78rem", fontWeight: "750", color: "#475569", margin: "0 0 10px 0", textTransform: "uppercase" }}>
+                Included in Premium:
+              </h4>
+              <ul style={{ margin: 0, paddingLeft: "16px", fontSize: "0.8rem", color: "#475569", display: "flex", flexDirection: "column", gap: "6px" }}>
+                <li>🔒 Legally compliant cryptographic signatures</li>
+                <li>📝 Access to signature drawing pads, stamp templates</li>
+                <li>🗄️ Secure, unlimited document backup & history log</li>
+                <li>⚡ Priority processing speeds</li>
+              </ul>
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+              <button
+                onClick={() => {
+                  setShowPremiumWarning(false);
+                  setOnboardingModal(null); // Bypass warning and enter editor
+                }}
+                className="v2-pill-primary"
+                style={{
+                  width: "100%",
+                  boxSizing: "border-box",
+                  padding: "12px",
+                  fontSize: "14px",
+                  fontWeight: "700"
+                }}
+              >
+                Try Premium Free for 7 Days
+              </button>
+
+              <button
+                onClick={() => {
+                  setShowPremiumWarning(false);
+                  setOnboardingModal(null); // Continue to editor without premium
+                }}
+                style={{
+                  width: "100%",
+                  padding: "10px",
+                  borderRadius: "9999px",
+                  border: "none",
+                  backgroundColor: "transparent",
+                  color: "#64748b",
+                  fontSize: "0.82rem",
+                  fontWeight: "600",
+                  cursor: "pointer"
+                }}
+                onMouseEnter={e => e.currentTarget.style.color = "#0f172a"}
+                onMouseLeave={e => e.currentTarget.style.color = "#64748b"}
+              >
+                Continue with simple signature instead
+              </button>
             </div>
           </div>
         </div>
