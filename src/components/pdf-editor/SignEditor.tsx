@@ -3,7 +3,7 @@ import {
   ChevronLeft, ChevronRight, FileText, Plus, Check, X, ArrowLeft,
   Users, Edit2, Trash2, Calendar, Type, HelpCircle, PenTool,
   User, Stamp, GripVertical, Image, ChevronDown, Download, FolderKanban,
-  Hand, MousePointer, Undo, Redo, Crown, Lock, Database, Zap
+  Hand, MousePointer, Undo, Redo
 } from "lucide-react";
 import { getPdfjsLib } from "../../utils/pdfjs";
 import { OverlayElement, ActiveTool } from "./types";
@@ -16,7 +16,7 @@ interface SignEditorProps {
 
 export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
   const [step, setStep] = useState<"editor" | "invite-sent">("editor");
-  const [onboardingModal, setOnboardingModal] = useState<"who-signs" | "sealing-type" | null>("who-signs");
+  const [onboardingModal, setOnboardingModal] = useState<"who-signs" | null>("who-signs");
   const [showLeftSidebar, setShowLeftSidebar] = useState(true);
   const [activeCursorTool, setActiveCursorTool] = useState<"pointer" | "hand">("pointer");
 
@@ -63,7 +63,6 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
   // Modals state
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [emailInvites, setEmailInvites] = useState<string[]>([""]);
-  const [showPremiumWarning, setShowPremiumWarning] = useState(false);
   const [emailInputMode, setEmailInputMode] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
   
@@ -1374,39 +1373,6 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
             </h3>
           </div>
 
-          {/* Section: Type */}
-          <div className="options-group" style={{ marginBottom: "8px", padding: "0 24px" }}>
-            <label className="options-label" style={{ color: "var(--c-text)", fontWeight: "600" }}>Type</label>
-            <div style={{ display: "flex", gap: "8px", marginTop: "4px" }}>
-              <div style={{
-                flex: 1,
-                backgroundColor: "var(--c-bg, #ffffff)",
-                border: "2px solid var(--c-accent, #2563eb)",
-                borderRadius: "4px",
-                padding: "8px 6px",
-                textAlign: "center",
-                cursor: "pointer"
-              }}>
-                <span style={{ display: "block", fontSize: "0.78rem", fontWeight: "600", color: "var(--c-text)" }}>Simple</span>
-                <span style={{ display: "block", fontSize: "0.6rem", color: "var(--text-muted)", marginTop: "2px" }}>Signature</span>
-              </div>
-              <div style={{
-                flex: 1,
-                backgroundColor: "rgba(255, 255, 255, 0.4)",
-                border: "1px solid var(--border, #cbd5e1)",
-                borderRadius: "4px",
-                padding: "8px 6px",
-                textAlign: "center",
-                opacity: 0.6,
-                cursor: "not-allowed"
-              }}>
-                <span style={{ display: "flex", fontSize: "0.78rem", fontWeight: "600", color: "var(--c-text)", alignItems: "center", justifyContent: "center", gap: "4px" }}>
-                  Digital <Crown size={12} style={{ color: "#f59e0b" }} />
-                </span>
-                <span style={{ display: "block", fontSize: "0.6rem", color: "var(--text-muted)", marginTop: "2px" }}>Cryptographic</span>
-              </div>
-            </div>
-          </div>
 
           {/* Section: Required fields */}
           <div className="options-group" style={{ marginBottom: "8px", padding: "0 24px" }}>
@@ -2703,7 +2669,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
               </div>
             ) : (
               <div style={{ padding: "40px" }}>
-                {onboardingModal === "who-signs" ? (
+                {onboardingModal === "who-signs" && (
                   <>
                     <div style={{ textAlign: "center", marginBottom: "32px" }}>
                       <h2 style={{ fontSize: "1.45rem", fontWeight: "800", color: "#0f172a", margin: "0 0 8px 0" }}>
@@ -2717,7 +2683,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
                         {/* Option 1: Sign myself */}
                         <div
-                          onClick={() => setOnboardingModal("sealing-type")}
+                          onClick={() => setOnboardingModal(null)}
                           style={{
                             display: "flex",
                             flexDirection: "column",
@@ -2822,169 +2788,6 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                         </div>
                       </div>
                   </>
-                ) : (
-                  <>
-                    <div style={{ textAlign: "center", marginBottom: "32px" }}>
-                      <h2 style={{ fontSize: "1.45rem", fontWeight: "800", color: "#0f172a", margin: "0 0 8px 0" }}>
-                        Choose sealing type
-                      </h2>
-                      <p style={{ fontSize: "0.85rem", color: "#64748b", margin: 0 }}>
-                        Select the type of seal or verification you'd like to apply.
-                      </p>
-                    </div>
-
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
-                      {/* Option 1: Simple seal */}
-                      <div
-                        onClick={() => setOnboardingModal(null)}
-                        style={{
-                          display: "flex",
-                          flexDirection: "column",
-                          alignItems: "stretch",
-                          padding: "24px",
-                          border: "1.5px solid #e2e8f0",
-                          borderRadius: "4px",
-                          cursor: "pointer",
-                          transition: "all 0.2s ease-in-out",
-                          backgroundColor: "#ffffff",
-                          height: "100%",
-                          boxSizing: "border-box"
-                        }}
-                        onMouseEnter={e => {
-                          e.currentTarget.style.borderColor = "var(--c-accent, #2563eb)";
-                          e.currentTarget.style.transform = "translateY(-2px)";
-                          e.currentTarget.style.boxShadow = "0 10px 20px -10px rgba(37, 99, 235, 0.15)";
-                        }}
-                        onMouseLeave={e => {
-                          e.currentTarget.style.borderColor = "#e2e8f0";
-                          e.currentTarget.style.transform = "none";
-                          e.currentTarget.style.boxShadow = "0 1px 3px rgba(0,0,0,0.02)";
-                        }}
-                      >
-                        <div style={{
-                          height: "140px",
-                          backgroundColor: "#f8fafc",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          borderBottom: "1px solid #e2e8f0",
-                          padding: "16px"
-                        }}>
-                          <img 
-                            src="/sign_no_seal.png" 
-                            alt="Sign Without Seal" 
-                            style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain" }} 
-                          />
-                        </div>
-                        <div style={{ padding: "20px" }}>
-                          <h3 style={{ fontSize: "0.95rem", fontWeight: "750", color: "#0f172a", margin: "0 0 8px 0" }}>
-                            Sign without a seal
-                          </h3>
-                          <p style={{ fontSize: "0.78rem", color: "#64748b", margin: 0, lineHeight: "1.45" }}>
-                            Apply a standard, non-certified electronic signature.
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* Option 2: Digital seal (Premium) */}
-                      <div
-                        onClick={() => setShowPremiumWarning(true)}
-                        style={{
-                          display: "flex",
-                          flexDirection: "column",
-                          alignItems: "stretch",
-                          border: "1.5px solid #e2e8f0",
-                          borderRadius: "4px",
-                          cursor: "pointer",
-                          transition: "all 0.2s ease-in-out",
-                          backgroundColor: "#ffffff",
-                          position: "relative",
-                          overflow: "hidden",
-                          height: "100%",
-                          boxSizing: "border-box",
-                          boxShadow: "0 1px 3px rgba(0,0,0,0.02)"
-                        }}
-                        onMouseEnter={e => {
-                          e.currentTarget.style.borderColor = "#f59e0b";
-                          e.currentTarget.style.transform = "translateY(-2px)";
-                          e.currentTarget.style.boxShadow = "0 10px 20px -10px rgba(245, 158, 11, 0.15)";
-                        }}
-                        onMouseLeave={e => {
-                          e.currentTarget.style.borderColor = "#e2e8f0";
-                          e.currentTarget.style.transform = "none";
-                          e.currentTarget.style.boxShadow = "0 1px 3px rgba(0,0,0,0.02)";
-                        }}
-                      >
-                        <span style={{
-                          position: "absolute",
-                          top: "14px",
-                          right: "14px",
-                          backgroundColor: "#fff3c4",
-                          color: "#b45309",
-                          fontSize: "0.62rem",
-                          fontWeight: "800",
-                          padding: "3px 8px",
-                          borderRadius: "9999px",
-                          border: "1px solid #fcd34d",
-                          textTransform: "uppercase",
-                          letterSpacing: "0.04em",
-                          zIndex: 10,
-                          display: "inline-flex",
-                          alignItems: "center",
-                          gap: "3px"
-                        }}>
-                          Premium <Crown size={10} style={{ fill: "currentColor" }} />
-                        </span>
-                        
-                        <div style={{
-                          height: "140px",
-                          backgroundColor: "#fffbeb",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          borderBottom: "1px solid #fde68a",
-                          padding: "16px"
-                        }}>
-                          <img 
-                            src="/sign_with_seal.png" 
-                            alt="Sign With Digital Seal" 
-                            style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain" }} 
-                          />
-                        </div>
-                        <div style={{ padding: "20px" }}>
-                          <h3 style={{ fontSize: "0.95rem", fontWeight: "750", color: "#0f172a", margin: "0 0 8px 0" }}>
-                            Sign with digital seal
-                          </h3>
-                          <p style={{ fontSize: "0.78rem", color: "#64748b", margin: 0, lineHeight: "1.45" }}>
-                            Add a cryptographic, tamper-proof seal containing verification certificates.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <button
-                      onClick={() => setOnboardingModal("who-signs")}
-                      style={{
-                        marginTop: "24px",
-                        background: "transparent",
-                        border: "1px solid #cbd5e1",
-                        borderRadius: "8px",
-                        color: "#475569",
-                        fontSize: "0.8rem",
-                        fontWeight: "600",
-                        cursor: "pointer",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "6px",
-                        padding: "8px 16px",
-                        marginRight: "auto",
-                        transition: "all 0.15s ease"
-                      }}
-                    >
-                      <ArrowLeft size={13} strokeWidth={2.5} />
-                      Back to sign options
-                    </button>
-                  </>
                 )}
               </div>
             )}
@@ -2992,114 +2795,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
         </div>
       )}
 
-      {/* ── PREMIUM UPSELL WARNING OVERLAY ── */}
-      {showPremiumWarning && (
-        <div style={{
-          position: "fixed",
-          inset: 0,
-          backgroundColor: "rgba(15, 23, 42, 0.4)",
-          backdropFilter: "blur(6px)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          zIndex: 10000,
-          padding: "24px",
-          boxSizing: "border-box"
-        }}>
-          <div style={{
-            backgroundColor: "#ffffff",
-            borderRadius: "16px",
-            boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
-            border: "1px solid rgba(0, 0, 0, 0.05)",
-            width: "100%",
-            maxWidth: "500px",
-            padding: "40px",
-            textAlign: "center",
-            boxSizing: "border-box",
-            position: "relative"
-          }}>
-            <div style={{ width: "64px", height: "64px", borderRadius: "50%", backgroundColor: "#fffbeb", color: "#d97706", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px" }}>
-              <Crown size={28} style={{ fill: "currentColor" }} />
-            </div>
 
-            <h3 style={{ fontSize: "1.35rem", fontWeight: "800", color: "#0f172a", marginBottom: "12px" }}>
-              Unlock Digital Seals with Premium
-            </h3>
-            
-            <p style={{ fontSize: "0.85rem", color: "#64748b", lineHeight: "1.5", marginBottom: "24px" }}>
-              Cryptographic digital seals are legally-binding certificates that ensure your document cannot be altered after signing. Secure your workflows with professional credentials.
-            </p>
-
-            <div style={{
-              textAlign: "left",
-              backgroundColor: "var(--c-surface-soft, #f8fafc)",
-              borderRadius: "8px",
-              padding: "16px 20px",
-              marginBottom: "28px",
-              border: "1px solid #e2e8f0"
-            }}>
-              <h4 style={{ fontSize: "0.78rem", fontWeight: "750", color: "#475569", margin: "0 0 10px 0", textTransform: "uppercase" }}>
-                Included in Premium:
-              </h4>
-              <ul style={{ margin: 0, padding: 0, listStyle: "none", fontSize: "0.8rem", color: "#475569", display: "flex", flexDirection: "column", gap: "8px" }}>
-                <li style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                  <Lock size={14} style={{ color: "#d97706", flexShrink: 0 }} /> Legally compliant cryptographic signatures
-                </li>
-                <li style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                  <PenTool size={14} style={{ color: "#d97706", flexShrink: 0 }} /> Access to signature drawing pads, stamp templates
-                </li>
-                <li style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                  <Database size={14} style={{ color: "#d97706", flexShrink: 0 }} /> Secure, unlimited document backup & history log
-                </li>
-                <li style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                  <Zap size={14} style={{ color: "#d97706", flexShrink: 0 }} /> Priority processing speeds
-                </li>
-              </ul>
-            </div>
-
-            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-              <button
-                onClick={() => {
-                  setShowPremiumWarning(false);
-                  setOnboardingModal(null); // Bypass warning and enter editor
-                }}
-                className="v2-pill-primary"
-                style={{
-                  width: "100%",
-                  boxSizing: "border-box",
-                  padding: "12px",
-                  fontSize: "14px",
-                  fontWeight: "700"
-                }}
-              >
-                Try Premium Free for 7 Days
-              </button>
-
-              <button
-                onClick={() => {
-                  setShowPremiumWarning(false);
-                  setOnboardingModal(null); // Continue to editor without premium
-                }}
-                style={{
-                  width: "100%",
-                  padding: "10px",
-                  borderRadius: "9999px",
-                  border: "none",
-                  backgroundColor: "transparent",
-                  color: "#64748b",
-                  fontSize: "0.82rem",
-                  fontWeight: "600",
-                  cursor: "pointer"
-                }}
-                onMouseEnter={e => e.currentTarget.style.color = "#0f172a"}
-                onMouseLeave={e => e.currentTarget.style.color = "#64748b"}
-              >
-                Continue with simple signature instead
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
