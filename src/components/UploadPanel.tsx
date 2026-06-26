@@ -23,11 +23,11 @@ import {
 } from "./upload/UploadHelpers";
 import { FilePreviewCard } from "./upload/FilePreviewCard";
 import { PdfPageCard } from "./upload/PdfPageCard";
-import { PreviewModal } from "./upload/PreviewModal";
 import { UploadHero } from "./upload/UploadHero";
 import { SuccessState } from "./upload/SuccessState";
 import { OptionsSidebar } from "./upload/OptionsSidebar";
 import { indianSeoRoutes } from "../data/seoPages";
+import { InFramePdfViewer } from "./unified-workspace/WorkspaceCanvas";
 
 function generateReconstructedDoc(fileName: string): string {
   const title = fileName.replace(/\.[^/.]+$/, "").replace(/[_-]/g, " ");
@@ -872,6 +872,12 @@ export function UploadPanel({
               </div>
 
               {/* Page/file grid inside the preview frame card */}
+              {previewFile ? (
+                <InFramePdfViewer
+                  file={previewFile}
+                  onClose={() => setPreviewFile(null)}
+                />
+              ) : (
               <div 
                 className="workspace-grid"
                 style={{ 
@@ -906,6 +912,7 @@ export function UploadPanel({
                       totalGridItems={pageOrder.length}
                       onMoveLeft={() => movePage(idx, "left")}
                       onMoveRight={() => movePage(idx, "right")}
+                      onPreviewClick={stagedFiles[0] ? () => openPreview(stagedFiles[0]) : undefined}
                     />
                   ))
                 ) : (
@@ -934,6 +941,7 @@ export function UploadPanel({
                   </div>
                 )}
               </div>
+              )}
             </div>
           </div>
 
@@ -1124,14 +1132,6 @@ export function UploadPanel({
           />
         )
       )}
-      <PreviewModal
-        previewFile={previewFile}
-        onClose={() => setPreviewFile(null)}
-        previewScale={previewScale}
-        setPreviewScale={setPreviewScale}
-        previewRotation={previewRotation}
-        setPreviewRotation={setPreviewRotation}
-      />
     </div>
   );
 }

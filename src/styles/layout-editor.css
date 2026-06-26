@@ -774,20 +774,51 @@
   transform: translateY(-50%) scale(1);
 }
 
-/* Custom Scrollbars for PDF Editor Scroll Panels */
+/* Custom Scrollbars for PDF Editor Scroll Panels (Secondary Blue & Narrow) */
+.unified-workspace-container *::-webkit-scrollbar,
+.visual-editor-root *::-webkit-scrollbar,
+.visual-editor-active *::-webkit-scrollbar,
+.workspace-split-container *::-webkit-scrollbar,
+.workspace-canvas *::-webkit-scrollbar,
 .editor-page-sidebar-scroll::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
+  width: 5px;
+  height: 5px;
 }
+.unified-workspace-container *::-webkit-scrollbar-track,
+.visual-editor-root *::-webkit-scrollbar-track,
+.visual-editor-active *::-webkit-scrollbar-track,
+.workspace-split-container *::-webkit-scrollbar-track,
+.workspace-canvas *::-webkit-scrollbar-track,
 .editor-page-sidebar-scroll::-webkit-scrollbar-track {
   background: transparent;
 }
+.unified-workspace-container *::-webkit-scrollbar-thumb,
+.visual-editor-root *::-webkit-scrollbar-thumb,
+.visual-editor-active *::-webkit-scrollbar-thumb,
+.workspace-split-container *::-webkit-scrollbar-thumb,
+.workspace-canvas *::-webkit-scrollbar-thumb,
 .editor-page-sidebar-scroll::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #93c5fd; /* Secondary blue */
   border-radius: 9999px;
 }
+.unified-workspace-container *::-webkit-scrollbar-thumb:hover,
+.visual-editor-root *::-webkit-scrollbar-thumb:hover,
+.visual-editor-active *::-webkit-scrollbar-thumb:hover,
+.workspace-split-container *::-webkit-scrollbar-thumb:hover,
+.workspace-canvas *::-webkit-scrollbar-thumb:hover,
 .editor-page-sidebar-scroll::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #3b82f6;
+}
+
+/* Firefox support */
+.unified-workspace-container *,
+.visual-editor-root *,
+.visual-editor-active *,
+.workspace-split-container *,
+.workspace-canvas *,
+.editor-page-sidebar-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #93c5fd transparent;
 }
 
 /* Soft opacity transition for thumbnail buttons */

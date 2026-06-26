@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Play, CheckCircle2, Download, Share2, RotateCcw, File, ChevronDown, ChevronUp, Check, Printer, Trash2, ChevronRight, Type, Highlighter, PenTool, Layers, Settings2, Paintbrush, Square, Circle, Bold, Italic, Underline, AlignLeft, AlignCenter, AlignRight, Undo, Redo, Star } from "lucide-react";
+import { Play, CheckCircle2, Download, Share2, RotateCcw, File, ChevronDown, ChevronUp, Check, Printer, Trash2, ChevronRight, Type, Highlighter, PenTool, Layers, Settings2, Paintbrush, Square, Circle, Bold, Italic, Underline, AlignLeft, AlignCenter, AlignRight, Undo, Redo, Star, ArrowLeftRight } from "lucide-react";
 import { ToolIcon } from "../ToolIcon";
 
 interface WorkspaceOptionsProps {
@@ -150,7 +150,7 @@ const ToggleRow = ({
     onClick={() => onChange(!checked)}
   >
     <div>
-      <div style={{ fontSize: "13px", fontWeight: 600, color: "#1e293b" }}>{label}</div>
+      <div style={{ fontSize: "13px", fontWeight: 500, color: "#1e293b" }}>{label}</div>
       {desc && <div style={{ fontSize: "11px", color: "#64748b", marginTop: "1px" }}>{desc}</div>}
     </div>
     <div
@@ -317,7 +317,7 @@ const CategoryHeader = ({
   >
     <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
       <Icon size={16} style={{ color: "#475569" }} />
-      <span style={{ fontSize: "13.5px", fontWeight: 600, color: "#1e293b" }}>{title}</span>
+      <span style={{ fontSize: "13px", fontWeight: 500, color: "#1e293b" }}>{title}</span>
     </div>
     {isOpen ? <ChevronUp size={16} style={{ color: "#64748b" }} /> : <ChevronDown size={16} style={{ color: "#64748b" }} />}
   </button>
@@ -1690,8 +1690,31 @@ export function WorkspaceOptions({
             </span>
           </div>
         </div>
-        <div className="uw-options-footer">
-          <button className="uw-action-btn" disabled style={{ opacity: 0.7 }}>
+        <div className="uw-options-footer" style={{ display: "flex", gap: "10px" }}>
+          <button
+            type="button"
+            onClick={clearSelection}
+            style={{
+              flex: 1,
+              backgroundColor: "transparent",
+              border: "1px solid var(--border, #cbd5e1)",
+              color: "var(--text-muted, #64748b)",
+              padding: "12px",
+              borderRadius: "6px",
+              fontSize: "14px",
+              fontWeight: 500,
+              cursor: "pointer",
+              transition: "all 0.2s ease",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center"
+            }}
+            onMouseEnter={e => e.currentTarget.style.backgroundColor = "#f8fafc"}
+            onMouseLeave={e => e.currentTarget.style.backgroundColor = "transparent"}
+          >
+            Cancel
+          </button>
+          <button className="uw-action-btn" disabled style={{ opacity: 0.7, flex: 1.5 }}>
             <span>Processing...</span>
           </button>
         </div>
@@ -1971,14 +1994,59 @@ export function WorkspaceOptions({
         {hasFiles && renderToolOptions()}
       </div>
 
-      <div className="uw-options-footer">
+      <div className="uw-options-footer" style={{ display: "flex", gap: "10px" }}>
+        <button
+          type="button"
+          onClick={clearSelection}
+          style={{
+            flex: 1,
+            backgroundColor: "transparent",
+            border: "1px solid var(--border, #cbd5e1)",
+            color: "var(--text-muted, #64748b)",
+            padding: "12px",
+            borderRadius: "6px",
+            fontSize: "14px",
+            fontWeight: 500,
+            cursor: "pointer",
+            transition: "all 0.2s ease",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center"
+          }}
+          onMouseEnter={e => e.currentTarget.style.backgroundColor = "#f8fafc"}
+          onMouseLeave={e => e.currentTarget.style.backgroundColor = "transparent"}
+        >
+          Cancel
+        </button>
         <button
           className="uw-action-btn"
           onClick={onExecute}
           disabled={!hasFiles || isProcessing}
+          style={{ flex: 1.5 }}
         >
-          <Play size={16} fill="currentColor" />
-          <span>{isProcessing ? "Processing..." : `Execute ${activeTool}`}</span>
+          {isProcessing ? (
+            <span>Processing...</span>
+          ) : (
+            <>
+              {activeTool.toLowerCase().includes(" to ") ? (
+                (() => {
+                  const index = activeTool.toLowerCase().indexOf(" to ");
+                  const left = activeTool.substring(0, index).trim();
+                  const right = activeTool.substring(index + 4).trim();
+                  return (
+                    <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                      {left} <ArrowLeftRight size={14} /> {right}
+                    </span>
+                  );
+                })()
+              ) : (
+                <>
+                  <Play size={16} fill="currentColor" />
+                  <span>{activeTool}</span>
+                </>
+              )}
+            </>
+          )}
         </button>
       </div>
     </aside>

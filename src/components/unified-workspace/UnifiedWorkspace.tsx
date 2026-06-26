@@ -39,6 +39,7 @@ export function UnifiedWorkspace({
   const [activeTab, setActiveTab] = useState<SidebarTab | null>("Compress");
   const [activeTool, setActiveTool] = useState<string>(selectedTool || "Compress PDF");
   const [stagedFiles, setStagedFiles] = useState<File[] | null>(initialFiles);
+  const [previewFile, setPreviewFile] = useState<File | null>(null);
 
   useEffect(() => {
     if (initialFiles) {
@@ -120,6 +121,7 @@ export function UnifiedWorkspace({
   useEffect(() => {
     setUndoStack([]);
     setRedoStack([]);
+    setPreviewFile(null);
   }, [stagedFiles, activeTool]);
 
   // Progress Bar states & effect (3 second rules sync)
@@ -315,7 +317,8 @@ export function UnifiedWorkspace({
         )}
         <WorkspaceHeader
           activeTool={activeTool}
-          onBack={onBack}
+          previewFile={previewFile}
+          onBack={previewFile ? () => setPreviewFile(null) : onBack}
           onLoginClick={() => onViewChange("login")}
           onProClick={() => onViewChange("pricing")}
         />
@@ -353,6 +356,8 @@ export function UnifiedWorkspace({
                 onRemoveFile={handleRemoveFile}
                 onAddMoreClick={() => {}}
                 onExecute={handleExecute}
+                previewFile={previewFile}
+                setPreviewFile={setPreviewFile}
                 isProcessing={isProcessing}
                 isCompleted={isCompleted}
                 activeJob={activeJob}

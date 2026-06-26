@@ -17,6 +17,7 @@ interface PdfPageCardProps {
   totalGridItems: number;
   onMoveLeft: () => void;
   onMoveRight: () => void;
+  onPreviewClick?: () => void;
 }
 
 export function PdfPageCard({
@@ -34,6 +35,7 @@ export function PdfPageCard({
   totalGridItems,
   onMoveLeft,
   onMoveRight,
+  onPreviewClick,
 }: PdfPageCardProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [loading, setLoading] = useState(true);
@@ -79,7 +81,11 @@ export function PdfPageCard({
   const showMove = selectedTool === "Organize PDF";
 
   return (
-    <div className={`canvas-file-card page-card ${isRemoved ? "removed" : ""} ${isSelected ? "selected" : ""}`} style={{ position: "relative" }}>
+    <div
+      className={`canvas-file-card page-card ${isRemoved ? "removed" : ""} ${isSelected ? "selected" : ""}`}
+      style={{ position: "relative", cursor: onPreviewClick ? "pointer" : "default" }}
+      onClick={() => onPreviewClick?.()}
+    >
       {showCheckbox && (
         <div 
           className="page-card-checkbox-wrapper" 

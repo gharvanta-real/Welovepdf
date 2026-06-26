@@ -53,6 +53,9 @@ interface WorkspaceCanvasProps {
   canUndo: boolean;
   canRedo: boolean;
   pushUndo: (elements: any[]) => void;
+
+  previewFile: File | null;
+  setPreviewFile: (file: File | null) => void;
 }
 
 export function WorkspaceCanvas({
@@ -95,7 +98,9 @@ export function WorkspaceCanvas({
   redo,
   canUndo,
   canRedo,
-  pushUndo
+  pushUndo,
+  previewFile,
+  setPreviewFile
 }: WorkspaceCanvasProps) {
   
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -967,7 +972,7 @@ export function WorkspaceCanvas({
 
       <div className={`uw-staged-canvas ${!isMultiFileOrPageTool ? "simple-canvas" : ""}`} style={{ border: "none", borderRadius: 0 }}>
         {/* 1. SECONDARY TOOLBAR */}
-        {isMultiFileOrPageTool && (
+        {isMultiFileOrPageTool && !previewFile && (
           <WorkspaceToolbar 
             viewMode={viewMode}
             setViewMode={setViewMode}
@@ -982,19 +987,53 @@ export function WorkspaceCanvas({
 
         {/* 2. SUB-BAR FILTERS/VIEWS */}
         {isMultiFileOrPageTool && (
-          <WorkspaceSubbar 
-            isAllSelected={isAllSelected}
-            onSelectAllChange={handleSelectAll}
-            layoutMode={layoutMode}
-            setLayoutMode={setLayoutMode}
-            stagedFilesCount={stagedFiles.length}
-            pdfPagesCount={activePagesFilter.length}
-            viewMode={viewMode}
-          />
+          previewFile ? (
+            <div className="uw-staged-subbar">
+              <div className="uw-subbar-left">
+                <button
+                  onClick={() => setPreviewFile(null)}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    background: "transparent",
+                    border: "none",
+                    cursor: "pointer",
+                    color: "var(--c-text)",
+                    fontSize: "13.5px",
+                    fontWeight: 600,
+                    padding: "4px 8px",
+                    borderRadius: "6px",
+                    marginLeft: "-8px",
+                    fontFamily: "Plus Jakarta Sans, sans-serif"
+                  }}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="m15 18-6-6 6-6"/></svg>
+                  Back
+                </button>
+              </div>
+            </div>
+          ) : (
+            <WorkspaceSubbar 
+              isAllSelected={isAllSelected}
+              onSelectAllChange={handleSelectAll}
+              layoutMode={layoutMode}
+              setLayoutMode={setLayoutMode}
+              stagedFilesCount={stagedFiles.length}
+              pdfPagesCount={activePagesFilter.length}
+              viewMode={viewMode}
+            />
+          )
         )}
 
         {/* 3. CONTENT AREA */}
-        {loadingPages && isMultiFileOrPageTool ? (
+        {previewFile ? (
+          /* ── IN-FRAME INLINE PDF VIEWER ── */
+          <InFramePdfViewer
+            file={previewFile}
+            onClose={() => setPreviewFile(null)}
+          />
+        ) : loadingPages && isMultiFileOrPageTool ? (
           <div className="uw-staged-grid" style={{ flex: 1, padding: "24px", display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "24px", alignContent: "start" }}>
             {[1, 2, 3, 4].map((i) => (
               <div key={i} className="canvas-file-card skeleton-card" style={{ cursor: "default", width: "220px", height: "280px", maxWidth: "220px", borderRadius: "8px", backgroundColor: "#ffffff", border: "1px solid #e2e8f0", display: "flex", flexDirection: "column", overflow: "hidden", position: "relative" }}>
@@ -1009,7 +1048,7 @@ export function WorkspaceCanvas({
             ))}
           </div>
         ) : (
-          <WorkspaceStagedGrid 
+          <WorkspaceStagedGrid
             viewMode={isMultiFileOrPageTool ? viewMode : "Files"}
             layoutMode={layoutMode}
             stagedFiles={stagedFiles}
@@ -1023,6 +1062,7 @@ export function WorkspaceCanvas({
             handleRotatePageSingle={handleRotatePageSingle}
             handleDeleteSelected={handleDeleteSelected}
             onRemoveFile={onRemoveFile}
+            onPreviewFile={(file) => setPreviewFile(file)}
             simpleMode={!isMultiFileOrPageTool}
           />
         )}
@@ -1030,3 +1070,156 @@ export function WorkspaceCanvas({
     </div>
   );
 }
+
+/* ─── In-Frame PDF Viewer (renders inside the canvas container) ─────────────── */
+interface InFramePdfViewerProps {
+  file: File;
+  onClose: () => void;
+}
+
+export function InFramePdfViewer({ file, onClose }: InFramePdfViewerProps) {
+  const [pdfDoc, setPdfDoc] = useState<any>(null);
+  const [totalPages, setTotalPages] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const scale = 1.1;
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const renderTaskRef = useRef<any>(null);
+
+  useEffect(() => {
+    const fileReader = new FileReader();
+    fileReader.onload = async function() {
+      const typedarray = new Uint8Array(this.result as ArrayBuffer);
+      try {
+        const pdfjsLib = await getPdfjsLib();
+        const pdf = await pdfjsLib.getDocument({ data: typedarray }).promise;
+        setPdfDoc(pdf);
+        setTotalPages(pdf.numPages);
+        setLoading(false);
+      } catch (err: any) {
+        setError("Failed to load PDF");
+        setLoading(false);
+      }
+    };
+    fileReader.readAsArrayBuffer(file);
+  }, [file]);
+
+  useEffect(() => {
+    if (!pdfDoc || !canvasRef.current) return;
+    let cancelled = false;
+
+    async function render() {
+      if (renderTaskRef.current) {
+        renderTaskRef.current.cancel();
+        renderTaskRef.current = null;
+      }
+      try {
+        const page = await pdfDoc.getPage(currentPage);
+        if (cancelled) return;
+        const viewport = page.getViewport({ scale });
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        const task = page.render({ canvasContext: ctx, viewport });
+        renderTaskRef.current = task;
+        await task.promise;
+        renderTaskRef.current = null;
+      } catch (e: any) {
+        if (e?.name !== "RenderingCancelledException") console.error(e);
+      }
+    }
+    render();
+    return () => { cancelled = true; };
+  }, [pdfDoc, currentPage, scale]);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+      if (e.key === "ArrowRight" || e.key === "ArrowDown") setCurrentPage(p => Math.min(totalPages, p + 1));
+      if (e.key === "ArrowLeft" || e.key === "ArrowUp") setCurrentPage(p => Math.max(1, p - 1));
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [totalPages, onClose]);
+
+  const progress = totalPages > 1 ? ((currentPage - 1) / (totalPages - 1)) * 100 : 100;
+
+  return (
+    <div style={{
+      display: "flex", flexDirection: "column",
+      flex: 1, overflow: "hidden",
+      background: "var(--c-bg-page, #f1f5f9)"
+    }}>
+      {/* ── Page content ── */}
+      <div style={{ flex: 1, overflow: "auto", display: "flex", alignItems: "flex-start", justifyContent: "center", padding: "24px 16px" }}>
+        {loading ? (
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "12px", height: "100%", color: "var(--text-muted)" }}>
+            <div className="processing-spinner" style={{ width: "28px", height: "28px", borderColor: "var(--border)", borderTopColor: "var(--c-accent)" } as React.CSSProperties} />
+            <span style={{ fontSize: "13px" }}>Loading…</span>
+          </div>
+        ) : error ? (
+          <div style={{ textAlign: "center", color: "var(--text-muted)", fontSize: "13px", paddingTop: "40px" }}>{error}</div>
+        ) : (
+          <canvas
+            ref={canvasRef}
+            style={{
+              display: "block",
+              maxWidth: "100%",
+              boxShadow: "0 4px 24px rgba(0,0,0,0.12)",
+              borderRadius: "2px",
+              background: "#fff"
+            }}
+          />
+        )}
+      </div>
+
+      {/* ── Bottom nav bar ── */}
+      {!loading && !error && totalPages > 0 && (
+        <div style={{
+          display: "flex", flexDirection: "column", alignItems: "center",
+          gap: "6px", padding: "8px 16px",
+          borderTop: "1px solid var(--border)", background: "var(--c-surface)",
+          flexShrink: 0
+        }}>
+          {totalPages > 1 && (
+            <div style={{ width: "100%", maxWidth: "320px", height: "3px", background: "var(--border)", borderRadius: "4px", overflow: "hidden" }}>
+              <div style={{ width: `${progress}%`, height: "100%", background: "var(--c-accent, #3b82f6)", borderRadius: "4px", transition: "width 0.2s ease" }} />
+            </div>
+          )}
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <button
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              disabled={currentPage <= 1}
+              style={{ ...btnStyle, opacity: currentPage <= 1 ? 0.35 : 1 }}
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="m15 18-6-6 6-6"/></svg>
+            </button>
+            <span style={{ fontSize: "12px", fontWeight: 600, color: "var(--c-text)", minWidth: "60px", textAlign: "center" }}>
+              {currentPage} / {totalPages}
+            </span>
+            <button
+              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              disabled={currentPage >= totalPages}
+              style={{ ...btnStyle, opacity: currentPage >= totalPages ? 0.35 : 1 }}
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="m9 18 6-6-6-6"/></svg>
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+const btnStyle: React.CSSProperties = {
+  width: "28px", height: "28px", borderRadius: "6px",
+  border: "1px solid var(--border)", background: "var(--c-bg)",
+  color: "var(--c-text)", cursor: "pointer",
+  display: "flex", alignItems: "center", justifyContent: "center",
+  fontSize: "15px", fontWeight: "400"
+};
+

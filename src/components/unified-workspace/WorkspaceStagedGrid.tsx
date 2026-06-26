@@ -16,6 +16,7 @@ interface WorkspaceStagedGridProps {
   handleRotatePageSingle: (key: string, deg: number) => void;
   handleDeleteSelected: () => void;
   onRemoveFile: (index: number) => void;
+  onPreviewFile?: (file: File) => void;
   simpleMode?: boolean;
 }
 
@@ -33,6 +34,7 @@ export function WorkspaceStagedGrid({
   handleRotatePageSingle,
   handleDeleteSelected,
   onRemoveFile,
+  onPreviewFile,
   simpleMode = false
 }: WorkspaceStagedGridProps) {
   
@@ -64,7 +66,8 @@ export function WorkspaceStagedGrid({
               key={`${file.name}-${idx}`} 
               className={`canvas-file-card-wrapper ${isSelected ? "selected" : ""}`}
               onClick={() => handleToggleSelectFile(idx)}
-              style={{ position: "relative" }}
+              onDoubleClick={() => onPreviewFile?.(file)}
+              style={{ position: "relative", cursor: "pointer" }}
             >
               <div 
                 style={{ position: "absolute", top: "12px", left: "12px", zIndex: 10 }}
@@ -77,6 +80,27 @@ export function WorkspaceStagedGrid({
                   style={{ width: "16px", height: "16px", cursor: "pointer" }}
                 />
               </div>
+              {/* Eye preview button on hover */}
+              {onPreviewFile && (
+                <div
+                  className="uw-preview-btn"
+                  onClick={(e) => { e.stopPropagation(); onPreviewFile(file); }}
+                  title="Preview PDF (or double-click)"
+                  style={{
+                    position: "absolute", bottom: "52px", right: "10px",
+                    zIndex: 15, opacity: 0, transition: "opacity 0.15s ease",
+                    background: "rgba(15,23,42,0.75)", backdropFilter: "blur(6px)",
+                    border: "none", borderRadius: "8px", color: "#fff",
+                    padding: "5px 10px", fontSize: "11px", fontWeight: "600",
+                    cursor: "pointer", display: "flex", alignItems: "center", gap: "4px"
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.opacity = "1")}
+                  onMouseLeave={e => (e.currentTarget.style.opacity = "0")}
+                >
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  Preview
+                </div>
+              )}
               <FilePreviewCard
                 file={file}
                 idx={idx}
@@ -97,6 +121,7 @@ export function WorkspaceStagedGrid({
         const isExcluded = localRemovedPages.has(pageKey);
         const isSelected = selectedPages.has(index);
         const rotation = pageRotations[pageKey] || 0;
+        const parentFile = stagedFiles[page.fileIndex];
 
         if (isExcluded) return null;
 
@@ -105,6 +130,7 @@ export function WorkspaceStagedGrid({
             key={pageKey} 
             className={`canvas-file-card page-card ${isSelected ? "selected" : ""}`}
             onClick={() => handleToggleSelectPage(index)}
+            onDoubleClick={() => parentFile && onPreviewFile?.(parentFile)}
             style={{ cursor: "pointer", position: "relative" }}
           >
             <div 
@@ -132,6 +158,35 @@ export function WorkspaceStagedGrid({
                   objectFit: "contain"
                 }}
               />
+              {/* Double-click hint on hover */}
+              {onPreviewFile && (
+                <div
+                  className="uw-preview-btn"
+                  onClick={(e) => { e.stopPropagation(); parentFile && onPreviewFile(parentFile); }}
+                  title="Preview file"
+                  style={{
+                    position: "absolute", inset: 0, display: "flex",
+                    alignItems: "center", justifyContent: "center",
+                    background: "rgba(0,0,0,0)", transition: "background 0.15s ease",
+                    zIndex: 5, cursor: "pointer"
+                  }}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.background = "rgba(0,0,0,0.35)";
+                    const btn = e.currentTarget.querySelector(".uw-eye-hint") as HTMLElement | null;
+                    if (btn) btn.style.opacity = "1";
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.background = "rgba(0,0,0,0)";
+                    const btn = e.currentTarget.querySelector(".uw-eye-hint") as HTMLElement | null;
+                    if (btn) btn.style.opacity = "0";
+                  }}
+                >
+                  <span className="uw-eye-hint" style={{ opacity: 0, transition: "opacity 0.15s", background: "rgba(15,23,42,0.8)", color: "#fff", borderRadius: "8px", padding: "4px 10px", fontSize: "11px", fontWeight: "600", display: "flex", alignItems: "center", gap: "4px" }}>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    Open
+                  </span>
+                </div>
+              )}
             </div>
             
             <div className="file-card-meta page-meta" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 12px" }}>

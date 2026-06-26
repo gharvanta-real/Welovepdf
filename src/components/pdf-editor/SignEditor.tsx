@@ -69,6 +69,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
   
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const overlayContainerRef = useRef<HTMLDivElement>(null);
+  const viewportRef = useRef<HTMLDivElement>(null);
 
   // Upgrade features states & refs
   const [modalSection, setModalSection] = useState<"signature" | "initials" | "stamp">("signature");
@@ -348,6 +349,101 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
     }
   }
 
+  // Synchronize zoomRef and setup smart pinch-to-zoom on viewport
+  const zoomRef = useRef(zoom);
+  useEffect(() => {
+    zoomRef.current = zoom;
+  }, [zoom]);
+
+  const touchStartDistRef = useRef<number | null>(null);
+  const touchStartZoomRef = useRef<number>(100);
+  const touchMidpointRef = useRef<{ x: number; y: number } | null>(null);
+  const scrollAtPinchStartRef = useRef<{ left: number; top: number }>({ left: 0, top: 0 });
+
+  // Compute best-fit zoom so the page fills ~90% of the viewport width
+  function fitPageToViewport() {
+    const viewport = viewportRef.current;
+    const canvas = canvasRef.current;
+    if (!viewport || !canvas) return;
+    const vw = viewport.clientWidth - 64; // 32px padding each side
+    const pageNativeWidth = canvas.offsetWidth || canvas.scrollWidth;
+    if (pageNativeWidth <= 0) return;
+    // The page was rendered at current zoom, so native width corresponds to current zoom
+    const fitZoom = Math.round((vw / pageNativeWidth) * zoomRef.current);
+    const clamped = Math.min(200, Math.max(30, fitZoom));
+    setZoom(clamped);
+  }
+
+  useEffect(() => {
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+
+    function getDistance(t1: Touch, t2: Touch) {
+      const dx = t1.clientX - t2.clientX;
+      const dy = t1.clientY - t2.clientY;
+      return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    function getMidpoint(t1: Touch, t2: Touch) {
+      return {
+        x: (t1.clientX + t2.clientX) / 2,
+        y: (t1.clientY + t2.clientY) / 2
+      };
+    }
+
+    function onTouchStart(e: TouchEvent) {
+      if (e.touches.length === 2) {
+        e.preventDefault();
+        const dist = getDistance(e.touches[0], e.touches[1]);
+        touchStartDistRef.current = dist;
+        touchStartZoomRef.current = zoomRef.current;
+        touchMidpointRef.current = getMidpoint(e.touches[0], e.touches[1]);
+        scrollAtPinchStartRef.current = { left: viewport!.scrollLeft, top: viewport!.scrollTop };
+      }
+    }
+
+    function onTouchMove(e: TouchEvent) {
+      if (e.touches.length === 2 && touchStartDistRef.current !== null) {
+        e.preventDefault();
+        const dist = getDistance(e.touches[0], e.touches[1]);
+        if (dist > 0) {
+          const factor = dist / touchStartDistRef.current;
+          let newZoom = Math.round(touchStartZoomRef.current * factor);
+          newZoom = Math.min(200, Math.max(30, newZoom));
+          setZoom(newZoom);
+
+          // Re-center scroll around the pinch midpoint
+          const mid = touchMidpointRef.current;
+          if (mid) {
+            const rect = viewport!.getBoundingClientRect();
+            const originX = mid.x - rect.left;
+            const originY = mid.y - rect.top;
+            const scaleDelta = newZoom / touchStartZoomRef.current;
+            viewport!.scrollLeft = scrollAtPinchStartRef.current.left * scaleDelta + originX * (scaleDelta - 1);
+            viewport!.scrollTop  = scrollAtPinchStartRef.current.top  * scaleDelta + originY * (scaleDelta - 1);
+          }
+        }
+      }
+    }
+
+    function onTouchEnd(e: TouchEvent) {
+      if (e.touches.length < 2) {
+        touchStartDistRef.current = null;
+        touchMidpointRef.current = null;
+      }
+    }
+
+    viewport.addEventListener("touchstart", onTouchStart, { passive: false });
+    viewport.addEventListener("touchmove", onTouchMove, { passive: false });
+    viewport.addEventListener("touchend", onTouchEnd, { passive: false });
+
+    return () => {
+      viewport.removeEventListener("touchstart", onTouchStart);
+      viewport.removeEventListener("touchmove", onTouchMove);
+      viewport.removeEventListener("touchend", onTouchEnd);
+    };
+  }, []);
+
   // Initialize context for drawing pad
   useEffect(() => {
     if (modalSection === "signature" && sigMethod === "draw" && drawingCanvasRef.current) {
@@ -467,6 +563,9 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
     fileReader.readAsArrayBuffer(file);
   }, [file]);
 
+  // Auto-fit zoom when PDF first loads (run once after first page renders)
+  const hasAutoFitRef = useRef(false);
+
   // Render current page to canvas viewport
   useEffect(() => {
     if (pdfDoc && pageOrder[currentPage - 1]) {
@@ -487,6 +586,18 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
           canvas.style.width = `${viewport.width / pixelRatio}px`;
           canvas.style.height = `${viewport.height / pixelRatio}px`;
           await page.render({ canvasContext: context, viewport }).promise;
+
+          // Auto-fit to viewport width on first load
+          if (!hasAutoFitRef.current && viewportRef.current) {
+            hasAutoFitRef.current = true;
+            const vw = viewportRef.current.clientWidth - 64;
+            const pageW = viewport.width / pixelRatio;
+            if (pageW > 0 && vw > 0) {
+              const fitZoom = Math.round((vw / pageW) * zoom);
+              const clamped = Math.min(150, Math.max(30, fitZoom));
+              if (Math.abs(clamped - zoom) > 5) setZoom(clamped);
+            }
+          }
         } catch (err) {
           console.error("SignEditor Page render error:", err);
         }
@@ -860,7 +971,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
   };
 
   return (
-    <div style={{
+    <div className="visual-editor-root" style={{
       display: "flex",
       flexDirection: "column",
       height: "100%",
@@ -998,35 +1109,11 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
           <button onClick={redo} disabled={!canRedo} style={{ ...toolbarButtonStyle, opacity: canRedo ? 1 : 0.4, cursor: canRedo ? "pointer" : "not-allowed" }} title="Redo"><Redo size={14} /></button>
         </div>
 
-        {/* Right Zoom and Completion Actions */}
-        <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-            <button onClick={() => setZoom(z => Math.max(50, z - 10))} style={zoomButtonStyle}>-</button>
-            <span style={{ fontSize: "12px", minWidth: "36px", textAlign: "center", color: "var(--c-text)" }}>{zoom}%</span>
-            <button onClick={() => setZoom(z => Math.min(200, z + 10))} style={zoomButtonStyle}>+</button>
-          </div>
-
-          <button 
-            onClick={handleSignComplete}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "6px",
-              padding: "8px 16px",
-              borderRadius: "6px",
-              border: "none",
-              background: "#1f2937",
-              color: "#ffffff",
-              cursor: "pointer",
-              fontSize: "13px",
-              fontWeight: "500",
-              transition: "background 0.15s"
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = "#111827"; }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = "#1f2937"; }}
-          >
-            Sign PDF &rarr;
-          </button>
+        {/* Right: zoom controls in toolbar */}
+        <div style={{ display: "flex", alignItems: "center", gap: "6px", width: "120px", justifyContent: "flex-end" }}>
+          <button onClick={() => setZoom(z => Math.max(30, z - 10))} style={zoomButtonStyle} title="Zoom Out">−</button>
+          <span style={{ fontSize: "12px", color: "var(--c-text, #1e293b)", minWidth: "38px", textAlign: "center", fontWeight: "500" }}>{zoom}%</span>
+          <button onClick={() => setZoom(z => Math.min(200, z + 10))} style={zoomButtonStyle} title="Zoom In">+</button>
         </div>
       </div>
 
@@ -1042,7 +1129,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
         {showLeftSidebar && (
           <div style={{
             width: "180px",
-            backgroundColor: "var(--c-bg, #ffffff)",
+            backgroundColor: "var(--c-bg-page, #f8fafc)",
             borderRight: "1px solid var(--border, #cbd5e1)",
             display: "flex",
             flexDirection: "column",
@@ -1095,18 +1182,23 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
         )}
 
         {/* Center Canvas Workspace Viewport */}
-        <div style={{
-          flex: 1,
-          overflow: "auto",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: "32px",
-          position: "relative",
-          backgroundColor: "var(--c-bg-page, #f8fafc)",
-          cursor: activeCursorTool === "hand" ? "grab" : "default"
-        }}>
+        <div 
+          ref={viewportRef}
+          style={{
+            flex: 1,
+            overflow: "auto",
+            display: "flex",
+            padding: "32px",
+            position: "relative",
+            backgroundColor: "var(--c-bg-page, #f8fafc)",
+            backgroundImage: "radial-gradient(circle, var(--border, #cbd5e1) 1px, transparent 1px)",
+            backgroundSize: "20px 20px",
+            cursor: activeCursorTool === "hand" ? "grab" : "default",
+            touchAction: "none"
+          }}
+        >
           {/* PDF Page Canvas Frame wrapper */}
+          <div style={{ margin: "auto", position: "relative", display: "flex", flexDirection: "column", alignItems: "center" }}>
           <div 
             ref={overlayContainerRef}
             onMouseDown={handleMouseDown}
@@ -1114,10 +1206,10 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
             onMouseUp={handleMouseUp}
             style={{
               position: "relative",
-              boxShadow: "0 8px 30px rgba(0,0,0,0.06)",
+              boxShadow: "0 12px 40px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06)",
               backgroundColor: "#ffffff",
-              borderRadius: "4px",
-              border: "1px solid var(--border, #cbd5e1)"
+              borderRadius: "2px",
+              border: "1px solid rgba(0,0,0,0.08)"
             }}
           >
             <canvas ref={canvasRef} style={{ display: "block" }} />
@@ -1197,6 +1289,47 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
               );
             })}
           </div>
+
+          {/* Floating HUD: Zoom Controls */}
+          <div style={{
+            position: "sticky",
+            bottom: "0",
+            marginTop: "12px",
+            display: "flex",
+            alignItems: "center",
+            gap: "4px",
+            background: "rgba(15,23,42,0.82)",
+            backdropFilter: "blur(10px)",
+            WebkitBackdropFilter: "blur(10px)",
+            borderRadius: "20px",
+            padding: "5px 8px",
+            boxShadow: "0 4px 20px rgba(0,0,0,0.25)",
+            userSelect: "none",
+            zIndex: 10
+          }}>
+            <button
+              onClick={() => setZoom(z => Math.max(30, z - 10))}
+              style={{ width: "26px", height: "26px", borderRadius: "50%", border: "none", background: "rgba(255,255,255,0.12)", color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "16px", fontWeight: "300" }}
+              title="Zoom Out"
+            >−</button>
+            <button
+              onClick={fitPageToViewport}
+              style={{ padding: "3px 10px", borderRadius: "12px", border: "none", background: "transparent", color: "rgba(255,255,255,0.9)", cursor: "pointer", fontSize: "12px", fontWeight: "500", minWidth: "46px", textAlign: "center" }}
+              title="Click to fit page"
+            >{zoom}%</button>
+            <button
+              onClick={() => setZoom(z => Math.min(200, z + 10))}
+              style={{ width: "26px", height: "26px", borderRadius: "50%", border: "none", background: "rgba(255,255,255,0.12)", color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "16px", fontWeight: "300" }}
+              title="Zoom In"
+            >+</button>
+            <div style={{ width: "1px", height: "16px", background: "rgba(255,255,255,0.2)", margin: "0 2px" }} />
+            <button
+              onClick={fitPageToViewport}
+              style={{ padding: "3px 8px", borderRadius: "12px", border: "none", background: "rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.85)", cursor: "pointer", fontSize: "11px", fontWeight: "500" }}
+              title="Fit to width"
+            >Fit</button>
+          </div>
+          </div>
         </div>
 
         {/* Right Sidebar: Signing options panel */}
@@ -1214,7 +1347,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
           }}
         >
           {/* Header section with back button */}
-          <div style={{ padding: "24px 24px 12px" }}>
+          <div style={{ padding: "12px 24px 6px" }}>
             <button 
               onClick={onClose}
               style={{
@@ -1241,7 +1374,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
           </div>
 
           {/* Section: Type */}
-          <div className="options-group" style={{ marginBottom: "20px", padding: "0 24px" }}>
+          <div className="options-group" style={{ marginBottom: "8px", padding: "0 24px" }}>
             <label className="options-label" style={{ color: "var(--c-text)", fontWeight: "600" }}>Type</label>
             <div style={{ display: "flex", gap: "8px", marginTop: "4px" }}>
               <div style={{
@@ -1249,7 +1382,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                 backgroundColor: "var(--c-bg, #ffffff)",
                 border: "2px solid var(--c-accent, #2563eb)",
                 borderRadius: "4px",
-                padding: "10px 6px",
+                padding: "8px 6px",
                 textAlign: "center",
                 cursor: "pointer"
               }}>
@@ -1261,7 +1394,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                 backgroundColor: "rgba(255, 255, 255, 0.4)",
                 border: "1px solid var(--border, #cbd5e1)",
                 borderRadius: "4px",
-                padding: "10px 6px",
+                padding: "8px 6px",
                 textAlign: "center",
                 opacity: 0.6,
                 cursor: "not-allowed"
@@ -1275,14 +1408,14 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
           </div>
 
           {/* Section: Required fields */}
-          <div className="options-group" style={{ marginBottom: "20px", padding: "0 24px" }}>
+          <div className="options-group" style={{ marginBottom: "8px", padding: "0 24px" }}>
             <label className="options-label" style={{ color: "var(--c-text)", fontWeight: "600" }}>Required Fields</label>
             <div className="options-vertical-list" style={{ marginTop: "4px" }}>
               <div 
                 onClick={addSignatureToPage}
                 className="option-card"
                 style={{
-                  padding: "10px 12px",
+                  padding: "8px 10px",
                   display: "flex",
                   flexDirection: "row",
                   alignItems: "center",
@@ -1357,16 +1490,16 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
           </div>
 
           {/* Section: Optional fields */}
-          <div className="options-group" style={{ flex: 1, overflowY: "auto", marginBottom: "20px", padding: "0 24px" }}>
+          <div className="options-group" style={{ flex: 1, overflowY: "auto", marginBottom: "8px", padding: "0 24px" }}>
             <label className="options-label" style={{ color: "var(--c-text)", fontWeight: "600" }}>Optional Fields</label>
-            <div className="options-vertical-list" style={{ marginTop: "4px", display: "flex", flexDirection: "column", gap: "8px" }}>
+            <div className="options-vertical-list" style={{ marginTop: "4px", display: "flex", flexDirection: "column", gap: "6px" }}>
               
               {/* 1. Initials Card */}
               <div 
                 onClick={addInitialsToPage}
                 className="option-card"
                 style={{
-                  padding: "10px 12px",
+                  padding: "8px 10px",
                   display: "flex",
                   flexDirection: "row",
                   alignItems: "center",
@@ -1438,7 +1571,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                 onClick={addNameToPage}
                 className="option-card"
                 style={{
-                  padding: "10px 12px",
+                  padding: "8px 10px",
                   display: "flex",
                   flexDirection: "row",
                   alignItems: "center",
@@ -1476,7 +1609,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                 onClick={addDateToPage}
                 className="option-card"
                 style={{
-                  padding: "10px 12px",
+                  padding: "8px 10px",
                   display: "flex",
                   flexDirection: "row",
                   alignItems: "center",
@@ -1514,7 +1647,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                 onClick={addTextToPage}
                 className="option-card"
                 style={{
-                  padding: "10px 12px",
+                  padding: "8px 10px",
                   display: "flex",
                   flexDirection: "row",
                   alignItems: "center",
@@ -1552,7 +1685,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                 onClick={addStampToPage}
                 className="option-card"
                 style={{
-                  padding: "10px 12px",
+                  padding: "8px 10px",
                   display: "flex",
                   flexDirection: "row",
                   alignItems: "center",
@@ -1626,7 +1759,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                 onClick={addCheckmarkToPage}
                 className="option-card"
                 style={{
-                  padding: "10px 12px",
+                  padding: "8px 10px",
                   display: "flex",
                   flexDirection: "row",
                   alignItems: "center",
@@ -1663,10 +1796,34 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
           </div>
 
           {/* Sign Bottom Button */}
-          <div className="uw-options-footer">
+          <div className="uw-options-footer" style={{ padding: "8px 24px 12px", display: "flex", gap: "10px" }}>
+            <button 
+              type="button"
+              onClick={onClose}
+              style={{
+                flex: 1,
+                backgroundColor: "transparent",
+                border: "1px solid var(--border, #cbd5e1)",
+                color: "var(--text-muted, #64748b)",
+                padding: "12px",
+                borderRadius: "6px",
+                fontSize: "14px",
+                fontWeight: 500,
+                cursor: "pointer",
+                transition: "all 0.2s ease",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center"
+              }}
+              onMouseEnter={e => e.currentTarget.style.backgroundColor = "#f8fafc"}
+              onMouseLeave={e => e.currentTarget.style.backgroundColor = "transparent"}
+            >
+              Cancel
+            </button>
             <button 
               onClick={handleSignComplete}
               className="uw-action-btn"
+              style={{ flex: 1.5 }}
             >
               Sign PDF &rarr;
             </button>
