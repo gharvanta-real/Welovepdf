@@ -1315,7 +1315,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
             >−</button>
             <button
               onClick={fitPageToViewport}
-              style={{ padding: "3px 10px", borderRadius: "12px", border: "none", background: "transparent", color: "var(--c-accent, #2563eb)", cursor: "pointer", fontSize: "12px", fontWeight: "600", minWidth: "46px", textAlign: "center" }}
+              style={{ padding: "3px 10px", borderRadius: "12px", border: "none", background: "transparent", color: "var(--c-text, #1e293b)", cursor: "pointer", fontSize: "12px", fontWeight: "500", minWidth: "46px", textAlign: "center" }}
               title="Click to fit page"
             >{zoom}%</button>
             <button
@@ -1326,7 +1326,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
             <div style={{ width: "1px", height: "16px", background: "rgba(37, 99, 235, 0.2)", margin: "0 2px" }} />
             <button
               onClick={fitPageToViewport}
-              style={{ padding: "3px 8px", borderRadius: "12px", border: "none", background: "rgba(37, 99, 235, 0.1)", color: "var(--c-accent, #2563eb)", cursor: "pointer", fontSize: "11px", fontWeight: "600" }}
+              style={{ padding: "3px 8px", borderRadius: "12px", border: "none", background: "rgba(0, 0, 0, 0.05)", color: "var(--c-text, #1e293b)", cursor: "pointer", fontSize: "11px", fontWeight: "500" }}
               title="Fit to width"
             >Fit</button>
           </div>
