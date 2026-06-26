@@ -2696,28 +2696,36 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                         }}
                         onMouseEnter={e => {
                           e.currentTarget.style.borderColor = "var(--c-accent, #2563eb)";
-                          e.currentTarget.style.backgroundColor = "var(--c-surface-soft, #f8fafc)";
                           e.currentTarget.style.transform = "translateY(-2px)";
+                          e.currentTarget.style.boxShadow = "0 10px 20px -10px rgba(37, 99, 235, 0.15)";
                         }}
                         onMouseLeave={e => {
                           e.currentTarget.style.borderColor = "#e2e8f0";
-                          e.currentTarget.style.backgroundColor = "#ffffff";
                           e.currentTarget.style.transform = "none";
+                          e.currentTarget.style.boxShadow = "0 1px 3px rgba(0,0,0,0.02)";
                         }}
                       >
-                        <div style={{ marginBottom: "16px" }}>
-                          <svg width="40" height="40" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <rect width="48" height="48" rx="8" fill="#f0fdf4"/>
-                            <rect x="15" y="11" width="18" height="26" rx="3" stroke="#22c55e" strokeWidth="2.5"/>
-                            <path d="M20 24L23 27L28 21" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-                          </svg>
+                        <div style={{
+                          height: "140px",
+                          backgroundColor: "#f8fafc",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          borderBottom: "1px solid #e2e8f0",
+                          padding: "16px"
+                        }}>
+                          <img 
+                            src="/sign_no_seal.png" 
+                            alt="Sign Without Seal" 
+                            style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain" }} 
+                          />
                         </div>
-                        <div>
+                        <div style={{ padding: "20px" }}>
                           <h3 style={{ fontSize: "0.95rem", fontWeight: "750", color: "#0f172a", margin: "0 0 8px 0" }}>
                             Sign without a seal
                           </h3>
                           <p style={{ fontSize: "0.78rem", color: "#64748b", margin: 0, lineHeight: "1.45" }}>
-                            Apply a standard, non-certified electronic signature. Ideal for quick approvals.
+                            Apply a standard, non-certified electronic signature.
                           </p>
                         </div>
                       </div>
@@ -2728,26 +2736,27 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                         style={{
                           display: "flex",
                           flexDirection: "column",
-                          alignItems: "flex-start",
-                          padding: "24px",
+                          alignItems: "stretch",
                           border: "1.5px solid #e2e8f0",
                           borderRadius: "8px",
                           cursor: "pointer",
                           transition: "all 0.2s ease-in-out",
                           backgroundColor: "#ffffff",
                           position: "relative",
+                          overflow: "hidden",
                           height: "100%",
-                          boxSizing: "border-box"
+                          boxSizing: "border-box",
+                          boxShadow: "0 1px 3px rgba(0,0,0,0.02)"
                         }}
                         onMouseEnter={e => {
                           e.currentTarget.style.borderColor = "#f59e0b";
-                          e.currentTarget.style.backgroundColor = "#fffde6";
                           e.currentTarget.style.transform = "translateY(-2px)";
+                          e.currentTarget.style.boxShadow = "0 10px 20px -10px rgba(245, 158, 11, 0.15)";
                         }}
                         onMouseLeave={e => {
                           e.currentTarget.style.borderColor = "#e2e8f0";
-                          e.currentTarget.style.backgroundColor = "#ffffff";
                           e.currentTarget.style.transform = "none";
+                          e.currentTarget.style.boxShadow = "0 1px 3px rgba(0,0,0,0.02)";
                         }}
                       >
                         <span style={{
@@ -2762,20 +2771,31 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                           borderRadius: "9999px",
                           border: "1px solid #fcd34d",
                           textTransform: "uppercase",
-                          letterSpacing: "0.04em"
+                          letterSpacing: "0.04em",
+                          zIndex: 10,
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "3px"
                         }}>
                           Premium <Crown size={10} style={{ fill: "currentColor" }} />
                         </span>
                         
-                        <div style={{ marginBottom: "16px" }}>
-                          <svg width="40" height="40" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <rect width="48" height="48" rx="8" fill="#fffbeb"/>
-                            <circle cx="24" cy="19" r="7" stroke="#f59e0b" strokeWidth="2.5"/>
-                            <path d="M19 25L17 35L24 32L31 35L29 25" stroke="#f59e0b" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-                            <path d="M21 18L23 20L27 16" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                          </svg>
+                        <div style={{
+                          height: "140px",
+                          backgroundColor: "#fffbeb",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          borderBottom: "1px solid #fde68a",
+                          padding: "16px"
+                        }}>
+                          <img 
+                            src="/sign_with_seal.png" 
+                            alt="Sign With Digital Seal" 
+                            style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain" }} 
+                          />
                         </div>
-                        <div>
+                        <div style={{ padding: "20px" }}>
                           <h3 style={{ fontSize: "0.95rem", fontWeight: "750", color: "#0f172a", margin: "0 0 8px 0" }}>
                             Sign with digital seal
                           </h3>
