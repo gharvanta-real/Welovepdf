@@ -951,7 +951,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
               display: "flex",
               alignItems: "center",
               gap: "6px",
-              fontWeight: "600",
+              fontWeight: "400",
               fontSize: "13px"
             }}
           >
@@ -978,7 +978,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
               display: "flex",
               alignItems: "center",
               gap: "6px",
-              fontWeight: "600",
+              fontWeight: "400",
               fontSize: "13px"
             }}
           >
@@ -1008,14 +1008,24 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
 
           <button 
             onClick={handleSignComplete}
-            className="v2-pill-primary"
             style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
               padding: "8px 16px",
+              borderRadius: "6px",
+              border: "none",
+              background: "#1f2937",
+              color: "#ffffff",
+              cursor: "pointer",
               fontSize: "13px",
-              fontWeight: "600"
+              fontWeight: "500",
+              transition: "background 0.15s"
             }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = "#111827"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = "#1f2937"; }}
           >
-            Finish &rarr;
+            Sign PDF &rarr;
           </button>
         </div>
       </div>
@@ -1238,7 +1248,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                 flex: 1,
                 backgroundColor: "var(--c-bg, #ffffff)",
                 border: "2px solid var(--c-accent, #2563eb)",
-                borderRadius: "8px",
+                borderRadius: "4px",
                 padding: "10px 6px",
                 textAlign: "center",
                 cursor: "pointer"
@@ -1250,7 +1260,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                 flex: 1,
                 backgroundColor: "rgba(255, 255, 255, 0.4)",
                 border: "1px solid var(--border, #cbd5e1)",
-                borderRadius: "8px",
+                borderRadius: "4px",
                 padding: "10px 6px",
                 textAlign: "center",
                 opacity: 0.6,
@@ -1279,7 +1289,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                   gap: "8px",
                   backgroundColor: "var(--c-bg, #ffffff)",
                   border: "1px solid var(--border, #cbd5e1)",
-                  borderRadius: "8px",
+                  borderRadius: "4px",
                   cursor: "pointer",
                   width: "100%",
                   boxSizing: "border-box"
@@ -1292,7 +1302,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                 <div style={{
                   width: "28px",
                   height: "28px",
-                  borderRadius: "6px",
+                  borderRadius: "4px",
                   backgroundColor: "var(--c-accent, #2563eb)",
                   color: "#ffffff",
                   display: "flex",
@@ -1363,7 +1373,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                   gap: "8px",
                   backgroundColor: "var(--c-bg, #ffffff)",
                   border: "1px solid var(--border, #cbd5e1)",
-                  borderRadius: "8px",
+                  borderRadius: "4px",
                   cursor: "pointer",
                   width: "100%",
                   boxSizing: "border-box"
@@ -1373,7 +1383,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                 <div style={{
                   width: "28px",
                   height: "28px",
-                  borderRadius: "6px",
+                  borderRadius: "4px",
                   backgroundColor: "#0ea5e9",
                   color: "#ffffff",
                   display: "flex",
@@ -1435,7 +1445,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                   gap: "8px",
                   backgroundColor: "var(--c-bg, #ffffff)",
                   border: "1px solid var(--border, #cbd5e1)",
-                  borderRadius: "8px",
+                  borderRadius: "4px",
                   cursor: "pointer",
                   width: "100%",
                   boxSizing: "border-box"
@@ -1445,7 +1455,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                 <div style={{
                   width: "28px",
                   height: "28px",
-                  borderRadius: "6px",
+                  borderRadius: "4px",
                   backgroundColor: "#6366f1",
                   color: "#ffffff",
                   display: "flex",
@@ -1473,7 +1483,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                   gap: "8px",
                   backgroundColor: "var(--c-bg, #ffffff)",
                   border: "1px solid var(--border, #cbd5e1)",
-                  borderRadius: "8px",
+                  borderRadius: "4px",
                   cursor: "pointer",
                   width: "100%",
                   boxSizing: "border-box"
@@ -1483,7 +1493,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                 <div style={{
                   width: "28px",
                   height: "28px",
-                  borderRadius: "6px",
+                  borderRadius: "4px",
                   backgroundColor: "#14b8a6",
                   color: "#ffffff",
                   display: "flex",
@@ -1511,7 +1521,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                   gap: "8px",
                   backgroundColor: "var(--c-bg, #ffffff)",
                   border: "1px solid var(--border, #cbd5e1)",
-                  borderRadius: "8px",
+                  borderRadius: "4px",
                   cursor: "pointer",
                   width: "100%",
                   boxSizing: "border-box"
@@ -1521,7 +1531,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                 <div style={{
                   width: "28px",
                   height: "28px",
-                  borderRadius: "6px",
+                  borderRadius: "4px",
                   backgroundColor: "#f59e0b",
                   color: "#ffffff",
                   display: "flex",
@@ -1549,7 +1559,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                   gap: "8px",
                   backgroundColor: "var(--c-bg, #ffffff)",
                   border: "1px solid var(--border, #cbd5e1)",
-                  borderRadius: "8px",
+                  borderRadius: "4px",
                   cursor: "pointer",
                   width: "100%",
                   boxSizing: "border-box"
@@ -1559,7 +1569,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                 <div style={{
                   width: "28px",
                   height: "28px",
-                  borderRadius: "6px",
+                  borderRadius: "4px",
                   backgroundColor: "#ec4899",
                   color: "#ffffff",
                   display: "flex",
@@ -1623,7 +1633,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                   gap: "8px",
                   backgroundColor: "var(--c-bg, #ffffff)",
                   border: "1px solid var(--border, #cbd5e1)",
-                  borderRadius: "8px",
+                  borderRadius: "4px",
                   cursor: "pointer",
                   width: "100%",
                   boxSizing: "border-box"
@@ -1633,7 +1643,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                 <div style={{
                   width: "28px",
                   height: "28px",
-                  borderRadius: "6px",
+                  borderRadius: "4px",
                   backgroundColor: "#10b981",
                   color: "#ffffff",
                   display: "flex",
@@ -1653,24 +1663,12 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
           </div>
 
           {/* Sign Bottom Button */}
-          <div style={{ padding: "16px 24px 24px", flexShrink: 0 }}>
+          <div className="uw-options-footer">
             <button 
               onClick={handleSignComplete}
-              className="v2-pill-primary"
-              style={{
-                width: "100%",
-                boxSizing: "border-box",
-                padding: "12px",
-                fontSize: "14px",
-                fontWeight: "600",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: "8px"
-              }}
+              className="uw-action-btn"
             >
-              <span>Sign PDF</span>
-              <span>&rarr;</span>
+              Sign PDF &rarr;
             </button>
           </div>
         </div>
@@ -2567,7 +2565,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                             flexDirection: "column",
                             alignItems: "stretch",
                             border: "1.5px solid #e2e8f0",
-                            borderRadius: "8px",
+                            borderRadius: "4px",
                             cursor: "pointer",
                             transition: "all 0.2s ease-in-out",
                             backgroundColor: "#ffffff",
@@ -2620,7 +2618,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                             flexDirection: "column",
                             alignItems: "stretch",
                             border: "1.5px solid #e2e8f0",
-                            borderRadius: "8px",
+                            borderRadius: "4px",
                             cursor: "pointer",
                             transition: "all 0.2s ease-in-out",
                             backgroundColor: "#ffffff",
@@ -2684,10 +2682,10 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                         style={{
                           display: "flex",
                           flexDirection: "column",
-                          alignItems: "flex-start",
+                          alignItems: "stretch",
                           padding: "24px",
                           border: "1.5px solid #e2e8f0",
-                          borderRadius: "8px",
+                          borderRadius: "4px",
                           cursor: "pointer",
                           transition: "all 0.2s ease-in-out",
                           backgroundColor: "#ffffff",
@@ -2738,7 +2736,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                           flexDirection: "column",
                           alignItems: "stretch",
                           border: "1.5px solid #e2e8f0",
-                          borderRadius: "8px",
+                          borderRadius: "4px",
                           cursor: "pointer",
                           transition: "all 0.2s ease-in-out",
                           backgroundColor: "#ffffff",
