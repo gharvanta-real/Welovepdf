@@ -39,9 +39,9 @@ const featuresData = [
   }
 ];
 
-// ── Feature Mockup Components ──────────────────────────────────────────────
+// â”€â”€ Feature Mockup Components â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-// ── Premium Browser & Canvas Mockup Components (Built from Scratch) ─────────────────────────
+// â”€â”€ Premium Browser & Canvas Mockup Components (Built from Scratch) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 interface PremiumBrowserMockupProps {
   url?: string;
@@ -130,7 +130,7 @@ export function PremiumBrowserMockup({ url = "pdfmount.online/edit", toolbar, ch
             flex: 1,
             maxWidth: "180px",
             height: "22px",
-            background: "#f1f5f9",
+            background: "#f4f4f4",
             borderRadius: "4px",
             display: "flex",
             alignItems: "center",
@@ -149,7 +149,7 @@ export function PremiumBrowserMockup({ url = "pdfmount.online/edit", toolbar, ch
         {/* Document Canvas */}
         <div style={{
           flex: 1,
-          backgroundColor: "#f1f5f9",
+          backgroundColor: "#f4f4f4",
           padding: "12px",
           display: "flex",
           justifyContent: "center",
@@ -315,7 +315,7 @@ export function PremiumDashboardMockup() {
           { name: "contract_final_signed.pdf", size: "450 KB", status: "Signed" },
           { name: "invoice_merge.pdf", size: "2.1 MB", status: "Merged" }
         ].map((f, i) => (
-          <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "4px 6px", border: "1px solid #f1f5f9", borderRadius: "4px", backgroundColor: "#f8fafc" }}>
+          <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "4px 6px", border: "1px solid #f4f4f4", borderRadius: "4px", backgroundColor: "#f8fafc" }}>
             <div style={{ display: "flex", flexDirection: "column" }}>
               <span style={{ fontSize: "0.55rem", fontWeight: "700", color: "#1e293b" }}>{f.name}</span>
               <span style={{ fontSize: "0.45rem", color: "#94a3b8" }}>{f.size}</span>
@@ -356,7 +356,7 @@ const whyChooseData = [
   },
   {
     title: "Clean & Simple",
-    description: "No cluttered menus or complicated options — just click, process, and go.",
+    description: "No cluttered menus or complicated options - just click, process, and go.",
     icon: Award
   }
 ];
@@ -444,7 +444,7 @@ export function BrowserMockup() {
             flex: 1,
             maxWidth: "180px",
             height: "22px",
-            background: "#f1f5f9",
+            background: "#f4f4f4",
             borderRadius: "4px",
             display: "flex",
             alignItems: "center",
@@ -489,14 +489,14 @@ export function BrowserMockup() {
 
           <div style={{ width: "1px", height: "16px", backgroundColor: "#e2e8f0", margin: "0 4px" }}></div>
 
-          <div style={{ width: "24px", height: "24px", display: "flex", alignItems: "center", justifyContent: "center", opacity: 0.4 }}><span style={{ fontSize: "10px" }}>↶</span></div>
-          <div style={{ width: "24px", height: "24px", display: "flex", alignItems: "center", justifyContent: "center", opacity: 0.4 }}><span style={{ fontSize: "10px" }}>↷</span></div>
+          <div style={{ width: "24px", height: "24px", display: "flex", alignItems: "center", justifyContent: "center", opacity: 0.4 }}><span style={{ fontSize: "10px" }}>â†¶</span></div>
+          <div style={{ width: "24px", height: "24px", display: "flex", alignItems: "center", justifyContent: "center", opacity: 0.4 }}><span style={{ fontSize: "10px" }}>â†·</span></div>
         </div>
 
         {/* Document Canvas */}
         <div style={{
           flex: 1,
-          backgroundColor: "#f1f5f9",
+          backgroundColor: "#f4f4f4",
           padding: "12px",
           display: "flex",
           justifyContent: "center",
@@ -762,7 +762,7 @@ export function LandingPage({ onToolSelect, onViewChange }: LandingPageProps) {
   return (
     <div className="stitch-landing">
 
-      {/* ── HERO ── */}
+      {/* â”€â”€ HERO â”€â”€ */}
       <section className="stitch-hero">
         <div className="stitch-hero-inner">
           {/* Left copy */}
@@ -779,7 +779,7 @@ export function LandingPage({ onToolSelect, onViewChange }: LandingPageProps) {
             </div>
           </div>
 
-          {/* Right illustration — interactive-looking Canvas/Browser Mockup */}
+          {/* Right illustration â€” interactive-looking Canvas/Browser Mockup */}
           <div className="stitch-hero-illustration" style={{ width: "100%", height: "520px", display: "flex", position: "relative" }}>
             <div className="stitch-hero-glow" />
             <BrowserMockup />
@@ -787,7 +787,7 @@ export function LandingPage({ onToolSelect, onViewChange }: LandingPageProps) {
         </div>
       </section>
 
-      {/* ── POPULAR TOOLS — Block Mint ── */}
+      {/* â”€â”€ POPULAR TOOLS â€” Block Mint â”€â”€ */}
       <section className="stitch-block-section stitch-block-mint" id="stitch-tools-section">
         <div className="stitch-container">
           <div className="stitch-block-header">
@@ -838,7 +838,7 @@ export function LandingPage({ onToolSelect, onViewChange }: LandingPageProps) {
         </div>
       </section>
 
-      {/* ── ENTERPRISE / SIGNING — Block Lime ── */}
+      {/* â”€â”€ ENTERPRISE / SIGNING â€” Block Lime â”€â”€ */}
       <section className="stitch-block-section stitch-block-lime">
         <div className="stitch-container">
           <div className="stitch-split-section has-large-visual">
@@ -870,7 +870,7 @@ export function LandingPage({ onToolSelect, onViewChange }: LandingPageProps) {
         </div>
       </section>
 
-      {/* ── FEATURES WALKTHROUGH ── */}
+      {/* â”€â”€ FEATURES WALKTHROUGH â”€â”€ */}
       <section className="stitch-features-section">
         <div className="stitch-container">
           <div style={{ textAlign: "center", marginBottom: "64px" }}>
@@ -907,7 +907,7 @@ export function LandingPage({ onToolSelect, onViewChange }: LandingPageProps) {
         </div>
       </section>
 
-      {/* ── WHY CHOOSE — Block Lilac ── */}
+      {/* â”€â”€ WHY CHOOSE â€” Block Lilac â”€â”€ */}
       <section className="stitch-block-section stitch-block-lilac">
         <div className="stitch-container">
           <div style={{ marginBottom: "48px" }}>
@@ -933,7 +933,7 @@ export function LandingPage({ onToolSelect, onViewChange }: LandingPageProps) {
         </div>
       </section>
 
-      {/* ── CTA SECTION ── */}
+      {/* â”€â”€ CTA SECTION â”€â”€ */}
       <section className="stitch-cta-section">
         <div className="stitch-container" style={{ textAlign: "center" }}>
           <h2 style={{ fontSize: "28px", fontWeight: 340, letterSpacing: "-0.96px", marginBottom: "20px" }}>
@@ -950,8 +950,9 @@ export function LandingPage({ onToolSelect, onViewChange }: LandingPageProps) {
         </div>
       </section>
 
-      {/* ── FOOTER — Dark Navy ── */}
+      {/* â”€â”€ FOOTER â€” Dark Navy â”€â”€ */}
       <Footer onToolSelect={onToolSelect} onViewChange={onViewChange} />
     </div>
   );
 }
+

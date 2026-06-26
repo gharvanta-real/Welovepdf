@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+﻿import React, { useState, useEffect } from "react";
 import { File, X } from "lucide-react";
 import { formatBytes } from "./UploadHelpers";
 import { getPdfjsLib } from "../../utils/pdfjs";
@@ -75,7 +75,7 @@ export function renderSmileyIllustration(
   }
 
   // Display locked padlock next to text if locked
-  const badgeTextFinal = isLocked ? `🔒 ${badgeText}` : badgeText;
+  const badgeTextFinal = isLocked ? `ðŸ”’ ${badgeText}` : badgeText;
 
   return (
     <div style={{ position: "relative", width: "100%", height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "#f8fafc", padding: "16px", boxSizing: "border-box" }}>
@@ -127,11 +127,11 @@ export function renderSmileyIllustration(
           backgroundColor: themeColor,
           color: "#ffffff",
           fontFamily: "Plus Jakarta Sans, sans-serif",
-          fontSize: "11px",
-          fontWeight: "900",
-          padding: "2px 8px",
+          fontSize: "10px",
+          fontWeight: 600,
+          padding: "2px 7px",
           borderRadius: "3px",
-          letterSpacing: "0.5px",
+          letterSpacing: "0.2px",
           boxShadow: `0 2px 4px ${themeColor}33`,
           zIndex: 3,
           whiteSpace: "nowrap"
@@ -253,7 +253,7 @@ export function FilePreviewCard({ file, idx, toolColor, onRemove, onPreviewClick
       (extension === "docx" || extension === "doc") ? "#dbeafe" :
       (extension === "xlsx" || extension === "xls") ? "#dcfce7" :
       (extension === "pptx" || extension === "ppt") ? "#ffedd5" :
-      (extension === "html" || extension === "htm") ? "#e0f2fe" : "#f1f5f9";
+      (extension === "html" || extension === "htm") ? "#e0f2fe" : "#f4f4f4";
       
     previewContent = renderSmileyIllustration(badgeText, badgeColor, bgLineColor, { isLoading: true });
   } else if (file.type.startsWith("image/") && previewUrl) {
@@ -273,8 +273,8 @@ export function FilePreviewCard({ file, idx, toolColor, onRemove, onPreviewClick
           renderSmileyIllustration("PDF", "#ef4444", "#fee2e2")
         )}
         {pdfPageCount !== null && !readOnly && (
-          <span className="pdf-page-counter-badge" style={{ position: "absolute", bottom: "6px", right: "6px", backgroundColor: "rgba(15, 23, 42, 0.8)", color: "white", fontSize: "0.68rem", fontWeight: "bold", padding: "2px 6px", borderRadius: "4px" }}>
-            {pdfPageCount} {pdfPageCount === 1 ? "Page" : "Pages"}
+          <span className="pdf-page-counter-badge" style={{ position: "absolute", bottom: "6px", right: "6px", backgroundColor: "rgba(15, 23, 42, 0.65)", color: "white", fontSize: "10px", fontWeight: 400, padding: "2px 5px", borderRadius: "3px" }}>
+            {pdfPageCount} {pdfPageCount === 1 ? "pg" : "pgs"}
           </span>
         )}
       </div>
@@ -288,9 +288,9 @@ export function FilePreviewCard({ file, idx, toolColor, onRemove, onPreviewClick
   } else if (extension === "html" || extension === "htm") {
     previewContent = renderSmileyIllustration("HTML", "#0ea5e9", "#e0f2fe");
   } else if (extension === "txt") {
-    previewContent = renderSmileyIllustration("TXT", "#64748b", "#f1f5f9");
+    previewContent = renderSmileyIllustration("TXT", "#64748b", "#f4f4f4");
   } else {
-    previewContent = renderSmileyIllustration("FILE", toolColor || "#2563eb", "#f1f5f9");
+    previewContent = renderSmileyIllustration("FILE", toolColor || "#2563eb", "#f4f4f4");
   }
 
   return (
@@ -325,3 +325,4 @@ export function FilePreviewCard({ file, idx, toolColor, onRemove, onPreviewClick
     </div>
   );
 }
+

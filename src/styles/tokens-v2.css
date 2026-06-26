@@ -1,4 +1,4 @@
-/* ── DESIGN TOKENS V2 (Scoped to prevent system breaks) ── */
+﻿/* â”€â”€ DESIGN TOKENS V2 (Scoped to prevent system breaks) â”€â”€ */
 
 /* 1. Theme Blue (Shifted from Orange to Royal Blue) - Clean blue/ice-blue tones */
 .theme-blue {
@@ -36,7 +36,7 @@
 .theme-light {
   --v2-bg-base: #F8FAFC;
   --v2-bg-page: #FFFFFF;
-  --v2-bg-surface: #F1F5F9;
+  --v2-bg-surface: #f4f4f4;
   --v2-bg-card: #FFFFFF;
   --v2-bg-badge: #EEF2F6;
   
@@ -53,14 +53,14 @@
   
   /* Borders & Shadows */
   --v2-border: #E2E8F0;
-  --v2-border-light: #F1F5F9;
+  --v2-border-light: #f4f4f4;
   --v2-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
   --v2-shadow-md: 0 8px 24px rgba(15, 23, 42, 0.05);
   --v2-shadow-lg: 0 16px 32px rgba(15, 23, 42, 0.08);
 
   /* Decorative shape colors */
   --v2-deco-shape-1: #E0E7FF;
-  --v2-deco-shape-2: #F1F5F9;
+  --v2-deco-shape-2: #f4f4f4;
   --v2-deco-shape-3: #F8FAFC;
 }
 
@@ -108,3 +108,4 @@
   
   --v2-container-max: 1200px;
 }
+

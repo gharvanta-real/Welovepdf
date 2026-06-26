@@ -156,7 +156,7 @@ export function PricingPage({ currentUser, onUpgradeSuccess, onLoginRequired, on
         "Priority support (24/5)",
         "Billed monthly, cancel anytime",
       ],
-      cta: isProActive ? "✓ Current Plan" : "Subscribe Now",
+      cta: isProActive ? "âœ“ Current Plan" : "Subscribe Now",
       ctaAction: isProActive ? () => {} : () => handleSubscribe("Pro"),
     },
     {
@@ -186,11 +186,11 @@ export function PricingPage({ currentUser, onUpgradeSuccess, onLoginRequired, on
     { feature: "Jobs per day", starter: "10", pro: "100", enterprise: "Unlimited" },
     { feature: "Max file size", starter: "50 MB", pro: "500 MB", enterprise: "Unlimited" },
     { feature: "All PDF Tools", starter: "✓", pro: "✓", enterprise: "✓" },
-    { feature: "Priority Processing", starter: "—", pro: "✓", enterprise: "✓" },
+    { feature: "Priority Processing", starter: "-", pro: "✓", enterprise: "✓" },
     { feature: "Annotations & Editor", starter: "Basic", pro: "Full", enterprise: "Full" },
     { feature: "Plan Duration", starter: "Permanent", pro: "Monthly", enterprise: "Custom" },
-    { feature: "API Access", starter: "—", pro: "Add-on", enterprise: "✓" },
-    { feature: "SSO / Security", starter: "—", pro: "—", enterprise: "✓" },
+    { feature: "API Access", starter: "-", pro: "Add-on", enterprise: "✓" },
+    { feature: "SSO / Security", starter: "-", pro: "-", enterprise: "✓" },
     { feature: "Support", starter: "Community", pro: "24/5 Priority", enterprise: "24/7 VIP" },
   ];
 
@@ -421,7 +421,7 @@ export function PricingPage({ currentUser, onUpgradeSuccess, onLoginRequired, on
           background-color: #1E293B;
         }
         .pricing-btn-disabled {
-          background-color: #F1F5F9;
+          background-color: #f4f4f4;
           color: #94A3B8;
           cursor: default;
         }
@@ -461,7 +461,7 @@ export function PricingPage({ currentUser, onUpgradeSuccess, onLoginRequired, on
           padding: 16px 12px;
           font-size: 14px;
           color: #334155;
-          border-bottom: 1px solid #F1F5F9;
+          border-bottom: 1px solid #f4f4f4;
         }
         .theme-dark .comparison-table td {
           color: #CBD5E1;
@@ -539,7 +539,7 @@ export function PricingPage({ currentUser, onUpgradeSuccess, onLoginRequired, on
                 <div style={{ width: "56px", height: "56px", borderRadius: "50%", backgroundColor: "rgba(37,99,235,0.08)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px" }}>
                   <Crown size={26} color="#2563EB" />
                 </div>
-                <h3 style={{ fontSize: "20px", fontWeight: 700, marginBottom: "8px" }}>Pro Activated! 🎉</h3>
+                <h3 style={{ fontSize: "20px", fontWeight: 700, marginBottom: "8px" }}>Pro Activated! ðŸŽ‰</h3>
                 <p style={{ color: "#64748B", fontSize: "14px", margin: 0, lineHeight: 1.5 }}>
                   Your Pro plan is active until {formatDate(planInfo?.expires_at || null)}.
                 </p>
@@ -598,7 +598,7 @@ export function PricingPage({ currentUser, onUpgradeSuccess, onLoginRequired, on
 
                   <p style={{ margin: "8px 0 0", fontSize: "12px", color: "#94A3B8", textAlign: "center", lineHeight: 1.5 }}>
                     Activating a code gives you 1 full year of Pro access.<br />
-                    100 jobs/day · 500 MB files · Priority processing.
+                    100 jobs/day • 500 MB files • Priority processing.
                   </p>
                 </div>
               </>
@@ -617,7 +617,7 @@ export function PricingPage({ currentUser, onUpgradeSuccess, onLoginRequired, on
           </p>
           {currentUser && isProActive && planInfo?.expires_at && (
             <div style={{ marginTop: "16px", backgroundColor: "rgba(37,99,235,0.06)", border: "1px solid rgba(37,99,235,0.15)", borderRadius: "9999px", padding: "6px 18px", fontSize: "12.5px", fontWeight: 600, display: "inline-flex", alignItems: "center", gap: "6px", color: "#2563EB", width: "fit-content" }}>
-              <Crown size={13} /> Pro active · Expires {formatDate(planInfo.expires_at)}
+              <Crown size={13} /> Pro active • Expires {formatDate(planInfo.expires_at)}
             </div>
           )}
         </div>
@@ -709,7 +709,7 @@ export function PricingPage({ currentUser, onUpgradeSuccess, onLoginRequired, on
         <section className="promo-banner">
           <h2 className="comparison-title" style={{ fontSize: "28px", marginBottom: "12px" }}>Have a promo code?</h2>
           <p>
-            Enter your code to activate a 1-year Pro trial plan — 500MB files, 100 jobs/day, priority support.
+            Enter your code to activate a 1-year Pro trial plan - 500MB files, 100 jobs/day, priority support.
           </p>
           <div style={{ display: "flex", gap: "16px", justifyContent: "center", flexWrap: "wrap" }}>
             <button onClick={handleOpenPromo} className="pricing-btn pricing-btn-primary" style={{ width: "auto", padding: "14px 32px", display: "inline-flex", alignItems: "center", gap: "8px" }}>
@@ -726,3 +726,4 @@ export function PricingPage({ currentUser, onUpgradeSuccess, onLoginRequired, on
   );
 }
 export default PricingPage;
+

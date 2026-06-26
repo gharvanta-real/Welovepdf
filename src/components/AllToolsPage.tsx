@@ -222,7 +222,7 @@ export function AllToolsPage({ onToolSelect, onPricingClick, onContactSalesClick
           gap: "24px", 
           marginBottom: "40px",
           paddingBottom: "24px",
-          borderBottom: "1px solid #f1f5f9"
+          borderBottom: "1px solid #f4f4f4"
         }}>
           {/* Search Input */}
           <div style={{ position: "relative", maxWidth: "480px", width: "100%" }}>
@@ -407,7 +407,7 @@ export function AllToolsPage({ onToolSelect, onPricingClick, onContactSalesClick
         )}
 
         {/* SEO & Resource Guide Section (At the Bottom, Well Organized, Non-Robotic, with Vector Illustrations) */}
-        <div style={{ marginTop: "80px", paddingTop: "60px", borderTop: "1px solid #f1f5f9" }}>
+        <div style={{ marginTop: "80px", paddingTop: "60px", borderTop: "1px solid #f4f4f4" }}>
           
           {/* Article Header */}
           <div style={{ maxWidth: "900px", marginBottom: "48px" }}>
@@ -463,17 +463,17 @@ export function AllToolsPage({ onToolSelect, onPricingClick, onContactSalesClick
           {/* AdSense Unit (Middle) */}
           <AdSenseUnit slot="middle-responsive-ad" />
 
-          {/* How to Use — Full Width Image, No Card, No Badge */}
+          {/* How to Use - Full Width Image, No Card, No Badge */}
           <div style={{ marginBottom: "64px" }}>
             <h3 style={{ fontSize: "22px", fontWeight: 700, color: "#0F172A", marginBottom: "12px" }}>
               How to Use Any Tool
             </h3>
             <p style={{ fontSize: "14px", color: "#4B5563", lineHeight: 1.6, marginBottom: "28px", maxWidth: "680px" }}>
-              Every tool on Pdfmount.online follows the same simple three-step flow — upload your file, choose your settings, and download the result instantly. No software installation, no account required for basic tasks.
+              Every tool on Pdfmount.online follows the same simple three-step flow - upload your file, choose your settings, and download the result instantly. No software installation, no account required for basic tasks.
             </p>
             <img
               src="/How-to-use-any-tools.png"
-              alt="How to use any PDF tool — upload, process, download"
+              alt="How to use any PDF tool - upload, process, download"
               style={{
                 width: "100%",
                 height: "auto",
@@ -544,3 +544,4 @@ export function AllToolsPage({ onToolSelect, onPricingClick, onContactSalesClick
     </div>
   );
 }
+

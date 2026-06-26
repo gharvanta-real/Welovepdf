@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Play, CheckCircle2, Download, Share2, RotateCcw, File, ChevronDown, ChevronUp, Check, Printer, Trash2, ChevronRight, Type, Highlighter, PenTool, Layers, Settings2, Paintbrush, Square, Circle, Bold, Italic, Underline, AlignLeft, AlignCenter, AlignRight, Undo, Redo, Star, ArrowLeftRight } from "lucide-react";
+import { Play, CheckCircle2, Download, Share2, RotateCcw, File, ChevronDown, ChevronUp, Check, Printer, Trash2, ChevronRight, Type, Highlighter, PenTool, Layers, Settings2, Paintbrush, Square, Circle, Bold, Italic, Underline, AlignLeft, AlignCenter, AlignRight, Undo, Redo, Star, ArrowLeftRight, Maximize2 } from "lucide-react";
 import { ToolIcon } from "../ToolIcon";
 
 interface WorkspaceOptionsProps {
@@ -140,24 +140,27 @@ const ToggleRow = ({
       display: "flex",
       alignItems: "center",
       justifyContent: "space-between",
-      padding: "10px 12px",
-      background: "#f4f4f4",
-      border: "none",
+      padding: "9px 11px",
+      background: "#f8fafc",
+      border: "1.5px solid transparent",
       borderRadius: "6px",
       cursor: "pointer",
-      marginBottom: "6px",
+      marginBottom: "4px",
+      transition: "all 0.15s ease",
     }}
     onClick={() => onChange(!checked)}
+    onMouseEnter={e => (e.currentTarget.style.borderColor = "#e2e8f0")}
+    onMouseLeave={e => (e.currentTarget.style.borderColor = "transparent")}
   >
     <div>
-      <div style={{ fontSize: "13px", fontWeight: 500, color: "#1e293b" }}>{label}</div>
-      {desc && <div style={{ fontSize: "11px", color: "#64748b", marginTop: "1px" }}>{desc}</div>}
+      <div style={{ fontSize: "13px", fontWeight: 400, color: "#334155" }}>{label}</div>
+      {desc && <div style={{ fontSize: "11px", color: "#94a3b8", marginTop: "1px", fontWeight: 400 }}>{desc}</div>}
     </div>
     <div
       style={{
-        width: "36px",
-        height: "20px",
-        borderRadius: "10px",
+        width: "32px",
+        height: "18px",
+        borderRadius: "9px",
         backgroundColor: checked ? "#2563eb" : "#cbd5e1",
         position: "relative",
         transition: "background 0.2s",
@@ -168,13 +171,13 @@ const ToggleRow = ({
         style={{
           position: "absolute",
           top: "3px",
-          left: checked ? "18px" : "3px",
-          width: "14px",
-          height: "14px",
+          left: checked ? "16px" : "3px",
+          width: "12px",
+          height: "12px",
           borderRadius: "50%",
           backgroundColor: "#fff",
           transition: "left 0.2s",
-          boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
+          boxShadow: "0 1px 2px rgba(0,0,0,0.15)",
         }}
       />
     </div>
@@ -306,7 +309,7 @@ const CategoryHeader = ({
       alignItems: "center",
       justifyContent: "space-between",
       padding: "12px 14px",
-      background: isOpen ? "#f1f5f9" : "#f8fafc",
+      background: isOpen ? "#f4f4f4" : "#f8fafc",
       border: "1px solid #e2e8f0",
       borderRadius: "6px",
       cursor: "pointer",
@@ -316,10 +319,10 @@ const CategoryHeader = ({
     }}
   >
     <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-      <Icon size={16} style={{ color: "#475569" }} />
-      <span style={{ fontSize: "13px", fontWeight: 500, color: "#1e293b" }}>{title}</span>
+      <Icon size={15} strokeWidth={1.5} style={{ color: "#64748b" }} />
+      <span style={{ fontSize: "13px", fontWeight: 400, color: "#334155" }}>{title}</span>
     </div>
-    {isOpen ? <ChevronUp size={16} style={{ color: "#64748b" }} /> : <ChevronDown size={16} style={{ color: "#64748b" }} />}
+    {isOpen ? <ChevronUp size={15} strokeWidth={1.5} style={{ color: "#94a3b8" }} /> : <ChevronDown size={15} strokeWidth={1.5} style={{ color: "#94a3b8" }} />}
   </button>
 );
 
@@ -448,6 +451,15 @@ export function WorkspaceOptions({
   const [flattenMode, setFlattenMode] = useState<"all" | "forms" | "annotations">("all");
 
   // Collapsible category states
+  const [isLayoutOpen, setIsLayoutOpen] = useState(false);
+  const [isMetadataOpen, setIsMetadataOpen] = useState(false);
+  const [isSecurityOpen, setIsSecurityOpen] = useState(false);
+  const [isRoundnessOpen, setIsRoundnessOpen] = useState(false);
+  const [globalOrientation, setGlobalOrientation] = useState<"portrait" | "landscape">("portrait");
+  const [globalPageSelection, setGlobalPageSelection] = useState<"all" | "odd" | "even" | "custom">("all");
+  const [globalPageRange, setGlobalPageRange] = useState("");
+  const [globalRoundness, setGlobalRoundness] = useState<"none" | "small" | "medium" | "large" | "pill">("none");
+
   // Annotation defaults states (now hoisted to UnifiedWorkspace)
 
   const renderToolOptions = () => {
@@ -723,19 +735,19 @@ export function WorkspaceOptions({
                 <RadioCard
                   active={imageDpi === "72"}
                   onClick={() => setImageDpi("72")}
-                  title="Low — 72 DPI"
+                  title="Low - 72 DPI"
                   desc="Small file size, for web and previews"
                 />
                 <RadioCard
                   active={imageDpi === "150"}
                   onClick={() => setImageDpi("150")}
-                  title="Medium — 150 DPI"
+                  title="Medium - 150 DPI"
                   desc="Balanced resolution for most uses"
                 />
                 <RadioCard
                   active={imageDpi === "300"}
                   onClick={() => setImageDpi("300")}
-                  title="High — 300 DPI"
+                  title="High - 300 DPI"
                   desc="Print-ready quality, larger file sizes"
                 />
               </div>
@@ -862,7 +874,7 @@ export function WorkspaceOptions({
                   active={mergeSort === "name"}
                   onClick={() => setMergeSort("name")}
                   title="Alphabetically by Name"
-                  desc="Sort files A–Z before merging"
+                  desc="Sort files Aâ€“Z before merging"
                 />
                 <RadioCard
                   active={mergeSort === "size"}
@@ -1156,13 +1168,13 @@ export function WorkspaceOptions({
                 <RadioCard
                   active={summaryLength === "short"}
                   onClick={() => setSummaryLength("short")}
-                  title="Brief (1–2 paragraphs)"
+                  title="Brief (1â€“2 paragraphs)"
                   desc="Key takeaways only, very concise"
                 />
                 <RadioCard
                   active={summaryLength === "medium"}
                   onClick={() => setSummaryLength("medium")}
-                  title="Standard (3–5 paragraphs)"
+                  title="Standard (3â€“5 paragraphs)"
                   desc="Balanced overview of main sections"
                 />
                 <RadioCard
@@ -1427,8 +1439,8 @@ export function WorkspaceOptions({
                     <label style={{ fontSize: "11px", fontWeight: 700, color: "#475569", display: "block", marginBottom: "6px", fontFamily: "Plus Jakarta Sans, sans-serif" }}>Active Drawing Tool</label>
                     <div style={{ display: "flex", gap: "8px", marginBottom: "12px" }}>
                       {[
-                        { id: "pen", label: "Pen (पेन)", icon: PenTool },
-                        { id: "highlighter", label: "Highlighter (हाइलाइटर)", icon: Highlighter }
+                        { id: "pen", label: "Pen (à¤ªà¥‡à¤¨)", icon: PenTool },
+                        { id: "highlighter", label: "Highlighter (à¤¹à¤¾à¤‡à¤²à¤¾à¤‡à¤Ÿà¤°)", icon: Highlighter }
                       ].map(t => {
                         const Icon = t.icon;
                         const isActive = activeDrawTool === t.id;
@@ -1537,23 +1549,23 @@ export function WorkspaceOptions({
                       value={annotShapeType}
                       onChange={setAnnotShapeType}
                       options={[
-                        { value: "Rectangle", label: "Rectangle (आयत)" },
-                        { value: "Rounded Rectangle", label: "Rounded Rectangle (गोल कोनों वाला आयत)" },
-                        { value: "Circle", label: "Circle (गोलाकार)" },
-                        { value: "Ellipse", label: "Ellipse (अंडाकार)" },
-                        { value: "Triangle", label: "Triangle (त्रिकोण)" },
-                        { value: "Right Triangle", label: "Right Triangle (समकोण त्रिकोण)" },
-                        { value: "Star 4", label: "4-Point Star (4-कोणीय तारा)" },
-                        { value: "Star 5", label: "5-Point Star (5-कोणीय तारा)" },
-                        { value: "Pentagon", label: "Pentagon (पंचकोण)" },
-                        { value: "Hexagon", label: "Hexagon (षट्कोण)" },
-                        { value: "Line", label: "Single Line (सीधी रेखा)" },
-                        { value: "Arrow", label: "Arrow (एकतरफा तीर)" },
-                        { value: "Double Arrow", label: "Double Arrow (दोनों तरफ तीर)" },
-                        { value: "Speech Bubble", label: "Speech Bubble (कमेंट बॉक्स)" },
-                        { value: "Heart", label: "Heart (दिल)" },
-                        { value: "Cloud", label: "Cloud (बादल)" },
-                        { value: "Cross", label: "Cross/Plus (जोड़ का निशान)" }
+                        { value: "Rectangle", label: "Rectangle (à¤†à¤¯à¤¤)" },
+                        { value: "Rounded Rectangle", label: "Rounded Rectangle (à¤—à¥‹à¤² à¤•à¥‹à¤¨à¥‹à¤‚ à¤µà¤¾à¤²à¤¾ à¤†à¤¯à¤¤)" },
+                        { value: "Circle", label: "Circle (à¤—à¥‹à¤²à¤¾à¤•à¤¾à¤°)" },
+                        { value: "Ellipse", label: "Ellipse (à¤…à¤‚à¤¡à¤¾à¤•à¤¾à¤°)" },
+                        { value: "Triangle", label: "Triangle (à¤¤à¥à¤°à¤¿à¤•à¥‹à¤£)" },
+                        { value: "Right Triangle", label: "Right Triangle (à¤¸à¤®à¤•à¥‹à¤£ à¤¤à¥à¤°à¤¿à¤•à¥‹à¤£)" },
+                        { value: "Star 4", label: "4-Point Star (4-à¤•à¥‹à¤£à¥€à¤¯ à¤¤à¤¾à¤°à¤¾)" },
+                        { value: "Star 5", label: "5-Point Star (5-à¤•à¥‹à¤£à¥€à¤¯ à¤¤à¤¾à¤°à¤¾)" },
+                        { value: "Pentagon", label: "Pentagon (à¤ªà¤‚à¤šà¤•à¥‹à¤£)" },
+                        { value: "Hexagon", label: "Hexagon (à¤·à¤Ÿà¥à¤•à¥‹à¤£)" },
+                        { value: "Line", label: "Single Line (à¤¸à¥€à¤§à¥€ à¤°à¥‡à¤–à¤¾)" },
+                        { value: "Arrow", label: "Arrow (à¤à¤•à¤¤à¤°à¤«à¤¾ à¤¤à¥€à¤°)" },
+                        { value: "Double Arrow", label: "Double Arrow (à¤¦à¥‹à¤¨à¥‹à¤‚ à¤¤à¤°à¤« à¤¤à¥€à¤°)" },
+                        { value: "Speech Bubble", label: "Speech Bubble (à¤•à¤®à¥‡à¤‚à¤Ÿ à¤¬à¥‰à¤•à¥à¤¸)" },
+                        { value: "Heart", label: "Heart (à¤¦à¤¿à¤²)" },
+                        { value: "Cloud", label: "Cloud (à¤¬à¤¾à¤¦à¤²)" },
+                        { value: "Cross", label: "Cross/Plus (à¤œà¥‹à¤¡à¤¼ à¤•à¤¾ à¤¨à¤¿à¤¶à¤¾à¤¨)" }
                       ]}
                     />
                   </div>
@@ -1749,13 +1761,13 @@ export function WorkspaceOptions({
       ? Math.max(5, Math.min(100, (activeJob.finalSizeBytes / activeJob.originalSizeBytes) * 100))
       : 100;
 
-    // "Or continue in" — suggest related tools based on current tool
+    // "Or continue in" â€” suggest related tools based on current tool
     const continueTools: { name: string; color: string; emoji: string }[] = [
-      { name: "Merge PDF",         color: "#7c3aed", emoji: "⊞" },
-      { name: "Protect PDF",       color: "#dc2626", emoji: "🔒" },
-      { name: "Split PDF",         color: "#d97706", emoji: "✂️" },
+      { name: "Merge PDF",         color: "#7c3aed", emoji: "âŠž" },
+      { name: "Protect PDF",       color: "#dc2626", emoji: "ðŸ”’" },
+      { name: "Split PDF",         color: "#d97706", emoji: "âœ‚ï¸" },
       { name: "PDF to Word",       color: "#2563eb", emoji: "W" },
-      { name: "Compress PDF",      color: "#16a34a", emoji: "↓" },
+      { name: "Compress PDF",      color: "#16a34a", emoji: "â†“" },
     ].filter(t => t.name !== activeTool).slice(0, 4);
 
     return (
@@ -1790,7 +1802,7 @@ export function WorkspaceOptions({
               {hasSavingsData ? (
                 <>
                   <span>{originalSizeStr}</span>
-                  <span style={{ margin: "0 4px" }}>→</span>
+                  <span style={{ margin: "0 4px" }}>â†’</span>
                   <span style={{ fontWeight: 700, color: "#1e293b" }}>{finalSizeStr}</span>
                   <span style={{ color: "#16a34a", fontWeight: 700, marginLeft: "4px" }}>
                     ({savingsPercent}% smaller)
@@ -1929,10 +1941,10 @@ export function WorkspaceOptions({
   return (
     <aside className="uw-options-panel">
       <div className="uw-options-scroll">
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "4px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
             <ToolIcon toolNameOrId={activeTool} size={22} style={{ borderRadius: "5px" }} />
-            <h2 className="uw-options-header" style={{ margin: 0, fontSize: "18px" }}>
+            <h2 className="uw-options-header" style={{ margin: 0 }}>
               {activeTool}
             </h2>
           </div>
@@ -1988,10 +2000,171 @@ export function WorkspaceOptions({
           )}
         </div>
         <span className="uw-options-subtitle">
-          {hasFiles ? "Configure settings before processing" : "Please select files to continue"}
+          {hasFiles ? "Configure settings before processing" : "Upload files to get started"}
         </span>
 
-        {hasFiles && renderToolOptions()}
+        {hasFiles && (
+          <>
+            {renderToolOptions()}
+
+            {/* Global collapsible categories (default for all tools) */}
+            <div style={{ marginTop: "16px", borderTop: "1px solid #e2e8f0", paddingTop: "16px", display: "flex", flexDirection: "column", gap: "8px" }}>
+              <span style={{ fontSize: "11px", fontWeight: 500, color: "#b0bac7", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: "4px", display: "block" }}>
+                Default Controls
+              </span>
+              
+              {/* 1. Layout & Page Control */}
+              <CategoryHeader
+                icon={Layers}
+                title="Layout & Page Control"
+                isOpen={isLayoutOpen}
+                onClick={() => setIsLayoutOpen(!isLayoutOpen)}
+              />
+              {isLayoutOpen && (
+                <div style={{ padding: "8px 12px", background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "6px", marginBottom: "8px", display: "flex", flexDirection: "column", gap: "10px" }}>
+                  <Section label="Page Layout Orientation">
+                    <div style={{ display: "flex", gap: "6px" }}>
+                      {([
+                        { value: "portrait", label: "Portrait" },
+                        { value: "landscape", label: "Landscape" }
+                      ] as const).map(opt => (
+                        <button
+                          key={opt.value}
+                          type="button"
+                          onClick={() => setGlobalOrientation(opt.value)}
+                          className={`uw-radio-card ${globalOrientation === opt.value ? "active" : ""}`}
+                          style={{ flex: 1, padding: "8px 10px", fontSize: "12px", justifyContent: "center", border: "none" }}
+                        >
+                          <div className="uw-radio-circle" />
+                          <span>{opt.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </Section>
+                  
+                  <Section label="Page Selection Mode">
+                    <StyledSelect
+                      value={globalPageSelection}
+                      onChange={(v: any) => setGlobalPageSelection(v)}
+                      options={[
+                        { value: "all", label: "All Pages" },
+                        { value: "odd", label: "Odd Pages Only" },
+                        { value: "even", label: "Even Pages Only" },
+                        { value: "custom", label: "Custom Page Range" }
+                      ]}
+                    />
+                  </Section>
+                  
+                  {globalPageSelection === "custom" && (
+                    <Section label="Page Range (e.g. 1-5, 8)">
+                      <StyledInput
+                        value={globalPageRange}
+                        onChange={setGlobalPageRange}
+                        placeholder="e.g. 1-3, 5"
+                      />
+                    </Section>
+                  )}
+                </div>
+              )}
+
+              {/* 2. Document Metadata */}
+              <CategoryHeader
+                icon={Settings2}
+                title="Document Metadata"
+                isOpen={isMetadataOpen}
+                onClick={() => setIsMetadataOpen(!isMetadataOpen)}
+              />
+              {isMetadataOpen && (
+                <div style={{ padding: "8px 12px", background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "6px", marginBottom: "8px", display: "flex", flexDirection: "column", gap: "10px" }}>
+                  <ToggleRow
+                    label="Strip Metadata"
+                    desc="Remove author, creator, and metadata info"
+                    checked={removeMetadata}
+                    onChange={setRemoveMetadata}
+                  />
+                  {!removeMetadata && (
+                    <>
+                      <Section label="Author Name">
+                        <StyledInput
+                          value={metadataAuthor}
+                          onChange={setMetadataAuthor}
+                          placeholder="e.g. Author name"
+                        />
+                      </Section>
+                      <Section label="Keywords / Tags">
+                        <StyledInput
+                          value={metadataKeywords}
+                          onChange={setMetadataKeywords}
+                          placeholder="e.g. report, final"
+                        />
+                      </Section>
+                    </>
+                  )}
+                </div>
+              )}
+
+              {/* 3. Security & Protection */}
+              <CategoryHeader
+                icon={Printer}
+                title="Security & Watermark"
+                isOpen={isSecurityOpen}
+                onClick={() => setIsSecurityOpen(!isSecurityOpen)}
+              />
+              {isSecurityOpen && (
+                <div style={{ padding: "8px 12px", background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "6px", marginBottom: "8px", display: "flex", flexDirection: "column", gap: "10px" }}>
+                  <Section label="Restrict Access (Password)">
+                    <StyledInput
+                      type="password"
+                      value={pdfPassword}
+                      onChange={setPdfPassword}
+                      placeholder="Enter security password"
+                    />
+                  </Section>
+                  <ToggleRow
+                    label="Allow Text/Image Copying"
+                    desc="Permit copy-paste in document"
+                    checked={allowCopy}
+                    onChange={setAllowCopy}
+                  />
+                  <ToggleRow
+                    label="Allow High Quality Printing"
+                    desc="Allow printing of the file"
+                    checked={allowPrint}
+                    onChange={setAllowPrint}
+                  />
+                </div>
+              )}
+
+              {/* 4. Roundness */}
+              <CategoryHeader
+                icon={Maximize2}
+                title="Roundness"
+                isOpen={isRoundnessOpen}
+                onClick={() => setIsRoundnessOpen(!isRoundnessOpen)}
+              />
+              {isRoundnessOpen && (
+                <div style={{ padding: "8px 12px", background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "6px", marginBottom: "8px", display: "flex", flexDirection: "column", gap: "10px" }}>
+                  <Section label="Corner Roundness">
+                    <StyledSelect
+                      value={globalRoundness}
+                      onChange={(v: any) => setGlobalRoundness(v)}
+                      options={[
+                        { value: "none",   label: "None - Sharp Corners" },
+                        { value: "small",  label: "Small - Subtle Rounding" },
+                        { value: "medium", label: "Medium - Balanced" },
+                        { value: "large",  label: "Large - Pronounced Curves" },
+                        { value: "pill",   label: "Pill - Fully Rounded" }
+                      ]}
+                    />
+                  </Section>
+                  <div style={{ fontSize: "11px", color: "#94a3b8", lineHeight: "1.5" }}>
+                    Applies corner rounding globally across UI elements and exported document frames.
+                  </div>
+                </div>
+              )}
+            </div>
+          </>
+        )}
       </div>
 
       <div className="uw-options-footer" style={{ display: "flex", gap: "10px" }}>
@@ -2052,3 +2225,4 @@ export function WorkspaceOptions({
     </aside>
   );
 }
+

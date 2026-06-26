@@ -1,4 +1,4 @@
-export interface OverlayElement {
+﻿export interface OverlayElement {
   id: string;
   type: "text" | "drawing" | "highlight" | "shape" | "signature" | "redact" | "image" | "comment" | "link" | "stamp";
   page: number;
@@ -50,8 +50,9 @@ export const FONT_SIZES = [8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 36,
 export const PRESET_COLORS = [
   "#000000", "#1e293b", "#ef4444", "#f97316", "#eab308",
   "#22c55e", "#06b6d4", "#3b82f6", "#8b5cf6", "#ec4899",
-  "#ffffff", "#f1f5f9", "#fecaca", "#fed7aa", "#fef9c3",
+  "#ffffff", "#f4f4f4", "#fecaca", "#fed7aa", "#fef9c3",
   "#bbf7d0", "#a5f3fc", "#bfdbfe", "#ddd6fe", "#fbcfe8"
 ];
 
 export const STAMP_TYPES = ["Approved", "Draft", "Confidential", "Reviewed", "Void", "Certified", "Urgent"];
+

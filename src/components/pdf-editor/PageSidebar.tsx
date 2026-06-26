@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import { 
   RotateCw, RotateCcw, Trash2, FileText, LayoutGrid, MoreVertical, Plus, ChevronDown 
 } from "lucide-react";
@@ -93,7 +93,7 @@ export function PageSidebar({
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
-        borderBottom: "1px solid #f1f5f9"
+        borderBottom: "1px solid #f4f4f4"
       }}>
         <span style={{
           fontSize: "0.85rem",
@@ -112,7 +112,7 @@ export function PageSidebar({
           display: "flex",
           alignItems: "center"
         }}
-        onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "#f1f5f9"; }}
+        onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "#f4f4f4"; }}
         onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; }}
         >
           <LayoutGrid size={15} />
@@ -343,7 +343,7 @@ export function PageSidebar({
       {/* Sidebar Footer: Add Pages button */}
       <div style={{
         padding: "16px",
-        borderTop: "1px solid #f1f5f9"
+        borderTop: "1px solid #f4f4f4"
       }}>
         <button
           onClick={onAddPages || (() => {})}
@@ -382,3 +382,4 @@ export function PageSidebar({
     </aside>
   );
 }
+

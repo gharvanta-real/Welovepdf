@@ -41,17 +41,17 @@ export function WorkspaceToolbar({
             className={`uw-toggle-btn ${viewMode === "Files" ? "active" : ""}`}
             onClick={() => setViewMode("Files")}
           >
-            <FileText size={14} />
+            <FileText size={13} strokeWidth={1.5} />
             Files
           </button>
           <button 
             className={`uw-toggle-btn ${viewMode === "Pages" ? "active" : ""}`}
             onClick={() => setViewMode("Pages")}
           >
-            <LayoutGrid size={14} />
+            <LayoutGrid size={13} strokeWidth={1.5} />
             Pages
             <span className="uw-crown-badge" title="Premium Feature">
-              <Crown size={10} fill="#f59e0b" style={{ marginLeft: 2 }} />
+              <Crown size={9} fill="#f59e0b" style={{ marginLeft: 2 }} />
             </span>
           </button>
         </div>
@@ -60,9 +60,9 @@ export function WorkspaceToolbar({
 
         {/* Add Dropdown */}
         <button className="uw-add-dropdown" onClick={onAddClick}>
-          <Plus size={14} />
+          <Plus size={13} strokeWidth={1.5} />
           Add
-          <ChevronDown size={12} style={{ marginLeft: 2 }} />
+          <ChevronDown size={11} strokeWidth={1.5} style={{ marginLeft: 1 }} />
         </button>
 
         <div className="uw-toolbar-divider" />
@@ -74,7 +74,7 @@ export function WorkspaceToolbar({
           disabled={!isAnySelected || viewMode === "Files"}
           title="Rotate Left"
         >
-          <RotateCcw size={14} />
+          <RotateCcw size={13} strokeWidth={1.5} />
         </button>
         <button 
           className="uw-action-icon-btn" 
@@ -82,7 +82,7 @@ export function WorkspaceToolbar({
           disabled={!isAnySelected || viewMode === "Files"}
           title="Rotate Right"
         >
-          <RotateCw size={14} />
+          <RotateCw size={13} strokeWidth={1.5} />
         </button>
         <button 
           className="uw-action-icon-btn" 
@@ -90,14 +90,14 @@ export function WorkspaceToolbar({
           disabled={!isAnySelected}
           title="Delete Selected"
         >
-          <Trash2 size={14} />
+          <Trash2 size={13} strokeWidth={1.5} />
         </button>
       </div>
 
       <div className="uw-toolbar-right">
         <button className="uw-finish-btn" onClick={onExecute}>
           Finish
-          <ArrowRight size={14} />
+          <ArrowRight size={13} strokeWidth={1.5} />
         </button>
       </div>
     </div>

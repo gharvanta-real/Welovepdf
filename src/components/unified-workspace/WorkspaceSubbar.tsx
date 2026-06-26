@@ -1,11 +1,9 @@
 import React from "react";
-import { ArrowUpDown, List, LayoutGrid } from "lucide-react";
+import { ArrowUpDown } from "lucide-react";
 
 interface WorkspaceSubbarProps {
   isAllSelected: boolean;
   onSelectAllChange: (checked: boolean) => void;
-  layoutMode: "grid" | "list";
-  setLayoutMode: (mode: "grid" | "list") => void;
   stagedFilesCount: number;
   pdfPagesCount: number;
   viewMode: "Files" | "Pages";
@@ -14,8 +12,6 @@ interface WorkspaceSubbarProps {
 export function WorkspaceSubbar({
   isAllSelected,
   onSelectAllChange,
-  layoutMode,
-  setLayoutMode,
   stagedFilesCount,
   pdfPagesCount,
   viewMode
@@ -31,29 +27,14 @@ export function WorkspaceSubbar({
           checked={isAllSelected && showCheckbox}
           onChange={(e) => onSelectAllChange(e.target.checked)}
         />
-        <label htmlFor="select-all-staged" style={{ cursor: "pointer", userSelect: "none" }}>Select all</label>
+        <label htmlFor="select-all-staged" style={{ cursor: "pointer", userSelect: "none", fontSize: "12px", fontWeight: 400, color: "#64748b" }}>Select all</label>
       </div>
 
       <div className="uw-subbar-right">
         <button className="uw-sort-btn" title="Sort Staged Files">
-          <ArrowUpDown size={12} />
+          <ArrowUpDown size={11} strokeWidth={1.5} />
           A-Z
         </button>
-        <div className="uw-toolbar-divider" style={{ margin: "0 2px" }} />
-        <div className="uw-view-switcher">
-          <button 
-            className={`uw-view-btn ${layoutMode === "list" ? "active" : ""}`}
-            onClick={() => setLayoutMode("list")}
-          >
-            <List size={13} />
-          </button>
-          <button 
-            className={`uw-view-btn ${layoutMode === "grid" ? "active" : ""}`}
-            onClick={() => setLayoutMode("grid")}
-          >
-            <LayoutGrid size={13} />
-          </button>
-        </div>
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+﻿import React, { useState, useEffect, useRef } from "react";
 import { 
   ChevronLeft, ChevronRight, FileText, Plus, Check, X, ArrowLeft,
   Users, Edit2, Trash2, Calendar, Type, HelpCircle, PenTool,
@@ -878,7 +878,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
     if (ctx) {
       ctx.font = "bold 44px 'Google Sans', 'Google Sans Text', 'Plus Jakarta Sans', sans-serif";
       ctx.fillStyle = signatureDetails.color;
-      ctx.fillText("✓", 10, 48);
+      ctx.fillText("âœ“", 10, 48);
     }
     const newEl: OverlayElement = {
       id: "check-" + Date.now(),
@@ -942,7 +942,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
 
   // Who-signs onboarding modal is now rendered as an overlay inside the main editor view
 
-  // ── Step 1.5: Invite Sent Success view ──
+  // â”€â”€ Step 1.5: Invite Sent Success view â”€â”€
   if (step === "invite-sent") {
     return (
       <div style={{
@@ -973,7 +973,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
     );
   }
 
-  // ── Step 2: Main Editor Workspace View ──
+  // â”€â”€ Step 2: Main Editor Workspace View â”€â”€
   const toolbarButtonStyle = {
     width: "32px",
     height: "32px",
@@ -1016,7 +1016,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
       overflow: "hidden",
       position: "relative"
     }}>
-      {/* ── TOP TOOLBAR ── */}
+      {/* â”€â”€ TOP TOOLBAR â”€â”€ */}
       <div style={{
         height: "56px",
         width: "100%",
@@ -1037,7 +1037,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
               padding: "8px",
               borderRadius: "6px",
               border: "1px solid var(--border, #cbd5e1)",
-              backgroundColor: showLeftSidebar ? "var(--c-surface, #f1f5f9)" : "var(--c-bg, #ffffff)",
+              backgroundColor: showLeftSidebar ? "var(--c-surface, #f4f4f4)" : "var(--c-bg, #ffffff)",
               color: "var(--c-text, #1e293b)",
               cursor: "pointer",
               display: "flex",
@@ -1054,7 +1054,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
               style={{
                 padding: "8px 12px",
                 border: "none",
-                backgroundColor: activeCursorTool === "hand" ? "var(--c-surface, #f1f5f9)" : "var(--c-bg, #ffffff)",
+                backgroundColor: activeCursorTool === "hand" ? "var(--c-surface, #f4f4f4)" : "var(--c-bg, #ffffff)",
                 color: "var(--c-text, #1e293b)",
                 cursor: "pointer",
                 display: "flex",
@@ -1069,7 +1069,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
               style={{
                 padding: "8px 12px",
                 border: "none",
-                backgroundColor: activeCursorTool === "pointer" ? "var(--c-surface, #f1f5f9)" : "var(--c-bg, #ffffff)",
+                backgroundColor: activeCursorTool === "pointer" ? "var(--c-surface, #f4f4f4)" : "var(--c-bg, #ffffff)",
                 color: "var(--c-text, #1e293b)",
                 cursor: "pointer",
                 borderLeft: "1px solid var(--border, #cbd5e1)",
@@ -1146,13 +1146,13 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
 
         {/* Right: zoom controls in toolbar */}
         <div style={{ display: "flex", alignItems: "center", gap: "6px", width: "120px", justifyContent: "flex-end" }}>
-          <button onClick={() => setZoom(z => Math.max(30, z - 10))} style={zoomButtonStyle} title="Zoom Out">−</button>
+          <button onClick={() => setZoom(z => Math.max(30, z - 10))} style={zoomButtonStyle} title="Zoom Out">âˆ’</button>
           <span style={{ fontSize: "12px", color: "var(--c-text, #1e293b)", minWidth: "38px", textAlign: "center", fontWeight: "500" }}>{zoom}%</span>
           <button onClick={() => setZoom(z => Math.min(200, z + 10))} style={zoomButtonStyle} title="Zoom In">+</button>
         </div>
       </div>
 
-      {/* ── MAIN WORKSPACE BODY ── */}
+      {/* â”€â”€ MAIN WORKSPACE BODY â”€â”€ */}
       <div style={{
         display: "flex",
         flex: 1,
@@ -1368,7 +1368,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
               onClick={() => setZoom(z => Math.max(30, z - 10))}
               style={{ width: "26px", height: "26px", borderRadius: "50%", border: "none", background: "rgba(37, 99, 235, 0.08)", color: "var(--c-text, #1e293b)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "16px", fontWeight: "500" }}
               title="Zoom Out"
-            >−</button>
+            >âˆ’</button>
             <button
               onClick={fitPageToViewport}
               style={{ padding: "3px 10px", borderRadius: "12px", border: "none", background: "transparent", color: "var(--c-text, #1e293b)", cursor: "pointer", fontSize: "12px", fontWeight: "500", minWidth: "46px", textAlign: "center" }}
@@ -1855,7 +1855,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
         </div>
       </div>
 
-      {/* ── Signature Details popup modal ── */}
+      {/* â”€â”€ Signature Details popup modal â”€â”€ */}
       {showDetailsModal && (
         <div style={{
           position: "fixed",
@@ -1948,7 +1948,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                 Set your {modalSection === "signature" ? "Signature" : modalSection === "initials" ? "Initials" : "Company Stamp"}
               </h3>
 
-              {/* ── Section A: Signature Content ── */}
+              {/* â”€â”€ Section A: Signature Content â”€â”€ */}
               {modalSection === "signature" && (
                 <div style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0 }}>
                   {/* Signature Sub-tabs */}
@@ -2140,7 +2140,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                           justifyContent: "center",
                           overflow: "hidden",
                           padding: "6px",
-                          backgroundImage: "linear-gradient(45deg, #f1f5f9 25%, transparent 25%), linear-gradient(-45deg, #f1f5f9 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f1f5f9 75%), linear-gradient(-45deg, transparent 75%, #f1f5f9 75%)",
+                          backgroundImage: "linear-gradient(45deg, #f4f4f4 25%, transparent 25%), linear-gradient(-45deg, #f4f4f4 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f4f4f4 75%), linear-gradient(-45deg, transparent 75%, #f4f4f4 75%)",
                           backgroundSize: "10px 10px",
                           backgroundPosition: "0 0, 0 5px, 5px -5px, -5px 0",
                           backgroundColor: "#ffffff"
@@ -2157,7 +2157,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                 </div>
               )}
 
-              {/* ── Section B: Initials Content ── */}
+              {/* â”€â”€ Section B: Initials Content â”€â”€ */}
               {modalSection === "initials" && (
                 <div style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0 }}>
                   {/* Initials Sub-tabs */}
@@ -2311,7 +2311,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                           justifyContent: "center",
                           overflow: "hidden",
                           padding: "6px",
-                          backgroundImage: "linear-gradient(45deg, #f1f5f9 25%, transparent 25%), linear-gradient(-45deg, #f1f5f9 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f1f5f9 75%), linear-gradient(-45deg, transparent 75%, #f1f5f9 75%)",
+                          backgroundImage: "linear-gradient(45deg, #f4f4f4 25%, transparent 25%), linear-gradient(-45deg, #f4f4f4 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f4f4f4 75%), linear-gradient(-45deg, transparent 75%, #f4f4f4 75%)",
                           backgroundSize: "10px 10px",
                           backgroundPosition: "0 0, 0 5px, 5px -5px, -5px 0",
                           backgroundColor: "#ffffff"
@@ -2328,7 +2328,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                 </div>
               )}
 
-              {/* ── Section C: Company Stamp Content ── */}
+              {/* â”€â”€ Section C: Company Stamp Content â”€â”€ */}
               {modalSection === "stamp" && (
                 <div style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0 }}>
                   {/* Stamp Sub-tabs */}
@@ -2378,7 +2378,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                                     padding: "6px 4px",
                                     fontSize: "0.7rem",
                                     fontWeight: "750",
-                                    backgroundColor: stampText.type === st.id ? "#000" : "#f1f5f9",
+                                    backgroundColor: stampText.type === st.id ? "#000" : "#f4f4f4",
                                     color: stampText.type === st.id ? "#fff" : "#475569",
                                     border: "none",
                                     borderRadius: "4px",
@@ -2492,7 +2492,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                           justifyContent: "center",
                           overflow: "hidden",
                           padding: "6px",
-                          backgroundImage: "linear-gradient(45deg, #f1f5f9 25%, transparent 25%), linear-gradient(-45deg, #f1f5f9 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f1f5f9 75%), linear-gradient(-45deg, transparent 75%, #f1f5f9 75%)",
+                          backgroundImage: "linear-gradient(45deg, #f4f4f4 25%, transparent 25%), linear-gradient(-45deg, #f4f4f4 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f4f4f4 75%), linear-gradient(-45deg, transparent 75%, #f4f4f4 75%)",
                           backgroundSize: "10px 10px",
                           backgroundPosition: "0 0, 0 5px, 5px -5px, -5px 0",
                           backgroundColor: "#ffffff"
@@ -2512,7 +2512,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
               {/* Bottom control row */}
               <div style={{
                 marginTop: "auto",
-                borderTop: "1px solid #f1f5f9",
+                borderTop: "1px solid #f4f4f4",
                 paddingTop: "12px",
                 display: "flex",
                 justifyContent: "space-between",
@@ -2585,7 +2585,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
         </div>
       )}
 
-      {/* ── ONBOARDING OVERLAY MODAL ── */}
+      {/* â”€â”€ ONBOARDING OVERLAY MODAL â”€â”€ */}
       {onboardingModal && (
         <div style={{
           position: "fixed",
@@ -2856,3 +2856,4 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
     </div>
   );
 }
+

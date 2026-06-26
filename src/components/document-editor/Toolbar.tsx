@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+﻿import React, { useState, useRef, useEffect } from 'react';
 import {
   Undo2, Redo2, Printer, Paintbrush, Search,
   Bold, Italic, Underline, Strikethrough,
@@ -57,7 +57,7 @@ const STYLES = [
 const FONT_SIZES = [6, 7, 8, 9, 10, 11, 12, 14, 16, 18, 20, 24, 28, 32, 36, 48, 72];
 
 const TEXT_COLORS = ['#000000','#374151','#dc2626','#ea580c','#ca8a04','#16a34a','#2563eb','#7c3aed','#db2777','#ffffff','#f3f4f6','#fef9c3'];
-const HIGHLIGHT_COLORS = ['#fef08a','#bbf7d0','#bfdbfe','#fecdd3','#e9d5ff','#fed7aa','#f1f5f9','#ffffff','transparent'];
+const HIGHLIGHT_COLORS = ['#fef08a','#bbf7d0','#bfdbfe','#fecdd3','#e9d5ff','#fed7aa','#f4f4f4','#ffffff','transparent'];
 
 export function Toolbar({
   state, onFormat, onAlign, onList,
@@ -210,7 +210,7 @@ export function Toolbar({
     >
       <ToolbarStyles />
 
-      {/* ── Formatting controls ── */}
+      {/* â”€â”€ Formatting controls â”€â”€ */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '1px', flex: 1, flexWrap: 'nowrap' }}>
 
         {/* Search menus */}
@@ -449,7 +449,7 @@ export function Toolbar({
         </button>
       </div>
 
-      {/* ── Right side: editing mode + collapse ── */}
+      {/* â”€â”€ Right side: editing mode + collapse â”€â”€ */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '2px', flexShrink: 0 }}>
         <button className="ptb-mode-btn" title="Editing mode">
           <PenLine size={13} style={{ color: '#1f2937' }} />
@@ -550,3 +550,4 @@ const ToolbarStyles = () => (
     .ptb-mode-btn:hover { background-color: rgba(0,0,0,0.07); }
   `}} />
 );
+

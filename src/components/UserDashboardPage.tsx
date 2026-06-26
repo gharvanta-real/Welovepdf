@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+﻿import React, { useState, useRef, useEffect } from "react";
 import { 
   ArrowLeft, User, Shield, CreditCard, LogOut, HardDrive, Plus, Edit, 
   Stamp, Archive, MoreHorizontal, Grid, List, FileText, Trash2, Download, 
@@ -309,17 +309,17 @@ export function UserDashboardPage({
     <div className="stitch-landing-v2 theme-blue" style={{ width: "100%", height: "calc(100vh - 60px)", backgroundColor: "#ffffff", color: "var(--v2-text-main)", fontFamily: "var(--v2-font-sans)", overflow: "hidden", display: "flex", flexDirection: "column", boxSizing: "border-box" }}>
       <div style={{ maxWidth: "1280px", width: "100%", margin: "0 auto", padding: "40px 24px 0 24px", flex: 1, display: "flex", flexDirection: "column", minHeight: 0, boxSizing: "border-box" }}>
         
-        {/* ── Breadcrumbs ── */}
+        {/* â”€â”€ Breadcrumbs â”€â”€ */}
         <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "14px", color: "var(--v2-text-muted)", marginBottom: "32px", fontWeight: 500, flexShrink: 0 }}>
           <span style={{ cursor: "pointer" }} onClick={onBack}>My Account</span>
           <ChevronRight size={14} style={{ color: "var(--v2-text-light)" }} />
           <span style={{ color: "var(--v2-text-main)", fontWeight: 600 }}>{getBreadcrumbTitle()}</span>
         </div>
 
-        {/* ── Dashboard Layout Grid ── */}
+        {/* â”€â”€ Dashboard Layout Grid â”€â”€ */}
         <div style={{ display: "grid", gridTemplateColumns: "240px 1fr", gap: "40px", alignItems: "flex-start", flex: 1, minHeight: 0, overflow: "hidden", width: "100%" }}>
           
-          {/* ── Left Sidebar Navigation Placeholder ── */}
+          {/* â”€â”€ Left Sidebar Navigation Placeholder â”€â”€ */}
           <div style={{ width: "240px", flexShrink: 0 }}>
             <aside style={{ 
               display: "flex", 
@@ -455,10 +455,10 @@ export function UserDashboardPage({
           </aside>
         </div>
 
-          {/* ── Right Content Area ── */}
+          {/* â”€â”€ Right Content Area â”€â”€ */}
           <main className="narrow-scrollbar" style={{ height: "100%", overflowY: "auto", paddingRight: "16px", paddingBottom: "100px", boxSizing: "border-box" }}>
             
-            {/* 1️⃣ DASHBOARD VIEW */}
+            {/* 1ï¸âƒ£ DASHBOARD VIEW */}
             {activeTab === "dashboard" && (
               <div>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "24px", marginBottom: "28px" }}>
@@ -503,7 +503,7 @@ export function UserDashboardPage({
                           <span style={{ color: "var(--v2-text-muted)" }}>Storage Used</span>
                           <strong style={{ color: "var(--v2-text-main)" }}>{totalMB.toFixed(1)} MB / {maxStorageMB} MB</strong>
                         </div>
-                        <div style={{ height: "6px", width: "100%", backgroundColor: "#f1f5f9", borderRadius: "9999px", overflow: "hidden" }}>
+                        <div style={{ height: "6px", width: "100%", backgroundColor: "#f4f4f4", borderRadius: "9999px", overflow: "hidden" }}>
                           <div style={{ height: "100%", width: `${storagePercentage}%`, backgroundColor: "var(--v2-primary)", borderRadius: "9999px", transition: "width 0.3s ease" }}></div>
                         </div>
                       </div>
@@ -527,7 +527,7 @@ export function UserDashboardPage({
                         </div>
 
                         {/* Reset Timer */}
-                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 12px", backgroundColor: "#f8fafc", borderRadius: "8px", border: "1px solid #f1f5f9", marginTop: "4px" }}>
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 12px", backgroundColor: "#f8fafc", borderRadius: "8px", border: "1px solid #f4f4f4", marginTop: "4px" }}>
                           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                             <Clock size={15} style={{ color: "var(--v2-primary)" }} />
                             <span style={{ fontSize: "12.5px", color: "var(--v2-text-muted)" }}>Auto-deletes in</span>
@@ -581,7 +581,7 @@ export function UserDashboardPage({
                           <tr>
                             <td colSpan={4} style={{ padding: "48px 20px", textAlign: "center", color: "var(--v2-text-muted)" }}>
                               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
-                                <div style={{ width: "40px", height: "40px", borderRadius: "50%", backgroundColor: "#f1f5f9", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                <div style={{ width: "40px", height: "40px", borderRadius: "50%", backgroundColor: "#f4f4f4", display: "flex", alignItems: "center", justifyContent: "center" }}>
                                   <FileText size={20} style={{ color: "var(--v2-text-muted)" }} />
                                 </div>
                                 <span style={{ fontSize: "14px", fontWeight: 500 }}>No processed files in this workspace session</span>
@@ -666,7 +666,7 @@ export function UserDashboardPage({
                   <div style={{ display: "grid", gridTemplateColumns: allDocs.length === 0 ? "1fr" : "repeat(auto-fill, minmax(180px, 1fr))", gap: "16px" }}>
                     {allDocs.length === 0 ? (
                       <div style={{ padding: "48px 24px", textAlign: "center", backgroundColor: "#ffffff", border: "1px solid var(--v2-border-light)", borderRadius: "12px", color: "var(--v2-text-muted)" }}>
-                        <div style={{ width: "40px", height: "40px", borderRadius: "50%", backgroundColor: "#f1f5f9", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 12px auto" }}>
+                        <div style={{ width: "40px", height: "40px", borderRadius: "50%", backgroundColor: "#f4f4f4", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 12px auto" }}>
                           <FileText size={20} style={{ color: "var(--v2-text-muted)" }} />
                         </div>
                         <p style={{ fontSize: "14px", fontWeight: 500, margin: "0 0 4px 0" }}>No processed files in this workspace session</p>
@@ -709,7 +709,7 @@ export function UserDashboardPage({
               </div>
             )}
 
-            {/* 2️⃣ EDIT PROFILE VIEW (Matching Image Fields exactly) */}
+            {/* 2ï¸âƒ£ EDIT PROFILE VIEW (Matching Image Fields exactly) */}
             {activeTab === "profile" && (
               <div style={{ border: "1px solid var(--v2-border-light)", borderRadius: "16px", padding: "32px", backgroundColor: "#ffffff" }}>
                 
@@ -825,7 +825,7 @@ export function UserDashboardPage({
               </div>
             )}
 
-            {/* 3️⃣ SECURITY VIEW */}
+            {/* 3ï¸âƒ£ SECURITY VIEW */}
             {activeTab === "security" && (
               <div style={{ display: "flex", flexDirection: "column", gap: "28px" }}>
                 
@@ -889,7 +889,7 @@ export function UserDashboardPage({
               </div>
             )}
 
-            {/* 5️⃣ TOOLS VIEW */}
+            {/* 5ï¸âƒ£ TOOLS VIEW */}
             {activeTab === "tools" && (
               <div>
                 <div style={{ marginBottom: "28px", display: "flex", justifyContent: "space-between", alignItems: "flex-end", gap: "24px" }}>
@@ -982,3 +982,4 @@ export function UserDashboardPage({
     </div>
   );
 }
+

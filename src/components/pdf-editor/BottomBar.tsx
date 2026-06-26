@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import { 
   ChevronLeft, ChevronRight, ChevronDown, Minus, Plus, Maximize2, 
   LayoutGrid, BookOpen, Bookmark 
@@ -90,7 +90,7 @@ export function BottomBar({
               cursor: "pointer",
               transition: "all 0.15s"
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "#f1f5f9"; e.currentTarget.style.color = "#1e293b"; }}
+            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "#f4f4f4"; e.currentTarget.style.color = "#1e293b"; }}
             onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; e.currentTarget.style.color = "#64748b"; }}
           >
             {btn.icon}
@@ -302,3 +302,4 @@ export function BottomBar({
     </div>
   );
 }
+

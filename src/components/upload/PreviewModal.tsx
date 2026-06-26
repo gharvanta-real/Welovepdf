@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+﻿import React, { useState, useEffect, useRef, useCallback } from "react";
 import { getPdfjsLib } from "../../utils/pdfjs";
 import { formatBytes } from "./UploadHelpers";
 import { renderSmileyIllustration } from "./FilePreviewCard";
 
-/* ─── Image Full-Screen Viewer ─────────────────────────────────────────────── */
+/* â”€â”€â”€ Image Full-Screen Viewer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 interface ImagePreviewViewerProps {
   file: File;
   onClose: () => void;
@@ -48,7 +48,7 @@ function ImageFullscreenViewer({ file, onClose }: ImagePreviewViewerProps) {
       />
       {/* HUD */}
       <div style={{ position: "fixed", bottom: "32px", left: "50%", transform: "translateX(-50%)", display: "flex", alignItems: "center", gap: "6px", background: "rgba(15,23,42,0.85)", backdropFilter: "blur(12px)", borderRadius: "24px", padding: "6px 10px", boxShadow: "0 4px 24px rgba(0,0,0,0.4)", zIndex: 10 }}>
-        <HudButton onClick={() => setScale(s => Math.max(0.3, s - 0.2))} title="Zoom Out">−</HudButton>
+        <HudButton onClick={() => setScale(s => Math.max(0.3, s - 0.2))} title="Zoom Out">âˆ’</HudButton>
         <button onClick={() => setScale(1)} style={hudTextStyle} title="Reset zoom">{Math.round(scale * 100)}%</button>
         <HudButton onClick={() => setScale(s => Math.min(3, s + 0.2))} title="Zoom In">+</HudButton>
       </div>
@@ -56,7 +56,7 @@ function ImageFullscreenViewer({ file, onClose }: ImagePreviewViewerProps) {
   );
 }
 
-/* ─── Shared HUD button styles ─────────────────────────────────────────────── */
+/* â”€â”€â”€ Shared HUD button styles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 const hudTextStyle: React.CSSProperties = {
   background: "transparent", border: "none", color: "rgba(255,255,255,0.9)", fontSize: "12px",
   fontWeight: "600", minWidth: "44px", textAlign: "center", cursor: "pointer", padding: "2px 6px"
@@ -80,7 +80,7 @@ function HudButton({ onClick, title, children, disabled }: { onClick: () => void
   );
 }
 
-/* ─── PDF Single-Page Renderer ─────────────────────────────────────────────── */
+/* â”€â”€â”€ PDF Single-Page Renderer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 interface PdfPageRendererProps {
   pdfDoc: any;
   pageNum: number;
@@ -146,7 +146,7 @@ function PdfPageRenderer({ pdfDoc, pageNum, scale, rotation, onRendered }: PdfPa
   );
 }
 
-/* ─── Full-Screen PDF Viewer ───────────────────────────────────────────────── */
+/* â”€â”€â”€ Full-Screen PDF Viewer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 interface PdfFullscreenViewerProps {
   file: File;
   onClose: () => void;
@@ -281,7 +281,7 @@ function PdfFullscreenViewer({ file, onClose, initialPage = 1 }: PdfFullscreenVi
       onTouchStart={onTouchStartSwipe}
       onTouchEnd={onTouchEndSwipe}
     >
-      {/* ── Top Bar ── */}
+      {/* â”€â”€ Top Bar â”€â”€ */}
       <div style={{
         display: "flex", alignItems: "center", justifyContent: "space-between",
         padding: "10px 16px",
@@ -291,11 +291,11 @@ function PdfFullscreenViewer({ file, onClose, initialPage = 1 }: PdfFullscreenVi
       }}>
         {/* File info */}
         <div style={{ display: "flex", flexDirection: "column", overflow: "hidden", maxWidth: "calc(100% - 200px)" }}>
-          <span style={{ fontSize: "13px", fontWeight: "600", color: "#f1f5f9", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+          <span style={{ fontSize: "13px", fontWeight: "600", color: "#f4f4f4", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
             {file.name}
           </span>
           <span style={{ fontSize: "11px", color: "rgba(255,255,255,0.45)", marginTop: "1px" }}>
-            {formatBytes(file.size)} · {totalPages} {totalPages === 1 ? "page" : "pages"}
+            {formatBytes(file.size)} Â· {totalPages} {totalPages === 1 ? "page" : "pages"}
           </span>
         </div>
 
@@ -322,12 +322,12 @@ function PdfFullscreenViewer({ file, onClose, initialPage = 1 }: PdfFullscreenVi
         </div>
       </div>
 
-      {/* ── Page Viewer Body ── */}
+      {/* â”€â”€ Page Viewer Body â”€â”€ */}
       <div style={{ flex: 1, overflow: "auto", display: "flex", alignItems: "flex-start", justifyContent: "center", padding: "32px 24px", position: "relative" }}>
         {loading ? (
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "16px", height: "100%", minHeight: "200px" }}>
             <div className="processing-spinner" style={{ borderColor: "rgba(255,255,255,0.15)", borderTopColor: "#3b82f6", width: "32px", height: "32px" } as React.CSSProperties} />
-            <span style={{ fontSize: "13px", color: "rgba(255,255,255,0.5)" }}>Loading PDF…</span>
+            <span style={{ fontSize: "13px", color: "rgba(255,255,255,0.5)" }}>Loading PDFâ€¦</span>
           </div>
         ) : error ? (
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "16px", paddingTop: "60px" }}>
@@ -371,7 +371,7 @@ function PdfFullscreenViewer({ file, onClose, initialPage = 1 }: PdfFullscreenVi
                 display: "flex", alignItems: "center", justifyContent: "center",
                 opacity: currentPage <= 1 ? 0.3 : 1, transition: "all 0.15s ease", zIndex: 20
               }}
-              title="Previous page (←)"
+              title="Previous page (â†)"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="m15 18-6-6 6-6" /></svg>
             </button>
@@ -386,7 +386,7 @@ function PdfFullscreenViewer({ file, onClose, initialPage = 1 }: PdfFullscreenVi
                 display: "flex", alignItems: "center", justifyContent: "center",
                 opacity: currentPage >= totalPages ? 0.3 : 1, transition: "all 0.15s ease", zIndex: 20
               }}
-              title="Next page (→)"
+              title="Next page (â†’)"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="m9 18 6-6-6-6" /></svg>
             </button>
@@ -394,7 +394,7 @@ function PdfFullscreenViewer({ file, onClose, initialPage = 1 }: PdfFullscreenVi
         )}
       </div>
 
-      {/* ── Bottom HUD ── */}
+      {/* â”€â”€ Bottom HUD â”€â”€ */}
       {!loading && !error && (
         <div style={{
           display: "flex", flexDirection: "column", alignItems: "center",
@@ -428,7 +428,7 @@ function PdfFullscreenViewer({ file, onClose, initialPage = 1 }: PdfFullscreenVi
 
             {/* Zoom controls */}
             <div style={{ display: "flex", alignItems: "center", gap: "4px", background: "rgba(255,255,255,0.08)", borderRadius: "20px", padding: "4px 6px" }}>
-              <HudButton onClick={() => setScale(s => Math.max(0.4, s - 0.2))} title="Zoom Out (-)">−</HudButton>
+              <HudButton onClick={() => setScale(s => Math.max(0.4, s - 0.2))} title="Zoom Out (-)">âˆ’</HudButton>
               <button onClick={() => setScale(1.2)} style={{ ...hudTextStyle, fontSize: "12px" }} title="Reset zoom">
                 {Math.round(scale * 100)}%
               </button>
@@ -437,7 +437,7 @@ function PdfFullscreenViewer({ file, onClose, initialPage = 1 }: PdfFullscreenVi
 
             {/* Keyboard hint */}
             <span style={{ fontSize: "10px", color: "rgba(255,255,255,0.25)", display: "none" as const }}>
-              ← → to navigate · Esc to close
+              â† â†’ to navigate Â· Esc to close
             </span>
           </div>
         </div>
@@ -446,7 +446,7 @@ function PdfFullscreenViewer({ file, onClose, initialPage = 1 }: PdfFullscreenVi
   );
 }
 
-/* ─── Main PreviewModal (entry point) ─────────────────────────────────────── */
+/* â”€â”€â”€ Main PreviewModal (entry point) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 interface PreviewModalProps {
   previewFile: File | null;
   onClose: () => void;
@@ -483,7 +483,7 @@ export function PreviewModal({
           <button
             onClick={onClose}
             style={{ background: "rgba(255,255,255,0.1)", border: "none", color: "#fff", borderRadius: "8px", padding: "6px 12px", cursor: "pointer", fontSize: "13px", fontWeight: "500" }}
-          >✕ Close</button>
+          >âœ• Close</button>
         </div>
         <div onClick={e => e.stopPropagation()} style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
           <ImageFullscreenViewer file={previewFile} onClose={onClose} />
@@ -517,3 +517,4 @@ export function PreviewModal({
     </div>
   );
 }
+

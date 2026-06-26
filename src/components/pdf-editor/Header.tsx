@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+﻿import React, { useState } from "react";
 import { 
   Undo2, Redo2, Sparkles, SlidersHorizontal, Download, ChevronDown, Edit2, Check
 } from "lucide-react";
@@ -194,7 +194,7 @@ export function Header({
               cursor: canUndo ? "pointer" : "not-allowed",
               transition: "all 0.15s ease"
             }}
-            onMouseEnter={(e) => { if (canUndo) e.currentTarget.style.backgroundColor = "#f1f5f9"; }}
+            onMouseEnter={(e) => { if (canUndo) e.currentTarget.style.backgroundColor = "#f4f4f4"; }}
             onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; }}
             title="Undo (Ctrl+Z)"
           >
@@ -216,7 +216,7 @@ export function Header({
               cursor: canRedo ? "pointer" : "not-allowed",
               transition: "all 0.15s ease"
             }}
-            onMouseEnter={(e) => { if (canRedo) e.currentTarget.style.backgroundColor = "#f1f5f9"; }}
+            onMouseEnter={(e) => { if (canRedo) e.currentTarget.style.backgroundColor = "#f4f4f4"; }}
             onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; }}
             title="Redo (Ctrl+Y)"
           >
@@ -344,3 +344,4 @@ export function Header({
     </header>
   );
 }
+

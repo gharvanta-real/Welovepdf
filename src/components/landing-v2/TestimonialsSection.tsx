@@ -53,7 +53,7 @@ const PartnerIllustration = () => (
 // 4. 24/7 Support Icon
 const SupportIllustration = () => (
   <svg width="56" height="56" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginBottom: "8px" }}>
-    <rect x="8" y="14" width="36" height="26" rx="6" fill="#F1F5F9" stroke="#CBD5E1" strokeWidth="2" />
+    <rect x="8" y="14" width="36" height="26" rx="6" fill="#f4f4f4" stroke="#CBD5E1" strokeWidth="2" />
     <rect x="26" y="24" width="30" height="24" rx="6" fill="#FFFFFF" stroke="#3B82F6" strokeWidth="2" />
     <path d="M20 40l-4 6v-6h4z" fill="#CBD5E1" />
     <path d="M44 48l4 6v-6h-4z" fill="#3B82F6" />
@@ -124,7 +124,7 @@ export function TestimonialsSection() {
       <div className="v2-container">
         <div className="v2-testimonials-header">
           <h2>Why Choose PDFMount?</h2>
-          <p>Trusted by millions — built for privacy, speed, and simplicity.</p>
+          <p>Trusted by millions - built for privacy, speed, and simplicity.</p>
         </div>
         <div className="v2-why-grid">
           {chooseItems.map((item, idx) => {
@@ -143,3 +143,4 @@ export function TestimonialsSection() {
   );
 }
 export default TestimonialsSection;
+

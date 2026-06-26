@@ -146,7 +146,7 @@ export function PdfPageCard({
               style={{
                 width: "28px",
                 height: "28px",
-                borderRadius: "50%",
+                borderRadius: "4px",
                 border: "1px solid var(--border)",
                 background: "var(--c-bg)",
                 color: "var(--c-text)",
@@ -179,7 +179,7 @@ export function PdfPageCard({
               style={{
                 width: "28px",
                 height: "28px",
-                borderRadius: "50%",
+                borderRadius: "4px",
                 border: "1px solid var(--border)",
                 background: isRemoved ? "var(--s-primary)" : "var(--c-bg)",
                 color: isRemoved ? "var(--s-on-primary)" : "var(--c-text)",
@@ -214,7 +214,7 @@ export function PdfPageCard({
                 style={{
                   width: "28px",
                   height: "28px",
-                  borderRadius: "50%",
+                  borderRadius: "4px",
                   border: "1px solid var(--border)",
                   background: "var(--c-bg)",
                   color: "var(--c-text)",
@@ -251,7 +251,7 @@ export function PdfPageCard({
                 style={{
                   width: "28px",
                   height: "28px",
-                  borderRadius: "50%",
+                  borderRadius: "4px",
                   border: "1px solid var(--border)",
                   background: "var(--c-bg)",
                   color: "var(--c-text)",

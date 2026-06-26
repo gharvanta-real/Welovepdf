@@ -6,6 +6,7 @@ import { WorkspaceSubbar } from "./WorkspaceSubbar";
 import { WorkspaceStagedGrid } from "./WorkspaceStagedGrid";
 import { WorkspaceUploadZone } from "./WorkspaceUploadZone";
 import { FilePreviewCard, renderSmileyIllustration } from "../upload/FilePreviewCard";
+import { PdfPreviewPanel } from "./PdfPreviewPanel";
 
 interface WorkspaceCanvasProps {
   activeTool: string;
@@ -106,16 +107,32 @@ export function WorkspaceCanvas({
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   // Staged states
-  const [viewMode, setViewMode] = useState<"Files" | "Pages">("Files");
-  const [layoutMode, setLayoutMode] = useState<"grid" | "list">("grid");
+  const [viewMode, setViewMode] = useState<"Files" | "Pages">("Pages");
+  const layoutMode = "grid";
   const [selectedFiles, setSelectedFiles] = useState<Set<number>>(new Set());
   const [selectedPages, setSelectedPages] = useState<Set<number>>(new Set());
   const [pageRotations, setPageRotations] = useState<Record<string, number>>({});
   const [localRemovedPages, setLocalRemovedPages] = useState<Set<string>>(new Set());
   
+  // Preview mode — replaces canvas with PdfPreviewPanel
+  const [previewMode, setPreviewMode] = useState(false);
+  const [initialActivePageKey, setInitialActivePageKey] = useState<string | null>(null);
+  
   // Parsed PDF Pages state
   const [pdfPages, setPdfPages] = useState<{ pageNum: number; url: string; fileIndex: number }[]>([]);
   const [loadingPages, setLoadingPages] = useState(false);
+
+  // Auto switch to pages view and reset states when staged files change
+  useEffect(() => {
+    if (!stagedFiles || stagedFiles.length === 0) {
+      setSelectedFiles(new Set());
+      setSelectedPages(new Set());
+      setPageRotations({});
+      setLocalRemovedPages(new Set());
+    } else {
+      setViewMode("Pages");
+    }
+  }, [stagedFiles]);
 
   // Trigger hidden input
   const handleAddClick = () => {
@@ -589,7 +606,7 @@ export function WorkspaceCanvas({
 
     const tipMap: Record<string, string> = {
       "Compress PDF": "Compressing an important PDF? Use our Protect tool after to encrypt it with a password!",
-      "Protect PDF": "After protecting, keep your password safe — it cannot be recovered if lost.",
+      "Protect PDF": "After protecting, keep your password safe - it cannot be recovered if lost.",
       "Merge PDF": "You can drag & drop to reorder pages before merging next time.",
       "Split PDF": "After splitting, use Merge to combine specific parts back together.",
       "PDF to Word": "For best results, use PDFs with selectable text rather than scanned images.",
@@ -674,7 +691,7 @@ export function WorkspaceCanvas({
             width: "100%",
             height: "100%",
             overflowY: "auto",
-            background: "#f1f5f9",
+            background: "#f4f4f4",
             padding: "32px 16px",
             gap: "32px"
           }}>
@@ -970,9 +987,23 @@ export function WorkspaceCanvas({
         style={{ display: "none" }} 
       />
 
-      <div className={`uw-staged-canvas ${!isMultiFileOrPageTool ? "simple-canvas" : ""}`} style={{ border: "none", borderRadius: 0 }}>
+      {/* â•â•â• PREVIEW MODE â€” replaces entire canvas area â•â•â• */}
+      {previewMode && stagedFiles && stagedFiles.length > 0 ? (
+        <div className="uw-staged-canvas" style={{ border: "none", borderRadius: 0 }}>
+          <PdfPreviewPanel
+            files={stagedFiles}
+            initialActivePageKey={initialActivePageKey}
+            onClose={() => {
+              setPreviewMode(false);
+              setInitialActivePageKey(null);
+            }}
+          />
+        </div>
+      ) : (
+
+      <div className="uw-staged-canvas" style={{ border: "none", borderRadius: 0 }}>
         {/* 1. SECONDARY TOOLBAR */}
-        {isMultiFileOrPageTool && !previewFile && (
+        {!previewFile && (
           <WorkspaceToolbar 
             viewMode={viewMode}
             setViewMode={setViewMode}
@@ -986,58 +1017,45 @@ export function WorkspaceCanvas({
         )}
 
         {/* 2. SUB-BAR FILTERS/VIEWS */}
-        {isMultiFileOrPageTool && (
-          previewFile ? (
-            <div className="uw-staged-subbar">
-              <div className="uw-subbar-left">
-                <button
-                  onClick={() => setPreviewFile(null)}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "6px",
-                    background: "transparent",
-                    border: "none",
-                    cursor: "pointer",
-                    color: "var(--c-text)",
-                    fontSize: "13.5px",
-                    fontWeight: 600,
-                    padding: "4px 8px",
-                    borderRadius: "6px",
-                    marginLeft: "-8px",
-                    fontFamily: "Plus Jakarta Sans, sans-serif"
-                  }}
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="m15 18-6-6 6-6"/></svg>
-                  Back
-                </button>
-              </div>
+        {previewFile ? (
+          <div className="uw-staged-subbar">
+            <div className="uw-subbar-left">
+              <button
+                onClick={() => setPreviewFile(null)}
+                style={{
+                  display: "flex", alignItems: "center", gap: "6px",
+                  background: "transparent", border: "none", cursor: "pointer",
+                  color: "var(--c-text)", fontSize: "13.5px", fontWeight: 600,
+                  padding: "4px 8px", borderRadius: "6px", marginLeft: "-8px",
+                  fontFamily: "Plus Jakarta Sans, sans-serif"
+                }}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="m15 18-6-6 6-6"/></svg>
+                Back
+              </button>
             </div>
-          ) : (
-            <WorkspaceSubbar 
-              isAllSelected={isAllSelected}
-              onSelectAllChange={handleSelectAll}
-              layoutMode={layoutMode}
-              setLayoutMode={setLayoutMode}
-              stagedFilesCount={stagedFiles.length}
-              pdfPagesCount={activePagesFilter.length}
-              viewMode={viewMode}
-            />
-          )
+          </div>
+        ) : (
+          <WorkspaceSubbar 
+            isAllSelected={isAllSelected}
+            onSelectAllChange={handleSelectAll}
+            stagedFilesCount={stagedFiles.length}
+            pdfPagesCount={activePagesFilter.length}
+            viewMode={viewMode}
+          />
         )}
 
         {/* 3. CONTENT AREA */}
         {previewFile ? (
-          /* ── IN-FRAME INLINE PDF VIEWER ── */
           <InFramePdfViewer
             file={previewFile}
             onClose={() => setPreviewFile(null)}
           />
-        ) : loadingPages && isMultiFileOrPageTool ? (
+        ) : loadingPages ? (
           <div className="uw-staged-grid" style={{ flex: 1, padding: "24px", display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "24px", alignContent: "start" }}>
             {[1, 2, 3, 4].map((i) => (
               <div key={i} className="canvas-file-card skeleton-card" style={{ cursor: "default", width: "220px", height: "280px", maxWidth: "220px", borderRadius: "8px", backgroundColor: "#ffffff", border: "1px solid #e2e8f0", display: "flex", flexDirection: "column", overflow: "hidden", position: "relative" }}>
-                <div className="file-card-preview-box skeleton-shimmer" style={{ flex: 1, width: "100%", height: "calc(100% - 52px)", backgroundColor: "#f1f5f9", display: "flex", alignItems: "stretch", justifyContent: "stretch", overflow: "hidden" }}>
+                <div className="file-card-preview-box skeleton-shimmer" style={{ flex: 1, width: "100%", height: "calc(100% - 52px)", backgroundColor: "#f4f4f4", display: "flex", alignItems: "stretch", justifyContent: "stretch", overflow: "hidden" }}>
                   {renderSmileyIllustration("LOADING", "#e2e8f0", "#cbd5e1", { isLoading: true })}
                 </div>
                 <div className="file-card-meta" style={{ height: "52px", width: "100%", backgroundColor: "#f8fafc", borderTop: "1px solid #e2e8f0", borderBottomLeftRadius: "8px", borderBottomRightRadius: "8px", padding: "8px 12px", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "flex-start", boxSizing: "border-box", gap: "6px" }}>
@@ -1049,7 +1067,7 @@ export function WorkspaceCanvas({
           </div>
         ) : (
           <WorkspaceStagedGrid
-            viewMode={isMultiFileOrPageTool ? viewMode : "Files"}
+            viewMode={viewMode}
             layoutMode={layoutMode}
             stagedFiles={stagedFiles}
             pdfPages={pdfPages}
@@ -1062,16 +1080,21 @@ export function WorkspaceCanvas({
             handleRotatePageSingle={handleRotatePageSingle}
             handleDeleteSelected={handleDeleteSelected}
             onRemoveFile={onRemoveFile}
-            onPreviewFile={(file) => setPreviewFile(file)}
-            simpleMode={!isMultiFileOrPageTool}
+            onPreviewFile={(pageKey) => {
+              setInitialActivePageKey(pageKey || null);
+              setPreviewMode(true);
+            }}
+            simpleMode={false}
           />
         )}
       </div>
+
+      )}
     </div>
   );
 }
 
-/* ─── In-Frame PDF Viewer (renders inside the canvas container) ─────────────── */
+/* â”€â”€â”€ In-Frame PDF Viewer (renders inside the canvas container) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 interface InFramePdfViewerProps {
   file: File;
   onClose: () => void;
@@ -1152,14 +1175,14 @@ export function InFramePdfViewer({ file, onClose }: InFramePdfViewerProps) {
     <div style={{
       display: "flex", flexDirection: "column",
       flex: 1, overflow: "hidden",
-      background: "var(--c-bg-page, #f1f5f9)"
+      background: "var(--c-bg-page, #f4f4f4)"
     }}>
-      {/* ── Page content ── */}
+      {/* â”€â”€ Page content â”€â”€ */}
       <div style={{ flex: 1, overflow: "auto", display: "flex", alignItems: "flex-start", justifyContent: "center", padding: "24px 16px" }}>
         {loading ? (
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "12px", height: "100%", color: "var(--text-muted)" }}>
             <div className="processing-spinner" style={{ width: "28px", height: "28px", borderColor: "var(--border)", borderTopColor: "var(--c-accent)" } as React.CSSProperties} />
-            <span style={{ fontSize: "13px" }}>Loading…</span>
+            <span style={{ fontSize: "13px" }}>Loadingâ€¦</span>
           </div>
         ) : error ? (
           <div style={{ textAlign: "center", color: "var(--text-muted)", fontSize: "13px", paddingTop: "40px" }}>{error}</div>
@@ -1177,7 +1200,7 @@ export function InFramePdfViewer({ file, onClose }: InFramePdfViewerProps) {
         )}
       </div>
 
-      {/* ── Bottom nav bar ── */}
+      {/* â”€â”€ Bottom nav bar â”€â”€ */}
       {!loading && !error && totalPages > 0 && (
         <div style={{
           display: "flex", flexDirection: "column", alignItems: "center",
@@ -1222,4 +1245,5 @@ const btnStyle: React.CSSProperties = {
   display: "flex", alignItems: "center", justifyContent: "center",
   fontSize: "15px", fontWeight: "400"
 };
+
 

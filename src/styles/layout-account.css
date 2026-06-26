@@ -1,4 +1,4 @@
-/* Account Details Drawer */
+﻿/* Account Details Drawer */
 .drawer-backdrop {
   position: fixed;
   inset: 0;
@@ -186,7 +186,7 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  background: #f1f5f9;
+  background: #f4f4f4;
   color: #64748b;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -196,7 +196,7 @@
 .settings-icon-wrapper.support-color,
 .settings-icon-wrapper.storage-color,
 .settings-icon-wrapper.preferences-color {
-  background: #f1f5f9;
+  background: #f4f4f4;
   color: #64748b;
 }
 
@@ -221,7 +221,7 @@
 
 .progress-bar-bg {
   height: 6px;
-  background: #f1f5f9;
+  background: #f4f4f4;
   border-radius: 3px;
   overflow: hidden;
 }
@@ -430,5 +430,6 @@
   border-radius: 12px;
   padding: 24px;
 }
+
 
 

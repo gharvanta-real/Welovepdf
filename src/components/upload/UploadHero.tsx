@@ -93,7 +93,7 @@ export function UploadHero({
 
   return (
     <>
-      {/* ── Centered Title & Eyebrow ── */}
+      {/* â”€â”€ Centered Title & Eyebrow â”€â”€ */}
       <div style={{ textAlign: "center", paddingTop: "50px", paddingBottom: "28px" }}>
         <h1 style={{
           fontFamily: "Plus Jakarta Sans, sans-serif",
@@ -112,7 +112,7 @@ export function UploadHero({
         }}>{heroDesc}</p>
       </div>
 
-      {/* ── Center Upload Box Card ── */}
+      {/* â”€â”€ Center Upload Box Card â”€â”€ */}
       <section style={{ padding: "0 24px", display: "flex", justifyContent: "center" }}>
         <div 
           className="upload-hero-card" 
@@ -257,7 +257,7 @@ export function UploadHero({
         </div>
       </section>
 
-      {/* ── Bullet checklist directly under the card ── */}
+      {/* â”€â”€ Bullet checklist directly under the card â”€â”€ */}
       <div style={{
         display: "flex",
         justifyContent: "center",
@@ -280,7 +280,7 @@ export function UploadHero({
               color: "#2563eb",
               fontSize: "11px",
               fontWeight: "bold"
-            }}>✓</span>
+            }}>âœ“</span>
             <span>{feat.title}</span>
           </div>
         ))}
@@ -292,7 +292,7 @@ export function UploadHero({
         </section>
       )}
 
-      {/* ── 6 BENEFITS FEATURES GRID ── */}
+      {/* â”€â”€ 6 BENEFITS FEATURES GRID â”€â”€ */}
       <section style={{ padding: "40px 24px 60px", maxWidth: "1200px", margin: "0 auto" }}>
         <div style={{
           display: "grid",
@@ -339,7 +339,7 @@ export function UploadHero({
           ].map((benefit, i) => (
             <div key={i} style={{
               background: "#F8FAFC",
-              border: "1px solid #F1F5F9",
+              border: "1px solid #f4f4f4",
               borderRadius: "16px",
               padding: "32px",
               display: "flex",
@@ -368,7 +368,7 @@ export function UploadHero({
         </div>
       </section>
 
-      {/* ── SEO SECTION & ACCORDIONS ── */}
+      {/* â”€â”€ SEO SECTION & ACCORDIONS â”€â”€ */}
       {seoData && (
         <section style={{
           padding: "40px 24px 80px",
@@ -383,7 +383,7 @@ export function UploadHero({
             marginBottom: "60px"
           }} />
 
-          {/* Intro & Detailed Content — Magazine Layout */}
+          {/* Intro & Detailed Content â€” Magazine Layout */}
           <div style={{ marginBottom: "80px" }}>
             {/* Full-width header block */}
             <div style={{ marginBottom: "36px", maxWidth: "780px" }}>
@@ -409,7 +409,7 @@ export function UploadHero({
               display: "grid",
               gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
               gap: "24px 48px",
-              borderTop: "1px solid #F1F5F9",
+              borderTop: "1px solid #f4f4f4",
               paddingTop: "32px"
             }}>
               {seoData.detailedContent.map((para, idx) => (
@@ -660,7 +660,7 @@ export function UploadHero({
                 fontWeight: 500,
                 color: "#4B5563"
               }}>
-                <strong>4.8 / 5 stars</strong> — trusted by 10,000+ users monthly
+                <strong>4.8 / 5 stars</strong> - trusted by 10,000+ users monthly
               </span>
             </div>
           </div>
@@ -672,3 +672,4 @@ export function UploadHero({
     </>
   );
 }
+

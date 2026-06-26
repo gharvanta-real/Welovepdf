@@ -16,7 +16,7 @@ interface WorkspaceStagedGridProps {
   handleRotatePageSingle: (key: string, deg: number) => void;
   handleDeleteSelected: () => void;
   onRemoveFile: (index: number) => void;
-  onPreviewFile?: (file: File) => void;
+  onPreviewFile?: (pageKey?: string) => void;
   simpleMode?: boolean;
 }
 
@@ -66,7 +66,7 @@ export function WorkspaceStagedGrid({
               key={`${file.name}-${idx}`} 
               className={`canvas-file-card-wrapper ${isSelected ? "selected" : ""}`}
               onClick={() => handleToggleSelectFile(idx)}
-              onDoubleClick={() => onPreviewFile?.(file)}
+              onDoubleClick={() => onPreviewFile?.(`${idx}-1`)}
               style={{ position: "relative", cursor: "pointer" }}
             >
               <div 
@@ -84,20 +84,20 @@ export function WorkspaceStagedGrid({
               {onPreviewFile && (
                 <div
                   className="uw-preview-btn"
-                  onClick={(e) => { e.stopPropagation(); onPreviewFile(file); }}
+                  onClick={(e) => { e.stopPropagation(); onPreviewFile(`${idx}-1`); }}
                   title="Preview PDF (or double-click)"
                   style={{
-                    position: "absolute", bottom: "52px", right: "10px",
+                    position: "absolute", bottom: "48px", right: "8px",
                     zIndex: 15, opacity: 0, transition: "opacity 0.15s ease",
-                    background: "rgba(15,23,42,0.75)", backdropFilter: "blur(6px)",
-                    border: "none", borderRadius: "8px", color: "#fff",
-                    padding: "5px 10px", fontSize: "11px", fontWeight: "600",
+                    background: "rgba(15,23,42,0.7)", backdropFilter: "blur(4px)",
+                    border: "none", borderRadius: "6px", color: "#fff",
+                    padding: "4px 9px", fontSize: "11px", fontWeight: 400,
                     cursor: "pointer", display: "flex", alignItems: "center", gap: "4px"
                   }}
                   onMouseEnter={e => (e.currentTarget.style.opacity = "1")}
                   onMouseLeave={e => (e.currentTarget.style.opacity = "0")}
                 >
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                   Preview
                 </div>
               )}
@@ -129,8 +129,8 @@ export function WorkspaceStagedGrid({
           <div 
             key={pageKey} 
             className={`canvas-file-card page-card ${isSelected ? "selected" : ""}`}
-            onClick={() => handleToggleSelectPage(index)}
-            onDoubleClick={() => parentFile && onPreviewFile?.(parentFile)}
+            onClick={() => onPreviewFile?.(pageKey)}
+            onDoubleClick={() => onPreviewFile?.(pageKey)}
             style={{ cursor: "pointer", position: "relative" }}
           >
             <div 
@@ -162,7 +162,7 @@ export function WorkspaceStagedGrid({
               {onPreviewFile && (
                 <div
                   className="uw-preview-btn"
-                  onClick={(e) => { e.stopPropagation(); parentFile && onPreviewFile(parentFile); }}
+                  onClick={(e) => { e.stopPropagation(); onPreviewFile(pageKey); }}
                   title="Preview file"
                   style={{
                     position: "absolute", inset: 0, display: "flex",
@@ -181,32 +181,32 @@ export function WorkspaceStagedGrid({
                     if (btn) btn.style.opacity = "0";
                   }}
                 >
-                  <span className="uw-eye-hint" style={{ opacity: 0, transition: "opacity 0.15s", background: "rgba(15,23,42,0.8)", color: "#fff", borderRadius: "8px", padding: "4px 10px", fontSize: "11px", fontWeight: "600", display: "flex", alignItems: "center", gap: "4px" }}>
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  <span className="uw-eye-hint" style={{ opacity: 0, transition: "opacity 0.15s", background: "rgba(15,23,42,0.75)", color: "#fff", borderRadius: "6px", padding: "3px 8px", fontSize: "11px", fontWeight: 400, display: "flex", alignItems: "center", gap: "4px" }}>
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                     Open
                   </span>
                 </div>
               )}
             </div>
             
-            <div className="file-card-meta page-meta" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 12px" }}>
-              <span style={{ fontSize: "12px", fontWeight: "600" }}>Page {page.pageNum}</span>
+            <div className="file-card-meta page-meta" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "6px 10px" }}>
+              <span style={{ fontSize: "11px", fontWeight: 400, color: "#64748b" }}>Page {page.pageNum}</span>
               <div style={{ display: "flex", gap: "4px" }} onClick={(e) => e.stopPropagation()}>
                 <button 
                   className="uw-action-icon-btn" 
                   onClick={() => handleRotatePageSingle(pageKey, 90)}
-                  style={{ width: "24px", height: "24px", padding: 0 }}
+                  style={{ width: "22px", height: "22px", padding: 0 }}
                   title="Rotate 90°"
                 >
-                  <RotateCw size={12} />
+                  <RotateCw size={11} strokeWidth={1.5} />
                 </button>
                 <button 
                   className="uw-action-icon-btn" 
                   onClick={() => handleDeleteSelected()}
-                  style={{ width: "24px", height: "24px", padding: 0 }}
+                  style={{ width: "22px", height: "22px", padding: 0 }}
                   title="Delete Page"
                 >
-                  <Trash2 size={12} />
+                  <Trash2 size={11} strokeWidth={1.5} />
                 </button>
               </div>
             </div>

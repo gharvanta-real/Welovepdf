@@ -9,6 +9,7 @@ import {
   AlignHorizontalJustifyCenter, AlignVerticalJustifyCenter, Minimize2,
 } from "lucide-react";
 import { getPdfjsLib } from "../../utils/pdfjs";
+import { ToolIcon } from "../ToolIcon";
 
 interface CropEditorProps {
   file: File;
@@ -18,13 +19,13 @@ interface CropEditorProps {
 
 // ─── Preset definitions ──────────────────────────────────────────────────────
 const PRESETS = [
-  { id: "custom",  label: "Custom Margins",        Icon: Settings2,  values: null },
-  { id: "none",    label: "No Margins (Full Page)", Icon: Expand,     values: { t: 0,  b: 0,  l: 0,  r: 0  } },
-  { id: "a4",      label: "Standard A4",            Icon: FileType2,  values: { t: 10, b: 10, l: 5,  r: 5  } },
-  { id: "letter",  label: "Letter Page",            Icon: FileText,   values: { t: 8,  b: 8,  l: 8,  r: 8  } },
-  { id: "auto",    label: "Auto-Crop Scanner",      Icon: ScanLine,   values: { t: 12, b: 12, l: 12, r: 12 } },
-  { id: "tight",   label: "Tight Trim (±3%)",       Icon: Scissors,   values: { t: 3,  b: 3,  l: 3,  r: 3  } },
-  { id: "wide",    label: "Wide Margins (15%)",     Icon: FrameIcon,  values: { t: 15, b: 15, l: 15, r: 15 } },
+  { id: "custom",  label: "Custom Margins",        Icon: Settings2,  values: null, color: "#3b82f6" },
+  { id: "none",    label: "No Margins (Full Page)", Icon: Expand,     values: { t: 0,  b: 0,  l: 0,  r: 0  }, color: "#ef4444" },
+  { id: "a4",      label: "Standard A4",            Icon: FileType2,  values: { t: 10, b: 10, l: 5,  r: 5  }, color: "#10b981" },
+  { id: "letter",  label: "Letter Page",            Icon: FileText,   values: { t: 8,  b: 8,  l: 8,  r: 8  }, color: "#ec4899" },
+  { id: "auto",    label: "Auto-Crop Scanner",      Icon: ScanLine,   values: { t: 12, b: 12, l: 12, r: 12 }, color: "#8b5cf6" },
+  { id: "tight",   label: "Tight Trim (±3%)",       Icon: Scissors,   values: { t: 3,  b: 3,  l: 3,  r: 3  }, color: "#06b6d4" },
+  { id: "wide",    label: "Wide Margins (15%)",     Icon: FrameIcon,  values: { t: 15, b: 15, l: 15, r: 15 }, color: "#f59e0b" },
 ];
 
 const LAYOUT_PATTERNS = [
@@ -620,68 +621,82 @@ export function CropEditor({ file, onClose, onSave }: CropEditorProps) {
           flexShrink: 0,
           gap: "12px",
         }}>
+          {/* Left Side: Title & Loading indicators */}
           <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-            <Crop size={14} color="#2563eb" />
-            <span style={{ fontSize: "13px", fontWeight: 600, color: "#374151" }}>
+            <Crop size={14} color="#2563eb" strokeWidth={1.5} />
+            <span style={{ fontSize: "12px", fontWeight: 600, color: "#374151" }}>
               Crop Preview
             </span>
-            {/* Page spinner indicator */}
+            {/* Page rendering state spinner */}
             {renderingPage && (
               <span style={{
-                fontSize: "11px", color: "#2563eb",
+                fontSize: "12px", color: "#2563eb",
                 background: "#eff6ff", padding: "2px 8px",
-                borderRadius: "99px", fontWeight: 600,
+                borderRadius: "4px", fontWeight: 600,
               }}>
                 Loading…
               </span>
             )}
             {isDragging && !renderingPage && (
               <span style={{
-                fontSize: "11px", color: "#2563eb",
+                fontSize: "12px", color: "#2563eb",
                 background: "#eff6ff", padding: "2px 8px",
-                borderRadius: "99px", fontWeight: 600,
+                borderRadius: "4px", fontWeight: 600,
               }}>
                 Dragging…
               </span>
             )}
           </div>
 
-          {/* Zoom Controls */}
-          <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-            <button onClick={() => setZoom(z => Math.max(0.4, +(z - 0.1).toFixed(1)))} style={canvasToolBtn} title="Zoom Out">
-              <ZoomOut size={14} />
-            </button>
-            <span style={{ fontSize: "11px", fontWeight: 700, color: "#374151", minWidth: "40px", textAlign: "center" }}>
-              {Math.round(zoom * 100)}%
-            </span>
-            <button onClick={() => setZoom(z => Math.min(3, +(z + 0.1).toFixed(1)))} style={canvasToolBtn} title="Zoom In">
-              <ZoomIn size={14} />
-            </button>
-            <button onClick={() => setZoom(1.0)} style={canvasToolBtn} title="Reset Zoom">
-              <Maximize2 size={14} />
+          {/* Right Side: Grouped toolbar controls with separators */}
+          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+            {/* Zoom Controls */}
+            <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+              <button onClick={() => setZoom(z => Math.max(0.4, +(z - 0.1).toFixed(1)))} style={canvasToolBtn} title="Zoom Out">
+                <ZoomOut size={14} strokeWidth={1.5} />
+              </button>
+              <span style={{ fontSize: "12px", fontWeight: 600, color: "#374151", minWidth: "38px", textAlign: "center" }}>
+                {Math.round(zoom * 100)}%
+              </span>
+              <button onClick={() => setZoom(z => Math.min(3, +(z + 0.1).toFixed(1)))} style={canvasToolBtn} title="Zoom In">
+                <ZoomIn size={14} strokeWidth={1.5} />
+              </button>
+              <button onClick={() => setZoom(1.0)} style={canvasToolBtn} title="Reset Zoom">
+                <Maximize2 size={14} strokeWidth={1.5} />
+              </button>
+            </div>
+
+            {/* Vertical Divider */}
+            <div style={{ width: "1px", height: "18px", backgroundColor: "#cbd5e1" }} />
+
+            {/* Keep Size Badge */}
+            <div style={{
+              fontSize: "12px", color: "#475569",
+              background: "#f8fafc", borderRadius: "4px",
+              border: "1px solid #cbd5e1",
+              padding: "4px 10px", fontWeight: 600,
+              fontVariantNumeric: "tabular-nums",
+            }}>
+              Keep: {Math.round(cropW)}% × {Math.round(cropH)}%
+            </div>
+
+            {/* Vertical Divider */}
+            <div style={{ width: "1px", height: "18px", backgroundColor: "#cbd5e1" }} />
+
+            {/* Toggle Guides Button */}
+            <button
+              onClick={() => setShowGuides(g => !g)}
+              style={{
+                ...canvasToolBtn,
+                color: showGuides ? "#2563eb" : "#475569",
+                background: showGuides ? "#eff6ff" : "#ffffff",
+                borderColor: showGuides ? "#2563eb" : "#cbd5e1",
+              }}
+              title="Toggle Guides"
+            >
+              <Layout size={14} strokeWidth={1.5} />
             </button>
           </div>
-
-          <div style={{
-            fontSize: "11px", color: "#6b7280",
-            background: "#f4f4f4", borderRadius: "6px",
-            padding: "4px 10px", fontWeight: 600,
-            fontVariantNumeric: "tabular-nums",
-          }}>
-            Keep: {Math.round(cropW)}% × {Math.round(cropH)}%
-          </div>
-
-          <button
-            onClick={() => setShowGuides(g => !g)}
-            style={{
-              ...canvasToolBtn,
-              color: showGuides ? "#2563eb" : "#9ca3af",
-              background: showGuides ? "#eff6ff" : "transparent",
-            }}
-            title="Toggle Guides"
-          >
-            <Layout size={14} />
-          </button>
         </div>
 
         {/* PDF Canvas Area */}
@@ -798,53 +813,20 @@ export function CropEditor({ file, onClose, onSave }: CropEditorProps) {
         {/* Panel Header */}
         <div style={{ padding: "16px 18px 14px", borderBottom: "1px solid #f3f4f6", flexShrink: 0 }}>
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <div style={{
-              width: "32px", height: "32px", borderRadius: "8px",
-              background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              boxShadow: "0 2px 6px rgba(37,99,235,0.3)", flexShrink: 0,
-            }}>
-              <Crop size={15} color="#ffffff" />
-            </div>
+            <ToolIcon
+              toolNameOrId="Crop PDF"
+              size={16}
+              style={{
+                borderRadius: "8px",
+                boxShadow: "0 2px 6px rgba(5,150,105,0.3)",
+                flexShrink: 0
+              }}
+            />
             <div>
               <div style={{ fontSize: "15px", fontWeight: 700, color: "#111827", lineHeight: 1.2 }}>Crop Margins</div>
               <div style={{ fontSize: "12px", color: "#9ca3af", marginTop: "2px", fontWeight: 400 }}>Drag handles or use sliders</div>
             </div>
           </div>
-
-          {/* Page counter chip — shows total pages */}
-          {!isLoading && totalPages > 1 && (
-            <div style={{
-              marginTop: "10px",
-              display: "flex",
-              alignItems: "center",
-              gap: "6px",
-              padding: "6px 10px",
-              background: "#f4f4f4",
-              borderRadius: "8px",
-              fontSize: "12px",
-              color: "#374151",
-            }}>
-              <FileText size={12} color="#6b7280" />
-              <span style={{ fontWeight: 500 }}>
-                Page <strong style={{ color: "#111827" }}>{currentPage}</strong> of{" "}
-                <strong style={{ color: "#111827" }}>{totalPages}</strong>
-              </span>
-              {applyToAll && (
-                <span style={{
-                  marginLeft: "auto",
-                  fontSize: "10px",
-                  color: "#2563eb",
-                  background: "#eff6ff",
-                  padding: "1px 6px",
-                  borderRadius: "99px",
-                  fontWeight: 600,
-                }}>
-                  All pages
-                </span>
-              )}
-            </div>
-          )}
         </div>
 
         {/* Underline Tabs */}
@@ -888,39 +870,34 @@ export function CropEditor({ file, onClose, onSave }: CropEditorProps) {
           {activeTab === "preset" && (
             <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
               <span style={sectionLabel}>Page Preset</span>
-              <div style={{ display: "flex", flexDirection: "column", gap: "4px", marginTop: "6px" }}>
+              <div className="uw-radio-card-group" style={{ marginTop: "6px" }}>
                 {PRESETS.map(p => {
                   const active = preset === p.id;
                   return (
                     <button
                       key={p.id}
+                      type="button"
                       onClick={() => setPreset(p.id)}
+                      className={`uw-radio-card ${active ? "active" : ""}`}
                       style={{
-                        display: "flex", alignItems: "center", gap: "10px",
+                        width: "100%",
+                        border: "none",
+                        textAlign: "left",
                         padding: "10px 12px",
-                        border: "none", borderRadius: "8px",
-                        background: active ? "#ffffff" : "#f4f4f4",
-                        cursor: "pointer", transition: "background 0.12s", textAlign: "left",
-                        boxShadow: active ? "0 0 0 1.5px #2563eb" : "none",
                       }}
                     >
+                      <div className="uw-radio-circle" />
                       <div style={{
                         width: "28px", height: "28px", borderRadius: "7px",
-                        background: active ? "#eff6ff" : "#e5e7eb",
+                        background: active ? `${p.color}20` : `${p.color}0c`,
                         display: "flex", alignItems: "center", justifyContent: "center",
                         flexShrink: 0, transition: "background 0.12s",
                       }}>
-                        <p.Icon size={14} color={active ? "#2563eb" : "#6b7280"} />
+                        <p.Icon size={14} color={p.color} />
                       </div>
-                      <span style={{
-                        fontSize: "13px",
-                        fontWeight: active ? 600 : 400,
-                        color: active ? "#1d4ed8" : "#374151",
-                        flex: 1,
-                      }}>
+                      <span className="uw-radio-card-title" style={{ flex: 1, marginBottom: 0 }}>
                         {p.label}
                       </span>
-                      {active && <Check size={14} color="#2563eb" />}
                     </button>
                   );
                 })}
@@ -1070,28 +1047,29 @@ export function CropEditor({ file, onClose, onSave }: CropEditorProps) {
         {/* ── Bottom Action Buttons ─────────────────────────────────── */}
         <div style={{
           padding: "12px 16px", borderTop: "1px solid #f3f4f6", flexShrink: 0,
-          display: "flex", flexDirection: "column", gap: "8px", background: "#ffffff",
+          display: "flex", flexDirection: "row", gap: "8px", background: "#ffffff",
         }}>
           <button
             onClick={handleReset}
             style={{
-              display: "flex", alignItems: "center", justifyContent: "center", gap: "6px",
-              padding: "9px", border: "none", borderRadius: "8px",
+              flex: 1,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              padding: "11px 8px", border: "none", borderRadius: "8px",
               background: "#f4f4f4", color: "#374151", cursor: "pointer",
               fontSize: "13px", fontWeight: 500, transition: "background 0.12s",
             }}
             onMouseEnter={e => (e.currentTarget.style.background = "#e5e7eb")}
             onMouseLeave={e => (e.currentTarget.style.background = "#f4f4f4")}
           >
-            <RefreshCw size={13} />
-            Reset to Default
+            Reset
           </button>
 
           <button
             onClick={handleApply}
             style={{
-              display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
-              padding: "11px", border: "none", borderRadius: "8px",
+              flex: 1,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              padding: "11px 8px", border: "none", borderRadius: "8px",
               background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
               color: "#ffffff", cursor: "pointer",
               fontSize: "13px", fontWeight: 700,
@@ -1109,8 +1087,7 @@ export function CropEditor({ file, onClose, onSave }: CropEditorProps) {
               e.currentTarget.style.transform  = "translateY(0)";
             }}
           >
-            <Download size={14} />
-            Crop PDF →
+            Crop PDF
           </button>
         </div>
       </aside>
@@ -1198,10 +1175,11 @@ function EdgeHandle({
 // ─── Shared styles ───────────────────────────────────────────────────────────
 const canvasToolBtn: React.CSSProperties = {
   width: "28px", height: "28px",
-  border: "none", borderRadius: "6px",
-  background: "transparent",
+  border: "1px solid #cbd5e1", borderRadius: "4px",
+  background: "#ffffff",
   display: "flex", alignItems: "center", justifyContent: "center",
-  cursor: "pointer", color: "#6b7280", transition: "all 0.15s",
+  cursor: "pointer", color: "#1e293b", transition: "all 0.15s ease",
+  boxShadow: "0 1px 2px rgba(0,0,0,0.04)",
 };
 
 const sectionLabel: React.CSSProperties = {

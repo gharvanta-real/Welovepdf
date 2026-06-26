@@ -182,7 +182,7 @@ export function Header({
                                       className="mega-item"
                                       style={{
                                         "--icon-color-strong": isComingSoon ? "#94a3b8" : toolColor,
-                                        "--icon-bg-soft": isComingSoon ? "#f1f5f9" : softBg,
+                                        "--icon-bg-soft": isComingSoon ? "#f4f4f4" : softBg,
                                         opacity: isComingSoon ? 0.55 : 1,
                                         cursor: isComingSoon ? "not-allowed" : "pointer",
                                       } as React.CSSProperties}
@@ -359,7 +359,7 @@ export function Header({
           {!currentUser ? (
             <div className="mobile-nav-section mobile-auth-section">
               <button className="mobile-auth-btn-primary" onClick={() => { setIsMobileMenuOpen(false); onLoginClick(); }}>
-                Get Started — Free
+                Get Started - Free
               </button>
               <button className="mobile-auth-btn-ghost" onClick={() => { setIsMobileMenuOpen(false); onLoginClick(); }}>
                 Log In
@@ -377,3 +377,4 @@ export function Header({
     </>
   );
 }
+
