@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import { 
   ChevronLeft, ChevronRight, FileText, Plus, Check, X, 
   Users, Edit2, Trash2, Calendar, Type, HelpCircle, PenTool,
-  User, Stamp, GripVertical, Image, ChevronDown, Download, FolderKanban
+  User, Stamp, GripVertical, Image, ChevronDown, Download, FolderKanban,
+  Hand, MousePointer, Undo, Redo, Crown, Lock, Database, Zap
 } from "lucide-react";
 import { getPdfjsLib } from "../../utils/pdfjs";
 import { OverlayElement, ActiveTool } from "./types";
@@ -448,7 +449,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
         const thumbUrls: string[] = [];
         for (let i = 1; i <= pdf.numPages; i++) {
           const page = await pdf.getPage(i);
-          const viewport = page.getViewport({ scale: 0.14 });
+          const viewport = page.getViewport({ scale: 0.35 });
           const canvas = document.createElement("canvas");
           canvas.height = viewport.height;
           canvas.width = viewport.width;
@@ -474,14 +475,17 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
       async function renderPage() {
         try {
           const page = await pdfDoc.getPage(pageNum);
-          const viewport = page.getViewport({ scale: zoom / 100 });
+          const pixelRatio = window.devicePixelRatio || 1;
+          const viewport = page.getViewport({ scale: (zoom / 100) * pixelRatio });
           if (!active) return;
           const canvas = canvasRef.current;
           if (!canvas) return;
           const context = canvas.getContext("2d");
           if (!context) return;
-          canvas.height = viewport.height;
           canvas.width = viewport.width;
+          canvas.height = viewport.height;
+          canvas.style.width = `${viewport.width / pixelRatio}px`;
+          canvas.style.height = `${viewport.height / pixelRatio}px`;
           await page.render({ canvasContext: context, viewport }).promise;
         } catch (err) {
           console.error("SignEditor Page render error:", err);
@@ -906,11 +910,13 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                 border: "none",
                 backgroundColor: activeCursorTool === "hand" ? "var(--c-surface, #f1f5f9)" : "var(--c-bg, #ffffff)",
                 color: "var(--c-text, #1e293b)",
-                cursor: "pointer"
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center"
               }}
               title="Pan Hand Tool"
             >
-              <span style={{ fontSize: "14px" }}>✋</span>
+              <Hand size={14} />
             </button>
             <button 
               onClick={() => setActiveCursorTool("pointer")}
@@ -920,11 +926,13 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                 backgroundColor: activeCursorTool === "pointer" ? "var(--c-surface, #f1f5f9)" : "var(--c-bg, #ffffff)",
                 color: "var(--c-text, #1e293b)",
                 cursor: "pointer",
-                borderLeft: "1px solid var(--border, #cbd5e1)"
+                borderLeft: "1px solid var(--border, #cbd5e1)",
+                display: "flex",
+                alignItems: "center"
               }}
               title="Select / Drag Tool"
             >
-              <span style={{ fontSize: "14px" }}>🖱️</span>
+              <MousePointer size={14} />
             </button>
           </div>
         </div>
@@ -982,12 +990,12 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
 
           <button onClick={addDateToPage} style={toolbarButtonStyle} title="Add Date Stamp"><Calendar size={15} /></button>
           <button onClick={addTextToPage} style={toolbarButtonStyle} title="Add Text"><Type size={15} /></button>
-          <button onClick={addCheckmarkToPage} style={toolbarButtonStyle} title="Add Checkmark"><span style={{ fontWeight: "bold" }}>✓</span></button>
+          <button onClick={addCheckmarkToPage} style={toolbarButtonStyle} title="Add Checkmark"><Check size={15} /></button>
 
           <div style={{ width: "1px", height: "24px", backgroundColor: "var(--border, #cbd5e1)" }} />
 
-          <button onClick={undo} disabled={!canUndo} style={{ ...toolbarButtonStyle, opacity: canUndo ? 1 : 0.4, cursor: canUndo ? "pointer" : "not-allowed" }} title="Undo">↩️</button>
-          <button onClick={redo} disabled={!canRedo} style={{ ...toolbarButtonStyle, opacity: canRedo ? 1 : 0.4, cursor: canRedo ? "pointer" : "not-allowed" }} title="Redo">↪️</button>
+          <button onClick={undo} disabled={!canUndo} style={{ ...toolbarButtonStyle, opacity: canUndo ? 1 : 0.4, cursor: canUndo ? "pointer" : "not-allowed" }} title="Undo"><Undo size={14} /></button>
+          <button onClick={redo} disabled={!canRedo} style={{ ...toolbarButtonStyle, opacity: canRedo ? 1 : 0.4, cursor: canRedo ? "pointer" : "not-allowed" }} title="Redo"><Redo size={14} /></button>
         </div>
 
         {/* Right Zoom and Completion Actions */}
@@ -1248,7 +1256,9 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                 opacity: 0.6,
                 cursor: "not-allowed"
               }}>
-                <span style={{ display: "block", fontSize: "0.78rem", fontWeight: "600", color: "var(--c-text)" }}>Digital 👑</span>
+                <span style={{ display: "flex", fontSize: "0.78rem", fontWeight: "600", color: "var(--c-text)", alignItems: "center", justifyContent: "center", gap: "4px" }}>
+                  Digital <Crown size={12} style={{ color: "#f59e0b" }} />
+                </span>
                 <span style={{ display: "block", fontSize: "0.6rem", color: "var(--text-muted)", marginTop: "2px" }}>Cryptographic</span>
               </div>
             </div>
@@ -1629,11 +1639,9 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  fontSize: "14px",
-                  fontWeight: "bold",
                   flexShrink: 0
                 }}>
-                  ✓
+                  <Check size={14} />
                 </div>
                 <div style={{ flex: 1, fontSize: "0.82rem", fontWeight: "600", color: "var(--c-text)" }}>
                   Checkbox / Tick
@@ -2741,7 +2749,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
                           textTransform: "uppercase",
                           letterSpacing: "0.04em"
                         }}>
-                          Premium 👑
+                          Premium <Crown size={10} style={{ fill: "currentColor" }} />
                         </span>
                         
                         <div style={{ marginBottom: "16px" }}>
@@ -2817,7 +2825,7 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
             position: "relative"
           }}>
             <div style={{ width: "64px", height: "64px", borderRadius: "50%", backgroundColor: "#fffbeb", color: "#d97706", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px" }}>
-              <span style={{ fontSize: "28px" }}>👑</span>
+              <Crown size={28} style={{ fill: "currentColor" }} />
             </div>
 
             <h3 style={{ fontSize: "1.35rem", fontWeight: "800", color: "#0f172a", marginBottom: "12px" }}>
@@ -2839,11 +2847,19 @@ export function SignEditor({ file, onClose, onSave }: SignEditorProps) {
               <h4 style={{ fontSize: "0.78rem", fontWeight: "750", color: "#475569", margin: "0 0 10px 0", textTransform: "uppercase" }}>
                 Included in Premium:
               </h4>
-              <ul style={{ margin: 0, paddingLeft: "16px", fontSize: "0.8rem", color: "#475569", display: "flex", flexDirection: "column", gap: "6px" }}>
-                <li>🔒 Legally compliant cryptographic signatures</li>
-                <li>📝 Access to signature drawing pads, stamp templates</li>
-                <li>🗄️ Secure, unlimited document backup & history log</li>
-                <li>⚡ Priority processing speeds</li>
+              <ul style={{ margin: 0, padding: 0, listStyle: "none", fontSize: "0.8rem", color: "#475569", display: "flex", flexDirection: "column", gap: "8px" }}>
+                <li style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  <Lock size={14} style={{ color: "#d97706", flexShrink: 0 }} /> Legally compliant cryptographic signatures
+                </li>
+                <li style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  <PenTool size={14} style={{ color: "#d97706", flexShrink: 0 }} /> Access to signature drawing pads, stamp templates
+                </li>
+                <li style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  <Database size={14} style={{ color: "#d97706", flexShrink: 0 }} /> Secure, unlimited document backup & history log
+                </li>
+                <li style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  <Zap size={14} style={{ color: "#d97706", flexShrink: 0 }} /> Priority processing speeds
+                </li>
               </ul>
             </div>
 

@@ -53,7 +53,7 @@ export function BatesNumberEditor({ file, onClose, onSave }: BatesNumberEditorPr
         const thumbUrls: string[] = [];
         for (let i = 1; i <= pdf.numPages; i++) {
           const page = await pdf.getPage(i);
-          const viewport = page.getViewport({ scale: 0.14 });
+          const viewport = page.getViewport({ scale: 0.35 });
           const canvas = document.createElement("canvas");
           canvas.height = viewport.height;
           canvas.width = viewport.width;
@@ -79,14 +79,17 @@ export function BatesNumberEditor({ file, onClose, onSave }: BatesNumberEditorPr
       async function renderPage() {
         try {
           const page = await pdfDoc.getPage(actualPageNum);
-          const viewport = page.getViewport({ scale: zoom / 100 });
+          const pixelRatio = window.devicePixelRatio || 1;
+          const viewport = page.getViewport({ scale: (zoom / 100) * pixelRatio });
           const canvas = canvasRef.current;
           if (!canvas) return;
           const context = canvas.getContext("2d");
           if (!context) return;
 
-          canvas.height = viewport.height;
           canvas.width = viewport.width;
+          canvas.height = viewport.height;
+          canvas.style.width = `${viewport.width / pixelRatio}px`;
+          canvas.style.height = `${viewport.height / pixelRatio}px`;
 
           const renderContext = {
             canvasContext: context,
@@ -95,8 +98,8 @@ export function BatesNumberEditor({ file, onClose, onSave }: BatesNumberEditorPr
           await page.render(renderContext).promise;
 
           if (overlayContainerRef.current) {
-            overlayContainerRef.current.style.width = `${viewport.width}px`;
-            overlayContainerRef.current.style.height = `${viewport.height}px`;
+            overlayContainerRef.current.style.width = `${viewport.width / pixelRatio}px`;
+            overlayContainerRef.current.style.height = `${viewport.height / pixelRatio}px`;
           }
         } catch (err) {
           console.error("Error rendering PDF page in BatesNumberEditor:", err);
