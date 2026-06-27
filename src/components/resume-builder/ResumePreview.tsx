@@ -77,6 +77,98 @@ export function ResumePreview({ data, styles, zoomMode, zoomLevel }: ResumePrevi
     }
   }, [styles.fontFamily, styles.customFontFamily]);
 
+  const [tooltipStyles, setTooltipStyles] = useState<React.CSSProperties | null>(null);
+  const [showTooltip, setShowTooltip] = useState(false);
+  const [showSizeMenu, setShowSizeMenu] = useState(false);
+
+  // Detect and track selection changes in the canvas
+  useEffect(() => {
+    const handleSelectionChange = () => {
+      const selection = window.getSelection();
+      if (!selection || selection.isCollapsed || !selection.toString().trim()) {
+        setShowTooltip(false);
+        setShowSizeMenu(false);
+        return;
+      }
+
+      // Verify the selection range is contained within the preview canvas sheet
+      try {
+        const range = selection.getRangeAt(0);
+        const commonAncestor = range.commonAncestorContainer;
+        const previewContent = containerRef.current;
+        if (!previewContent || !previewContent.contains(commonAncestor)) {
+          setShowTooltip(false);
+          setShowSizeMenu(false);
+          return;
+        }
+
+        // Compute selection coordinates bounding rect
+        const rect = range.getBoundingClientRect();
+        const tooltipWidth = 320;
+        
+        let left = rect.left + rect.width / 2 - tooltipWidth / 2;
+        let top = rect.top - 46; // 46px above the selected range
+        
+        left += window.scrollX;
+        top += window.scrollY;
+
+        // Keep bounds within safe horizontal boundaries
+        if (left < 10) left = 10;
+        if (left + tooltipWidth > window.innerWidth - 10) {
+          left = window.innerWidth - tooltipWidth - 10;
+        }
+
+        setTooltipStyles({
+          position: "absolute",
+          left: `${left}px`,
+          top: `${top}px`,
+          zIndex: 99999,
+          display: "flex",
+          alignItems: "center",
+          gap: "2px",
+          backgroundColor: "#1F2937",
+          border: "1px solid #374151",
+          borderRadius: "4px",
+          padding: "3px 4px",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.25)"
+        });
+        setShowTooltip(true);
+      } catch (err) {
+        // Safe check
+      }
+    };
+
+    document.addEventListener("selectionchange", handleSelectionChange);
+    return () => {
+      document.removeEventListener("selectionchange", handleSelectionChange);
+    };
+  }, []);
+
+  // Format command triggers
+  const triggerFormat = (command: string, value: string = "") => {
+    document.execCommand(command, false, value);
+  };
+
+  const applyFontSize = (size: string) => {
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) return;
+    const range = selection.getRangeAt(0);
+    
+    document.execCommand("styleWithCSS", false, "true");
+    const span = document.createElement("span");
+    span.style.fontSize = size;
+    
+    try {
+      range.surroundContents(span);
+    } catch {
+      const fragment = range.extractContents();
+      span.appendChild(fragment);
+      range.insertNode(span);
+    }
+    
+    setShowSizeMenu(false);
+  };
+
   // Empty state — guide user to fill in details
   if (isEmpty) {
     return (
@@ -93,7 +185,7 @@ export function ResumePreview({ data, styles, zoomMode, zoomLevel }: ResumePrevi
   }
 
   return (
-    <div className="rb-preview-viewport">
+    <div className="rb-preview-viewport" style={{ position: "relative" }}>
       {/* Outer sheet container for scaling */}
       <div
         ref={containerRef}
@@ -112,10 +204,216 @@ export function ResumePreview({ data, styles, zoomMode, zoomLevel }: ResumePrevi
       >
         <div
           className="rb-preview-content-injected"
+          contentEditable={true}
+          suppressContentEditableWarning={true}
           dangerouslySetInnerHTML={{ __html: compiledHtml }}
-          style={{ height: "100%", width: "100%" }}
+          style={{ height: "100%", width: "100%", outline: "none" }}
         />
       </div>
+
+      {/* Floating formatting shortcut popup */}
+      {showTooltip && tooltipStyles && (
+        <div style={tooltipStyles} className="rb-format-tooltip">
+          <button
+            onMouseDown={(e) => { e.preventDefault(); triggerFormat("bold"); }}
+            style={{
+              background: "transparent",
+              border: "none",
+              color: "#D1D5DB",
+              padding: "4px 8px",
+              fontSize: "12px",
+              fontWeight: "700",
+              cursor: "pointer",
+              borderRadius: "3px"
+            }}
+            title="Bold"
+          >
+            B
+          </button>
+          <button
+            onMouseDown={(e) => { e.preventDefault(); triggerFormat("italic"); }}
+            style={{
+              background: "transparent",
+              border: "none",
+              color: "#D1D5DB",
+              padding: "4px 8px",
+              fontSize: "12px",
+              fontStyle: "italic",
+              fontWeight: "400",
+              cursor: "pointer",
+              borderRadius: "3px"
+            }}
+            title="Italic"
+          >
+            I
+          </button>
+          <button
+            onMouseDown={(e) => { e.preventDefault(); triggerFormat("underline"); }}
+            style={{
+              background: "transparent",
+              border: "none",
+              color: "#D1D5DB",
+              padding: "4px 8px",
+              fontSize: "12px",
+              textDecoration: "underline",
+              fontWeight: "400",
+              cursor: "pointer",
+              borderRadius: "3px"
+            }}
+            title="Underline"
+          >
+            U
+          </button>
+          
+          <div style={{ width: "1px", height: "14px", backgroundColor: "#4B5563", margin: "0 3px" }}></div>
+          
+          {/* Size Dropdown */}
+          <div style={{ position: "relative" }}>
+            <button
+              onMouseDown={(e) => { e.preventDefault(); setShowSizeMenu(!showSizeMenu); }}
+              style={{
+                background: "transparent",
+                border: "none",
+                color: "#D1D5DB",
+                padding: "4px 6px",
+                fontSize: "11px",
+                fontWeight: "400",
+                cursor: "pointer",
+                borderRadius: "3px"
+              }}
+              title="Font Size"
+            >
+              Size
+            </button>
+            {showSizeMenu && (
+              <div style={{
+                position: "absolute",
+                bottom: "100%",
+                left: "50%",
+                transform: "translateX(-50%)",
+                backgroundColor: "#1F2937",
+                border: "1px solid #374151",
+                borderRadius: "4px",
+                padding: "4px 0",
+                display: "flex",
+                flexDirection: "column",
+                gap: "2px",
+                minWidth: "65px",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.25)",
+                marginBottom: "6px",
+                zIndex: 100000
+              }}>
+                {["9pt", "10pt", "11pt", "12pt", "14pt", "16pt"].map((sz) => (
+                  <button
+                    key={sz}
+                    onMouseDown={(e) => { e.preventDefault(); applyFontSize(sz); }}
+                    style={{
+                      background: "transparent",
+                      border: "none",
+                      color: "#E5E7EB",
+                      padding: "4px 8px",
+                      fontSize: "11px",
+                      fontWeight: "400",
+                      cursor: "pointer",
+                      width: "100%",
+                      textAlign: "center"
+                    }}
+                  >
+                    {sz}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+          
+          <div style={{ width: "1px", height: "14px", backgroundColor: "#4B5563", margin: "0 3px" }}></div>
+          
+          <button
+            onMouseDown={(e) => { e.preventDefault(); triggerFormat("justifyLeft"); }}
+            style={{
+              background: "transparent",
+              border: "none",
+              color: "#D1D5DB",
+              padding: "4px 6px",
+              fontSize: "11px",
+              fontWeight: "400",
+              cursor: "pointer",
+              borderRadius: "3px"
+            }}
+            title="Align Left"
+          >
+            Left
+          </button>
+          <button
+            onMouseDown={(e) => { e.preventDefault(); triggerFormat("justifyCenter"); }}
+            style={{
+              background: "transparent",
+              border: "none",
+              color: "#D1D5DB",
+              padding: "4px 6px",
+              fontSize: "11px",
+              fontWeight: "400",
+              cursor: "pointer",
+              borderRadius: "3px"
+            }}
+            title="Align Center"
+          >
+            Center
+          </button>
+          <button
+            onMouseDown={(e) => { e.preventDefault(); triggerFormat("justifyRight"); }}
+            style={{
+              background: "transparent",
+              border: "none",
+              color: "#D1D5DB",
+              padding: "4px 6px",
+              fontSize: "11px",
+              fontWeight: "400",
+              cursor: "pointer",
+              borderRadius: "3px"
+            }}
+            title="Align Right"
+          >
+            Right
+          </button>
+          
+          <div style={{ width: "1px", height: "14px", backgroundColor: "#4B5563", margin: "0 3px" }}></div>
+          
+          <button
+            onMouseDown={(e) => { e.preventDefault(); triggerFormat("insertUnorderedList"); }}
+            style={{
+              background: "transparent",
+              border: "none",
+              color: "#D1D5DB",
+              padding: "4px 6px",
+              fontSize: "11px",
+              fontWeight: "400",
+              cursor: "pointer",
+              borderRadius: "3px"
+            }}
+            title="Bullet List"
+          >
+            • List
+          </button>
+          
+          <button
+            onMouseDown={(e) => { e.preventDefault(); triggerFormat("removeFormat"); }}
+            style={{
+              background: "transparent",
+              border: "none",
+              color: "#EF4444",
+              padding: "4px 6px",
+              fontSize: "11px",
+              fontWeight: "400",
+              cursor: "pointer",
+              borderRadius: "3px"
+            }}
+            title="Clear Formatting"
+          >
+            Clear
+          </button>
+        </div>
+      )}
     </div>
   );
 }

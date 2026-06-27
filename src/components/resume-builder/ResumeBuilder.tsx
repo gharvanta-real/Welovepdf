@@ -214,14 +214,22 @@ export function ResumeBuilder({ onBack, onToolSelect }: ResumeBuilderProps) {
 
   // PDF direct printing
   const handleDownloadPdf = () => {
-    const html = compileResumeToHtml(resumeData, styles);
+    const previewEl = document.querySelector(".rb-preview-content-injected");
+    let html = previewEl ? previewEl.innerHTML : compileResumeToHtml(resumeData, styles);
+    // Strip contenteditable attributes to be 100% clean
+    html = html.replace(/contenteditable="true"/g, 'contenteditable="false"');
+    
     const pdfTitle = resumeData.basics.name ? `Resume - ${resumeData.basics.name}` : "Resume";
     exportToPdf(html, pdfTitle);
   };
 
   // Word (.doc) direct client-side export
   const handleDownloadDoc = () => {
-    const html = compileResumeToHtml(resumeData, styles);
+    const previewEl = document.querySelector(".rb-preview-content-injected");
+    let html = previewEl ? previewEl.innerHTML : compileResumeToHtml(resumeData, styles);
+    // Strip contenteditable attributes to be 100% clean
+    html = html.replace(/contenteditable="true"/g, 'contenteditable="false"');
+
     // Wrap with MS Word meta headers to ensure proper layout and font rendering
     const header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Export Document to Word</title></head><body>";
     const footer = "</body></html>";
