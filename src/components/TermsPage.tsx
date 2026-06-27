@@ -12,8 +12,8 @@ const sections = [
   },
   {
     icon: Users,
-    title: "Free Plan & Pro Account Limits",
-    body: "Our core tools are free for everyone. To prevent server overload, we apply standard daily processing quotas based on your plan. Guest users can upload files up to 25 MB. Free account holders up to 50 MB. Pro members up to 500 MB. We never sell your data — server costs are covered by optional Pro plans and clean advertising.",
+    title: "Usage Limits",
+    body: "Our core tools are completely free for everyone. To keep our servers fast and reliable, we apply fair daily processing limits. Guest users can upload files up to 25 MB and process up to 5 files per day. Free account holders (registration is free!) can upload files up to 200 MB and process up to 50 files per tool per day. We never sell your data.",
   },
   {
     icon: Server,

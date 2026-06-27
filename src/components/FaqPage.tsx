@@ -35,7 +35,7 @@ const faqs: FaqItem[] = [
   {
     category: "Limits",
     q: "Are there file size limits for uploading?",
-    a: "Yes. Guest users can process files up to 25 MB. Free account holders can upload up to 50 MB. Pro members can upload files up to 500 MB. These limits keep our servers fast and reliable for everyone.",
+    a: "Yes. Guest users can process files up to 25 MB. Free account holders (sign up is free!) can upload files up to 200 MB. These limits help keep our servers fast and reliable for everyone.",
   },
   {
     category: "General",

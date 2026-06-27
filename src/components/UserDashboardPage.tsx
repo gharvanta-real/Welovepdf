@@ -1,4 +1,4 @@
-﻿import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { 
   ArrowLeft, User, Shield, CreditCard, LogOut, HardDrive, Plus, Edit, 
   Stamp, Archive, MoreHorizontal, Grid, List, FileText, Trash2, Download, 
@@ -162,6 +162,18 @@ export function UserDashboardPage({
       .finally(() => setPlanLoading(false));
   }, [currentUser]);
 
+  // ── Live usage stats from backend ──────────────────────────────────────────
+  const [usageStats, setUsageStats] = useState<{ jobs_count_24h: number; jobs_limit: number; plan: string } | null>(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem("authToken");
+    if (!token || !currentUser) return;
+    fetch("/api/user/stats", { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => r.ok ? r.json() : null)
+      .then(data => { if (data) setUsageStats(data); })
+      .catch(() => {});
+  }, [currentUser, jobs.length]); // refresh whenever a new job is done
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [activeTab]);
@@ -181,8 +193,13 @@ export function UserDashboardPage({
   ];
 
   const totalMB = allDocs.reduce((acc, doc) => acc + parseSizeToMB(doc.size), 0);
-  const maxStorageMB = 100;
+  // Logged-in users: 200 MB upload limit, 50 jobs/day per tool
+  const maxStorageMB = 200;
+  const dailyJobLimit = 50;
   const storagePercentage = Math.min((totalMB / maxStorageMB) * 100, 100);
+  const jobsUsed = usageStats?.jobs_count_24h ?? 0;
+  const jobsLimit = usageStats?.jobs_limit ?? dailyJobLimit;
+  const jobsPercentage = Math.min((jobsUsed / jobsLimit) * 100, 100);
 
   const showToast = (msg: string) => {
     setToastMsg(msg);
@@ -540,6 +557,50 @@ export function UserDashboardPage({
                     <p style={{ fontSize: "11px", color: "var(--v2-text-muted)", margin: 0, lineHeight: 1.4 }}>
                       Your session remains active as long as you keep uploading or processing files.
                     </p>
+                  </div>
+
+                  {/* Card 3: Daily Usage Meter */}
+                  <div style={{ backgroundColor: "#ffffff", border: "1px solid var(--v2-border-light)", borderRadius: "12px", padding: "24px", display: "flex", flexDirection: "column", gap: "16px", gridColumn: "1 / -1" }}>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "8px" }}>
+                      <span style={{ fontSize: "10px", color: "var(--v2-text-muted)", fontWeight: "700", textTransform: "uppercase", letterSpacing: "0.5px" }}>DAILY USAGE LIMITS</span>
+                      <span style={{ fontSize: "11px", color: "#10b981", fontWeight: 600, background: "#f0fdf4", padding: "3px 10px", borderRadius: "999px", border: "1px solid #bbf7d0" }}>✓ Free Account — No Payment Required</span>
+                    </div>
+
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
+                      {/* Jobs Meter */}
+                      <div>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "13px", marginBottom: "6px" }}>
+                          <span style={{ color: "var(--v2-text-muted)" }}>Tool Uses Today</span>
+                          <strong style={{
+                            color: jobsPercentage >= 90 ? "#ef4444" : jobsPercentage >= 70 ? "#f59e0b" : "var(--v2-text-main)"
+                          }}>
+                            {jobsUsed} / {jobsLimit} per tool
+                          </strong>
+                        </div>
+                        <div style={{ height: "6px", width: "100%", backgroundColor: "#f4f4f4", borderRadius: "9999px", overflow: "hidden" }}>
+                          <div style={{
+                            height: "100%",
+                            width: `${jobsPercentage}%`,
+                            backgroundColor: jobsPercentage >= 90 ? "#ef4444" : jobsPercentage >= 70 ? "#f59e0b" : "#10b981",
+                            borderRadius: "9999px",
+                            transition: "width 0.4s ease"
+                          }} />
+                        </div>
+                        <p style={{ fontSize: "11px", color: "var(--v2-text-muted)", margin: "6px 0 0 0" }}>Resets every 24 hours per tool</p>
+                      </div>
+
+                      {/* File Size Limit */}
+                      <div>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "13px", marginBottom: "6px" }}>
+                          <span style={{ color: "var(--v2-text-muted)" }}>Max File Size</span>
+                          <strong style={{ color: "var(--v2-text-main)" }}>200 MB per file</strong>
+                        </div>
+                        <div style={{ height: "6px", width: "100%", backgroundColor: "#f4f4f4", borderRadius: "9999px", overflow: "hidden" }}>
+                          <div style={{ height: "100%", width: "100%", backgroundColor: "#2563eb", borderRadius: "9999px" }} />
+                        </div>
+                        <p style={{ fontSize: "11px", color: "var(--v2-text-muted)", margin: "6px 0 0 0" }}>Applies to all tools · supports PDF, DOCX, XLSX, JPG</p>
+                      </div>
+                    </div>
                   </div>
 
                 </div>

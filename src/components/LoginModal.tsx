@@ -7,11 +7,13 @@ interface LoginModalProps {
   isOpen: boolean;
   onClose: () => void;
   onLoginSuccess: (user: { name: string; email: string; plan?: string }) => void;
+  /** When true, the modal cannot be closed — user MUST log in (e.g. limit hit) */
+  isRequired?: boolean;
 }
 
 type AuthMode = "login" | "signup" | "forgot";
 
-export function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps) {
+export function LoginModal({ isOpen, onClose, onLoginSuccess, isRequired = false }: LoginModalProps) {
   const [authMode, setAuthMode] = useState<AuthMode>("login");
   
   // Form fields
@@ -284,8 +286,36 @@ export function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps)
   };
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-box" style={{ maxWidth: "860px", padding: 0 }}>
+    <div
+      className="modal-overlay"
+      onClick={isRequired ? undefined : onClose}
+      style={{ cursor: isRequired ? "default" : undefined }}
+    >
+      <div
+        className="modal-box"
+        style={{ maxWidth: "860px", padding: 0 }}
+        onClick={e => e.stopPropagation()}
+      >
+        {/* Required-login banner — shown when user hit a usage limit */}
+        {isRequired && (
+          <div style={{
+            background: "linear-gradient(90deg, #2563eb 0%, #1d4ed8 100%)",
+            color: "#ffffff",
+            padding: "10px 24px",
+            fontSize: "13px",
+            fontWeight: 600,
+            textAlign: "center",
+            letterSpacing: "0.1px",
+            borderRadius: "16px 16px 0 0",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "8px"
+          }}>
+            <span>🔒</span>
+            <span>You've reached your daily free limit — Sign up free to continue (200 MB · 50 uses/day per tool)</span>
+          </div>
+        )}
         
         {/* Left Side: Interactive Branding / Blue V2 Inspired Color Block */}
         <div className="auth-branding-panel">
@@ -330,10 +360,12 @@ export function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps)
 
         {/* Right Side: Auth Form */}
         <div className="auth-form-panel">
-          {/* Close Button */}
-          <button className="modal-close-btn" onClick={onClose} aria-label="Close modal">
-            <X size={20} />
-          </button>
+          {/* Close Button — hidden when login is required (limit hit) */}
+          {!isRequired && (
+            <button className="modal-close-btn" onClick={onClose} aria-label="Close modal">
+              <X size={20} />
+            </button>
+          )}
 
           {showMfaChallenge ? (
             <div style={{ display: "flex", flexDirection: "column", gap: "20px", width: "100%" }}>

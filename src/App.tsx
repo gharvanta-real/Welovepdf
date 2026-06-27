@@ -265,6 +265,8 @@ export function App() {
   const [hasStagedFiles, setHasStagedFiles] = useState(false);
   const [workspaceInitialFiles, setWorkspaceInitialFiles] = useState<File[] | null>(null);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  // true when modal was opened because user hit a usage limit (cannot be dismissed)
+  const [isLoginRequired, setIsLoginRequired] = useState(false);
   const [currentUser, setCurrentUser] = useState<{ name: string; email: string; plan?: string } | null>(() => {
     const token = localStorage.getItem("authToken");
     if (!token) return null;
@@ -751,18 +753,21 @@ export function App() {
     }
 
     const totalSizeBytes = filesArray.reduce((acc, f) => acc + f.size, 0);
-    const limitBytes = currentUser 
-      ? (currentUser.plan === "Pro" ? 500 * 1024 * 1024 : 50 * 1024 * 1024)
-      : 25 * 1024 * 1024; // 25 MB for anonymous/guests
+    // ── Client-side size guard (mirrors backend limits) ──────────────────────
+    // Anonymous : 25 MB  →  sign-up prompt
+    // Logged-in : 200 MB →  generous free limit
+    // ─────────────────────────────────────────────────────────────────────────
+    const limitBytes = currentUser
+      ? 200 * 1024 * 1024  // 200 MB for logged-in users
+      : 25 * 1024 * 1024;  // 25 MB for anonymous/guests
 
     if (totalSizeBytes > limitBytes) {
       if (!currentUser) {
-        setToast("Free limit is 25 MB. Log in to get 50 MB upload limit!");
+        setToast("File too large! Sign up free to upload files up to 200 MB.");
+        setIsLoginRequired(true);
         setIsLoginModalOpen(true);
-      } else if (currentUser.plan !== "Pro") {
-        setToast("Upload size exceeds the 50 MB limit. Please reduce your file size.");
       } else {
-        setToast("Maximum allowed file size is 500 MB.");
+        setToast("Upload size exceeds the 200 MB limit. Please reduce your file size.");
       }
       window.setTimeout(() => setToast(""), 5000);
       return;
@@ -917,21 +922,23 @@ export function App() {
 
       if (rawMsg.includes("DAILY_LIMIT_REACHED")) {
         if (rawMsg.includes("LOGIN_REQUIRED")) {
-          // Anonymous user hit 10 job limit → show login wall
-          setToast("You've used your 10 free tool uses today. Log in to keep going!");
-          window.setTimeout(() => setToast(""), 4000);
+          // Anonymous user hit 5 jobs/day limit → show mandatory sign-up wall
+          setToast("You've used your 5 free tool uses today. Sign up free to get 50 uses per tool per day!");
+          window.setTimeout(() => setToast(""), 6000);
+          setIsLoginRequired(true);
           setIsLoginModalOpen(true);
-        } else if (rawMsg.includes("UPGRADE_REQUIRED")) {
-          // Logged-in free user hit limit
-          setToast("Daily free usage limit reached. Please check back tomorrow!");
-          window.setTimeout(() => setToast(""), 5000);
+        } else {
+          // Logged-in user hit 50 jobs/day per tool limit
+          setToast("Daily limit of 50 uses for this tool reached. You can still use other tools or check back tomorrow!");
+          window.setTimeout(() => setToast(""), 6000);
         }
       } else if (rawMsg.toLowerCase().includes("limit")) {
         // Legacy fallback
         if (!currentUser) {
+          setIsLoginRequired(true);
           setIsLoginModalOpen(true);
-        } else if (currentUser.plan !== "Pro") {
-          setToast("Daily free usage limit reached. Please check back tomorrow!");
+        } else {
+          setToast("Daily usage limit reached. Please try again tomorrow.");
           window.setTimeout(() => setToast(""), 5000);
         }
       }
@@ -1258,11 +1265,18 @@ export function App() {
       {toast && <div className="toast">{toast}</div>}
       <LoginModal
         isOpen={isLoginModalOpen}
-        onClose={() => setIsLoginModalOpen(false)}
+        isRequired={isLoginRequired}
+        onClose={() => {
+          // Only allow close if not required (limit not hit)
+          if (!isLoginRequired) {
+            setIsLoginModalOpen(false);
+          }
+        }}
         onLoginSuccess={(user) => {
           setCurrentUser(user);
           localStorage.setItem("currentUser", JSON.stringify(user));
           setIsLoginModalOpen(false);
+          setIsLoginRequired(false); // reset after successful login
           if (currentView !== "admin") {
             setToast(`Logged in as ${user.name || user.email}!`);
             window.setTimeout(() => setToast(""), 2500);

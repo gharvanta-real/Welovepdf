@@ -820,17 +820,19 @@ async fn check_limits_and_authenticate(
     let user = authenticate_user(state, headers).await;
     let normalized_tool_id = tool_id.replace('-', "_");
 
+    // ── Usage Limits (Growth-Optimised) ──────────────────────────────────────
+    // Anonymous : 25 MB  |  5 jobs/day  (total across all tools) → strong login incentive
+    // Logged-in : 200 MB | 50 jobs/day  (per tool)               → rewarded for signing up
+    // ─────────────────────────────────────────────────────────────────────────
     let (max_bytes, max_jobs) = match &user {
-        Some(u) => {
-            // Always verify plan via subscriptions table (expiry-aware)
-            let active_plan = get_active_plan(state, &u.id).await;
-            if active_plan == "Pro" {
-                (500 * 1024 * 1024, 100) // 500 MB, 100 jobs/day per tool
-            } else {
-                (500 * 1024 * 1024, 100) // All free registered users get Pro limits (500 MB, 100 jobs/day)
-            }
+        Some(_) => {
+            // Logged-in free users — generous limits as reward for registering
+            (200 * 1024 * 1024, 50) // 200 MB, 50 jobs/day per tool
         }
-        None => (500 * 1024 * 1024, 100), // Anonymous users also get high limits
+        None => {
+            // Anonymous users — tight limits to encourage sign-up
+            (25 * 1024 * 1024, 5) // 25 MB, 5 jobs/day (counted across all tools)
+        }
     };
 
     let user_id = user.as_ref().map(|u| u.id.as_str());
@@ -840,17 +842,15 @@ async fn check_limits_and_authenticate(
         .map_err(|e| format!("Failed to verify usage limits: {}", e))?;
 
     if current_jobs >= max_jobs {
-        // Signal whether this is an anonymous user (no auth token) so the frontend
-        // can show the login wall. Since upgrade is disabled, registered users get a simple limit message.
         let is_anon = user.is_none();
         return Err(format!(
             "DAILY_LIMIT_REACHED:{}:Daily limit of {} tool uses reached. {}.",
             if is_anon { "LOGIN_REQUIRED" } else { "UPGRADE_REQUIRED" },
             max_jobs,
             if is_anon {
-                "Please log in to continue using PDFMount"
+                "Sign up free to get 200 MB uploads and 50 uses per tool per day"
             } else {
-                "Daily limit of 100 tool uses reached. Please try again tomorrow."
+                "Daily limit of 50 tool uses reached. Please try again tomorrow."
             }
         ));
     }
@@ -1518,15 +1518,10 @@ async fn get_stats(
         }
     };
 
+    // Must match the limits in check_limits_and_authenticate
     let max_jobs = match &user {
-        Some(u) => {
-            if u.plan == "Pro" {
-                100
-            } else {
-                10 // Free registered users: 10 jobs/day
-            }
-        }
-        None => 10, // Anonymous users: 10 jobs/day
+        Some(_) => 50, // Logged-in users: 50 jobs/day per tool
+        None => 5,     // Anonymous users: 5 jobs/day total
     };
 
     let plan = user
