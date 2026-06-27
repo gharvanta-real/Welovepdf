@@ -139,6 +139,31 @@ export function ResumeBuilder({ onBack, onToolSelect }: ResumeBuilderProps) {
     exportToPdf(html, pdfTitle);
   };
 
+  // Word (.doc) direct client-side export
+  const handleDownloadDoc = () => {
+    const html = compileResumeToHtml(resumeData, styles);
+    // Wrap with MS Word meta headers to ensure proper layout and font rendering
+    const header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Export Document to Word</title></head><body>";
+    const footer = "</body></html>";
+    const sourceHTML = header + html + footer;
+    
+    const blob = new Blob(['\ufeff' + sourceHTML], {
+      type: 'application/msword'
+    });
+    
+    const url = URL.createObjectURL(blob);
+    const downloadAnchor = document.createElement("a");
+    const docTitle = resumeData.basics.name 
+      ? `Resume_${resumeData.basics.name.replace(/\s+/g, "_")}.doc` 
+      : "Resume.doc";
+    downloadAnchor.href = url;
+    downloadAnchor.download = docTitle;
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+    URL.revokeObjectURL(url);
+  };
+
   // Google Docs Export Handler
   const [isGoogleDocsLoading, setIsGoogleDocsLoading] = useState(false);
   const [googleDocsStatus, setGoogleDocsStatus] = useState('');
@@ -245,6 +270,17 @@ export function ResumeBuilder({ onBack, onToolSelect }: ResumeBuilderProps) {
           >
             <FileText size={16} /> Download PDF
           </button>
+
+          {/* Download Word — New client-side Word export */}
+          <button
+            className="rb-action-btn rb-btn-outline"
+            onClick={handleDownloadDoc}
+            title="Download as Word Document (.doc)"
+            style={{ display: "flex", gap: "6px", alignItems: "center", border: "1px solid #2563EB", color: "#2563EB" }}
+          >
+            <FileText size={16} /> Download Word
+          </button>
+
           <button
             className="rb-action-btn rb-btn-primary rb-btn-gdocs"
             onClick={handleEditInGoogleDocs}
