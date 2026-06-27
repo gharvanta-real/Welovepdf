@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { OnboardingWizard } from "./OnboardingWizard";
 import { ResumeForm } from "./ResumeForm";
 import { ResumePreview } from "./ResumePreview";
@@ -24,7 +24,20 @@ interface ResumeBuilderProps {
 }
 
 export function ResumeBuilder({ onBack, onToolSelect }: ResumeBuilderProps) {
-  const [isOnboarding, setIsOnboarding] = useState<boolean>(true);
+  const [isOnboarding, setIsOnboarding] = useState<boolean>(() => {
+    try {
+      const savedData = localStorage.getItem("pdfmount_resume_data");
+      if (savedData) {
+        const parsed = JSON.parse(savedData);
+        if (parsed.basics?.name?.trim() || parsed.work?.length > 0 || parsed.education?.length > 0) {
+          return false;
+        }
+      }
+      return true;
+    } catch {
+      return true;
+    }
+  });
   const [isDesignModalOpen, setIsDesignModalOpen] = useState<boolean>(false);
   const [isActionsDropdownOpen, setIsActionsDropdownOpen] = useState<boolean>(false);
   const [errorModalMsg, setErrorModalMsg] = useState<string | null>(null);
@@ -38,24 +51,62 @@ export function ResumeBuilder({ onBack, onToolSelect }: ResumeBuilderProps) {
   const importInputRef = useRef<HTMLInputElement>(null);
 
   // Styles selection
-  const [styles, setStyles] = useState<ResumeStyles>({
-    templateId: "traditional",
-    colorScheme: "navy",
-    fontFamily: "modern",
-    spacing: "normal",
-    showIcons: true
+  const [styles, setStyles] = useState<ResumeStyles>(() => {
+    try {
+      const saved = localStorage.getItem("pdfmount_resume_styles");
+      return saved ? JSON.parse(saved) : {
+        templateId: "traditional",
+        colorScheme: "navy",
+        fontFamily: "modern",
+        spacing: "normal",
+        showIcons: true
+      };
+    } catch {
+      return {
+        templateId: "traditional",
+        colorScheme: "navy",
+        fontFamily: "modern",
+        spacing: "normal",
+        showIcons: true
+      };
+    }
   });
 
   // Main Resume Data state
-  const [resumeData, setResumeData] = useState<ResumeData>({
-    basics: { name: "", label: "", email: "", phone: "", url: "", summary: "", location: "" },
-    work: [],
-    education: [],
-    skills: [],
-    projects: [],
-    certifications: [],
-    languages: ""
+  const [resumeData, setResumeData] = useState<ResumeData>(() => {
+    try {
+      const saved = localStorage.getItem("pdfmount_resume_data");
+      return saved ? JSON.parse(saved) : {
+        basics: { name: "", label: "", email: "", phone: "", url: "", summary: "", location: "" },
+        work: [],
+        education: [],
+        skills: [],
+        projects: [],
+        certifications: [],
+        languages: ""
+      };
+    } catch {
+      return {
+        basics: { name: "", label: "", email: "", phone: "", url: "", summary: "", location: "" },
+        work: [],
+        education: [],
+        skills: [],
+        projects: [],
+        certifications: [],
+        languages: ""
+      };
+    }
   });
+
+  // Auto-save styles to localStorage when modified
+  useEffect(() => {
+    localStorage.setItem("pdfmount_resume_styles", JSON.stringify(styles));
+  }, [styles]);
+
+  // Auto-save resumeData to localStorage when modified
+  useEffect(() => {
+    localStorage.setItem("pdfmount_resume_data", JSON.stringify(resumeData));
+  }, [resumeData]);
 
   // Export JSON Backup file
   const handleExportJson = () => {
@@ -224,6 +275,17 @@ export function ResumeBuilder({ onBack, onToolSelect }: ResumeBuilderProps) {
             className="rb-back-btn"
             onClick={() => {
               if (window.confirm('Start a new resume? All current changes will be lost.')) {
+                const freshData = {
+                  basics: { name: "", label: "", email: "", phone: "", url: "", summary: "", location: "" },
+                  work: [],
+                  education: [],
+                  skills: [],
+                  projects: [],
+                  certifications: [],
+                  languages: ""
+                };
+                setResumeData(freshData);
+                localStorage.setItem("pdfmount_resume_data", JSON.stringify(freshData));
                 setIsOnboarding(true);
               }
             }}
