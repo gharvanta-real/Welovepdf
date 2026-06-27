@@ -1039,10 +1039,6 @@ h2.rb-step-title {
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
 }
 
 .rb-preview-a4-sheet {
@@ -1051,10 +1047,6 @@ h2.rb-step-title {
 
 .rb-preview-content-injected {
   text-align: left;
-  -webkit-user-select: text !important;
-  -moz-user-select: text !important;
-  -ms-user-select: text !important;
-  user-select: text !important;
 }
 
 
