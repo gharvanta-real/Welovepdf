@@ -1,0 +1,103 @@
+import React, { useRef, useEffect, useState } from "react";
+import { ResumeData, ResumeStyles } from "./types";
+import { compileResumeToHtml } from "./templates";
+
+interface ResumePreviewProps {
+  data: ResumeData;
+  styles: ResumeStyles;
+  zoomMode: "auto" | "manual";
+  zoomLevel: number;
+}
+
+// Check if resume has any meaningful content to show
+function isResumeEmpty(data: ResumeData): boolean {
+  return (
+    !data.basics.name.trim() &&
+    !data.basics.label.trim() &&
+    data.work.length === 0 &&
+    data.education.length === 0 &&
+    data.skills.length === 0
+  );
+}
+
+export function ResumePreview({ data, styles, zoomMode, zoomLevel }: ResumePreviewProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState<number>(1);
+  const isEmpty = isResumeEmpty(data);
+  const compiledHtml = isEmpty ? "" : compileResumeToHtml(data, styles);
+
+  // Resize scaling — only depends on zoomMode/zoomLevel, NOT data/styles (content doesn't affect layout size)
+  useEffect(() => {
+    if (zoomMode === "manual") {
+      setScale(zoomLevel);
+      return;
+    }
+
+    const handleResize = () => {
+      if (!containerRef.current) return;
+      const parent = containerRef.current.parentElement;
+      if (!parent) return;
+
+      const parentWidth = parent.clientWidth;
+      const targetWidth = 800; // standard A4 width representation in px
+
+      // Calculate scale — cap between 0.3x and 1.2x (raised from 1.1 for better large-screen usage)
+      let scaleRatio = (parentWidth - 40) / targetWidth;
+      if (scaleRatio > 1.2) scaleRatio = 1.2;
+      if (scaleRatio < 0.3) scaleRatio = 0.3;
+
+      setScale(scaleRatio);
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    const timer = setTimeout(handleResize, 100);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      clearTimeout(timer);
+    };
+  }, [zoomMode, zoomLevel]); // ✅ Fixed: removed data/styles from deps — resize doesn't depend on content
+
+  // Empty state — guide user to fill in details
+  if (isEmpty) {
+    return (
+      <div className="rb-preview-viewport rb-preview-empty-state">
+        <div className="rb-empty-preview-card">
+          <div className="rb-empty-preview-icon">📄</div>
+          <h3 className="rb-empty-preview-title">Your resume preview will appear here</h3>
+          <p className="rb-empty-preview-text">
+            Start filling in your details on the left panel to see a live preview of your resume.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="rb-preview-viewport">
+      {/* Outer sheet container for scaling */}
+      <div
+        ref={containerRef}
+        className="rb-preview-a4-sheet"
+        style={{
+          transform: `scale(${scale})`,
+          transformOrigin: "top center",
+          width: "800px",
+          minHeight: "1130px", // A4 aspect ratio at 96dpi
+          backgroundColor: "#ffffff",
+          boxShadow: "0 10px 30px rgba(0, 0, 0, 0.15)",
+          borderRadius: "4px",
+          overflow: "hidden",
+          transition: "transform 0.15s ease-out"
+        }}
+      >
+        <div
+          className="rb-preview-content-injected"
+          dangerouslySetInnerHTML={{ __html: compiledHtml }}
+          style={{ height: "100%", width: "100%" }}
+        />
+      </div>
+    </div>
+  );
+}

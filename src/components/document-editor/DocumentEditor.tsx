@@ -11,6 +11,7 @@ import { WordCountModal } from './WordCountModal';
 import { SpecialCharactersModal } from './SpecialCharactersModal';
 import { DictionaryModal } from './DictionaryModal';
 import { TranslationModal } from './TranslationModal';
+import { loadGsiScript, getAccessToken, uploadHtmlToGoogleDoc, exportGoogleDocToHtml } from '../../services/googleDrive';
 
 interface DocumentEditorProps {
   onClose: () => void;
@@ -137,7 +138,114 @@ export function DocumentEditor({ onClose, initialContent }: DocumentEditorProps)
   const [isRecording, setIsRecording] = useState(false);
   const [editorMode, setEditorMode] = useState<'editing' | 'viewing'>('editing');
   const [showSaveExport, setShowSaveExport] = useState(false);
+  const [editorPageCount, setEditorPageCount] = useState(1);
   const recognitionRef = useRef<any>(null);
+
+  // Google Docs Integration States
+  const [googleClientId, setGoogleClientId] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('pdfmount-google-client-id') || (import.meta.env.VITE_GOOGLE_CLIENT_ID as string) || '';
+    }
+    return '';
+  });
+  const [googleFileId, setGoogleFileId] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('pdfmount-google-file-id') || '';
+    }
+    return '';
+  });
+  const [googleToken, setGoogleToken] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('pdfmount-google-token') || '';
+    }
+    return '';
+  });
+  const [googleDocUrl, setGoogleDocUrl] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('pdfmount-google-doc-url') || '';
+    }
+    return '';
+  });
+  const [isGoogleSyncing, setIsGoogleSyncing] = useState(false);
+  const [showGoogleConfigModal, setShowGoogleConfigModal] = useState(false);
+
+  // Dynamically pre-load Google Identity Services
+  useEffect(() => {
+    loadGsiScript().catch(console.error);
+  }, []);
+
+  const handleEditInGoogleDocs = async () => {
+    if (!googleClientId) {
+      setShowGoogleConfigModal(true);
+      return;
+    }
+    setIsGoogleSyncing(true);
+    try {
+      await loadGsiScript();
+      let token = googleToken;
+      if (!token) {
+        token = await getAccessToken(googleClientId);
+        setGoogleToken(token);
+        localStorage.setItem('pdfmount-google-token', token);
+      }
+      
+      const { fileId, webViewLink } = await uploadHtmlToGoogleDoc(token, docTitle, contentHtml);
+      setGoogleFileId(fileId);
+      setGoogleDocUrl(webViewLink);
+      localStorage.setItem('pdfmount-google-file-id', fileId);
+      localStorage.setItem('pdfmount-google-doc-url', webViewLink);
+      
+      // Open Google Doc in new tab
+      window.open(webViewLink, '_blank');
+    } catch (err: any) {
+      alert(`Google Docs integration error: ${err.message || err}`);
+      if (err.message?.includes('OAuth') || err.message?.includes('token') || err.message?.includes('401')) {
+        setGoogleToken('');
+        localStorage.removeItem('pdfmount-google-token');
+      }
+    } finally {
+      setIsGoogleSyncing(false);
+    }
+  };
+
+  const handleSyncFromGoogleDocs = async () => {
+    if (!googleFileId || !googleToken) {
+      alert("No active Google Docs session found.");
+      return;
+    }
+    setIsGoogleSyncing(true);
+    try {
+      const html = await exportGoogleDocToHtml(googleToken, googleFileId);
+      setContentHtml(html);
+      alert("Document successfully synchronized with Google Docs!");
+    } catch (err: any) {
+      // If unauthorized, retry token soliciting
+      if (err.message?.includes('export') || err.message?.includes('unauthorized') || err.message?.includes('401')) {
+        try {
+          const token = await getAccessToken(googleClientId);
+          setGoogleToken(token);
+          localStorage.setItem('pdfmount-google-token', token);
+          const html = await exportGoogleDocToHtml(token, googleFileId);
+          setContentHtml(html);
+          alert("Document successfully synchronized after renewing authentication!");
+        } catch (authErr: any) {
+          alert(`Auth renewal failed: ${authErr.message || authErr}`);
+        }
+      } else {
+        alert(`Sync failed: ${err.message || err}`);
+      }
+    } finally {
+      setIsGoogleSyncing(false);
+    }
+  };
+
+  const handleDisconnectGoogleDocs = () => {
+    setGoogleFileId('');
+    setGoogleDocUrl('');
+    localStorage.removeItem('pdfmount-google-file-id');
+    localStorage.removeItem('pdfmount-google-doc-url');
+    alert("Disconnected from Google Docs session.");
+  };
 
   // Background auto-save persistence
   useEffect(() => {
@@ -320,9 +428,8 @@ export function DocumentEditor({ onClose, initialContent }: DocumentEditorProps)
     const text = doc.body.textContent || '';
     const words = text.trim() ? text.trim().split(/\s+/).filter(Boolean).length : 0;
     const chars = text.length;
-    const pages = Math.max(1, Math.ceil(words / 500));
-    return { words, chars, pages };
-  }, [contentHtml]);
+    return { words, chars, pages: editorPageCount };
+  }, [contentHtml, editorPageCount]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -345,6 +452,11 @@ export function DocumentEditor({ onClose, initialContent }: DocumentEditorProps)
       if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
         e.preventDefault();
         exportToPdf(contentHtml, docTitle);
+      }
+      // Ctrl+Enter: Insert Page Break
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        executeDirect('insertHTML', '<div class="hard-page-break" style="page-break-after:always;border-bottom:2px dashed rgba(37,99,235,0.3);margin:24px 0;text-align:center;color:#2563eb;font-size:10px;font-family:\'Google Sans\',sans-serif;user-select:none;padding:4px 0;">[ Hard Page Break ]</div>');
       }
     };
 
@@ -544,6 +656,131 @@ export function DocumentEditor({ onClose, initialContent }: DocumentEditorProps)
           onOpenSaveExport={() => setShowSaveExport(true)}
         />
 
+        {/* ═══ GOOGLE DOCS SYNC BAR ═══ */}
+        {editorMode === 'editing' && (
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '6px 16px',
+            backgroundColor: '#f8fafc',
+            borderBottom: '1px solid #e2e8f0',
+            fontFamily: "'Google Sans', Roboto, sans-serif",
+            fontSize: '12px',
+            color: '#334155',
+            flexShrink: 0,
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '18px',
+                height: '18px',
+                backgroundColor: '#2563eb',
+                borderRadius: '3px',
+                color: '#ffffff',
+                fontWeight: 'bold',
+                fontSize: '10px',
+              }}>G</span>
+              {googleFileId ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ display: 'inline-block', width: '6px', height: '6px', backgroundColor: '#10b981', borderRadius: '50%', animation: 'pulse 1.5s infinite' }} />
+                  <span>Editing document in Google Docs. Make changes in Google Docs and sync back.</span>
+                </div>
+              ) : (
+                <span>Edit this document in Google Docs for pixel-perfect MS Word pages and formatting.</span>
+              )}
+            </div>
+            
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              {isGoogleSyncing ? (
+                <span style={{ color: '#2563eb', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <span style={{ display: 'inline-block', width: '12px', height: '12px', border: '2px solid #2563eb', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+                  Syncing with Google...
+                </span>
+              ) : googleFileId ? (
+                <>
+                  <button
+                    onClick={handleSyncFromGoogleDocs}
+                    style={{
+                      backgroundColor: '#2563eb',
+                      color: '#ffffff',
+                      border: 'none',
+                      padding: '4px 12px',
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                      fontWeight: 500,
+                    }}
+                  >
+                    Sync Changes
+                  </button>
+                  <button
+                    onClick={() => window.open(googleDocUrl, '_blank')}
+                    style={{
+                      backgroundColor: '#ffffff',
+                      color: '#3c4043',
+                      border: '1px solid #dadce0',
+                      padding: '4px 12px',
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                      fontWeight: 500,
+                    }}
+                  >
+                    Open Document
+                  </button>
+                  <button
+                    onClick={handleDisconnectGoogleDocs}
+                    style={{
+                      backgroundColor: 'transparent',
+                      color: '#dc2626',
+                      border: 'none',
+                      padding: '4px 8px',
+                      cursor: 'pointer',
+                      fontSize: '11px',
+                      fontWeight: 500,
+                    }}
+                  >
+                    Disconnect
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={handleEditInGoogleDocs}
+                    style={{
+                      backgroundColor: '#2563eb',
+                      color: '#ffffff',
+                      border: 'none',
+                      padding: '4px 12px',
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                      fontWeight: 500,
+                    }}
+                  >
+                    Edit in Google Docs
+                  </button>
+                  <button
+                    onClick={() => setShowGoogleConfigModal(true)}
+                    title="Configure Google Client ID"
+                    style={{
+                      backgroundColor: 'transparent',
+                      border: 'none',
+                      cursor: 'pointer',
+                      color: '#64748b',
+                      padding: '2px',
+                      display: 'flex',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <Settings size={14} />
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* ─── Toolbar: flat, no pill, same white bg ─── */}
         {!isToolbarCollapsed && editorMode === 'editing' && (
           <div style={{
@@ -686,6 +923,7 @@ export function DocumentEditor({ onClose, initialContent }: DocumentEditorProps)
             pageBorder={pageBorder}
             showGridlines={showGridlines}
             editorMode={editorMode}
+            onPageCountChange={setEditorPageCount}
           />
         </div>
 
@@ -1194,7 +1432,7 @@ export function DocumentEditor({ onClose, initialContent }: DocumentEditorProps)
         flexShrink: 0,
         fontFamily: "'Google Sans', Roboto, sans-serif",
       }}>
-        {/* CSS for Mic Dictation pulsing animation */}
+        {/* CSS for Mic Dictation pulsing animation & Google Docs Sync Bar */}
         <style dangerouslySetInnerHTML={{ __html: `
           @keyframes micPulse {
             0% { opacity: 0.4; transform: scale(0.95); }
@@ -1203,6 +1441,14 @@ export function DocumentEditor({ onClose, initialContent }: DocumentEditorProps)
           }
           .pulse-mic-icon {
             animation: micPulse 1.5s infinite ease-in-out;
+          }
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+          @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.8); }
           }
         `}} />
         <div style={{ display: 'flex', gap: 16 }}>
@@ -1260,6 +1506,103 @@ export function DocumentEditor({ onClose, initialContent }: DocumentEditorProps)
           contentHtml={contentHtml}
           onContentChange={setContentHtml}
         />
+      )}
+
+      {/* ═══ GOOGLE CLIENT ID CONFIG MODAL ═══ */}
+      {showGoogleConfigModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.4)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 9999,
+          fontFamily: "'Google Sans', Roboto, sans-serif",
+        }}>
+          <div style={{
+            backgroundColor: '#ffffff',
+            borderRadius: 8,
+            width: 480,
+            padding: 24,
+            boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+              <h3 style={{ margin: 0, fontSize: 16, fontWeight: 600, color: '#202124' }}>Configure Google API Client</h3>
+              <button 
+                onClick={() => setShowGoogleConfigModal(false)}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#5f6368' }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+            <p style={{ fontSize: 13, color: '#5f6368', lineHeight: 1.5, margin: '0 0 16px 0' }}>
+              To open documents directly in Google Docs, you need to create a Client ID inside the Google Cloud Console. 
+              <br />
+              <a href="https://console.cloud.google.com/" target="_blank" rel="noreferrer" style={{ color: '#2563eb', textDecoration: 'none', fontWeight: 500 }}>
+                Open Google Cloud Console &rarr;
+              </a>
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 20 }}>
+              <label style={{ fontSize: 11, fontWeight: 700, color: '#5f6368', textTransform: 'uppercase' }}>Google OAuth Client ID</label>
+              <input 
+                type="text" 
+                value={googleClientId}
+                onChange={e => {
+                  setGoogleClientId(e.target.value);
+                  localStorage.setItem('pdfmount-google-client-id', e.target.value);
+                }}
+                placeholder="e.g. 123456789-abc123xyz.apps.googleusercontent.com"
+                style={{
+                  padding: '10px 12px',
+                  borderRadius: 4,
+                  border: '1px solid #dadce0',
+                  fontSize: 13,
+                  outline: 'none',
+                  fontFamily: 'monospace',
+                }}
+              />
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
+              <button
+                onClick={() => setShowGoogleConfigModal(false)}
+                style={{
+                  padding: '8px 16px',
+                  backgroundColor: '#ffffff',
+                  border: '1px solid #dadce0',
+                  borderRadius: 4,
+                  fontSize: 13,
+                  fontWeight: 500,
+                  cursor: 'pointer',
+                  color: '#3c4043',
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  setShowGoogleConfigModal(false);
+                  handleEditInGoogleDocs();
+                }}
+                style={{
+                  padding: '8px 16px',
+                  backgroundColor: '#2563eb',
+                  border: 'none',
+                  borderRadius: 4,
+                  fontSize: 13,
+                  fontWeight: 500,
+                  cursor: 'pointer',
+                  color: '#ffffff',
+                }}
+              >
+                Save & Authenticate
+              </button>
+            </div>
+          </div>
+        </div>
       )}
       {showDocDetails && (
         <DocDetailsModal

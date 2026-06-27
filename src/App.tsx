@@ -29,8 +29,9 @@ const DataDeletionPage = lazyWithRetry(() => import("./components/TrustPages").t
 const AdminDashboard = lazyWithRetry(() => import("./admin/AdminDashboard").then(m => ({ default: m.AdminDashboard })));
 const LandingPageV2 = lazyWithRetry(() => import("./components/landing-v2/LandingPageV2").then(m => ({ default: m.LandingPageV2 })));
 const FooterV2 = lazyWithRetry(() => import("./components/landing-v2/FooterV2").then(m => ({ default: m.FooterV2 })));
+const ResumeBuilder = lazyWithRetry(() => import("./components/resume-builder/ResumeBuilder").then(m => ({ default: m.ResumeBuilder })));
 
-const pathMap: Record<string, { view: "home" | "workspace" | "pricing" | "privacy" | "terms" | "faq" | "contact" | "tools" | "about" | "contact-sales" | "settings" | "dashboard" | "security" | "file-privacy" | "data-deletion" | "admin" | "beta-workspace"; tool?: string }> = {
+const pathMap: Record<string, { view: "home" | "workspace" | "pricing" | "privacy" | "terms" | "faq" | "contact" | "tools" | "about" | "contact-sales" | "settings" | "dashboard" | "security" | "file-privacy" | "data-deletion" | "admin" | "beta-workspace" | "resume-builder"; tool?: string }> = {
   "/": { view: "home" },
   "/v2": { view: "home" },
   "/pricing": { view: "pricing" },
@@ -48,6 +49,7 @@ const pathMap: Record<string, { view: "home" | "workspace" | "pricing" | "privac
   "/data-deletion": { view: "data-deletion" },
   "/admin": { view: "admin" },
   "/beta-workspace": { view: "beta-workspace" },
+  "/resume-builder": { view: "resume-builder", tool: "Resume Builder" },
   
   // Tools
   "/merge-pdf": { view: "workspace", tool: "Merge PDF" },
@@ -157,6 +159,7 @@ function getPathForState(view: string, tool?: string): string {
     case "data-deletion": return "/data-deletion";
     case "admin": return "/admin";
     case "beta-workspace": return "/beta-workspace";
+    case "resume-builder": return "/resume-builder";
     default: return "/";
   }
 }
@@ -199,12 +202,12 @@ const viewMetadata: Record<string, { title: string; desc: string }> = {
     desc: "Learn about PDFMount, our mission to build fast and secure PDF tools for everyone. Trusted by thousands of users worldwide.",
   },
   tools: {
-    title: "All PDF Tools - PDFMount",
-    desc: "Explore all 23+ free online PDF tools. Merge, split, compress, convert, rotate, and secure your files in seconds. No registration required.",
+    title: "All PDF Tools & Converters - PDFMount Catalog",
+    desc: "Access our comprehensive library of PDF compression, merging, splitting, formatting, watermarking, and OCR utilities.",
   },
   dashboard: {
     title: "User Dashboard - PDFMount",
-    desc: "Manage your processed PDF files, check job statuses, and update your subscription settings.",
+    desc: "Manage your documents, subscription status, and view history in your PDFMount user dashboard.",
   },
   settings: {
     title: "Account Settings - PDFMount",
@@ -230,12 +233,16 @@ const viewMetadata: Record<string, { title: string; desc: string }> = {
     title: "Beta Interactive Workspace - PDFMount",
     desc: "Unified beta dashboard for all PDF Mount processing utilities.",
   },
+  "resume-builder": {
+    title: "Free Resume Builder - PDFMount",
+    desc: "Create, format, and export professional ATS-friendly resumes using dynamic design templates.",
+  },
 };
 
 // Derive the initial view and tool from the URL path synchronously so the
 // very first render matches the requested route (no homepage flash, no
 // "Loading interactive workspace…" flicker visible to crawlers or SSG shells).
-function getInitialState(): { view: "home" | "workspace" | "pricing" | "privacy" | "terms" | "faq" | "contact" | "tools" | "about" | "contact-sales" | "settings" | "dashboard" | "security" | "file-privacy" | "data-deletion" | "admin" | "beta-workspace"; tool: string } {
+function getInitialState(): { view: "home" | "workspace" | "pricing" | "privacy" | "terms" | "faq" | "contact" | "tools" | "about" | "contact-sales" | "settings" | "dashboard" | "security" | "file-privacy" | "data-deletion" | "admin" | "beta-workspace" | "resume-builder"; tool: string } {
   if (typeof window !== "undefined" && window.location.hostname === "admin.pdfmount.online") {
     return { view: "admin", tool: "Compress PDF" };
   }
@@ -253,7 +260,7 @@ export function App() {
   const [selectedTool, setSelectedTool] = useState(_initial.tool);
   const [toast, setToast] = useState("");
   const [jobs, setJobs] = useState<any[]>([]);
-  const [currentView, _setCurrentView] = useState<"home" | "workspace" | "pricing" | "privacy" | "terms" | "faq" | "contact" | "tools" | "about" | "contact-sales" | "settings" | "dashboard" | "security" | "file-privacy" | "data-deletion" | "admin" | "beta-workspace">(_initial.view);
+  const [currentView, _setCurrentView] = useState<"home" | "workspace" | "pricing" | "privacy" | "terms" | "faq" | "contact" | "tools" | "about" | "contact-sales" | "settings" | "dashboard" | "security" | "file-privacy" | "data-deletion" | "admin" | "beta-workspace" | "resume-builder">(_initial.view);
   const setCurrentView = (view: typeof currentView) => {
     if (view === "contact-sales") {
       _setCurrentView("contact");
@@ -716,7 +723,9 @@ export function App() {
       return;
     }
     setSelectedTool(toolName);
-    if (currentView !== "beta-workspace") {
+    if (toolName === "Resume Builder") {
+      setCurrentView("resume-builder");
+    } else if (currentView !== "beta-workspace") {
       setCurrentView("workspace");
     }
     setActiveJobId(null);
@@ -995,7 +1004,11 @@ export function App() {
       selectedTool === "Document Editor");
 
   return (
-    <div className={`app ${isVisualEditorActive ? "visual-editor-active" : ""}`} data-theme={theme}>
+    <div 
+      className={`app ${isVisualEditorActive ? "visual-editor-active" : ""}`} 
+      data-theme={theme}
+      style={["dashboard", "settings", "resume-builder"].includes(currentView) ? { height: "100vh", overflow: "hidden" } : undefined}
+    >
       {currentView === "admin" ? (
         <Suspense fallback={
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "100vh", color: "#71717a", fontSize: "14px", fontFamily: "sans-serif", backgroundColor: "#fafafa" }}>
@@ -1020,11 +1033,11 @@ export function App() {
         <div style={{ 
           display: "flex", 
           flexDirection: "column", 
-          height: (currentView === "dashboard" || currentView === "settings") ? "100vh" : "auto", 
+          height: ["dashboard", "settings", "resume-builder"].includes(currentView) ? "100vh" : "auto", 
           minHeight: "100vh",
-          overflow: (currentView === "dashboard" || currentView === "settings") ? "hidden" : "visible"
+          overflow: ["dashboard", "settings", "resume-builder"].includes(currentView) ? "hidden" : "visible"
         }}>
-          {!isVisualEditorActive && currentView !== "beta-workspace" && (
+          {!isVisualEditorActive && currentView !== "beta-workspace" && currentView !== "resume-builder" && (
             <Header
               onLogoClick={() => {
                 setCurrentView("home");
@@ -1060,7 +1073,7 @@ export function App() {
             display: "flex", 
             flexDirection: "column", 
             minHeight: 0,
-            overflow: (currentView === "dashboard" || currentView === "settings") ? "hidden" : "visible"
+            overflow: ["dashboard", "settings", "resume-builder"].includes(currentView) ? "hidden" : "visible"
           }}>
             <Suspense fallback={
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "60vh", color: "var(--text-muted)", fontSize: "15px", fontFamily: "sans-serif" }}>
@@ -1168,6 +1181,15 @@ export function App() {
                 <DataDeletionPage onBack={() => setCurrentView("home")} />
               ) : currentView === "faq" ? (
                 <FaqPage onBack={() => setCurrentView("home")} />
+              ) : currentView === "resume-builder" ? (
+                <ResumeBuilder
+                  onBack={() => {
+                    setCurrentView("home");
+                    setActiveJobId(null);
+                    setHasStagedFiles(false);
+                  }}
+                  onToolSelect={handleToolSelect}
+                />
               ) : currentView === "beta-workspace" ? (
                 <UnifiedWorkspace 
                   selectedTool={selectedTool} 

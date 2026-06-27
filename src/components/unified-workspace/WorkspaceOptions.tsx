@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Play, CheckCircle2, Download, Share2, RotateCcw, File, ChevronDown, ChevronUp, Check, Printer, Trash2, ChevronRight, Type, Highlighter, PenTool, Layers, Settings2, Paintbrush, Square, Circle, Bold, Italic, Underline, AlignLeft, AlignCenter, AlignRight, Undo, Redo, Star, ArrowLeftRight, Maximize2 } from "lucide-react";
+import { Play, CheckCircle2, Download, Share2, RotateCcw, File, ChevronDown, ChevronUp, Check, Printer, Trash2, ChevronRight, Type, Highlighter, PenTool, Paintbrush, Square, Circle, Bold, Italic, Underline, AlignLeft, AlignCenter, AlignRight, Undo, Redo, Star, ArrowLeftRight } from "lucide-react";
 import { ToolIcon } from "../ToolIcon";
 
 interface WorkspaceOptionsProps {
@@ -450,17 +450,9 @@ export function WorkspaceOptions({
   const [grayscaleMode, setGrayscaleMode] = useState<"all" | "images">("all");
   const [flattenMode, setFlattenMode] = useState<"all" | "forms" | "annotations">("all");
 
-  // Collapsible category states
-  const [isLayoutOpen, setIsLayoutOpen] = useState(false);
-  const [isMetadataOpen, setIsMetadataOpen] = useState(false);
-  const [isSecurityOpen, setIsSecurityOpen] = useState(false);
-  const [isRoundnessOpen, setIsRoundnessOpen] = useState(false);
-  const [globalOrientation, setGlobalOrientation] = useState<"portrait" | "landscape">("portrait");
-  const [globalPageSelection, setGlobalPageSelection] = useState<"all" | "odd" | "even" | "custom">("all");
-  const [globalPageRange, setGlobalPageRange] = useState("");
-  const [globalRoundness, setGlobalRoundness] = useState<"none" | "small" | "medium" | "large" | "pill">("none");
 
   // Annotation defaults states (now hoisted to UnifiedWorkspace)
+
 
   const renderToolOptions = () => {
     switch (activeTool) {
@@ -2003,168 +1995,8 @@ export function WorkspaceOptions({
           {hasFiles ? "Configure settings before processing" : "Upload files to get started"}
         </span>
 
-        {hasFiles && (
-          <>
-            {renderToolOptions()}
+        {hasFiles && renderToolOptions()}
 
-            {/* Global collapsible categories (default for all tools) */}
-            <div style={{ marginTop: "16px", borderTop: "1px solid #e2e8f0", paddingTop: "16px", display: "flex", flexDirection: "column", gap: "8px" }}>
-              <span style={{ fontSize: "11px", fontWeight: 500, color: "#b0bac7", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: "4px", display: "block" }}>
-                Default Controls
-              </span>
-              
-              {/* 1. Layout & Page Control */}
-              <CategoryHeader
-                icon={Layers}
-                title="Layout & Page Control"
-                isOpen={isLayoutOpen}
-                onClick={() => setIsLayoutOpen(!isLayoutOpen)}
-              />
-              {isLayoutOpen && (
-                <div style={{ padding: "8px 12px", background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "6px", marginBottom: "8px", display: "flex", flexDirection: "column", gap: "10px" }}>
-                  <Section label="Page Layout Orientation">
-                    <div style={{ display: "flex", gap: "6px" }}>
-                      {([
-                        { value: "portrait", label: "Portrait" },
-                        { value: "landscape", label: "Landscape" }
-                      ] as const).map(opt => (
-                        <button
-                          key={opt.value}
-                          type="button"
-                          onClick={() => setGlobalOrientation(opt.value)}
-                          className={`uw-radio-card ${globalOrientation === opt.value ? "active" : ""}`}
-                          style={{ flex: 1, padding: "8px 10px", fontSize: "12px", justifyContent: "center", border: "none" }}
-                        >
-                          <div className="uw-radio-circle" />
-                          <span>{opt.label}</span>
-                        </button>
-                      ))}
-                    </div>
-                  </Section>
-                  
-                  <Section label="Page Selection Mode">
-                    <StyledSelect
-                      value={globalPageSelection}
-                      onChange={(v: any) => setGlobalPageSelection(v)}
-                      options={[
-                        { value: "all", label: "All Pages" },
-                        { value: "odd", label: "Odd Pages Only" },
-                        { value: "even", label: "Even Pages Only" },
-                        { value: "custom", label: "Custom Page Range" }
-                      ]}
-                    />
-                  </Section>
-                  
-                  {globalPageSelection === "custom" && (
-                    <Section label="Page Range (e.g. 1-5, 8)">
-                      <StyledInput
-                        value={globalPageRange}
-                        onChange={setGlobalPageRange}
-                        placeholder="e.g. 1-3, 5"
-                      />
-                    </Section>
-                  )}
-                </div>
-              )}
-
-              {/* 2. Document Metadata */}
-              <CategoryHeader
-                icon={Settings2}
-                title="Document Metadata"
-                isOpen={isMetadataOpen}
-                onClick={() => setIsMetadataOpen(!isMetadataOpen)}
-              />
-              {isMetadataOpen && (
-                <div style={{ padding: "8px 12px", background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "6px", marginBottom: "8px", display: "flex", flexDirection: "column", gap: "10px" }}>
-                  <ToggleRow
-                    label="Strip Metadata"
-                    desc="Remove author, creator, and metadata info"
-                    checked={removeMetadata}
-                    onChange={setRemoveMetadata}
-                  />
-                  {!removeMetadata && (
-                    <>
-                      <Section label="Author Name">
-                        <StyledInput
-                          value={metadataAuthor}
-                          onChange={setMetadataAuthor}
-                          placeholder="e.g. Author name"
-                        />
-                      </Section>
-                      <Section label="Keywords / Tags">
-                        <StyledInput
-                          value={metadataKeywords}
-                          onChange={setMetadataKeywords}
-                          placeholder="e.g. report, final"
-                        />
-                      </Section>
-                    </>
-                  )}
-                </div>
-              )}
-
-              {/* 3. Security & Protection */}
-              <CategoryHeader
-                icon={Printer}
-                title="Security & Watermark"
-                isOpen={isSecurityOpen}
-                onClick={() => setIsSecurityOpen(!isSecurityOpen)}
-              />
-              {isSecurityOpen && (
-                <div style={{ padding: "8px 12px", background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "6px", marginBottom: "8px", display: "flex", flexDirection: "column", gap: "10px" }}>
-                  <Section label="Restrict Access (Password)">
-                    <StyledInput
-                      type="password"
-                      value={pdfPassword}
-                      onChange={setPdfPassword}
-                      placeholder="Enter security password"
-                    />
-                  </Section>
-                  <ToggleRow
-                    label="Allow Text/Image Copying"
-                    desc="Permit copy-paste in document"
-                    checked={allowCopy}
-                    onChange={setAllowCopy}
-                  />
-                  <ToggleRow
-                    label="Allow High Quality Printing"
-                    desc="Allow printing of the file"
-                    checked={allowPrint}
-                    onChange={setAllowPrint}
-                  />
-                </div>
-              )}
-
-              {/* 4. Roundness */}
-              <CategoryHeader
-                icon={Maximize2}
-                title="Roundness"
-                isOpen={isRoundnessOpen}
-                onClick={() => setIsRoundnessOpen(!isRoundnessOpen)}
-              />
-              {isRoundnessOpen && (
-                <div style={{ padding: "8px 12px", background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "6px", marginBottom: "8px", display: "flex", flexDirection: "column", gap: "10px" }}>
-                  <Section label="Corner Roundness">
-                    <StyledSelect
-                      value={globalRoundness}
-                      onChange={(v: any) => setGlobalRoundness(v)}
-                      options={[
-                        { value: "none",   label: "None - Sharp Corners" },
-                        { value: "small",  label: "Small - Subtle Rounding" },
-                        { value: "medium", label: "Medium - Balanced" },
-                        { value: "large",  label: "Large - Pronounced Curves" },
-                        { value: "pill",   label: "Pill - Fully Rounded" }
-                      ]}
-                    />
-                  </Section>
-                  <div style={{ fontSize: "11px", color: "#94a3b8", lineHeight: "1.5" }}>
-                    Applies corner rounding globally across UI elements and exported document frames.
-                  </div>
-                </div>
-              )}
-            </div>
-          </>
-        )}
       </div>
 
       <div className="uw-options-footer" style={{ display: "flex", gap: "10px" }}>

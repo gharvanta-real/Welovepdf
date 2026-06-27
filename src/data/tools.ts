@@ -104,9 +104,11 @@ export const tools: PdfTool[] = [
   { id: "esign", name: "Sign PDF", group: "Popular", description: "Draw or type electronic signatures onto documents", icon: Stamp, sitemapGroup: "Brand & Security", status: "live" },
   { id: "unlock", name: "Unlock PDF", group: "Secure", description: "Remove secure owner passwords and restrictions", icon: FileLock2, sitemapGroup: "Brand & Security", status: "live" },
   { id: "protect", name: "Protect PDF", group: "Secure", description: "Encrypt your PDF with standard owner/user passwords", icon: ShieldCheck, sitemapGroup: "Brand & Security", status: "live" },
+  { id: "watermark-pdf", name: "Watermark PDF", group: "Secure", description: "Add image or text watermark overlay to your PDF", icon: Type, sitemapGroup: "Brand & Security", status: "live" },
   { id: "ocr", name: "PDF OCR", group: "AI", description: "Make scanned PDF pages fully searchable and editable", icon: RefreshCw, sitemapGroup: "Brand & Security", status: "coming-soon" },
   { id: "bates-numbering", name: "Bates Numbering", group: "Secure", description: "Index legal sheets with unique alphanumeric Bates numbering", icon: Hash, sitemapGroup: "Brand & Security", status: "beta" },
   { id: "metadata-pdf", name: "Edit PDF Metadata", group: "Secure", description: "Edit title, author, subject, and keywords fields in a PDF", icon: Info, sitemapGroup: "Brand & Security", status: "beta" },
   { id: "document-editor", name: "Document Editor", group: "AI", description: "Write rich documents with automated A4 page breaks and PDF export", icon: FileText, sitemapGroup: "View & Edit", status: "beta" },
+  { id: "resume-builder", name: "Resume Builder", group: "AI", description: "Create professional, print-ready resumes with onboarding wizards and rich editors", icon: FileText, sitemapGroup: "View & Edit", status: "live" },
 ];
 

@@ -162,6 +162,8 @@ export function PdfPreviewPanel({ files, initialActivePageKey, onClose }: PdfPre
   return (
     <div className="uw-preview-panel">
 
+      {/* Left thumbnail rail — only shown for multi-page PDFs */}
+      {totalPages > 1 && (
       <aside className="uw-preview-rail">
         <div className="uw-preview-rail-scroll" ref={railScrollRef}>
           {pages.map((page, i) => {
@@ -202,8 +204,9 @@ export function PdfPreviewPanel({ files, initialActivePageKey, onClose }: PdfPre
           })}
         </div>
       </aside>
+      )}
 
-      <main className="uw-preview-main">
+      <main className={`uw-preview-main${totalPages <= 1 ? " uw-preview-main--full" : ""}`}>
         <div className="uw-preview-main-scroll">
           {pages.map(page => {
             if (page.key !== activePage) return null;
@@ -256,16 +259,20 @@ export function PdfPreviewPanel({ files, initialActivePageKey, onClose }: PdfPre
             </svg>
             Back
           </button>
-          <div className="uw-preview-bar-divider" />
-          <div className="uw-preview-nav-group">
-            <button className="uw-preview-nav-btn" onClick={navPrev} disabled={activeIdx <= 0} title="Previous">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="m15 18-6-6 6-6" /></svg>
-            </button>
-            <span className="uw-preview-nav-counter">{activeIdx + 1} / {totalPages}</span>
-            <button className="uw-preview-nav-btn" onClick={navNext} disabled={activeIdx >= totalPages - 1} title="Next">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="m9 18 6-6-6-6" /></svg>
-            </button>
-          </div>
+          {totalPages > 1 && (
+            <>
+              <div className="uw-preview-bar-divider" />
+              <div className="uw-preview-nav-group">
+                <button className="uw-preview-nav-btn" onClick={navPrev} disabled={activeIdx <= 0} title="Previous">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="m15 18-6-6 6-6" /></svg>
+                </button>
+                <span className="uw-preview-nav-counter">{activeIdx + 1} / {totalPages}</span>
+                <button className="uw-preview-nav-btn" onClick={navNext} disabled={activeIdx >= totalPages - 1} title="Next">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="m9 18 6-6-6-6" /></svg>
+                </button>
+              </div>
+            </>
+          )}
         </div>
       </main>
     </div>

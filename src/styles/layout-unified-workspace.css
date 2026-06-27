@@ -1964,6 +1964,11 @@
   position: relative;
 }
 
+/* When there is no rail (single-page), main fills the entire width */
+.uw-preview-main--full {
+  width: 100%;
+}
+
 .uw-preview-main-scroll {
   flex: 1;
   overflow-y: auto;

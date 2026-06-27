@@ -31,6 +31,7 @@ interface PageCanvasProps {
   pageBorder?: PageBorder;
   showGridlines?: boolean;
   editorMode?: 'editing' | 'viewing';
+  onPageCountChange?: (count: number) => void;
 }
 
 const paperSizes = {
@@ -57,6 +58,7 @@ export function PageCanvas({
   pageBorder = { width: '0px', style: 'none', color: '#dadce0' },
   showGridlines = false,
   editorMode = 'editing',
+  onPageCountChange,
 }: PageCanvasProps) {
 
   useEffect(() => {
@@ -82,12 +84,27 @@ export function PageCanvas({
   const pageHeight = orientation === 'portrait' ? baseSize.height : baseSize.width;
 
   React.useEffect(() => {
+    onPageCountChange?.(computedPages);
+  }, [computedPages, onPageCountChange]);
+
+  React.useEffect(() => {
     if (layoutMode === 'web') {
       setComputedPages(1);
       return;
     }
     if (editorRef.current) {
+      // Temporarily clear styling that forces the height to stretch to the parent container
+      const originalMinHeight = editorRef.current.style.minHeight;
+      const originalHeight = editorRef.current.style.height;
+      editorRef.current.style.minHeight = '0px';
+      editorRef.current.style.height = 'auto';
+      
       const scrollHeight = editorRef.current.scrollHeight;
+      
+      // Restore original styling
+      editorRef.current.style.minHeight = originalMinHeight;
+      editorRef.current.style.height = originalHeight;
+
       const usableHeight = pageHeight - margins.top - margins.bottom;
       const pages = Math.max(1, Math.ceil(scrollHeight / usableHeight));
       if (pages !== computedPages) {
@@ -103,7 +120,16 @@ export function PageCanvas({
         setComputedPages(1);
         return;
       }
+      const originalMinHeight = editorRef.current.style.minHeight;
+      const originalHeight = editorRef.current.style.height;
+      editorRef.current.style.minHeight = '0px';
+      editorRef.current.style.height = 'auto';
+      
       const scrollHeight = editorRef.current.scrollHeight;
+      
+      editorRef.current.style.minHeight = originalMinHeight;
+      editorRef.current.style.height = originalHeight;
+
       const usableHeight = pageHeight - margins.top - margins.bottom;
       const pages = Math.max(1, Math.ceil(scrollHeight / usableHeight));
       if (pages !== computedPages) {
@@ -343,38 +369,59 @@ export function PageCanvas({
             backgroundSize: showGridlines ? '20px 20px' : 'none',
           }}
         >
-          {/* Visual Page Breaks */}
-          {layoutMode === 'print' && Array.from({ length: computedPages - 1 }).map((_, idx) => (
-            <div
-              key={idx}
-              style={{
-                position: 'absolute',
-                left: 0,
-                right: 0,
-                top: (idx + 1) * pageHeight - 1,
-                height: 0,
-                borderTop: '1px dashed #cbd5e1',
-                zIndex: 10,
-                pointerEvents: 'none',
-                display: 'flex',
-                justifyContent: 'center',
-              }}
-            >
-              <span style={{
-                position: 'relative',
-                top: -7,
-                fontSize: '9px',
-                color: '#9aa0a6',
-                backgroundColor: pageBgColor,
-                padding: '0 8px',
-                fontFamily: "'Google Sans', Roboto, sans-serif",
-                fontWeight: 500,
-                userSelect: 'none',
-              }}>
-                Page Break
-              </span>
-            </div>
-          ))}
+          {/* Visual Page Breaks (Subtle Dashed Guide in margins only to avoid cutting text) */}
+          {layoutMode === 'print' && Array.from({ length: computedPages - 1 }).map((_, idx) => {
+            const boundaryY = (idx + 1) * pageHeight;
+            return (
+              <React.Fragment key={idx}>
+                {/* Left Margin Line */}
+                <div
+                  style={{
+                    position: 'absolute',
+                    left: 0,
+                    width: `${margins.left}px`,
+                    top: boundaryY,
+                    height: 0,
+                    borderTop: '1px dashed #cbd5e1',
+                    zIndex: 1,
+                    pointerEvents: 'none',
+                  }}
+                />
+                {/* Right Margin Line with Label */}
+                <div
+                  style={{
+                    position: 'absolute',
+                    left: `${pageWidth - margins.right}px`,
+                    right: 0,
+                    top: boundaryY,
+                    height: 0,
+                    borderTop: '1px dashed #cbd5e1',
+                    zIndex: 1,
+                    pointerEvents: 'none',
+                    display: 'flex',
+                    justifyContent: 'flex-end',
+                  }}
+                >
+                  <span style={{
+                    position: 'relative',
+                    top: '-7px',
+                    fontSize: '8px',
+                    color: '#9aa0a6',
+                    backgroundColor: pageBgColor,
+                    padding: '0 6px',
+                    fontFamily: "'Google Sans', Roboto, sans-serif",
+                    fontWeight: 600,
+                    userSelect: 'none',
+                    letterSpacing: '0.5px',
+                    border: '1px solid #e2e8f0',
+                    borderRadius: '3px',
+                  }}>
+                    Page {idx + 1} Ends
+                  </span>
+                </div>
+              </React.Fragment>
+            );
+          })}
 
           <div
             ref={editorRef}

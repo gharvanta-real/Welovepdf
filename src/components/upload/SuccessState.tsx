@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { Check, File, Download, Share2, Cloud, RotateCcw, ArrowRight, FileText } from "lucide-react";
 import { Footer } from "../Footer";
 import { renderSmileyIllustration } from "./FilePreviewCard";
+import { openInGoogleDocs } from "../../services/googleDrive";
 
 interface SuccessStateProps {
   selectedTool: string;
@@ -26,6 +27,8 @@ export function SuccessState({
   onViewChange,
   onOpenInEditor,
 }: SuccessStateProps) {
+  const [isGdocsLoading, setIsGdocsLoading] = useState(false);
+  const [gdocsStatus, setGdocsStatus] = useState('');
   return (
     <div style={{ width: "100%", background: "#F8FAFC", display: "flex", flexDirection: "column", minHeight: "100%" }}>
       <div style={{ maxWidth: "1100px", width: "100%", margin: "0 auto", padding: "48px 24px 80px 24px", boxSizing: "border-box", flex: 1 }}>
@@ -166,9 +169,26 @@ export function SuccessState({
               </div>
 
               {/* Primary Action Button */}
-              {selectedTool === "PDF to Word" && onOpenInEditor && (
+              {selectedTool === "PDF to Word" && (
                 <button
-                  onClick={() => onOpenInEditor(activeJob.file)}
+                  disabled={isGdocsLoading}
+                  onClick={async () => {
+                    // Build a minimal HTML wrapper around the converted file name
+                    const title = activeJob.file.replace(/\.[^/.]+$/, '');
+                    const html = `<h1>${title}</h1><p><em>Document converted from PDF. Open and edit your content below.</em></p>`;
+                    setIsGdocsLoading(true);
+                    setGdocsStatus('Connecting to Google...');
+                    try {
+                      await openInGoogleDocs(html, title, (msg) => setGdocsStatus(msg));
+                      setGdocsStatus('Opened!');
+                    } catch (err: any) {
+                      alert(`Google Docs error: ${err.message || err}`);
+                      setGdocsStatus('');
+                    } finally {
+                      setIsGdocsLoading(false);
+                      setTimeout(() => setGdocsStatus(''), 3000);
+                    }
+                  }}
                   style={{
                     backgroundColor: "#000000",
                     color: "#ffffff",
@@ -189,11 +209,22 @@ export function SuccessState({
                     boxSizing: "border-box",
                     transition: "opacity 0.15s"
                   }}
-                  onMouseEnter={e => e.currentTarget.style.opacity = "0.85"}
-                  onMouseLeave={e => e.currentTarget.style.opacity = "1"}
+                  onMouseEnter={e => (e.currentTarget.style.opacity = isGdocsLoading ? '1' : '0.85')}
+                  onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
                 >
-                  <FileText size={18} />
-                  Edit in Document Editor
+                  {isGdocsLoading ? (
+                    <>
+                      <span style={{
+                        display: 'inline-block', width: 16, height: 16,
+                        border: '2px solid rgba(255,255,255,0.35)',
+                        borderTopColor: '#fff', borderRadius: '50%',
+                        animation: 'spin 0.8s linear infinite'
+                      }} />
+                      {gdocsStatus || 'Opening...'}
+                    </>
+                  ) : (
+                    <><FileText size={18} /> Edit in Google Docs</>
+                  )}
                 </button>
               )}
 
@@ -219,57 +250,12 @@ export function SuccessState({
                   <Share2 size={15} />
                   <span>{copied ? "Link Copied!" : "Copy Share Link"}</span>
                 </button>
-                <button 
-                  className="sub-action-sidebar-btn" 
-                  onClick={() => alert("Google Drive integration coming soon!")}
-                >
-                  <Cloud size={15} />
-                  <span>Save to Google Drive</span>
-                </button>
                 <hr style={{ margin: "8px 0", border: "none", borderTop: "1px solid #E2E8F0" }} />
                 <button className="sub-action-sidebar-btn" onClick={clearSelection}>
                   <RotateCcw size={15} />
                   <span>Start Over</span>
                 </button>
               </div>
-            </div>
-
-            {/* Integration Suggestion */}
-            <div style={{
-              backgroundColor: "#0F172A",
-              color: "#ffffff",
-              borderRadius: "24px",
-              padding: "36px 32px",
-              display: "flex",
-              flexDirection: "column",
-              gap: "16px",
-              border: "1px solid #1E293B",
-              boxShadow: "0 10px 15px -3px rgba(0,0,0,0.05)"
-            }}>
-              <span className="eyebrow" style={{ fontFamily: "JetBrains Mono, monospace", fontSize: "11px", color: "#38BDF8", letterSpacing: "1px", display: "block", fontWeight: 600 }}>
-                POWER UP
-              </span>
-              <h5 style={{ fontFamily: "Plus Jakarta Sans, sans-serif", fontSize: "20px", fontWeight: 700, margin: 0 }}>Integrate with your API</h5>
-              <p style={{ fontFamily: "Plus Jakarta Sans, sans-serif", fontSize: "14px", opacity: 0.75, margin: 0, lineHeight: 1.5, fontWeight: 400 }}>
-                Automate your PDF workflows with our high-performance processing engine.
-              </p>
-              <a 
-                href="#api-docs" 
-                style={{
-                  fontFamily: "Plus Jakarta Sans, sans-serif",
-                  fontSize: "14px",
-                  fontWeight: 600,
-                  color: "#38BDF8",
-                  textDecoration: "none",
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "8px"
-                }}
-                onClick={(e) => { e.preventDefault(); alert("API integration documentation is coming soon!"); }}
-              >
-                View API Documentation
-                <ArrowRight size={14} />
-              </a>
             </div>
           </div>
         </div>

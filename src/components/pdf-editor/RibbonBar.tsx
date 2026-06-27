@@ -258,7 +258,6 @@ export function RibbonBar({
             <RibbonGroup label="Tools">
               <RibbonBtn icon={<MousePointer size={16} />} label="Select" active={activeTool === "select"} onClick={() => setActiveTool("select")} color={toolColor} />
               <RibbonBtn icon={<Hand size={16} />} label="Pan" active={activeTool === "pan"} onClick={() => setActiveTool("pan")} color={toolColor} />
-              <RibbonBtn icon={<Search size={16} />} label="Find" onClick={() => alert("Find & Replace coming soon")} color={toolColor} />
             </RibbonGroup>
           </>
         )}

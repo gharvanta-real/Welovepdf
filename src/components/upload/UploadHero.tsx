@@ -174,8 +174,8 @@ export function UploadHero({
                 background: "#2563eb",
                 color: "#ffffff",
                 border: "none",
-                borderRadius: "8px 0 0 8px",
-                padding: "16px 36px",
+                borderRadius: "8px",
+                padding: "16px 48px",
                 fontSize: "17px",
                 fontWeight: "600",
                 fontFamily: "Plus Jakarta Sans, sans-serif",
@@ -190,60 +190,6 @@ export function UploadHero({
             >
               Choose Files
             </button>
-
-            {/* Dropdown arrow button */}
-            <div style={{ position: "relative" }}>
-              <button
-                onClick={(e) => { e.stopPropagation(); setIsDropdownOpen(!isDropdownOpen); }}
-                style={{
-                  background: "#2563eb",
-                  color: "#ffffff",
-                  border: "none",
-                  borderRadius: "0 8px 8px 0",
-                  borderLeft: "1px solid rgba(255, 255, 255, 0.2)",
-                  padding: "16px 18px",
-                  fontSize: "17px",
-                  cursor: "pointer",
-                  display: "inline-flex",
-                  alignItems: "center",
-                  height: "100%",
-                  transition: "background-color 0.15s ease"
-                }}
-                onMouseOver={e => (e.currentTarget.style.backgroundColor = "#1d4ed8")}
-                onMouseOut={e => (e.currentTarget.style.backgroundColor = "#2563eb")}
-              >
-                <ChevronDown size={18} style={{ transform: isDropdownOpen ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" }} />
-              </button>
-
-              {/* Dropdown menu */}
-              {isDropdownOpen && (
-                <div 
-                  className="choose-dropdown-menu" 
-                  style={{
-                    position: "absolute",
-                    top: "calc(100% + 8px)",
-                    right: 0,
-                    left: "auto",
-                    transform: "none",
-                    zIndex: 50
-                  }} 
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <button className="dropdown-item" onClick={() => { triggerFileInput(); setIsDropdownOpen(false); }}>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
-                    <span>From device</span>
-                  </button>
-                  <button className="dropdown-item" onClick={() => { alert("Dropbox coming soon!"); setIsDropdownOpen(false); }}>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#0061ff"><path d="M6 2l6 4-6 4-6-4 6-4zm12 0l6 4-6 4-6-4 6-4zM6 16l6-4-6-4-6 4 6 4zm12 0l6-4-6-4-6 4 6 4zM12 13v6l-6 4V17l6-4zm0 0v6l6 4V17l-6-4z"/></svg>
-                    <span>From Dropbox</span>
-                  </button>
-                  <button className="dropdown-item" onClick={() => { alert("Google Drive coming soon!"); setIsDropdownOpen(false); }}>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M2 14.5l3.5-6h13l-3.5 6H2z" fill="#00a859"/><path d="M8.5 2.5l3.5 6H22l-3.5-6H8.5z" fill="#ffc72c"/><path d="M15 8.5l3.5 6-6.5 11.5-3.5-6 6.5-11.5z" fill="#0066b3"/></svg>
-                    <span>From Google Drive</span>
-                  </button>
-                </div>
-              )}
-            </div>
           </div>
 
           <input
