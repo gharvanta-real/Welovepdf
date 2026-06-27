@@ -18,31 +18,7 @@ const TEMPLATE_PREVIEW_COLORS: Record<string, { accent: string; sidebar: boolean
   "minimalist":     { accent: "#374151", sidebar: false, centered: false },
 };
 
-// Autocomplete Job Titles List
-const SUGGESTED_JOB_TITLES = [
-  "Software Engineer",
-  "Frontend Developer",
-  "Backend Developer",
-  "Full Stack Developer",
-  "UI/UX Designer",
-  "Product Designer",
-  "Data Scientist",
-  "Data Analyst",
-  "Machine Learning Engineer",
-  "Product Manager",
-  "Project Manager",
-  "Marketing Manager",
-  "Digital Marketing Specialist",
-  "Business Analyst",
-  "Financial Analyst",
-  "HR Manager",
-  "Recruiter",
-  "Accountant",
-  "Content Writer",
-  "Customer Success Specialist",
-  "DevOps Engineer",
-  "Cloud Architect"
-];
+import { SUGGESTED_JOB_TITLES } from "../../data/jobTitles";
 
 export function OnboardingWizard({ onBackToApp, onComplete }: OnboardingWizardProps) {
   const [step, setStep] = useState<number>(1);
