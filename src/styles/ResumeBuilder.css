@@ -1780,3 +1780,41 @@ h2.rb-step-title {
   line-height: 1.4;
   color: #6B7280;
 }
+
+/* ── AUTOCOMPLETE JOB TITLES DROPDOWN ── */
+.rb-suggestions-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: calc(100% - 90px); /* Aligns perfectly with input box before the Next button */
+  background: #ffffff;
+  border: 1.5px solid #dbeafe; /* Light blue border */
+  border-radius: 10px;
+  box-shadow: 0 10px 25px rgba(37, 99, 235, 0.1);
+  padding: 6px 0;
+  margin: 4px 0 0 0;
+  list-style: none;
+  z-index: 1000;
+  max-height: 220px;
+  overflow-y: auto;
+  text-align: left;
+}
+
+.rb-suggestion-item {
+  padding: 10px 16px;
+  font-size: 13.5px;
+  color: #1f2937;
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+  font-family: inherit;
+}
+
+.rb-suggestion-item:hover {
+  background-color: #ebf2ff; /* Light brand blue */
+  color: #2563eb; /* Brand royal blue text */
+}
+
+.rb-suggestion-item:active {
+  background-color: #dbeafe;
+}
+

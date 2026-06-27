@@ -18,6 +18,32 @@ const TEMPLATE_PREVIEW_COLORS: Record<string, { accent: string; sidebar: boolean
   "minimalist":     { accent: "#374151", sidebar: false, centered: false },
 };
 
+// Autocomplete Job Titles List
+const SUGGESTED_JOB_TITLES = [
+  "Software Engineer",
+  "Frontend Developer",
+  "Backend Developer",
+  "Full Stack Developer",
+  "UI/UX Designer",
+  "Product Designer",
+  "Data Scientist",
+  "Data Analyst",
+  "Machine Learning Engineer",
+  "Product Manager",
+  "Project Manager",
+  "Marketing Manager",
+  "Digital Marketing Specialist",
+  "Business Analyst",
+  "Financial Analyst",
+  "HR Manager",
+  "Recruiter",
+  "Accountant",
+  "Content Writer",
+  "Customer Success Specialist",
+  "DevOps Engineer",
+  "Cloud Architect"
+];
+
 export function OnboardingWizard({ onBackToApp, onComplete }: OnboardingWizardProps) {
   const [step, setStep] = useState<number>(1);
   const [state, setState] = useState<OnboardingState>({
@@ -30,6 +56,7 @@ export function OnboardingWizard({ onBackToApp, onComplete }: OnboardingWizardPr
   const [parseError, setParseError] = useState("");
   const [showPasteMode, setShowPasteMode] = useState(false);
   const [pastedText, setPastedText] = useState("");
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const updateState = (updates: Partial<OnboardingState>) => {
@@ -240,38 +267,71 @@ export function OnboardingWizard({ onBackToApp, onComplete }: OnboardingWizardPr
         )}
 
         {/* ── STEP 2: Job position ── */}
-        {step === 2 && (
-          <div className="rb-step-content animate-fade-in">
-            <h2 className="rb-step-title">What is your target job title?</h2>
-            <p className="rb-step-subtitle">We'll recommend the best resume templates for your role.</p>
-            <div className="rb-input-wrapper">
-              <input
-                type="text"
-                className="rb-text-input"
-                placeholder="e.g. Software Engineer, Marketing Manager..."
-                value={state.position}
-                autoFocus
-                onChange={(e) => updateState({ position: e.target.value })}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && state.position.trim()) handleNextStep();
-                }}
-              />
+        {step === 2 && (() => {
+          const query = state.position.trim().toLowerCase();
+          const suggestions = query && showSuggestions
+            ? SUGGESTED_JOB_TITLES.filter(title => 
+                title.toLowerCase().includes(query) && 
+                title.toLowerCase() !== query
+              ).slice(0, 5)
+            : [];
+
+          return (
+            <div className="rb-step-content animate-fade-in">
+              <h2 className="rb-step-title">What is your target job title?</h2>
+              <p className="rb-step-subtitle">We'll recommend the best resume templates for your role.</p>
+              <div className="rb-input-wrapper" style={{ position: "relative" }}>
+                <input
+                  type="text"
+                  className="rb-text-input"
+                  placeholder="e.g. Software Engineer, Marketing Manager..."
+                  value={state.position}
+                  autoFocus
+                  onFocus={() => setShowSuggestions(true)}
+                  onBlur={() => {
+                    // Small delay to allow click event on suggestions list to fire
+                    setTimeout(() => setShowSuggestions(false), 200);
+                  }}
+                  onChange={(e) => updateState({ position: e.target.value })}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && state.position.trim()) handleNextStep();
+                  }}
+                />
+
+                {suggestions.length > 0 && (
+                  <ul className="rb-suggestions-dropdown animate-fade-in">
+                    {suggestions.map((title) => (
+                      <li 
+                        key={title} 
+                        onClick={() => {
+                          updateState({ position: title });
+                          setShowSuggestions(false);
+                        }}
+                        className="rb-suggestion-item"
+                      >
+                        {title}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+
+                <button
+                  className="rb-btn rb-btn-teal"
+                  disabled={!state.position.trim()}
+                  onClick={handleNextStep}
+                >
+                  Next
+                </button>
+              </div>
               <button
-                className="rb-btn rb-btn-teal"
-                disabled={!state.position.trim()}
-                onClick={handleNextStep}
+                className="rb-skip-link"
+                onClick={() => { updateState({ position: "Professional" }); handleNextStep(); }}
               >
-                Next
+                Skip this step
               </button>
             </div>
-            <button
-              className="rb-skip-link"
-              onClick={() => { updateState({ position: "Professional" }); handleNextStep(); }}
-            >
-              Skip this step
-            </button>
-          </div>
-        )}
+          );
+        })()}
 
         {/* ── STEP 3: ATS vs Recruiter ── */}
         {step === 3 && (
