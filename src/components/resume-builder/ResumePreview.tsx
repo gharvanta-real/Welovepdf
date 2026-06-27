@@ -81,65 +81,77 @@ export function ResumePreview({ data, styles, zoomMode, zoomLevel }: ResumePrevi
   const [showTooltip, setShowTooltip] = useState(false);
   const [showSizeMenu, setShowSizeMenu] = useState(false);
 
-  // Detect and track selection changes in the canvas
+  // Detect selection finalized on mouseup or keyup to prevent drag-flicker issues
   useEffect(() => {
-    const handleSelectionChange = () => {
-      const selection = window.getSelection();
-      if (!selection || selection.isCollapsed || !selection.toString().trim()) {
-        setShowTooltip(false);
-        setShowSizeMenu(false);
-        return;
-      }
-
-      // Verify the selection range is contained within the preview canvas sheet
-      try {
-        const range = selection.getRangeAt(0);
-        const commonAncestor = range.commonAncestorContainer;
-        const previewContent = containerRef.current;
-        if (!previewContent || !previewContent.contains(commonAncestor)) {
+    const checkSelection = () => {
+      // Small timeout to allow the browser selection range to settle
+      setTimeout(() => {
+        const selection = window.getSelection();
+        if (!selection || selection.isCollapsed || !selection.toString().trim()) {
           setShowTooltip(false);
           setShowSizeMenu(false);
           return;
         }
 
-        // Compute selection coordinates bounding rect
-        const rect = range.getBoundingClientRect();
-        const tooltipWidth = 320;
-        
-        let left = rect.left + rect.width / 2 - tooltipWidth / 2;
-        let top = rect.top - 46; // Positioned exactly above highlighted text
-        
-        // Keep bounds within safe horizontal boundaries of the viewport
-        if (left < 10) left = 10;
-        if (left + tooltipWidth > window.innerWidth - 10) {
-          left = window.innerWidth - tooltipWidth - 10;
-        }
+        try {
+          const range = selection.getRangeAt(0);
+          const commonAncestor = range.commonAncestorContainer;
+          const previewContent = containerRef.current;
+          if (!previewContent || !previewContent.contains(commonAncestor)) {
+            setShowTooltip(false);
+            setShowSizeMenu(false);
+            return;
+          }
 
-        setTooltipStyles({
-          position: "fixed", // Position fixed relative to viewport to prevent container offsets
-          left: `${left}px`,
-          top: `${top}px`,
-          zIndex: 99999,
-          display: "flex",
-          alignItems: "center",
-          gap: "2px",
-          backgroundColor: "#1F2937",
-          border: "1px solid #374151",
-          borderRadius: "4px",
-          padding: "3px 4px",
-          boxShadow: "0 4px 12px rgba(0,0,0,0.25)"
-        });
-        setShowTooltip(true);
-      } catch (err) {
-        // Safe check
-      }
+          const rect = range.getBoundingClientRect();
+          const tooltipWidth = 320;
+          
+          let left = rect.left + rect.width / 2 - tooltipWidth / 2;
+          let top = rect.top - 46; // Positioned exactly above highlighted text
+          
+          // Keep bounds within safe horizontal boundaries of the viewport
+          if (left < 10) left = 10;
+          if (left + tooltipWidth > window.innerWidth - 10) {
+            left = window.innerWidth - tooltipWidth - 10;
+          }
+
+          setTooltipStyles({
+            position: "fixed", // Position fixed relative to viewport to prevent container offsets
+            left: `${left}px`,
+            top: `${top}px`,
+            zIndex: 99999,
+            display: "flex",
+            alignItems: "center",
+            gap: "2px",
+            backgroundColor: "#1F2937",
+            border: "1px solid #374151",
+            borderRadius: "4px",
+            padding: "3px 4px",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.25)"
+          });
+          setShowTooltip(true);
+        } catch (err) {
+          setShowTooltip(false);
+        }
+      }, 20);
     };
 
-    document.addEventListener("selectionchange", handleSelectionChange);
-    window.addEventListener("scroll", handleSelectionChange, true); // Update position on scroll
+    const handleMouseDown = () => {
+      // Instantly hide formatting tooltip when a new selection click/drag begins
+      setShowTooltip(false);
+      setShowSizeMenu(false);
+    };
+
+    document.addEventListener("mouseup", checkSelection);
+    document.addEventListener("keyup", checkSelection);
+    document.addEventListener("mousedown", handleMouseDown);
+    window.addEventListener("scroll", checkSelection, true); // Keep aligned when scrolling
+
     return () => {
-      document.removeEventListener("selectionchange", handleSelectionChange);
-      window.removeEventListener("scroll", handleSelectionChange, true);
+      document.removeEventListener("mouseup", checkSelection);
+      document.removeEventListener("keyup", checkSelection);
+      document.removeEventListener("mousedown", handleMouseDown);
+      window.removeEventListener("scroll", checkSelection, true);
     };
   }, []);
 
