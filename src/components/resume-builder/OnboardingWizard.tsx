@@ -279,7 +279,8 @@ export function OnboardingWizard({ onBackToApp, onComplete }: OnboardingWizardPr
                     {suggestions.map((title) => (
                       <li 
                         key={title} 
-                        onClick={() => {
+                        onMouseDown={(e) => {
+                          e.preventDefault(); // Prevents input blur from firing and hiding dropdown before selection registers
                           updateState({ position: title });
                           setShowSuggestions(false);
                         }}
