@@ -59,6 +59,24 @@ export function ResumePreview({ data, styles, zoomMode, zoomLevel }: ResumePrevi
     };
   }, [zoomMode, zoomLevel]); // ✅ Fixed: removed data/styles from deps — resize doesn't depend on content
 
+  // Load custom Google Font inside preview client DOM if active
+  useEffect(() => {
+    if (styles.fontFamily === "custom" && styles.customFontFamily) {
+      const fontName = styles.customFontFamily.trim();
+      if (fontName) {
+        const fontId = fontName.replace(/\s+/g, "+");
+        const linkId = `google-font-preview-${fontId}`;
+        if (!document.getElementById(linkId)) {
+          const link = document.createElement("link");
+          link.id = linkId;
+          link.rel = "stylesheet";
+          link.href = `https://fonts.googleapis.com/css2?family=${fontId}:wght@300;400;500;600;700;800&display=swap`;
+          document.head.appendChild(link);
+        }
+      }
+    }
+  }, [styles.fontFamily, styles.customFontFamily]);
+
   // Empty state — guide user to fill in details
   if (isEmpty) {
     return (

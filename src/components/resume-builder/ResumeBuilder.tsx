@@ -404,13 +404,74 @@ export function ResumeBuilder({ onBack, onToolSelect }: ResumeBuilderProps) {
                         {styles.colorScheme === c.id && <Check size={14} className="swatch-check" />}
                       </button>
                     ))}
+
+                    {/* Custom Color Selector Swatch */}
+                    <div style={{ position: "relative", width: "36px", height: "36px" }}>
+                      <input
+                        type="color"
+                        value={styles.colorScheme === "custom" && styles.customColor ? styles.customColor : "#2563EB"}
+                        onChange={(e) => setStyles((prev) => ({ 
+                          ...prev, 
+                          colorScheme: "custom", 
+                          customColor: e.target.value 
+                        }))}
+                        style={{
+                          position: "absolute",
+                          top: 0,
+                          left: 0,
+                          width: "100%",
+                          height: "100%",
+                          opacity: 0,
+                          cursor: "pointer",
+                          zIndex: 10
+                        }}
+                      />
+                      <button
+                        className={`rb-color-swatch custom-swatch ${styles.colorScheme === "custom" ? "active" : ""}`}
+                        style={{
+                          background: "conic-gradient(red, yellow, lime, aqua, blue, magenta, red)",
+                          width: "100%",
+                          height: "100%",
+                          border: "1.5px solid #dbeafe"
+                        }}
+                        title="Choose custom color"
+                      >
+                        {styles.colorScheme === "custom" ? (
+                          <Check size={14} className="swatch-check" style={{ color: "#FFFFFF", filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.5))" }} />
+                        ) : (
+                          <span style={{ fontSize: "16px", color: "#FFFFFF", fontWeight: "bold", filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.5))" }}>＋</span>
+                        )}
+                      </button>
+                    </div>
                   </div>
+
+                  {styles.colorScheme === "custom" && (
+                    <div style={{ marginTop: "12px", display: "flex", alignItems: "center", gap: "8px" }}>
+                      <span style={{ fontSize: "12px", color: "#4B5563", fontWeight: 500 }}>Custom HEX:</span>
+                      <input
+                        type="text"
+                        value={styles.customColor || "#2563EB"}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setStyles((prev) => ({ ...prev, customColor: val }));
+                        }}
+                        style={{
+                          padding: "4px 8px",
+                          fontSize: "12px",
+                          border: "1px solid #D1D5DB",
+                          borderRadius: "4px",
+                          width: "90px",
+                          textTransform: "uppercase"
+                        }}
+                      />
+                    </div>
+                  )}
                 </div>
 
                 {/* Typography Picker */}
                 <div className="rb-cust-section">
                   <span className="rb-cust-label">Typography Combination</span>
-                  <div className="rb-select-group">
+                  <div className="rb-select-group" style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
                     {FONT_COMBINATIONS.map((f) => (
                       <button
                         key={f.id}
@@ -420,7 +481,43 @@ export function ResumeBuilder({ onBack, onToolSelect }: ResumeBuilderProps) {
                         {f.name}
                       </button>
                     ))}
+                    
+                    <button
+                      className={`rb-select-option-btn ${styles.fontFamily === "custom" ? "active" : ""}`}
+                      onClick={() => setStyles((prev) => ({ 
+                        ...prev, 
+                        fontFamily: "custom",
+                        customFontFamily: prev.customFontFamily || "Poppins"
+                      }))}
+                    >
+                      Custom Font
+                    </button>
                   </div>
+
+                  {styles.fontFamily === "custom" && (
+                    <div style={{ marginTop: "12px" }}>
+                      <span className="rb-cust-label" style={{ fontSize: "11px", color: "#4B5563", marginBottom: "4px", display: "block" }}>
+                        Enter Google Font Name:
+                      </span>
+                      <input
+                        type="text"
+                        value={styles.customFontFamily || ""}
+                        placeholder="e.g. Poppins, Montserrat, Open Sans, Roboto"
+                        onChange={(e) => setStyles((prev) => ({ ...prev, customFontFamily: e.target.value }))}
+                        style={{
+                          padding: "6px 12px",
+                          fontSize: "13px",
+                          border: "1px solid #D1D5DB",
+                          borderRadius: "4px",
+                          width: "100%",
+                          boxSizing: "border-box"
+                        }}
+                      />
+                      <span style={{ fontSize: "10.5px", color: "#6B7280", marginTop: "4px", display: "block", lineHeight: 1.3 }}>
+                        Type any font from Google Fonts (e.g. Poppins, Montserrat, Lato). It will load and print dynamically.
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
 

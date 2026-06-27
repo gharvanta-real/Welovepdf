@@ -69,8 +69,10 @@ export type SpacingMode = "compact" | "normal" | "spacious";
 
 export interface ResumeStyles {
   templateId: TemplateId;
-  colorScheme: ColorSchemeId;
-  fontFamily: FontFamilyId;
+  colorScheme: ColorSchemeId | "custom";
+  customColor?: string;
+  fontFamily: FontFamilyId | "custom";
+  customFontFamily?: string;
   spacing: SpacingMode;
   showIcons: boolean;
 }

@@ -119,7 +119,7 @@ export const SAMPLE_RESUME_DATA: ResumeData = {
 // HTML Template Compiler
 export function compileResumeToHtml(data: ResumeData, styles: ResumeStyles): string {
   const scheme = COLOR_SCHEMES.find((c) => c.id === styles.colorScheme) || COLOR_SCHEMES[0];
-  const fontCombo = FONT_COMBINATIONS.find((f) => f.id === styles.fontFamily) || FONT_COMBINATIONS[0];
+  const fontCombo = { ...(FONT_COMBINATIONS.find((f) => f.id === styles.fontFamily) || FONT_COMBINATIONS[0]) };
   
   // Spacing conversion
   const paddingMap = { compact: "12px", normal: "20px", spacious: "30px" };
@@ -128,7 +128,9 @@ export function compileResumeToHtml(data: ResumeData, styles: ResumeStyles): str
   const margin = marginMap[styles.spacing];
 
   // Colors
-  const primaryColor = scheme.primary;
+  const primaryColor = styles.colorScheme === "custom" && styles.customColor
+    ? styles.customColor
+    : scheme.primary;
   const secondaryColor = scheme.secondary;
   const textMuted = "#4B5563";
   const lightGrey = "#F3F4F6";
@@ -142,10 +144,23 @@ export function compileResumeToHtml(data: ResumeData, styles: ResumeStyles): str
   const separator = " &nbsp;·&nbsp; ";
 
   // Web fonts for compiled HTML output (loaded from Google Fonts)
-  const fontImports = `
+  let fontImports = `
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   `;
+
+  // Dynamically resolve custom Google Font if configured
+  if (styles.fontFamily === "custom" && styles.customFontFamily) {
+    const formattedFont = styles.customFontFamily.trim();
+    if (formattedFont) {
+      const fontId = formattedFont.replace(/\s+/g, "+");
+      fontImports += `
+        <link href="https://fonts.googleapis.com/css2?family=${fontId}:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+      `;
+      fontCombo.headerFont = `'${formattedFont}', sans-serif`;
+      fontCombo.bodyFont = `'${formattedFont}', sans-serif`;
+    }
+  }
 
   // Check if styles.templateId is a custom dynamic template
   if (typeof window !== "undefined") {
