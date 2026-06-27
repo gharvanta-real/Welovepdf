@@ -75,6 +75,12 @@ export interface ResumeStyles {
   customFontFamily?: string;
   spacing: SpacingMode;
   showIcons: boolean;
+  fontSize: "compact" | "normal" | "spacious";
+  titleWork?: string;
+  titleEducation?: string;
+  titleSkills?: string;
+  titleProjects?: string;
+  titleCertifications?: string;
 }
 
 export interface OnboardingState {

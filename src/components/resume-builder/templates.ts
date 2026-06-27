@@ -117,7 +117,35 @@ export const SAMPLE_RESUME_DATA: ResumeData = {
 };
 
 // HTML Template Compiler
+// HTML Template Compiler (Wrapper supporting systematic overrides)
 export function compileResumeToHtml(data: ResumeData, styles: ResumeStyles): string {
+  let html = compileResumeToHtmlRaw(data, styles);
+
+  // Apply dynamic section header renames systematically
+  if (styles.titleWork) {
+    html = html.replace(/Professional Experience<\/h2>/g, `${escapeHtml(styles.titleWork)}</h2>`)
+               .replace(/Work Experience<\/h2>/g, `${escapeHtml(styles.titleWork)}</h2>`);
+  }
+  if (styles.titleEducation) {
+    html = html.replace(/Education<\/h2>/g, `${escapeHtml(styles.titleEducation)}</h2>`);
+  }
+  if (styles.titleSkills) {
+    html = html.replace(/Key Skills<\/h2>/g, `${escapeHtml(styles.titleSkills)}</h2>`)
+               .replace(/Skills<\/h2>/g, `${escapeHtml(styles.titleSkills)}</h2>`);
+  }
+  if (styles.titleProjects) {
+    html = html.replace(/Key Projects<\/h2>/g, `${escapeHtml(styles.titleProjects)}</h2>`)
+               .replace(/Projects<\/h2>/g, `${escapeHtml(styles.titleProjects)}</h2>`);
+  }
+  if (styles.titleCertifications) {
+    html = html.replace(/Certifications &amp; Affiliations<\/h2>/g, `${escapeHtml(styles.titleCertifications)}</h2>`)
+               .replace(/Certifications<\/h2>/g, `${escapeHtml(styles.titleCertifications)}</h2>`);
+  }
+
+  return html;
+}
+
+function compileResumeToHtmlRaw(data: ResumeData, styles: ResumeStyles): string {
   const scheme = COLOR_SCHEMES.find((c) => c.id === styles.colorScheme) || COLOR_SCHEMES[0];
   const fontCombo = { ...(FONT_COMBINATIONS.find((f) => f.id === styles.fontFamily) || FONT_COMBINATIONS[0]) };
   
@@ -210,6 +238,7 @@ export function compileResumeToHtml(data: ResumeData, styles: ResumeStyles): str
     --text-muted: ${textMuted};
     --border-color: #E5E7EB;
     font-family: ${fontCombo.bodyFont};
+    zoom: ${styles.fontSize === "compact" ? "0.9" : styles.fontSize === "spacious" ? "1.1" : "1.0"};
   `;
 
   // â”€â”€ URL normalization: prevent https://https:// double prefix â”€â”€

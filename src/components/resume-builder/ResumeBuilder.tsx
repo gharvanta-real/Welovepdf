@@ -59,7 +59,13 @@ export function ResumeBuilder({ onBack, onToolSelect }: ResumeBuilderProps) {
         colorScheme: "navy",
         fontFamily: "modern",
         spacing: "normal",
-        showIcons: true
+        showIcons: true,
+        fontSize: "normal",
+        titleWork: "",
+        titleEducation: "",
+        titleSkills: "",
+        titleProjects: "",
+        titleCertifications: ""
       };
     } catch {
       return {
@@ -67,7 +73,13 @@ export function ResumeBuilder({ onBack, onToolSelect }: ResumeBuilderProps) {
         colorScheme: "navy",
         fontFamily: "modern",
         spacing: "normal",
-        showIcons: true
+        showIcons: true,
+        fontSize: "normal",
+        titleWork: "",
+        titleEducation: "",
+        titleSkills: "",
+        titleProjects: "",
+        titleCertifications: ""
       };
     }
   });
@@ -159,7 +171,13 @@ export function ResumeBuilder({ onBack, onToolSelect }: ResumeBuilderProps) {
       colorScheme: wizardState.focus === "recruiters" ? "royal" : "minimal-black",
       fontFamily: wizardState.focus === "ats" ? "classic" : "modern",
       spacing: "normal",
-      showIcons: wizardState.focus === "ats" ? false : true // ATS focus defaults to clean text (no icons)
+      showIcons: wizardState.focus === "ats" ? false : true, // ATS focus defaults to clean text (no icons)
+      fontSize: "normal",
+      titleWork: "",
+      titleEducation: "",
+      titleSkills: "",
+      titleProjects: "",
+      titleCertifications: ""
     });
 
     // 2. Pre-populate data based on user choice
@@ -670,40 +688,113 @@ export function ResumeBuilder({ onBack, onToolSelect }: ResumeBuilderProps) {
                       </button>
                     ))}
                   </div>
-                </div>
 
-                {/* Spacing Picker */}
-                <div className="rb-cust-section">
-                  <span className="rb-cust-label">Margin Spacing</span>
-                  <div className="rb-spacing-group">
-                    {(["compact", "normal", "spacious"] as SpacingMode[]).map((sp) => (
-                      <button
-                        key={sp}
-                        className={`rb-spacing-option-btn ${styles.spacing === sp ? "active" : ""}`}
-                        onClick={() => setStyles((prev) => ({ ...prev, spacing: sp }))}
-                      >
-                        {sp.toUpperCase()}
-                      </button>
-                    ))}
+                  {/* Spacing Picker */}
+                  <div className="rb-cust-section">
+                    <span className="rb-cust-label">Margin Spacing</span>
+                    <div className="rb-spacing-group">
+                      {(["compact", "normal", "spacious"] as SpacingMode[]).map((sp) => (
+                        <button
+                          key={sp}
+                          className={`rb-spacing-option-btn ${styles.spacing === sp ? "active" : ""}`}
+                          onClick={() => setStyles((prev) => ({ ...prev, spacing: sp }))}
+                        >
+                          {sp.toUpperCase()}
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                </div>
 
-                {/* Show/Hide Contact Emojis Toggle */}
-                <div className="rb-cust-section" style={{ marginTop: "16px" }}>
-                  <label className="rb-toggle-container" style={{ display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", userSelect: "none" }}>
-                    <input
-                      type="checkbox"
-                      checked={styles.showIcons}
-                      onChange={(e) => setStyles((prev) => ({ ...prev, showIcons: e.target.checked }))}
-                      style={{ cursor: "pointer", width: "16px", height: "16px", accentColor: "#2563EB" }}
-                    />
-                    <span style={{ fontSize: "13px", fontWeight: 500, color: "#1F2937" }}>
-                      Show contact icons (Emojis)
+                  {/* Font Size Picker */}
+                  <div className="rb-cust-section" style={{ marginTop: "16px" }}>
+                    <span className="rb-cust-label">Base Font Size</span>
+                    <div className="rb-spacing-group">
+                      {(["compact", "normal", "spacious"] as const).map((sz) => (
+                        <button
+                          key={sz}
+                          className={`rb-spacing-option-btn ${styles.fontSize === sz ? "active" : ""}`}
+                          onClick={() => setStyles((prev) => ({ ...prev, fontSize: sz }))}
+                        >
+                          {sz.toUpperCase()}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Show/Hide Contact Emojis Toggle */}
+                  <div className="rb-cust-section" style={{ marginTop: "16px" }}>
+                    <label className="rb-toggle-container" style={{ display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", userSelect: "none" }}>
+                      <input
+                        type="checkbox"
+                        checked={styles.showIcons}
+                        onChange={(e) => setStyles((prev) => ({ ...prev, showIcons: e.target.checked }))}
+                        style={{ cursor: "pointer", width: "16px", height: "16px", accentColor: "#2563EB" }}
+                      />
+                      <span style={{ fontSize: "13px", fontWeight: 500, color: "#1F2937" }}>
+                        Show contact icons (Emojis)
+                      </span>
+                    </label>
+                    <span style={{ display: "block", fontSize: "11px", color: "#6B7280", marginTop: "4px", lineHeight: 1.4 }}>
+                      Turn off icons for strict corporate layouts or ATS compatibility.
                     </span>
-                  </label>
-                  <span style={{ display: "block", fontSize: "11px", color: "#6B7280", marginTop: "4px", lineHeight: 1.4 }}>
-                    Turn off icons for strict corporate layouts or ATS compatibility.
-                  </span>
+                  </div>
+
+                  {/* Rename Resume Sections */}
+                  <div className="rb-cust-section" style={{ marginTop: "16px", borderTop: "1px solid #E5E7EB", paddingTop: "12px" }}>
+                    <span className="rb-cust-label" style={{ fontWeight: 600, color: "#111827", marginBottom: "8px" }}>Rename Resume Sections</span>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px" }}>
+                        <span style={{ fontSize: "11.5px", color: "#4B5563", minWidth: "90px" }}>Experience:</span>
+                        <input
+                          type="text"
+                          value={styles.titleWork || ""}
+                          placeholder="Work Experience"
+                          onChange={(e) => setStyles((prev) => ({ ...prev, titleWork: e.target.value }))}
+                          style={{ padding: "5px 8px", fontSize: "12.5px", border: "1px solid #D1D5DB", borderRadius: "4px", width: "100%", maxWidth: "150px" }}
+                        />
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px" }}>
+                        <span style={{ fontSize: "11.5px", color: "#4B5563", minWidth: "90px" }}>Education:</span>
+                        <input
+                          type="text"
+                          value={styles.titleEducation || ""}
+                          placeholder="Education"
+                          onChange={(e) => setStyles((prev) => ({ ...prev, titleEducation: e.target.value }))}
+                          style={{ padding: "5px 8px", fontSize: "12.5px", border: "1px solid #D1D5DB", borderRadius: "4px", width: "100%", maxWidth: "150px" }}
+                        />
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px" }}>
+                        <span style={{ fontSize: "11.5px", color: "#4B5563", minWidth: "90px" }}>Skills:</span>
+                        <input
+                          type="text"
+                          value={styles.titleSkills || ""}
+                          placeholder="Skills"
+                          onChange={(e) => setStyles((prev) => ({ ...prev, titleSkills: e.target.value }))}
+                          style={{ padding: "5px 8px", fontSize: "12.5px", border: "1px solid #D1D5DB", borderRadius: "4px", width: "100%", maxWidth: "150px" }}
+                        />
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px" }}>
+                        <span style={{ fontSize: "11.5px", color: "#4B5563", minWidth: "90px" }}>Projects:</span>
+                        <input
+                          type="text"
+                          value={styles.titleProjects || ""}
+                          placeholder="Projects"
+                          onChange={(e) => setStyles((prev) => ({ ...prev, titleProjects: e.target.value }))}
+                          style={{ padding: "5px 8px", fontSize: "12.5px", border: "1px solid #D1D5DB", borderRadius: "4px", width: "100%", maxWidth: "150px" }}
+                        />
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px" }}>
+                        <span style={{ fontSize: "11.5px", color: "#4B5563", minWidth: "90px" }}>Certifications:</span>
+                        <input
+                          type="text"
+                          value={styles.titleCertifications || ""}
+                          placeholder="Certifications"
+                          onChange={(e) => setStyles((prev) => ({ ...prev, titleCertifications: e.target.value }))}
+                          style={{ padding: "5px 8px", fontSize: "12.5px", border: "1px solid #D1D5DB", borderRadius: "4px", width: "100%", maxWidth: "150px" }}
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
