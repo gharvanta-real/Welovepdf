@@ -133,6 +133,14 @@ export function compileResumeToHtml(data: ResumeData, styles: ResumeStyles): str
   const textMuted = "#4B5563";
   const lightGrey = "#F3F4F6";
 
+  // Emojis/Icons conditional rendering helpers
+  const showIcons = styles.showIcons ?? true;
+  const iconPhone = showIcons ? "📞 " : "";
+  const iconEmail = showIcons ? "✉️ " : "";
+  const iconLocation = showIcons ? "📍 " : "";
+  const iconLink = showIcons ? "🔗 " : "";
+  const separator = " &nbsp;·&nbsp; ";
+
   // Web fonts for compiled HTML output (loaded from Google Fonts)
   const fontImports = `
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -337,10 +345,10 @@ export function compileResumeToHtml(data: ResumeData, styles: ResumeStyles): str
 
               <div style="margin-bottom: 20px; font-size: 9pt; color: #374151; line-height: 1.6;">
                 <h3 style="font-family: ${fontCombo.headerFont}; font-size: 11pt; color: ${primaryColor}; text-transform: uppercase; border-bottom: 2px solid ${primaryColor}; padding-bottom: 3px; margin: 0 0 10px 0;">Contact</h3>
-                <div style="margin-bottom: 6px;">ðŸ“ž ${escapeHtml(data.basics.phone)}</div>
-                <div style="margin-bottom: 6px; word-break: break-all;">âœ‰ï¸  <a href="mailto:${data.basics.email}" style="color: inherit; text-decoration: none;">${escapeHtml(data.basics.email)}</a></div>
-                <div style="margin-bottom: 6px;">ðŸ“  ${escapeHtml(data.basics.location)}</div>
-                ${data.basics.url ? `<div style="word-break: break-all;">ðŸ”— <a href="${safeUrl(data.basics.url)}" target="_blank" style="color: ${primaryColor}; text-decoration: none;">${escapeHtml(data.basics.url)}</a></div>` : ""}
+                <div style="margin-bottom: 6px;">${iconPhone}${escapeHtml(data.basics.phone)}</div>
+                <div style="margin-bottom: 6px; word-break: break-all;">${iconEmail}<a href="mailto:${data.basics.email}" style="color: inherit; text-decoration: none;">${escapeHtml(data.basics.email)}</a></div>
+                <div style="margin-bottom: 6px;">${iconLocation}${escapeHtml(data.basics.location)}</div>
+                ${data.basics.url ? `<div style="word-break: break-all;">${iconLink}<a href="${safeUrl(data.basics.url)}" target="_blank" style="color: ${primaryColor}; text-decoration: none;">${escapeHtml(data.basics.url)}</a></div>` : ""}
               </div>
 
               <div style="margin-bottom: 20px;">
@@ -409,10 +417,10 @@ export function compileResumeToHtml(data: ResumeData, styles: ResumeStyles): str
             ${escapeHtml(data.basics.label)}
           </div>
           <div style="font-size: 9pt; color: ${textMuted}; font-family: ${fontCombo.bodyFont}; line-height: 1.4; text-align: center; margin-top: 4px;">
-            <span>ðŸ“  ${escapeHtml(data.basics.location)}</span> &nbsp;Â·&nbsp;
-            <span>ðŸ“ž ${escapeHtml(data.basics.phone)}</span> &nbsp;Â·&nbsp;
-            <span>âœ‰ï¸  <a href="mailto:${data.basics.email}" style="color: inherit; text-decoration: none;">${escapeHtml(data.basics.email)}</a></span>
-            ${data.basics.url ? ` &nbsp;Â·&nbsp; <span>ðŸ”— <a href="${safeUrl(data.basics.url)}" target="_blank" style="color: inherit; text-decoration: none;">${escapeHtml(data.basics.url)}</a></span>` : ""}
+            <span>${iconLocation}${escapeHtml(data.basics.location)}</span>${separator}
+            <span>${iconPhone}${escapeHtml(data.basics.phone)}</span>${separator}
+            <span>${iconEmail}<a href="mailto:${data.basics.email}" style="color: inherit; text-decoration: none;">${escapeHtml(data.basics.email)}</a></span>
+            ${data.basics.url ? `${separator}<span>${iconLink}<a href="${safeUrl(data.basics.url)}" target="_blank" style="color: inherit; text-decoration: none;">${escapeHtml(data.basics.url)}</a></span>` : ""}
           </div>
         </div>
 
@@ -482,10 +490,10 @@ export function compileResumeToHtml(data: ResumeData, styles: ResumeStyles): str
               </div>
             </div>
             <div style="font-size: 9pt; color: ${textMuted}; line-height: 1.4; text-align: right;">
-              <div>ðŸ“  ${escapeHtml(data.basics.location)}</div>
-              <div>ðŸ“ž ${escapeHtml(data.basics.phone)}</div>
-              <div>âœ‰ï¸  <a href="mailto:${data.basics.email}" style="color: ${primaryColor}; text-decoration: none;">${escapeHtml(data.basics.email)}</a></div>
-              ${data.basics.url ? `<div>ðŸ”— <a href="${safeUrl(data.basics.url)}" target="_blank" style="color: inherit; text-decoration: none;">${escapeHtml(data.basics.url)}</a></div>` : ""}
+              <div>${iconLocation}${escapeHtml(data.basics.location)}</div>
+              <div>${iconPhone}${escapeHtml(data.basics.phone)}</div>
+              <div>${iconEmail}<a href="mailto:${data.basics.email}" style="color: ${primaryColor}; text-decoration: none;">${escapeHtml(data.basics.email)}</a></div>
+              ${data.basics.url ? `<div>${iconLink}<a href="${safeUrl(data.basics.url)}" target="_blank" style="color: inherit; text-decoration: none;">${escapeHtml(data.basics.url)}</a></div>` : ""}
             </div>
           </div>
         </div>
@@ -568,10 +576,10 @@ export function compileResumeToHtml(data: ResumeData, styles: ResumeStyles): str
             ${escapeHtml(data.basics.label)}
           </div>
           <div style="font-size: 9pt; color: ${textMuted}; border-bottom: 1px solid #E5E7EB; padding-bottom: 8px; font-family: ${fontCombo.bodyFont}; line-height: 1.4; margin-top: 4px;">
-            <span>ðŸ“ ${escapeHtml(data.basics.location)}</span> &nbsp;Â·&nbsp;
-            <span>ðŸ“ž ${escapeHtml(data.basics.phone)}</span> &nbsp;Â·&nbsp;
-            <span>âœ‰ï¸ <a href="mailto:${data.basics.email}" style="color: inherit; text-decoration: none;">${escapeHtml(data.basics.email)}</a></span>
-            ${data.basics.url ? ` &nbsp;Â·&nbsp; <span>ðŸ”— <a href="https://${data.basics.url}" target="_blank" style="color: inherit; text-decoration: none;">${escapeHtml(data.basics.url)}</a></span>` : ""}
+            <span>${iconLocation}${escapeHtml(data.basics.location)}</span> &nbsp;·&nbsp;
+            <span>${iconPhone}${escapeHtml(data.basics.phone)}</span> &nbsp;·&nbsp;
+            <span>${iconEmail}<a href="mailto:${data.basics.email}" style="color: inherit; text-decoration: none;">${escapeHtml(data.basics.email)}</a></span>
+            ${data.basics.url ? ` &nbsp;·&nbsp; <span>${iconLink}<a href="https://${data.basics.url}" target="_blank" style="color: inherit; text-decoration: none;">${escapeHtml(data.basics.url)}</a></span>` : ""}
           </div>
         </div>
 
@@ -628,10 +636,10 @@ export function compileResumeToHtml(data: ResumeData, styles: ResumeStyles): str
             </div>
           </td>
           <td style="text-align: right; vertical-align: bottom; padding: 0; padding-bottom: 8px; font-size: 9pt; color: ${textMuted}; line-height: 1.4; width: 35%;">
-            <div>ðŸ“ ${escapeHtml(data.basics.location)}</div>
-            <div>ðŸ“ž ${escapeHtml(data.basics.phone)}</div>
-            <div>âœ‰ï¸ <a href="mailto:${data.basics.email}" style="color: inherit; text-decoration: none;">${escapeHtml(data.basics.email)}</a></div>
-            ${data.basics.url ? `<div>ðŸ”— <a href="https://${data.basics.url}" target="_blank" style="color: inherit; text-decoration: none;">${escapeHtml(data.basics.url)}</a></div>` : ""}
+            <div>${iconLocation}${escapeHtml(data.basics.location)}</div>
+            <div>${iconPhone}${escapeHtml(data.basics.phone)}</div>
+            <div>${iconEmail}<a href="mailto:${data.basics.email}" style="color: inherit; text-decoration: none;">${escapeHtml(data.basics.email)}</a></div>
+            ${data.basics.url ? `<div>${iconLink}<a href="https://${data.basics.url}" target="_blank" style="color: inherit; text-decoration: none;">${escapeHtml(data.basics.url)}</a></div>` : ""}
           </td>
         </tr>
       </table>

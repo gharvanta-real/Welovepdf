@@ -72,6 +72,7 @@ export interface ResumeStyles {
   colorScheme: ColorSchemeId;
   fontFamily: FontFamilyId;
   spacing: SpacingMode;
+  showIcons: boolean;
 }
 
 export interface OnboardingState {

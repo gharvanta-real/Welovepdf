@@ -31,7 +31,8 @@ export function ResumeBuilder({ onBack, onToolSelect }: ResumeBuilderProps) {
     templateId: "traditional",
     colorScheme: "navy",
     fontFamily: "modern",
-    spacing: "normal"
+    spacing: "normal",
+    showIcons: true
   });
 
   // Main Resume Data state
@@ -92,10 +93,11 @@ export function ResumeBuilder({ onBack, onToolSelect }: ResumeBuilderProps) {
 
     // 1. Initialise templates and colors based on ATS vs Recruiter choice
     setStyles({
-      templateId: wizardState.selectedTemplateId || "traditional",
+      templateId: (wizardState.selectedTemplateId || "traditional") as import('./types').TemplateId,
       colorScheme: wizardState.focus === "recruiters" ? "royal" : "minimal-black",
       fontFamily: wizardState.focus === "ats" ? "classic" : "modern",
-      spacing: "normal"
+      spacing: "normal",
+      showIcons: wizardState.focus === "ats" ? false : true // ATS focus defaults to clean text (no icons)
     });
 
     // 2. Pre-populate data based on user choice
@@ -403,6 +405,24 @@ export function ResumeBuilder({ onBack, onToolSelect }: ResumeBuilderProps) {
                       </button>
                     ))}
                   </div>
+                </div>
+
+                {/* Show/Hide Contact Emojis Toggle */}
+                <div className="rb-cust-section" style={{ marginTop: "16px" }}>
+                  <label className="rb-toggle-container" style={{ display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", userSelect: "none" }}>
+                    <input
+                      type="checkbox"
+                      checked={styles.showIcons}
+                      onChange={(e) => setStyles((prev) => ({ ...prev, showIcons: e.target.checked }))}
+                      style={{ cursor: "pointer", width: "16px", height: "16px", accentColor: "#2563EB" }}
+                    />
+                    <span style={{ fontSize: "13px", fontWeight: 500, color: "#1F2937" }}>
+                      Show contact icons (Emojis)
+                    </span>
+                  </label>
+                  <span style={{ display: "block", fontSize: "11px", color: "#6B7280", marginTop: "4px", lineHeight: 1.4 }}>
+                    Turn off icons for strict corporate layouts or ATS compatibility.
+                  </span>
                 </div>
               </div>
             </div>
