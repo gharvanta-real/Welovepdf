@@ -15,6 +15,7 @@ export const FONT_COMBINATIONS = [
   { id: "classic", name: "Classic Serif (Georgia)", headerFont: "Georgia, serif", bodyFont: "Georgia, serif" },
   { id: "academic", name: "Playfair & Inter", headerFont: "'Playfair Display', serif", bodyFont: "Inter, sans-serif" },
   { id: "tech", name: "JetBrains Mono", headerFont: "'JetBrains Mono', monospace", bodyFont: "Inter, sans-serif" },
+  { id: "creative", name: "Poppins", headerFont: "Poppins, sans-serif", bodyFont: "Poppins, sans-serif" },
 ];
 
 export const TEMPLATES = [

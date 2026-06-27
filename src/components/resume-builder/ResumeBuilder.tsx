@@ -268,9 +268,9 @@ export function ResumeBuilder({ onBack, onToolSelect }: ResumeBuilderProps) {
     }
   };
 
-  const filteredFonts = (styles.customFontFamily || "").trim()
-    ? POPULAR_FONTS.filter(f => f.toLowerCase().includes((styles.customFontFamily || "").toLowerCase())).slice(0, 5)
-    : POPULAR_FONTS.slice(0, 5);
+  const filteredFonts = (styles.customFontFamily || "").trim() && styles.fontFamily === "custom"
+    ? POPULAR_FONTS.filter(f => f.toLowerCase().includes((styles.customFontFamily || "").toLowerCase()))
+    : POPULAR_FONTS;
 
   // If in onboarding step, show onboarding wizard
   if (isOnboarding) {
@@ -700,107 +700,193 @@ export function ResumeBuilder({ onBack, onToolSelect }: ResumeBuilderProps) {
 
                 {activeDesignTab === "typography" && (
                   <div className="rb-cust-section" style={{ margin: 0 }}>
-                    <span className="rb-cust-label" style={{ fontSize: "14px", fontWeight: "600", color: "#111827", marginBottom: "16px", display: "block" }}>Typography Combination</span>
-                    <div className="rb-select-group" style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "20px" }}>
-                      {FONT_COMBINATIONS.map((f) => (
-                        <button
-                          key={f.id}
-                          className={`rb-select-option-btn ${styles.fontFamily === f.id ? "active" : ""}`}
-                          onClick={() => setStyles((prev) => ({ ...prev, fontFamily: f.id as import('./types').FontFamilyId }))}
-                          style={{ padding: "8px 16px", fontSize: "13px" }}
-                        >
-                          {f.name}
-                        </button>
-                      ))}
-                      
-                      <button
-                        className={`rb-select-option-btn ${styles.fontFamily === "custom" ? "active" : ""}`}
-                        onClick={() => setStyles((prev) => ({ 
-                          ...prev, 
-                          fontFamily: "custom",
-                          customFontFamily: prev.customFontFamily || "Poppins"
-                        }))}
-                        style={{ padding: "8px 16px", fontSize: "13px" }}
-                      >
-                        Custom Font
-                      </button>
+                    <span className="rb-cust-label" style={{ fontSize: "14px", fontWeight: "600", color: "#111827", marginBottom: "16px", display: "block" }}>
+                      Font Style Presets
+                    </span>
+                    
+                    {/* 5-Column Grid displaying Preset Font Previews */}
+                    <div style={{
+                      display: "grid",
+                      gridTemplateColumns: "repeat(5, 1fr)",
+                      gap: "10px",
+                      marginBottom: "24px"
+                    }}>
+                      {FONT_COMBINATIONS.map((f) => {
+                        const isActive = styles.fontFamily === f.id;
+                        return (
+                          <button
+                            key={f.id}
+                            type="button"
+                            onClick={() => setStyles((prev) => ({ 
+                              ...prev, 
+                              fontFamily: f.id as import('./types').FontFamilyId 
+                            }))}
+                            style={{
+                              display: "flex",
+                              flexDirection: "column",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              padding: "12px 8px",
+                              border: isActive ? "2px solid #2563EB" : "1px solid #E5E7EB",
+                              borderRadius: "6px",
+                              backgroundColor: isActive ? "#EFF6FF" : "#FFFFFF",
+                              cursor: "pointer",
+                              textAlign: "center",
+                              transition: "all 0.2s ease",
+                              boxShadow: isActive ? "0 2px 8px rgba(37,99,235,0.15)" : "none"
+                            }}
+                          >
+                            {/* Font Preview Lettering */}
+                            <span style={{
+                              fontFamily: f.headerFont,
+                              fontSize: "20px",
+                              fontWeight: "700",
+                              color: isActive ? "#1D4ED8" : "#1F2937",
+                              marginBottom: "6px",
+                              display: "block"
+                            }}>
+                              Aa
+                            </span>
+                            {/* Preset Name */}
+                            <span style={{
+                              fontSize: "11px",
+                              fontWeight: "600",
+                              color: isActive ? "#1E40AF" : "#4B5563",
+                              lineHeight: "1.2",
+                              display: "block"
+                            }}>
+                              {f.name.replace(/ \(.*\)/, "")}
+                            </span>
+                          </button>
+                        );
+                      })}
                     </div>
 
-                    {styles.fontFamily === "custom" && (
-                      <div style={{ position: "relative", maxWidth: "360px" }}>
-                        <span className="rb-cust-label" style={{ fontSize: "11.5px", color: "#4B5563", marginBottom: "6px", display: "block" }}>
-                          Enter Google Font Name:
-                        </span>
-                        <input
-                          type="text"
-                          value={styles.customFontFamily || ""}
-                          placeholder="e.g. Poppins, Montserrat, Open Sans, Roboto"
-                          onFocus={() => setShowFontSuggestions(true)}
-                          onBlur={() => setTimeout(() => setShowFontSuggestions(false), 200)}
-                          onChange={(e) => setStyles((prev) => ({ ...prev, customFontFamily: e.target.value }))}
-                          style={{
-                            padding: "8px 12px",
-                            fontSize: "13px",
-                            border: "1px solid #D1D5DB",
-                            borderRadius: "4px",
-                            width: "100%",
-                            boxSizing: "border-box"
-                          }}
-                        />
-                        
+                    {/* All Fonts Selector (Dropdown & Manual Search Combo) */}
+                    <div style={{ position: "relative", borderTop: "1px solid #E5E7EB", paddingTop: "20px" }}>
+                      <span className="rb-cust-label" style={{ fontSize: "14px", fontWeight: "600", color: "#111827", marginBottom: "12px", display: "block" }}>
+                        Browse All Fonts
+                      </span>
+                      
+                      <div style={{ position: "relative" }}>
+                        {/* Selector / Search Trigger Input */}
+                        <div style={{ display: "flex", gap: "8px" }}>
+                          <input
+                            type="text"
+                            value={
+                              styles.fontFamily === "custom" && !showFontSuggestions
+                                ? styles.customFontFamily || ""
+                                : styles.fontFamily === "custom"
+                                ? styles.customFontFamily || ""
+                                : ""
+                            }
+                            placeholder={styles.fontFamily === "custom" ? styles.customFontFamily : "Select or search a font..."}
+                            onFocus={() => setShowFontSuggestions(true)}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              setStyles((prev) => ({ 
+                                ...prev, 
+                                fontFamily: "custom", 
+                                customFontFamily: val 
+                              }));
+                              setShowFontSuggestions(true);
+                            }}
+                            style={{
+                              padding: "10px 14px",
+                              fontSize: "13px",
+                              border: "1px solid #D1D5DB",
+                              borderRadius: "6px",
+                              width: "100%",
+                              boxSizing: "border-box",
+                              backgroundColor: "#FFFFFF",
+                              color: "#1F2937"
+                            }}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowFontSuggestions((prev) => !prev)}
+                            style={{
+                              padding: "0 12px",
+                              border: "1px solid #D1D5DB",
+                              borderRadius: "6px",
+                              background: "#F9FAFB",
+                              cursor: "pointer",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center"
+                            }}
+                          >
+                            <ChevronDown size={16} style={{ color: "#6B7280" }} />
+                          </button>
+                        </div>
+
+                        {/* Search Dropdown List (Shows all fonts by default when open) */}
                         {showFontSuggestions && (
-                          <div className="rb-autocomplete-dropdown" style={{
+                          <div style={{
                             position: "absolute",
                             top: "100%",
                             left: 0,
                             right: 0,
                             backgroundColor: "#ffffff",
                             border: "1px solid #E5E7EB",
-                            borderRadius: "4px",
-                            boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+                            borderRadius: "6px",
+                            boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
                             zIndex: 1000,
-                            marginTop: "4px",
-                            maxHeight: "160px",
-                            overflowY: "auto"
+                            marginTop: "6px",
+                            maxHeight: "220px",
+                            overflowY: "auto",
+                            padding: "6px 0"
                           }}>
+                            {/* Filtered suggestions */}
                             {filteredFonts.length > 0 ? (
-                              filteredFonts.map((font) => (
-                                <button
-                                  key={font}
-                                  onMouseDown={(e) => {
-                                    e.preventDefault();
-                                    setStyles((prev) => ({ ...prev, customFontFamily: font }));
-                                    setShowFontSuggestions(false);
-                                  }}
-                                  style={{
-                                    display: "block",
-                                    width: "100%",
-                                    padding: "8px 12px",
-                                    textAlign: "left",
-                                    border: "none",
-                                    backgroundColor: "transparent",
-                                    cursor: "pointer",
-                                    fontSize: "13px",
-                                    fontFamily: `'${font}', sans-serif`
-                                  }}
-                                  className="rb-autocomplete-item"
-                                >
-                                  {font}
-                                </button>
-                              ))
+                              filteredFonts.map((font) => {
+                                const isSelected = styles.fontFamily === "custom" && styles.customFontFamily === font;
+                                return (
+                                  <button
+                                    key={font}
+                                    type="button"
+                                    onMouseDown={(e) => {
+                                      e.preventDefault();
+                                      setStyles((prev) => ({ 
+                                        ...prev, 
+                                        fontFamily: "custom", 
+                                        customFontFamily: font 
+                                      }));
+                                      setShowFontSuggestions(false);
+                                    }}
+                                    style={{
+                                      display: "flex",
+                                      alignItems: "center",
+                                      justifyContent: "space-between",
+                                      width: "100%",
+                                      padding: "8px 16px",
+                                      textAlign: "left",
+                                      border: "none",
+                                      backgroundColor: isSelected ? "#F3F4F6" : "transparent",
+                                      cursor: "pointer",
+                                      fontSize: "13px",
+                                      color: "#1F2937",
+                                      fontFamily: `'${font}', sans-serif`
+                                    }}
+                                    className="rb-autocomplete-item"
+                                  >
+                                    <span>{font}</span>
+                                    {isSelected && <Check size={14} style={{ color: "#2563EB" }} />}
+                                  </button>
+                                );
+                              })
                             ) : (
-                              <div style={{ padding: "8px 12px", fontSize: "12px", color: "#6B7280" }}>
-                                Press Enter to use "{styles.customFontFamily}"
+                              <div style={{ padding: "8px 16px", fontSize: "12px", color: "#6B7280" }}>
+                                No preset found. Press Enter to use Custom Font "{styles.customFontFamily}"
                               </div>
                             )}
                           </div>
                         )}
-                        
-                        <span style={{ fontSize: "11px", color: "#6B7280", marginTop: "6px", display: "block", lineHeight: 1.35 }}>
-                          Type any font from Google Fonts (e.g. Poppins, Montserrat, Lato). It will load and print dynamically.
-                        </span>
                       </div>
-                    )}
+                      <span style={{ display: "block", fontSize: "11px", color: "#6B7280", marginTop: "8px", lineHeight: "1.4" }}>
+                        Select from the list or type directly to search and load any Google Font on-the-fly.
+                      </span>
+                    </div>
                   </div>
                 )}
 

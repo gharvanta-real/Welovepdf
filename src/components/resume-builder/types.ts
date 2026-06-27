@@ -1,7 +1,7 @@
 // ── Allowed literal union types for template/color/font IDs ──
 export type TemplateId = "traditional" | "modern-split" | "executive" | "creative-tech" | "minimalist";
 export type ColorSchemeId = "navy" | "emerald" | "slate" | "burgundy" | "royal" | "teal" | "minimal-black";
-export type FontFamilyId = "modern" | "classic" | "academic" | "tech";
+export type FontFamilyId = "modern" | "classic" | "academic" | "tech" | "creative";
 export type SkillLevel = "" | "Beginner" | "Intermediate" | "Expert";
 
 export interface Basics {
