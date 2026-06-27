@@ -10,7 +10,8 @@ import {
   Notification01Icon,
   ArrowLeft01Icon,
   ArrowRight01Icon,
-  Logout01Icon
+  Logout01Icon,
+  CpuIcon
 } from "@hugeicons/core-free-icons";
 
 interface AdminSidebarProps {
@@ -44,7 +45,8 @@ export function AdminSidebar({
       title: "Management",
       items: [
         { id: "users", name: "Users & Sessions", icon: UserGroupIcon },
-        { id: "billing", name: "Billing & MRR", icon: CreditCardIcon }
+        { id: "billing", name: "Billing & MRR", icon: CreditCardIcon },
+        { id: "templates", name: "Resume Templates", icon: CpuIcon }
       ]
     },
     {

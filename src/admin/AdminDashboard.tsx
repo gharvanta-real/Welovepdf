@@ -8,6 +8,7 @@ import { AdminToolStats } from "./pages/AdminToolStats";
 import { AdminPromoCodes } from "./pages/AdminPromoCodes";
 import { AdminSupport } from "./pages/AdminSupport";
 import { AdminNotifications, NotificationItem } from "./pages/AdminNotifications";
+import { AdminResumeTemplates } from "./pages/AdminResumeTemplates";
 
 import { HugeiconsIcon } from "@hugeicons/react";
 import { AlertCircleIcon } from "@hugeicons/core-free-icons";
@@ -296,6 +297,8 @@ export function AdminDashboard({ onBack, currentUser, onLoginClick }: AdminDashb
             onMarkAllRead={handleMarkAllRead}
           />
         );
+      case "templates":
+        return <AdminResumeTemplates />;
       default:
         return <AdminOverview />;
     }
@@ -338,6 +341,11 @@ export function AdminDashboard({ onBack, currentUser, onLoginClick }: AdminDashb
         return {
           title: "Operational Alerts & Logs",
           desc: "Inspect real-time warnings, webhook signals, security detections, and hardware load."
+        };
+      case "templates":
+        return {
+          title: "AI Resume Template Console",
+          desc: "Generate new resume layout codes dynamically via Vision LLM and manage current designs."
         };
       default:
         return { title: "Admin Panel", desc: "" };
