@@ -280,7 +280,7 @@ export function UploadHero({
               color: "#2563eb",
               fontSize: "11px",
               fontWeight: "bold"
-            }}>âœ“</span>
+            }}>✓</span>
             <span>{feat.title}</span>
           </div>
         ))}
