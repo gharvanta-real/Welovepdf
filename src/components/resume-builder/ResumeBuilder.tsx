@@ -4,7 +4,7 @@ import { ResumeForm } from "./ResumeForm";
 import { ResumePreview } from "./ResumePreview";
 import { compileResumeToHtml, COLOR_SCHEMES, FONT_COMBINATIONS, TEMPLATES, SAMPLE_RESUME_DATA } from "./templates";
 import { ResumeData, ResumeStyles, OnboardingState, SpacingMode } from "./types";
-import { FileText, Edit, Check, Settings2, Download, Undo2, Upload, ChevronDown } from "lucide-react";
+import { FileText, Edit, Check, Settings2, Download, Undo2, Upload, ChevronDown, Layout, Palette, Type, Maximize, Edit3 } from "lucide-react";
 import { exportToPdf } from "../document-editor/printService";
 import { openInGoogleDocs } from "../../services/googleDrive";
 import "../../styles/ResumeBuilder.css";
@@ -42,6 +42,7 @@ export function ResumeBuilder({ onBack, onToolSelect }: ResumeBuilderProps) {
   const [isActionsDropdownOpen, setIsActionsDropdownOpen] = useState<boolean>(false);
   const [errorModalMsg, setErrorModalMsg] = useState<string | null>(null);
   const [showFontSuggestions, setShowFontSuggestions] = useState<boolean>(false);
+  const [activeDesignTab, setActiveDesignTab] = useState<"layout" | "colors" | "typography" | "spacing" | "rename">("layout");
   
   // Zoom mode and custom scaling
   const [zoomMode, setZoomMode] = useState<"auto" | "manual">("auto");
@@ -479,323 +480,440 @@ export function ResumeBuilder({ onBack, onToolSelect }: ResumeBuilderProps) {
               <h3>Customize Resume Design</h3>
               <button className="rb-modal-close-btn" onClick={() => setIsDesignModalOpen(false)}>✕</button>
             </div>
-            
-            <div className="rb-modal-body">
-              {/* Left Column: Color & Typography */}
-              <div className="rb-modal-col">
-                {/* Color Scheme Picker */}
-                <div className="rb-cust-section">
-                  <span className="rb-cust-label">Primary Color</span>
-                  <div className="rb-color-picker-grid">
-                    {COLOR_SCHEMES.map((c) => (
-                      <button
-                        key={c.id}
-                        className={`rb-color-swatch ${styles.colorScheme === c.id ? "active" : ""}`}
-                        style={{ backgroundColor: c.primary }}
-                        title={c.name}
-                        onClick={() => setStyles((prev) => ({ ...prev, colorScheme: c.id as import('./types').ColorSchemeId }))}
-                      >
-                        {styles.colorScheme === c.id && <Check size={14} className="swatch-check" />}
-                      </button>
-                    ))}
-
-                    {/* Custom Color Selector Swatch */}
-                    <div style={{ position: "relative", width: "36px", height: "36px" }}>
-                      <input
-                        type="color"
-                        value={styles.colorScheme === "custom" && styles.customColor ? styles.customColor : "#2563EB"}
-                        onChange={(e) => setStyles((prev) => ({ 
-                          ...prev, 
-                          colorScheme: "custom", 
-                          customColor: e.target.value 
-                        }))}
-                        style={{
-                          position: "absolute",
-                          top: 0,
-                          left: 0,
-                          width: "100%",
-                          height: "100%",
-                          opacity: 0,
-                          cursor: "pointer",
-                          zIndex: 10
-                        }}
-                      />
-                      <button
-                        className={`rb-color-swatch custom-swatch ${styles.colorScheme === "custom" ? "active" : ""}`}
-                        style={{
-                          background: "conic-gradient(red, yellow, lime, aqua, blue, magenta, red)",
-                          width: "100%",
-                          height: "100%",
-                          border: "1.5px solid #dbeafe"
-                        }}
-                        title="Choose custom color"
-                      >
-                        {styles.colorScheme === "custom" ? (
-                          <Check size={14} className="swatch-check" style={{ color: "#FFFFFF", filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.5))" }} />
-                        ) : (
-                          <span style={{ fontSize: "16px", color: "#FFFFFF", fontWeight: "bold", filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.5))" }}>＋</span>
-                        )}
-                      </button>
-                    </div>
-                  </div>
-
-                  {styles.colorScheme === "custom" && (
-                    <div style={{ marginTop: "12px", display: "flex", alignItems: "center", gap: "8px" }}>
-                      <span style={{ fontSize: "12px", color: "#4B5563", fontWeight: 500 }}>Custom HEX:</span>
-                      <input
-                        type="text"
-                        value={styles.customColor || "#2563EB"}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          setStyles((prev) => ({ ...prev, customColor: val }));
-                        }}
-                        style={{
-                          padding: "4px 8px",
-                          fontSize: "12px",
-                          border: "1px solid #D1D5DB",
-                          borderRadius: "4px",
-                          width: "90px",
-                          textTransform: "uppercase"
-                        }}
-                      />
-                    </div>
-                  )}
-                </div>
-
-                {/* Typography Picker */}
-                <div className="rb-cust-section">
-                  <span className="rb-cust-label">Typography Combination</span>
-                  <div className="rb-select-group" style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
-                    {FONT_COMBINATIONS.map((f) => (
-                      <button
-                        key={f.id}
-                        className={`rb-select-option-btn ${styles.fontFamily === f.id ? "active" : ""}`}
-                        onClick={() => setStyles((prev) => ({ ...prev, fontFamily: f.id as import('./types').FontFamilyId }))}
-                      >
-                        {f.name}
-                      </button>
-                    ))}
-                    
-                    <button
-                      className={`rb-select-option-btn ${styles.fontFamily === "custom" ? "active" : ""}`}
-                      onClick={() => setStyles((prev) => ({ 
-                        ...prev, 
-                        fontFamily: "custom",
-                        customFontFamily: prev.customFontFamily || "Poppins"
-                      }))}
-                    >
-                      Custom Font
-                    </button>
-                  </div>
-
-                   {styles.fontFamily === "custom" && (
-                    <div style={{ marginTop: "12px", position: "relative" }}>
-                      <span className="rb-cust-label" style={{ fontSize: "11.5px", color: "#4B5563", marginBottom: "4px", display: "block" }}>
-                        Enter Google Font Name:
-                      </span>
-                      <input
-                        type="text"
-                        value={styles.customFontFamily || ""}
-                        placeholder="e.g. Poppins, Montserrat, Open Sans, Roboto"
-                        onFocus={() => setShowFontSuggestions(true)}
-                        onBlur={() => setTimeout(() => setShowFontSuggestions(false), 200)}
-                        onChange={(e) => setStyles((prev) => ({ ...prev, customFontFamily: e.target.value }))}
-                        style={{
-                          padding: "8px 12px",
-                          fontSize: "13px",
-                          border: "1px solid #D1D5DB",
-                          borderRadius: "4px",
-                          width: "100%",
-                          boxSizing: "border-box"
-                        }}
-                      />
-                      
-                      {showFontSuggestions && (
-                        <div className="rb-autocomplete-dropdown" style={{
-                          position: "absolute",
-                          top: "100%",
-                          left: 0,
-                          right: 0,
-                          backgroundColor: "#ffffff",
-                          border: "1px solid #E5E7EB",
-                          borderRadius: "4px",
-                          boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-                          zIndex: 1000,
-                          marginTop: "4px",
-                          maxHeight: "160px",
-                          overflowY: "auto"
-                        }}>
-                          {filteredFonts.length > 0 ? (
-                            filteredFonts.map((font) => (
-                              <button
-                                key={font}
-                                onMouseDown={(e) => {
-                                  e.preventDefault();
-                                  setStyles((prev) => ({ ...prev, customFontFamily: font }));
-                                  setShowFontSuggestions(false);
-                                }}
-                                style={{
-                                  display: "block",
-                                  width: "100%",
-                                  padding: "8px 12px",
-                                  textAlign: "left",
-                                  border: "none",
-                                  backgroundColor: "transparent",
-                                  cursor: "pointer",
-                                  fontSize: "13px",
-                                  fontFamily: `'${font}', sans-serif`
-                                }}
-                                className="rb-autocomplete-item"
-                              >
-                                {font}
-                              </button>
-                            ))
-                          ) : (
-                            <div style={{ padding: "8px 12px", fontSize: "12px", color: "#6B7280" }}>
-                              Press Enter to use "{styles.customFontFamily}"
-                            </div>
-                          )}
-                        </div>
-                      )}
-                      
-                      <span style={{ fontSize: "10.5px", color: "#6B7280", marginTop: "5px", display: "block", lineHeight: 1.35 }}>
-                        Type any font from Google Fonts (e.g. Poppins, Montserrat, Lato). It will load and print dynamically.
-                      </span>
-                    </div>
-                  )}
-                </div>
+               <div className="rb-modal-body" style={{ display: "flex", gap: "0", padding: "0", minHeight: "450px" }}>
+              {/* Left Sidebar Navigation */}
+              <div style={{ width: "220px", borderRight: "1px solid #E5E7EB", backgroundColor: "#F8FAFC", padding: "16px 0", display: "flex", flexDirection: "column", gap: "4px" }}>
+                <button
+                  className={`rb-modal-tab-btn ${activeDesignTab === "layout" ? "active" : ""}`}
+                  onClick={() => setActiveDesignTab("layout")}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "10px",
+                    width: "100%",
+                    padding: "12px 20px",
+                    border: "none",
+                    background: activeDesignTab === "layout" ? "#EFF6FF" : "transparent",
+                    color: activeDesignTab === "layout" ? "#2563EB" : "#4B5563",
+                    fontWeight: activeDesignTab === "layout" ? "600" : "500",
+                    fontSize: "13px",
+                    textAlign: "left",
+                    cursor: "pointer",
+                    borderLeft: activeDesignTab === "layout" ? "3px solid #2563EB" : "3px solid transparent"
+                  }}
+                >
+                  <Layout size={16} /> Layout Template
+                </button>
+                <button
+                  className={`rb-modal-tab-btn ${activeDesignTab === "colors" ? "active" : ""}`}
+                  onClick={() => setActiveDesignTab("colors")}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "10px",
+                    width: "100%",
+                    padding: "12px 20px",
+                    border: "none",
+                    background: activeDesignTab === "colors" ? "#EFF6FF" : "transparent",
+                    color: activeDesignTab === "colors" ? "#2563EB" : "#4B5563",
+                    fontWeight: activeDesignTab === "colors" ? "600" : "500",
+                    fontSize: "13px",
+                    textAlign: "left",
+                    cursor: "pointer",
+                    borderLeft: activeDesignTab === "colors" ? "3px solid #2563EB" : "3px solid transparent"
+                  }}
+                >
+                  <Palette size={16} /> Colors & Branding
+                </button>
+                <button
+                  className={`rb-modal-tab-btn ${activeDesignTab === "typography" ? "active" : ""}`}
+                  onClick={() => setActiveDesignTab("typography")}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "10px",
+                    width: "100%",
+                    padding: "12px 20px",
+                    border: "none",
+                    background: activeDesignTab === "typography" ? "#EFF6FF" : "transparent",
+                    color: activeDesignTab === "typography" ? "#2563EB" : "#4B5563",
+                    fontWeight: activeDesignTab === "typography" ? "600" : "500",
+                    fontSize: "13px",
+                    textAlign: "left",
+                    cursor: "pointer",
+                    borderLeft: activeDesignTab === "typography" ? "3px solid #2563EB" : "3px solid transparent"
+                  }}
+                >
+                  <Type size={16} /> Typography / Fonts
+                </button>
+                <button
+                  className={`rb-modal-tab-btn ${activeDesignTab === "spacing" ? "active" : ""}`}
+                  onClick={() => setActiveDesignTab("spacing")}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "10px",
+                    width: "100%",
+                    padding: "12px 20px",
+                    border: "none",
+                    background: activeDesignTab === "spacing" ? "#EFF6FF" : "transparent",
+                    color: activeDesignTab === "spacing" ? "#2563EB" : "#4B5563",
+                    fontWeight: activeDesignTab === "spacing" ? "600" : "500",
+                    fontSize: "13px",
+                    textAlign: "left",
+                    cursor: "pointer",
+                    borderLeft: activeDesignTab === "spacing" ? "3px solid #2563EB" : "3px solid transparent"
+                  }}
+                >
+                  <Maximize size={16} /> Spacing & Size
+                </button>
+                <button
+                  className={`rb-modal-tab-btn ${activeDesignTab === "rename" ? "active" : ""}`}
+                  onClick={() => setActiveDesignTab("rename")}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "10px",
+                    width: "100%",
+                    padding: "12px 20px",
+                    border: "none",
+                    background: activeDesignTab === "rename" ? "#EFF6FF" : "transparent",
+                    color: activeDesignTab === "rename" ? "#2563EB" : "#4B5563",
+                    fontWeight: activeDesignTab === "rename" ? "600" : "500",
+                    fontSize: "13px",
+                    textAlign: "left",
+                    cursor: "pointer",
+                    borderLeft: activeDesignTab === "rename" ? "3px solid #2563EB" : "3px solid transparent"
+                  }}
+                >
+                  <Edit3 size={16} /> Rename Sections
+                </button>
               </div>
 
-              {/* Right Column: Layout & Spacing */}
-              <div className="rb-modal-col">
-                {/* Layout Template Picker */}
-                <div className="rb-cust-section">
-                  <span className="rb-cust-label">Layout Template</span>
-                  <div className="rb-templates-list-pane">
-                    {TEMPLATES.map((t) => (
+              {/* Right Settings panel */}
+              <div style={{ flex: 1, padding: "24px 32px", overflowY: "auto" }}>
+                {activeDesignTab === "layout" && (
+                  <div className="rb-cust-section" style={{ margin: 0 }}>
+                    <span className="rb-cust-label" style={{ fontSize: "14px", fontWeight: "600", color: "#111827", marginBottom: "16px", display: "block" }}>Select Layout Template</span>
+                    <div className="rb-templates-list-pane" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+                      {TEMPLATES.map((t) => (
+                        <button
+                          key={t.id}
+                          className={`rb-template-select-item ${styles.templateId === t.id ? "active" : ""}`}
+                          onClick={() => setStyles((prev) => ({ ...prev, templateId: t.id as import('./types').TemplateId }))}
+                          style={{ margin: 0 }}
+                        >
+                          <div className="rb-template-select-check">
+                            <div className={`mock-bullet ${styles.templateId === t.id ? "checked" : ""}`}></div>
+                          </div>
+                          <div className="rb-template-select-info">
+                            <strong className="rb-template-select-name">{t.name}</strong>
+                            <span className="rb-template-select-desc" style={{ fontSize: "11px", display: "block", marginTop: "2px" }}>{t.description}</span>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {activeDesignTab === "colors" && (
+                  <div className="rb-cust-section" style={{ margin: 0 }}>
+                    <span className="rb-cust-label" style={{ fontSize: "14px", fontWeight: "600", color: "#111827", marginBottom: "16px", display: "block" }}>Primary Theme Color</span>
+                    <div className="rb-color-picker-grid" style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginBottom: "16px" }}>
+                      {COLOR_SCHEMES.map((c) => (
+                        <button
+                          key={c.id}
+                          className={`rb-color-swatch ${styles.colorScheme === c.id ? "active" : ""}`}
+                          style={{ backgroundColor: c.primary, width: "40px", height: "40px" }}
+                          title={c.name}
+                          onClick={() => setStyles((prev) => ({ ...prev, colorScheme: c.id as import('./types').ColorSchemeId }))}
+                        >
+                          {styles.colorScheme === c.id && <Check size={16} className="swatch-check" />}
+                        </button>
+                      ))}
+
+                      {/* Custom Color Selector Swatch */}
+                      <div style={{ position: "relative", width: "40px", height: "40px" }}>
+                        <input
+                          type="color"
+                          value={styles.colorScheme === "custom" && styles.customColor ? styles.customColor : "#2563EB"}
+                          onChange={(e) => setStyles((prev) => ({ 
+                            ...prev, 
+                            colorScheme: "custom", 
+                            customColor: e.target.value 
+                          }))}
+                          style={{
+                            position: "absolute",
+                            top: 0,
+                            left: 0,
+                            width: "100%",
+                            height: "100%",
+                            opacity: 0,
+                            cursor: "pointer",
+                            zIndex: 10
+                          }}
+                        />
+                        <button
+                          className={`rb-color-swatch custom-swatch ${styles.colorScheme === "custom" ? "active" : ""}`}
+                          style={{
+                            background: "conic-gradient(red, yellow, lime, aqua, blue, magenta, red)",
+                            width: "100%",
+                            height: "100%",
+                            border: "1.5px solid #dbeafe"
+                          }}
+                          title="Choose custom color"
+                        >
+                          {styles.colorScheme === "custom" ? (
+                            <Check size={16} className="swatch-check" style={{ color: "#FFFFFF", filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.5))" }} />
+                          ) : (
+                            <span style={{ fontSize: "18px", color: "#FFFFFF", fontWeight: "bold", filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.5))" }}>＋</span>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+
+                    {styles.colorScheme === "custom" && (
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px", background: "#F1F5F9", padding: "10px 14px", borderRadius: "6px", width: "fit-content" }}>
+                        <span style={{ fontSize: "12px", color: "#4B5563", fontWeight: 600 }}>Custom HEX:</span>
+                        <input
+                          type="text"
+                          value={styles.customColor || "#2563EB"}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setStyles((prev) => ({ ...prev, customColor: val }));
+                          }}
+                          style={{
+                            padding: "4px 8px",
+                            fontSize: "12px",
+                            border: "1px solid #D1D5DB",
+                            borderRadius: "4px",
+                            width: "90px",
+                            textTransform: "uppercase",
+                            fontWeight: "bold",
+                            color: "#1E293B"
+                          }}
+                        />
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {activeDesignTab === "typography" && (
+                  <div className="rb-cust-section" style={{ margin: 0 }}>
+                    <span className="rb-cust-label" style={{ fontSize: "14px", fontWeight: "600", color: "#111827", marginBottom: "16px", display: "block" }}>Typography Combination</span>
+                    <div className="rb-select-group" style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "20px" }}>
+                      {FONT_COMBINATIONS.map((f) => (
+                        <button
+                          key={f.id}
+                          className={`rb-select-option-btn ${styles.fontFamily === f.id ? "active" : ""}`}
+                          onClick={() => setStyles((prev) => ({ ...prev, fontFamily: f.id as import('./types').FontFamilyId }))}
+                          style={{ padding: "8px 16px", fontSize: "13px" }}
+                        >
+                          {f.name}
+                        </button>
+                      ))}
+                      
                       <button
-                        key={t.id}
-                        className={`rb-template-select-item ${styles.templateId === t.id ? "active" : ""}`}
-                        onClick={() => setStyles((prev) => ({ ...prev, templateId: t.id as import('./types').TemplateId }))}
+                        className={`rb-select-option-btn ${styles.fontFamily === "custom" ? "active" : ""}`}
+                        onClick={() => setStyles((prev) => ({ 
+                          ...prev, 
+                          fontFamily: "custom",
+                          customFontFamily: prev.customFontFamily || "Poppins"
+                        }))}
+                        style={{ padding: "8px 16px", fontSize: "13px" }}
                       >
-                        <div className="rb-template-select-check">
-                          <div className={`mock-bullet ${styles.templateId === t.id ? "checked" : ""}`}></div>
-                        </div>
-                        <div className="rb-template-select-info">
-                          <strong className="rb-template-select-name">{t.name}</strong>
-                          <span className="rb-template-select-desc">{t.description}</span>
-                        </div>
+                        Custom Font
                       </button>
-                    ))}
-                  </div>
-
-                  {/* Spacing Picker */}
-                  <div className="rb-cust-section">
-                    <span className="rb-cust-label">Margin Spacing</span>
-                    <div className="rb-spacing-group">
-                      {(["compact", "normal", "spacious"] as SpacingMode[]).map((sp) => (
-                        <button
-                          key={sp}
-                          className={`rb-spacing-option-btn ${styles.spacing === sp ? "active" : ""}`}
-                          onClick={() => setStyles((prev) => ({ ...prev, spacing: sp }))}
-                        >
-                          {sp.toUpperCase()}
-                        </button>
-                      ))}
                     </div>
-                  </div>
 
-                  {/* Font Size Picker */}
-                  <div className="rb-cust-section" style={{ marginTop: "16px" }}>
-                    <span className="rb-cust-label">Base Font Size</span>
-                    <div className="rb-spacing-group">
-                      {(["compact", "normal", "spacious"] as const).map((sz) => (
-                        <button
-                          key={sz}
-                          className={`rb-spacing-option-btn ${styles.fontSize === sz ? "active" : ""}`}
-                          onClick={() => setStyles((prev) => ({ ...prev, fontSize: sz }))}
-                        >
-                          {sz.toUpperCase()}
-                        </button>
-                      ))}
+                    {styles.fontFamily === "custom" && (
+                      <div style={{ position: "relative", maxWidth: "360px" }}>
+                        <span className="rb-cust-label" style={{ fontSize: "11.5px", color: "#4B5563", marginBottom: "6px", display: "block" }}>
+                          Enter Google Font Name:
+                        </span>
+                        <input
+                          type="text"
+                          value={styles.customFontFamily || ""}
+                          placeholder="e.g. Poppins, Montserrat, Open Sans, Roboto"
+                          onFocus={() => setShowFontSuggestions(true)}
+                          onBlur={() => setTimeout(() => setShowFontSuggestions(false), 200)}
+                          onChange={(e) => setStyles((prev) => ({ ...prev, customFontFamily: e.target.value }))}
+                          style={{
+                            padding: "8px 12px",
+                            fontSize: "13px",
+                            border: "1px solid #D1D5DB",
+                            borderRadius: "4px",
+                            width: "100%",
+                            boxSizing: "border-box"
+                          }}
+                        />
+                        
+                        {showFontSuggestions && (
+                          <div className="rb-autocomplete-dropdown" style={{
+                            position: "absolute",
+                            top: "100%",
+                            left: 0,
+                            right: 0,
+                            backgroundColor: "#ffffff",
+                            border: "1px solid #E5E7EB",
+                            borderRadius: "4px",
+                            boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+                            zIndex: 1000,
+                            marginTop: "4px",
+                            maxHeight: "160px",
+                            overflowY: "auto"
+                          }}>
+                            {filteredFonts.length > 0 ? (
+                              filteredFonts.map((font) => (
+                                <button
+                                  key={font}
+                                  onMouseDown={(e) => {
+                                    e.preventDefault();
+                                    setStyles((prev) => ({ ...prev, customFontFamily: font }));
+                                    setShowFontSuggestions(false);
+                                  }}
+                                  style={{
+                                    display: "block",
+                                    width: "100%",
+                                    padding: "8px 12px",
+                                    textAlign: "left",
+                                    border: "none",
+                                    backgroundColor: "transparent",
+                                    cursor: "pointer",
+                                    fontSize: "13px",
+                                    fontFamily: `'${font}', sans-serif`
+                                  }}
+                                  className="rb-autocomplete-item"
+                                >
+                                  {font}
+                                </button>
+                              ))
+                            ) : (
+                              <div style={{ padding: "8px 12px", fontSize: "12px", color: "#6B7280" }}>
+                                Press Enter to use "{styles.customFontFamily}"
+                              </div>
+                            )}
+                          </div>
+                        )}
+                        
+                        <span style={{ fontSize: "11px", color: "#6B7280", marginTop: "6px", display: "block", lineHeight: 1.35 }}>
+                          Type any font from Google Fonts (e.g. Poppins, Montserrat, Lato). It will load and print dynamically.
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {activeDesignTab === "spacing" && (
+                  <div className="rb-cust-section" style={{ margin: 0, display: "flex", flexDirection: "column", gap: "20px" }}>
+                    <div>
+                      <span className="rb-cust-label" style={{ fontSize: "14px", fontWeight: "600", color: "#111827", marginBottom: "12px", display: "block" }}>Margin Spacing</span>
+                      <div className="rb-spacing-group" style={{ display: "flex", gap: "8px" }}>
+                        {(["compact", "normal", "spacious"] as SpacingMode[]).map((sp) => (
+                          <button
+                            key={sp}
+                            className={`rb-spacing-option-btn ${styles.spacing === sp ? "active" : ""}`}
+                            onClick={() => setStyles((prev) => ({ ...prev, spacing: sp }))}
+                            style={{ padding: "8px 16px", fontSize: "13px" }}
+                          >
+                            {sp.toUpperCase()}
+                          </button>
+                        ))}
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Show/Hide Contact Emojis Toggle */}
-                  <div className="rb-cust-section" style={{ marginTop: "16px" }}>
-                    <label className="rb-toggle-container" style={{ display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", userSelect: "none" }}>
-                      <input
-                        type="checkbox"
-                        checked={styles.showIcons}
-                        onChange={(e) => setStyles((prev) => ({ ...prev, showIcons: e.target.checked }))}
-                        style={{ cursor: "pointer", width: "16px", height: "16px", accentColor: "#2563EB" }}
-                      />
-                      <span style={{ fontSize: "13px", fontWeight: 500, color: "#1F2937" }}>
-                        Show contact icons (Emojis)
+                    <div>
+                      <span className="rb-cust-label" style={{ fontSize: "14px", fontWeight: "600", color: "#111827", marginBottom: "12px", display: "block" }}>Base Font Size</span>
+                      <div className="rb-spacing-group" style={{ display: "flex", gap: "8px" }}>
+                        {(["compact", "normal", "spacious"] as const).map((sz) => (
+                          <button
+                            key={sz}
+                            className={`rb-spacing-option-btn ${styles.fontSize === sz ? "active" : ""}`}
+                            onClick={() => setStyles((prev) => ({ ...prev, fontSize: sz }))}
+                            style={{ padding: "8px 16px", fontSize: "13px" }}
+                          >
+                            {sz.toUpperCase()}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div style={{ borderTop: "1px solid #E5E7EB", paddingTop: "16px" }}>
+                      <label className="rb-toggle-container" style={{ display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", userSelect: "none" }}>
+                        <input
+                          type="checkbox"
+                          checked={styles.showIcons}
+                          onChange={(e) => setStyles((prev) => ({ ...prev, showIcons: e.target.checked }))}
+                          style={{ cursor: "pointer", width: "18px", height: "18px", accentColor: "#2563EB" }}
+                        />
+                        <span style={{ fontSize: "13px", fontWeight: 600, color: "#1F2937" }}>
+                          Show contact icons (Emojis)
+                        </span>
+                      </label>
+                      <span style={{ display: "block", fontSize: "11px", color: "#6B7280", marginTop: "4px", lineHeight: 1.4 }}>
+                        Turn off icons for strict corporate layouts or ATS compatibility.
                       </span>
-                    </label>
-                    <span style={{ display: "block", fontSize: "11px", color: "#6B7280", marginTop: "4px", lineHeight: 1.4 }}>
-                      Turn off icons for strict corporate layouts or ATS compatibility.
-                    </span>
+                    </div>
                   </div>
+                )}
 
-                  {/* Rename Resume Sections */}
-                  <div className="rb-cust-section" style={{ marginTop: "16px", borderTop: "1px solid #E5E7EB", paddingTop: "12px" }}>
-                    <span className="rb-cust-label" style={{ fontWeight: 600, color: "#111827", marginBottom: "8px" }}>Rename Resume Sections</span>
-                    <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px" }}>
-                        <span style={{ fontSize: "11.5px", color: "#4B5563", minWidth: "90px" }}>Experience:</span>
+                {activeDesignTab === "rename" && (
+                  <div className="rb-cust-section" style={{ margin: 0 }}>
+                    <span className="rb-cust-label" style={{ fontSize: "14px", fontWeight: "600", color: "#111827", marginBottom: "16px", display: "block" }}>Rename Resume Sections</span>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "12px", maxWidth: "400px" }}>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px" }}>
+                        <span style={{ fontSize: "12px", color: "#4B5563", fontWeight: 500, minWidth: "120px" }}>Work Experience:</span>
                         <input
                           type="text"
                           value={styles.titleWork || ""}
                           placeholder="Work Experience"
                           onChange={(e) => setStyles((prev) => ({ ...prev, titleWork: e.target.value }))}
-                          style={{ padding: "5px 8px", fontSize: "12.5px", border: "1px solid #D1D5DB", borderRadius: "4px", width: "100%", maxWidth: "150px" }}
+                          style={{ padding: "6px 12px", fontSize: "13px", border: "1px solid #D1D5DB", borderRadius: "4px", width: "100%" }}
                         />
                       </div>
-                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px" }}>
-                        <span style={{ fontSize: "11.5px", color: "#4B5563", minWidth: "90px" }}>Education:</span>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px" }}>
+                        <span style={{ fontSize: "12px", color: "#4B5563", fontWeight: 500, minWidth: "120px" }}>Education:</span>
                         <input
                           type="text"
                           value={styles.titleEducation || ""}
                           placeholder="Education"
                           onChange={(e) => setStyles((prev) => ({ ...prev, titleEducation: e.target.value }))}
-                          style={{ padding: "5px 8px", fontSize: "12.5px", border: "1px solid #D1D5DB", borderRadius: "4px", width: "100%", maxWidth: "150px" }}
+                          style={{ padding: "6px 12px", fontSize: "13px", border: "1px solid #D1D5DB", borderRadius: "4px", width: "100%" }}
                         />
                       </div>
-                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px" }}>
-                        <span style={{ fontSize: "11.5px", color: "#4B5563", minWidth: "90px" }}>Skills:</span>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px" }}>
+                        <span style={{ fontSize: "12px", color: "#4B5563", fontWeight: 500, minWidth: "120px" }}>Skills:</span>
                         <input
                           type="text"
                           value={styles.titleSkills || ""}
                           placeholder="Skills"
                           onChange={(e) => setStyles((prev) => ({ ...prev, titleSkills: e.target.value }))}
-                          style={{ padding: "5px 8px", fontSize: "12.5px", border: "1px solid #D1D5DB", borderRadius: "4px", width: "100%", maxWidth: "150px" }}
+                          style={{ padding: "6px 12px", fontSize: "13px", border: "1px solid #D1D5DB", borderRadius: "4px", width: "100%" }}
                         />
                       </div>
-                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px" }}>
-                        <span style={{ fontSize: "11.5px", color: "#4B5563", minWidth: "90px" }}>Projects:</span>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px" }}>
+                        <span style={{ fontSize: "12px", color: "#4B5563", fontWeight: 500, minWidth: "120px" }}>Projects:</span>
                         <input
                           type="text"
                           value={styles.titleProjects || ""}
                           placeholder="Projects"
                           onChange={(e) => setStyles((prev) => ({ ...prev, titleProjects: e.target.value }))}
-                          style={{ padding: "5px 8px", fontSize: "12.5px", border: "1px solid #D1D5DB", borderRadius: "4px", width: "100%", maxWidth: "150px" }}
+                          style={{ padding: "6px 12px", fontSize: "13px", border: "1px solid #D1D5DB", borderRadius: "4px", width: "100%" }}
                         />
                       </div>
-                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px" }}>
-                        <span style={{ fontSize: "11.5px", color: "#4B5563", minWidth: "90px" }}>Certifications:</span>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px" }}>
+                        <span style={{ fontSize: "12px", color: "#4B5563", fontWeight: 500, minWidth: "120px" }}>Certifications:</span>
                         <input
                           type="text"
                           value={styles.titleCertifications || ""}
                           placeholder="Certifications"
                           onChange={(e) => setStyles((prev) => ({ ...prev, titleCertifications: e.target.value }))}
-                          style={{ padding: "5px 8px", fontSize: "12.5px", border: "1px solid #D1D5DB", borderRadius: "4px", width: "100%", maxWidth: "150px" }}
+                          style={{ padding: "6px 12px", fontSize: "13px", border: "1px solid #D1D5DB", borderRadius: "4px", width: "100%" }}
                         />
                       </div>
                     </div>
                   </div>
-                </div>
+                )}
               </div>
             </div>
             <div className="rb-modal-footer">

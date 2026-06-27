@@ -1125,8 +1125,8 @@ h2.rb-step-title {
 .rb-modal-content {
   background-color: white;
   border-radius: 8px;
-  width: 90%;
-  max-width: 760px;
+  width: 95%;
+  max-width: 900px;
   max-height: 85vh;
   display: flex;
   flex-direction: column;
