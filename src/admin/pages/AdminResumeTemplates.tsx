@@ -48,7 +48,7 @@ export function AdminResumeTemplates() {
     }
   ]);
 
-  const [selectedTemplate, setSelectedTemplate] = useState<AdminTemplateItem | null>(templates[0]);
+  const [selectedTemplate, setSelectedTemplate] = useState<AdminTemplateItem | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationStep, setGenerationStep] = useState(0);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
@@ -56,6 +56,41 @@ export function AdminResumeTemplates() {
   const [templateName, setTemplateName] = useState("");
   const [previewTab, setPreviewTab] = useState<"code" | "meta">("code");
   const [toastMessage, setToastMessage] = useState("");
+
+  // Load custom templates on mount
+  React.useEffect(() => {
+    try {
+      const raw = localStorage.getItem("pdfmount_custom_templates");
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        setTemplates(prev => {
+          const filtered = prev.filter(t => t.id === "traditional" || t.id === "modern-split" || t.id === "executive");
+          return [...filtered, ...parsed];
+        });
+      }
+    } catch (e) {
+      console.error("Failed to load custom templates", e);
+    }
+  }, []);
+
+  // Set default selected template after mount
+  React.useEffect(() => {
+    if (templates.length > 0 && !selectedTemplate) {
+      setSelectedTemplate(templates[0]);
+    }
+  }, [templates, selectedTemplate]);
+
+  // Helper to save custom templates
+  const saveCustomTemplates = (currentList: AdminTemplateItem[]) => {
+    try {
+      const customOnly = currentList.filter(t => t.id !== "traditional" && t.id !== "modern-split" && t.id !== "executive");
+      localStorage.setItem("pdfmount_custom_templates", JSON.stringify(customOnly));
+      // Trigger a custom event to notify other components/tabs
+      window.dispatchEvent(new Event("pdfmount_templates_updated"));
+    } catch (e) {
+      console.error("Failed to save custom templates", e);
+    }
+  };
 
   // Simulated LLM generation steps
   const generationSteps = [
@@ -103,7 +138,11 @@ export function AdminResumeTemplates() {
               html: `<!-- AI Generated Template: ${templateName} -->\n<div style="font-family: var(--font-body); padding: 30px; background-color: #fff;">\n  <header style="border-bottom: 2px solid #2563EB; padding-bottom: 12px; margin-bottom: 20px;">\n    <h1 style="font-size: 24pt; color: #1B1B1B; margin: 0;">{{basics.name}}</h1>\n    <p style="font-size: 11pt; color: #4B5563; margin: 4px 0 0 0;">{{basics.label}}</p>\n  </header>\n  \n  <section style="margin-bottom: 20px;">\n    <h2 style="font-size: 14pt; color: #2563EB; text-transform: uppercase;">Experience</h2>\n    {{#each work}}\n    <div style="margin-bottom: 12px;">\n      <strong style="font-size: 11pt;">{{position}}</strong> at <span>{{company}}</span>\n      <div style="font-size: 9.5pt; color: #6B7280;">{{startDate}} - {{endDate}}</div>\n    </div>\n    {{/each}}\n  </section>\n</div>`
             };
 
-            setTemplates((prevList) => [...prevList, newTemplate]);
+            setTemplates((prevList) => {
+              const newList = [...prevList, newTemplate];
+              saveCustomTemplates(newList);
+              return newList;
+            });
             setSelectedTemplate(newTemplate);
             setIsGenerating(false);
             setUploadedFile(null);
@@ -118,18 +157,20 @@ export function AdminResumeTemplates() {
   };
 
   const handleStatusToggle = (id: string) => {
-    setTemplates((prev) =>
-      prev.map((t) => {
+    setTemplates((prev) => {
+      const next = prev.map((t) => {
         if (t.id === id) {
-          const nextStatus = t.status === "Active" ? "Draft" : "Active";
+          const nextStatus: "Active" | "Draft" = t.status === "Active" ? "Draft" : "Active";
           if (selectedTemplate?.id === id) {
             setSelectedTemplate({ ...t, status: nextStatus });
           }
           return { ...t, status: nextStatus };
         }
         return t;
-      })
-    );
+      });
+      saveCustomTemplates(next);
+      return next;
+    });
     setToastMessage("Template status updated.");
   };
 
@@ -383,7 +424,11 @@ export function AdminResumeTemplates() {
                     value={selectedTemplate.html}
                     onChange={(e) => {
                       const updatedHtml = e.target.value;
-                      setTemplates(prev => prev.map(t => t.id === selectedTemplate.id ? { ...t, html: updatedHtml } : t));
+                      setTemplates(prev => {
+                        const next = prev.map(t => t.id === selectedTemplate.id ? { ...t, html: updatedHtml } : t);
+                        saveCustomTemplates(next);
+                        return next;
+                      });
                       setSelectedTemplate(prev => prev ? { ...prev, html: updatedHtml } : null);
                     }}
                     style={{

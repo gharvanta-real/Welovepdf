@@ -139,6 +139,46 @@ export function compileResumeToHtml(data: ResumeData, styles: ResumeStyles): str
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   `;
 
+  // Check if styles.templateId is a custom dynamic template
+  if (typeof window !== "undefined") {
+    try {
+      const rawCustom = localStorage.getItem("pdfmount_custom_templates");
+      if (rawCustom) {
+        const customList = JSON.parse(rawCustom);
+        const match = customList.find((t: any) => t.id === styles.templateId);
+        if (match) {
+          let html = match.html;
+          // Interpolate standard variables
+          html = html.replace(/\{\{basics\.name\}\}/g, escapeHtml(data.basics.name || ""));
+          html = html.replace(/\{\{basics\.label\}\}/g, escapeHtml(data.basics.label || ""));
+          html = html.replace(/\{\{basics\.email\}\}/g, escapeHtml(data.basics.email || ""));
+          html = html.replace(/\{\{basics\.phone\}\}/g, escapeHtml(data.basics.phone || ""));
+          html = html.replace(/\{\{basics\.url\}\}/g, escapeHtml(data.basics.url || ""));
+          html = html.replace(/\{\{basics\.location\}\}/g, escapeHtml(data.basics.location || ""));
+          html = html.replace(/\{\{basics\.summary\}\}/g, escapeHtml(data.basics.summary || ""));
+          html = html.replace(/\{\{primaryColor\}\}/g, primaryColor);
+          
+          // Interpolate work array loops
+          const workRegex = /\{\{#each work\}\}([\s\S]*?)\{\{\/each\}\}/g;
+          html = html.replace(workRegex, (_: string, inner: string) => {
+            return (data.work || []).map(w => {
+              let block = inner;
+              block = block.replace(/\{\{position\}\}/g, escapeHtml(w.position || ""));
+              block = block.replace(/\{\{company\}\}/g, escapeHtml(w.company || ""));
+              block = block.replace(/\{\{startDate\}\}/g, escapeHtml(w.startDate || ""));
+              block = block.replace(/\{\{endDate\}\}/g, escapeHtml(w.endDate || ""));
+              return block;
+            }).join("");
+          });
+
+          return `${fontImports}${html}`;
+        }
+      }
+    } catch (e) {
+      console.error("Error compiling custom template", e);
+    }
+  }
+
   // Shared styles
   const baseStyles = `
     --primary-color: ${primaryColor};
@@ -665,6 +705,35 @@ function escapeHtml(str: string): string {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
+}
+
+// ── DYNAMIC EXPORT: Mutate TEMPLATES list at initialization so custom layouts are registerable ──
+if (typeof window !== "undefined") {
+  const syncCustomTemplates = () => {
+    try {
+      const raw = localStorage.getItem("pdfmount_custom_templates");
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        parsed.forEach((t: any) => {
+          // If active, add to TEMPLATES list so users can select it
+          if (t.status === "Active" && !TEMPLATES.some(existing => existing.id === t.id)) {
+            TEMPLATES.push({
+              id: t.id,
+              name: t.name,
+              description: t.description,
+              category: "ats"
+            });
+          }
+        });
+      }
+    } catch (e) {
+      console.error("Failed to sync custom templates to TEMPLATES list", e);
+    }
+  };
+
+  syncCustomTemplates();
+  // Listen for admin changes to dynamically update in the same session
+  window.addEventListener("pdfmount_templates_updated", syncCustomTemplates);
 }
 
 
