@@ -117,6 +117,8 @@ export function WorkspaceCanvas({
   // Preview mode — replaces canvas with PdfPreviewPanel
   const [previewMode, setPreviewMode] = useState(false);
   const [initialActivePageKey, setInitialActivePageKey] = useState<string | null>(null);
+  // Tracks if user manually closed preview — prevents auto re-entry until new files uploaded
+  const userDismissedPreview = useRef(false);
   
   // Parsed PDF Pages state
   const [pdfPages, setPdfPages] = useState<{ pageNum: number; url: string; fileIndex: number }[]>([]);
@@ -129,10 +131,32 @@ export function WorkspaceCanvas({
       setSelectedPages(new Set());
       setPageRotations({});
       setLocalRemovedPages(new Set());
+      // Exit preview mode when all files are removed
+      setPreviewMode(false);
+      setInitialActivePageKey(null);
+      userDismissedPreview.current = false; // Reset on file clear
     } else {
-      setViewMode("Pages");
+      const hasPreviewable = stagedFiles.some(file => {
+        const ext = file.name.split(".").pop()?.toLowerCase() || "";
+        return ext === "pdf" || file.type.startsWith("image/");
+      });
+      setViewMode(hasPreviewable ? "Pages" : "Files");
+      userDismissedPreview.current = false; // Reset on new file upload
     }
   }, [stagedFiles]);
+
+  // Auto-enter preview mode for multi-page PDFs (all tools)
+  // Skipped if user has manually dismissed the preview for the current files
+  useEffect(() => {
+    if (userDismissedPreview.current) return;
+    if (!loadingPages && pdfPages.length > 1) {
+      setPreviewMode(true);
+    } else if (!loadingPages && pdfPages.length <= 1) {
+      // Single-page or no pages — don't auto-enter preview
+      setPreviewMode(false);
+      setInitialActivePageKey(null);
+    }
+  }, [pdfPages, loadingPages]);
 
   // Trigger hidden input
   const handleAddClick = () => {
@@ -990,10 +1014,11 @@ export function WorkspaceCanvas({
       {/* â•â•â• PREVIEW MODE â€” replaces entire canvas area â•â•â• */}
       {previewMode && stagedFiles && stagedFiles.length > 0 ? (
         <div className="uw-staged-canvas" style={{ border: "none", borderRadius: 0 }}>
-          <PdfPreviewPanel
+        <PdfPreviewPanel
             files={stagedFiles}
             initialActivePageKey={initialActivePageKey}
             onClose={() => {
+              userDismissedPreview.current = true; // Prevent auto re-entry
               setPreviewMode(false);
               setInitialActivePageKey(null);
             }}
@@ -1013,6 +1038,7 @@ export function WorkspaceCanvas({
             handleDeleteSelected={handleDeleteSelected}
             isAnySelected={isAnySelected}
             onExecute={onExecute}
+            disablePagesView={pdfPages.length === 0}
           />
         )}
 

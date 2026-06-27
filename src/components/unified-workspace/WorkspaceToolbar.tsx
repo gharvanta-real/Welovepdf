@@ -20,6 +20,7 @@ interface WorkspaceToolbarProps {
   handleDeleteSelected: () => void;
   isAnySelected: boolean;
   onExecute?: () => void;
+  disablePagesView?: boolean;
 }
 
 export function WorkspaceToolbar({
@@ -30,7 +31,8 @@ export function WorkspaceToolbar({
   handleRotateRight,
   handleDeleteSelected,
   isAnySelected,
-  onExecute
+  onExecute,
+  disablePagesView = false
 }: WorkspaceToolbarProps) {
   return (
     <div className="uw-staged-header-toolbar">
@@ -46,7 +48,13 @@ export function WorkspaceToolbar({
           </button>
           <button 
             className={`uw-toggle-btn ${viewMode === "Pages" ? "active" : ""}`}
-            onClick={() => setViewMode("Pages")}
+            onClick={() => !disablePagesView && setViewMode("Pages")}
+            disabled={disablePagesView}
+            title={disablePagesView ? "Only PDF and image files support page-level view" : ""}
+            style={{
+              opacity: disablePagesView ? 0.5 : 1,
+              cursor: disablePagesView ? "not-allowed" : "pointer"
+            }}
           >
             <LayoutGrid size={13} strokeWidth={1.5} />
             Pages
