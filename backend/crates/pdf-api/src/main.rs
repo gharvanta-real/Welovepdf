@@ -229,31 +229,6 @@ pub async fn init_db(pool: &sqlx::SqlitePool) -> Result<(), sqlx::Error> {
     .execute(pool)
     .await?;
 
-    let count_ratings: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM ratings")
-        .fetch_one(pool)
-        .await
-        .unwrap_or((0,));
-    if count_ratings.0 == 0 {
-        // Seed 100 ratings of 5 and 10 ratings of 4 to make average ~4.91
-        for _ in 0..100 {
-            let id = uuid::Uuid::new_v4().to_string();
-            let now = chrono::Utc::now().to_rfc3339();
-            let _ = sqlx::query("INSERT INTO ratings (id, rating, created_at) VALUES (?, 5, ?)")
-                .bind(id)
-                .bind(now)
-                .execute(pool)
-                .await;
-        }
-        for _ in 0..10 {
-            let id = uuid::Uuid::new_v4().to_string();
-            let now = chrono::Utc::now().to_rfc3339();
-            let _ = sqlx::query("INSERT INTO ratings (id, rating, created_at) VALUES (?, 4, ?)")
-                .bind(id)
-                .bind(now)
-                .execute(pool)
-                .await;
-        }
-    }
 
     // Seed default promo code if not already present
     sqlx::query(
@@ -593,8 +568,6 @@ async fn get_public_stats(State(state): State<AppState>) -> impl IntoResponse {
         .fetch_one(&state.db)
         .await
         .unwrap_or((0,));
-        
-    let total_pdfs_processed = 128540 + jobs_count.0;
 
     let rating_stats: (Option<f64>, Option<i64>) = sqlx::query_as(
         "SELECT AVG(rating), COUNT(*) FROM ratings"
@@ -603,8 +576,10 @@ async fn get_public_stats(State(state): State<AppState>) -> impl IntoResponse {
     .await
     .unwrap_or((None, None));
 
-    let avg_rating = rating_stats.0.unwrap_or(4.91);
-    let total_ratings = 12500 + rating_stats.1.unwrap_or(0);
+    // Only real data — no fake offsets
+    let avg_rating = rating_stats.0.unwrap_or(0.0);
+    let total_ratings = rating_stats.1.unwrap_or(0);
+    let total_pdfs_processed = jobs_count.0;
 
     Json(serde_json::json!({
         "total_pdfs_processed": total_pdfs_processed,

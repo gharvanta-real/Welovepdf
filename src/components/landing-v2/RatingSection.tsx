@@ -1,29 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
 export function RatingSection() {
   const [rating, setRating] = useState<number | null>(null);
   const [hoverRating, setHoverRating] = useState<number | null>(null);
   const [submitted, setSubmitted] = useState(false);
-  const [stats, setStats] = useState({ avg_rating: 4.9, total_ratings: 12500 });
-
-  const fetchStats = async () => {
-    try {
-      const res = await fetch("/api/public-stats");
-      if (res.ok) {
-        const data = await res.json();
-        setStats({
-          avg_rating: data.avg_rating,
-          total_ratings: data.total_ratings,
-        });
-      }
-    } catch (err) {
-      console.error("Error fetching stats:", err);
-    }
-  };
-
-  useEffect(() => {
-    fetchStats();
-  }, []);
 
   const handleRating = async (value: number) => {
     setRating(value);
@@ -34,7 +14,6 @@ export function RatingSection() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ rating: value }),
       });
-      fetchStats(); // Update stats after submitting
     } catch (err) {
       console.error("Error submitting rating:", err);
     }
@@ -72,9 +51,6 @@ export function RatingSection() {
                     </button>
                   ))}
                 </div>
-                <span className="v2-rating-summary">
-                  Average <strong>{stats.avg_rating.toFixed(1)}/5</strong> stars from {stats.total_ratings.toLocaleString()}+ users
-                </span>
               </div>
             </div>
           ) : (
