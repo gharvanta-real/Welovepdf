@@ -18,6 +18,7 @@ export function ResumeBuilder({ onBack, onToolSelect }: ResumeBuilderProps) {
   const [isOnboarding, setIsOnboarding] = useState<boolean>(true);
   const [isDesignModalOpen, setIsDesignModalOpen] = useState<boolean>(false);
   const [isActionsDropdownOpen, setIsActionsDropdownOpen] = useState<boolean>(false);
+  const [errorModalMsg, setErrorModalMsg] = useState<string | null>(null);
   
   // Zoom mode and custom scaling
   const [zoomMode, setZoomMode] = useState<"auto" | "manual">("auto");
@@ -154,7 +155,7 @@ export function ResumeBuilder({ onBack, onToolSelect }: ResumeBuilderProps) {
       await openInGoogleDocs(html, docTitle, (msg) => setGoogleDocsStatus(msg));
       setGoogleDocsStatus('Opened in Google Docs!');
     } catch (err: any) {
-      alert(`Google Docs error: ${err.message || err}`);
+      setErrorModalMsg(err.message || String(err));
       setGoogleDocsStatus('');
     } finally {
       setIsGoogleDocsLoading(false);
@@ -426,10 +427,30 @@ export function ResumeBuilder({ onBack, onToolSelect }: ResumeBuilderProps) {
                 </div>
               </div>
             </div>
-
             <div className="rb-modal-footer">
               <button className="rb-btn rb-btn-teal" style={{ padding: "10px 24px", fontSize: "14px", width: "100%" }} onClick={() => setIsDesignModalOpen(false)}>
                 Apply Customizations
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Custom Alert/Warning Modal (Less Roundness Card) */}
+      {errorModalMsg && (
+        <div className="rb-alert-modal-overlay">
+          <div className="rb-alert-modal-card">
+            <div className="rb-alert-modal-header">
+              <h4>Google Docs Integration Notice</h4>
+            </div>
+            <div className="rb-alert-modal-body">
+              <p>{errorModalMsg}</p>
+            </div>
+            <div className="rb-alert-modal-footer">
+              <button 
+                className="rb-alert-modal-close-btn" 
+                onClick={() => setErrorModalMsg(null)}
+              >
+                Close
               </button>
             </div>
           </div>
