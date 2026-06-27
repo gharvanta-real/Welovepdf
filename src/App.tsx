@@ -33,7 +33,7 @@ const FooterV2 = lazyWithRetry(() => import("./components/landing-v2/FooterV2").
 const pathMap: Record<string, { view: "home" | "workspace" | "pricing" | "privacy" | "terms" | "faq" | "contact" | "tools" | "about" | "contact-sales" | "settings" | "dashboard" | "security" | "file-privacy" | "data-deletion" | "admin" | "beta-workspace"; tool?: string }> = {
   "/": { view: "home" },
   "/v2": { view: "home" },
-  "/pricing": { view: "home" },
+  "/pricing": { view: "pricing" },
   "/privacy": { view: "privacy" },
   "/terms": { view: "terms" },
   "/faq": { view: "faq" },
