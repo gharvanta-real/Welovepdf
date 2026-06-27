@@ -199,9 +199,9 @@ export function OnboardingWizard({ onBackToApp, onComplete }: OnboardingWizardPr
                   className="rb-choice-card rb-choice-upload"
                   onClick={() => fileInputRef.current?.click()}
                 >
-                  <span className="rb-choice-icon"><Upload size={26} /></span>
+                  <img src="/resume_upload_ill.png" alt="Upload" className="rb-choice-ill-img" />
                   <strong>Upload My Resume</strong>
-                  <span>Upload your PDF resume — we'll auto-fill all sections for you.</span>
+                  <span>Upload PDF to auto-fill sections.</span>
                   <em className="rb-choice-badge">PDF supported</em>
                 </button>
 
@@ -210,9 +210,9 @@ export function OnboardingWizard({ onBackToApp, onComplete }: OnboardingWizardPr
                   className="rb-choice-card rb-choice-paste"
                   onClick={() => setShowPasteMode(true)}
                 >
-                  <span className="rb-choice-icon"><ClipboardPaste size={26} /></span>
+                  <img src="/resume_paste_ill.png" alt="Paste" className="rb-choice-ill-img" />
                   <strong>Paste Resume Text</strong>
-                  <span>Copy-paste your resume text — works great with Word or Google Docs.</span>
+                  <span>Paste text from Word/Docs.</span>
                   <em className="rb-choice-badge">Any format</em>
                 </button>
 
@@ -221,9 +221,9 @@ export function OnboardingWizard({ onBackToApp, onComplete }: OnboardingWizardPr
                   className="rb-choice-card rb-choice-sample"
                   onClick={() => { updateState({ hasExistingResume: true }); handleNextStep(); }}
                 >
-                  <span className="rb-choice-icon"><FileText size={26} /></span>
+                  <img src="/resume_sample_ill.png" alt="Sample" className="rb-choice-ill-img" />
                   <strong>Load Sample Data</strong>
-                  <span>Start with a pre-filled example resume and edit it to fit your profile.</span>
+                  <span>Start with pre-filled sample.</span>
                 </button>
               </div>
             )}

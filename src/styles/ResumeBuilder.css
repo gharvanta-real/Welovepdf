@@ -1751,3 +1751,32 @@ h2.rb-step-title {
 .rb-skip-link:hover {
   color: var(--v2-primary, #2563EB);
 }
+
+/* ── ILLUSTRATION IMAGES IN CHOICE CARDS ── */
+.rb-choice-ill-img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  margin-bottom: 6px;
+  pointer-events: none;
+  user-select: none;
+}
+
+.rb-choice-cards-3col .rb-choice-card {
+  max-width: 185px;
+  padding: 18px 12px;
+  gap: 6px;
+  border-radius: 12px;
+  border: 1.5px solid var(--v2-border, #E5E7EB);
+}
+
+.rb-choice-cards-3col .rb-choice-card strong {
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+.rb-choice-cards-3col .rb-choice-card span {
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: #6B7280;
+}
