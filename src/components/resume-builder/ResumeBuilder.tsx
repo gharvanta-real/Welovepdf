@@ -9,6 +9,15 @@ import { exportToPdf } from "../document-editor/printService";
 import { openInGoogleDocs } from "../../services/googleDrive";
 import "../../styles/ResumeBuilder.css";
 
+const POPULAR_FONTS = [
+  "Poppins", "Inter", "Roboto", "Open Sans", "Lato", "Montserrat",
+  "Oswald", "Nunito", "Raleway", "Ubuntu", "Merriweather", "Lora",
+  "Playfair Display", "Fira Sans", "PT Sans", "PT Serif", "Work Sans",
+  "Quicksand", "Inconsolata", "Source Sans 3", "Alegreya", "EB Garamond",
+  "Mulish", "Cabin", "Heebo", "Kanit", "Dosis", "Manrope", "Outfit",
+  "Cinzel", "Libre Baskerville", "Cardo", "DM Sans", "Josefin Sans"
+];
+
 interface ResumeBuilderProps {
   onBack: () => void;
   onToolSelect: (toolName: string) => void;
@@ -19,6 +28,7 @@ export function ResumeBuilder({ onBack, onToolSelect }: ResumeBuilderProps) {
   const [isDesignModalOpen, setIsDesignModalOpen] = useState<boolean>(false);
   const [isActionsDropdownOpen, setIsActionsDropdownOpen] = useState<boolean>(false);
   const [errorModalMsg, setErrorModalMsg] = useState<string | null>(null);
+  const [showFontSuggestions, setShowFontSuggestions] = useState<boolean>(false);
   
   // Zoom mode and custom scaling
   const [zoomMode, setZoomMode] = useState<"auto" | "manual">("auto");
@@ -187,6 +197,10 @@ export function ResumeBuilder({ onBack, onToolSelect }: ResumeBuilderProps) {
       setTimeout(() => setGoogleDocsStatus(''), 3000);
     }
   };
+
+  const filteredFonts = (styles.customFontFamily || "").trim()
+    ? POPULAR_FONTS.filter(f => f.toLowerCase().includes((styles.customFontFamily || "").toLowerCase())).slice(0, 5)
+    : POPULAR_FONTS.slice(0, 5);
 
   // If in onboarding step, show onboarding wizard
   if (isOnboarding) {
@@ -494,18 +508,20 @@ export function ResumeBuilder({ onBack, onToolSelect }: ResumeBuilderProps) {
                     </button>
                   </div>
 
-                  {styles.fontFamily === "custom" && (
-                    <div style={{ marginTop: "12px" }}>
-                      <span className="rb-cust-label" style={{ fontSize: "11px", color: "#4B5563", marginBottom: "4px", display: "block" }}>
+                   {styles.fontFamily === "custom" && (
+                    <div style={{ marginTop: "12px", position: "relative" }}>
+                      <span className="rb-cust-label" style={{ fontSize: "11.5px", color: "#4B5563", marginBottom: "4px", display: "block" }}>
                         Enter Google Font Name:
                       </span>
                       <input
                         type="text"
                         value={styles.customFontFamily || ""}
                         placeholder="e.g. Poppins, Montserrat, Open Sans, Roboto"
+                        onFocus={() => setShowFontSuggestions(true)}
+                        onBlur={() => setTimeout(() => setShowFontSuggestions(false), 200)}
                         onChange={(e) => setStyles((prev) => ({ ...prev, customFontFamily: e.target.value }))}
                         style={{
-                          padding: "6px 12px",
+                          padding: "8px 12px",
                           fontSize: "13px",
                           border: "1px solid #D1D5DB",
                           borderRadius: "4px",
@@ -513,7 +529,56 @@ export function ResumeBuilder({ onBack, onToolSelect }: ResumeBuilderProps) {
                           boxSizing: "border-box"
                         }}
                       />
-                      <span style={{ fontSize: "10.5px", color: "#6B7280", marginTop: "4px", display: "block", lineHeight: 1.3 }}>
+                      
+                      {showFontSuggestions && (
+                        <div className="rb-autocomplete-dropdown" style={{
+                          position: "absolute",
+                          top: "100%",
+                          left: 0,
+                          right: 0,
+                          backgroundColor: "#ffffff",
+                          border: "1px solid #E5E7EB",
+                          borderRadius: "4px",
+                          boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+                          zIndex: 1000,
+                          marginTop: "4px",
+                          maxHeight: "160px",
+                          overflowY: "auto"
+                        }}>
+                          {filteredFonts.length > 0 ? (
+                            filteredFonts.map((font) => (
+                              <button
+                                key={font}
+                                onMouseDown={(e) => {
+                                  e.preventDefault();
+                                  setStyles((prev) => ({ ...prev, customFontFamily: font }));
+                                  setShowFontSuggestions(false);
+                                }}
+                                style={{
+                                  display: "block",
+                                  width: "100%",
+                                  padding: "8px 12px",
+                                  textAlign: "left",
+                                  border: "none",
+                                  backgroundColor: "transparent",
+                                  cursor: "pointer",
+                                  fontSize: "13px",
+                                  fontFamily: `'${font}', sans-serif`
+                                }}
+                                className="rb-autocomplete-item"
+                              >
+                                {font}
+                              </button>
+                            ))
+                          ) : (
+                            <div style={{ padding: "8px 12px", fontSize: "12px", color: "#6B7280" }}>
+                              Press Enter to use "{styles.customFontFamily}"
+                            </div>
+                          )}
+                        </div>
+                      )}
+                      
+                      <span style={{ fontSize: "10.5px", color: "#6B7280", marginTop: "5px", display: "block", lineHeight: 1.35 }}>
                         Type any font from Google Fonts (e.g. Poppins, Montserrat, Lato). It will load and print dynamically.
                       </span>
                     </div>
