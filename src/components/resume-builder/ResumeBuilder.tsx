@@ -234,67 +234,87 @@ export function ResumeBuilder({ onBack, onToolSelect }: ResumeBuilderProps) {
             onChange={handleImportJson} 
           />
 
+          {isGoogleDocsLoading && (
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "12.5px", color: "#2563EB", marginRight: "6px", fontWeight: 500 }}>
+              <span className="rb-spinner" style={{ width: "12px", height: "12px", border: "2px solid #2563EB", borderTopColor: "transparent", borderRadius: "50%", display: "inline-block" }} />
+              {googleDocsStatus || 'Connecting...'}
+            </div>
+          )}
+
           <button className="rb-action-btn rb-btn-outline" onClick={() => setIsDesignModalOpen(true)}>
             <Settings2 size={16} /> Customize Design
           </button>
 
-          {/* More Actions Dropdown Menu */}
+          {/* Consolidated Export / Download Dropdown Menu */}
           <div className="rb-dropdown-container">
             <button 
-              className={`rb-action-btn rb-btn-outline rb-dropdown-trigger ${isActionsDropdownOpen ? "active" : ""}`}
+              className={`rb-action-btn rb-btn-primary rb-dropdown-trigger ${isActionsDropdownOpen ? "active" : ""}`}
               onClick={() => setIsActionsDropdownOpen(!isActionsDropdownOpen)}
+              style={{ display: "flex", gap: "6px", alignItems: "center", backgroundColor: "#2563EB", color: "#FFFFFF", border: "none" }}
             >
-              More Actions <ChevronDown size={14} />
+              <Download size={16} /> Download & Export <ChevronDown size={14} />
             </button>
             
             {isActionsDropdownOpen && (
               <>
                 <div className="rb-dropdown-backdrop" onClick={() => setIsActionsDropdownOpen(false)} />
-                <div className="rb-dropdown-menu">
-                  <button className="rb-dropdown-item" onClick={() => { handleExportJson(); setIsActionsDropdownOpen(false); }}>
-                    <Download size={14} /> Export Backup (JSON)
+                <div className="rb-dropdown-menu" style={{ minWidth: "240px", right: 0, left: "auto" }}>
+                  <button className="rb-dropdown-item" onClick={() => { handleDownloadPdf(); setIsActionsDropdownOpen(false); }}>
+                    <span style={{ display: "flex", alignItems: "center", gap: "10px", width: "100%" }}>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0 }}>
+                        <rect x="3" y="3" width="18" height="18" rx="2" fill="#EF4444" />
+                        <text x="12" y="14" fill="#FFFFFF" fontSize="8px" fontWeight="bold" textAnchor="middle" fontFamily="Arial, Helvetica, sans-serif">PDF</text>
+                      </svg>
+                      Download PDF
+                    </span>
                   </button>
+
+                  <button className="rb-dropdown-item" onClick={() => { handleDownloadDoc(); setIsActionsDropdownOpen(false); }}>
+                    <span style={{ display: "flex", alignItems: "center", gap: "10px", width: "100%" }}>
+                      <img 
+                        src="/microsoft-word.svg" 
+                        alt="Word" 
+                        style={{ width: "18px", height: "18px", objectFit: "contain", flexShrink: 0, display: "block" }} 
+                      />
+                      Download Word (.doc)
+                    </span>
+                  </button>
+
+                  <button 
+                    className="rb-dropdown-item" 
+                    onClick={() => { handleEditInGoogleDocs(); setIsActionsDropdownOpen(false); }}
+                    disabled={isGoogleDocsLoading}
+                  >
+                    <span style={{ display: "flex", alignItems: "center", gap: "10px", width: "100%" }}>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0 }}>
+                        <rect x="4" y="3" width="16" height="18" rx="2" fill="#4285F4" />
+                        <rect x="7" y="7" width="10" height="2" rx="0.5" fill="#FFFFFF" />
+                        <rect x="7" y="11" width="10" height="2" rx="0.5" fill="#FFFFFF" />
+                        <rect x="7" y="15" width="6" height="2" rx="0.5" fill="#FFFFFF" />
+                      </svg>
+                      Edit in Google Docs
+                    </span>
+                  </button>
+
+                  <div style={{ height: "1px", background: "#E5E7EB", margin: "6px 0" }} />
+
+                  <button className="rb-dropdown-item" onClick={() => { handleExportJson(); setIsActionsDropdownOpen(false); }}>
+                    <span style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                      <Download size={15} style={{ color: "#4B5563" }} />
+                      Export Backup (JSON)
+                    </span>
+                  </button>
+
                   <button className="rb-dropdown-item" onClick={() => { triggerImportInput(); setIsActionsDropdownOpen(false); }}>
-                    <Upload size={14} /> Import Backup (JSON)
+                    <span style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                      <Upload size={15} style={{ color: "#4B5563" }} />
+                      Import Backup (JSON)
+                    </span>
                   </button>
                 </div>
               </>
             )}
           </div>
-
-          {/* Download PDF — Primary visible action */}
-          <button
-            className="rb-action-btn rb-btn-outline rb-btn-download"
-            onClick={handleDownloadPdf}
-            title="Download as PDF"
-          >
-            <FileText size={16} /> Download PDF
-          </button>
-
-          {/* Download Word — New client-side Word export */}
-          <button
-            className="rb-action-btn rb-btn-outline"
-            onClick={handleDownloadDoc}
-            title="Download as Word Document (.doc)"
-            style={{ display: "flex", gap: "6px", alignItems: "center", border: "1px solid #2563EB", color: "#2563EB" }}
-          >
-            <FileText size={16} /> Download Word
-          </button>
-
-          <button
-            className="rb-action-btn rb-btn-primary rb-btn-gdocs"
-            onClick={handleEditInGoogleDocs}
-            disabled={isGoogleDocsLoading}
-          >
-            {isGoogleDocsLoading ? (
-              <>
-                <span className="rb-spinner" />
-                {googleDocsStatus || 'Opening...'}
-              </>
-            ) : (
-              <><Edit size={16} /> Edit in Google Docs</>
-            )}
-          </button>
         </div>
       </header>
 
