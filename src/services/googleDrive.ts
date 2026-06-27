@@ -46,7 +46,7 @@ export function loadGsiScript(): Promise<void> {
       resolve();
     };
     script.onerror = (err) => {
-      reject(new Error("Failed to load Google Identity Services SDK"));
+      reject(new Error("Failed to load Google Identity Services SDK. This is usually caused by an adblocker, Brave Shields, or privacy extensions blocking Google Sign-In/Drive connection. Please disable shields/adblocker for pdfmount.online and try again."));
     };
     document.head.appendChild(script);
   });
