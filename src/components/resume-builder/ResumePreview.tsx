@@ -215,6 +215,7 @@ export function ResumePreview({ data, styles, zoomMode, zoomLevel }: ResumePrevi
           className="rb-preview-content-injected"
           contentEditable={true}
           suppressContentEditableWarning={true}
+          onDragStart={(e) => e.preventDefault()}
           dangerouslySetInnerHTML={{ __html: compiledHtml }}
           style={{ height: "100%", width: "100%", outline: "none" }}
         />
