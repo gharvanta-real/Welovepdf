@@ -21,7 +21,7 @@ export function getClientId(): string {
   if (typeof window === 'undefined') return '';
   return (
     localStorage.getItem(GDRIVE_CLIENT_ID_KEY) ||
-    ((import.meta as any).env?.VITE_GOOGLE_CLIENT_ID as string) ||
+    import.meta.env.VITE_GOOGLE_CLIENT_ID ||
     ''
   );
 }
