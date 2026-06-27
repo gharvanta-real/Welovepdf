@@ -107,19 +107,16 @@ export function ResumePreview({ data, styles, zoomMode, zoomLevel }: ResumePrevi
         const tooltipWidth = 320;
         
         let left = rect.left + rect.width / 2 - tooltipWidth / 2;
-        let top = rect.top - 46; // 46px above the selected range
+        let top = rect.top - 46; // Positioned exactly above highlighted text
         
-        left += window.scrollX;
-        top += window.scrollY;
-
-        // Keep bounds within safe horizontal boundaries
+        // Keep bounds within safe horizontal boundaries of the viewport
         if (left < 10) left = 10;
         if (left + tooltipWidth > window.innerWidth - 10) {
           left = window.innerWidth - tooltipWidth - 10;
         }
 
         setTooltipStyles({
-          position: "absolute",
+          position: "fixed", // Position fixed relative to viewport to prevent container offsets
           left: `${left}px`,
           top: `${top}px`,
           zIndex: 99999,
@@ -139,8 +136,10 @@ export function ResumePreview({ data, styles, zoomMode, zoomLevel }: ResumePrevi
     };
 
     document.addEventListener("selectionchange", handleSelectionChange);
+    window.addEventListener("scroll", handleSelectionChange, true); // Update position on scroll
     return () => {
       document.removeEventListener("selectionchange", handleSelectionChange);
+      window.removeEventListener("scroll", handleSelectionChange, true);
     };
   }, []);
 
@@ -186,20 +185,18 @@ export function ResumePreview({ data, styles, zoomMode, zoomLevel }: ResumePrevi
 
   return (
     <div className="rb-preview-viewport" style={{ position: "relative" }}>
-      {/* Outer sheet container for scaling */}
+      {/* Outer sheet container for scaling using native CSS zoom to preserve text selection coordinates */}
       <div
         ref={containerRef}
         className="rb-preview-a4-sheet"
         style={{
-          transform: `scale(${scale})`,
-          transformOrigin: "top center",
+          zoom: scale,
           width: "800px",
           minHeight: "1130px", // A4 aspect ratio at 96dpi
           backgroundColor: "#ffffff",
           boxShadow: "0 10px 30px rgba(0, 0, 0, 0.15)",
           borderRadius: "4px",
-          overflow: "hidden",
-          transition: "transform 0.15s ease-out"
+          overflow: "hidden"
         }}
       >
         <div
